@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.raas4emf.fileserver
+Bundle-SymbolicName: org.raas4emf.fileserver
+Bundle-Version: 1.0.0.qualifier
+Export-Package: org.raas4emf.fileserver
+Require-Bundle: org.eclipse.emf.cdo.net4j,
+ org.eclipse.emf.cdo.common,
+ org.eclipse.net4j.tcp,
+ org.eclipse.core.runtime,
+ org.eclipse.emf.ecore.change,
+ org.eclipse.emf.edit,
+ org.apache.log4j
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

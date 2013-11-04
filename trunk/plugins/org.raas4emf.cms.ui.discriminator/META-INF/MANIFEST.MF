@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Discriminator
+Bundle-SymbolicName: org.raas4emf.cms.ui.discriminator
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.raas4emf.cms.ui.discriminator.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.emf.cdo.net4j,
+ org.raas4emf.cms.core,
+ org.raas4emf.metamodel.raascms
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.raas4emf.cms.ui.discriminator

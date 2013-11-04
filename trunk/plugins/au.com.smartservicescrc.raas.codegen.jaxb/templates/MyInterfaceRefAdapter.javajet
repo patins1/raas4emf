@@ -1,0 +1,9 @@
+<%@ jet package="au.com.smartservicescrc.raas.codegen.jaxb.jet" class="MyInterfaceRefAdapter_Generator" skeleton="jaxb.skeleton" %>
+package <%=genClass.getGenPackage().getQualifiedPackageName()%>.jaxb;
+
+import <%=jaxbUtilPackage%>.EObjectRefAdapter;
+<%genClass.getGenModel().markImportLocation(stringBuffer, genClass.getGenPackage());%>
+
+public class <%=genClass.getInterfaceName()%>RefAdapter extends EObjectRefAdapter<<%=genClass.getInterfaceName()%>Ref,<%=genClass.getImportedInterfaceName()%>> {
+}
+<%genClass.getGenModel().emitSortedImports();%>

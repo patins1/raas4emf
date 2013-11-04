@@ -1,0 +1,10 @@
+<%@ jet package="au.com.smartservicescrc.raas.codegen.jaxws.jet" class="Sun_Jaxws_Generator" imports="java.util.*" skeleton="cxf-servlet.skeleton" %>
+<?xml version="1.0" encoding="UTF-8"?>
+<endpoints version="2.0" xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime">
+    <% for (String implementor: implementors) { %>
+    <%     String serviceId=implementor.substring(implementor.lastIndexOf(".")+1, implementor.lastIndexOf("Impl")).toLowerCase(); %>
+  <endpoint name="<%=serviceId%>"
+    implementation="<%=implementor%>"
+    url-pattern="/<%=serviceId%>" />
+    <% } %>	
+</endpoints>

@@ -1,0 +1,8 @@
+ToolItem {
+  padding: 0px 2px 0px 2px;
+  spacing: 0px;
+}
+
+ToolItem-DropDownIcon {
+  background-image: url( resource/widget_rap_toolbar_down.png );
+}

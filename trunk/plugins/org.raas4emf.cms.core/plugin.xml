@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.raas4emf.cms.transformation.transformator">
+      <transformator
+            class="org.raas4emf.cms.core.webgl.IfcToThreejsTranformator"
+            description="three.js JSON"
+            sourceFileExtension="ifc"
+            targetFileExtension="js">
+      </transformator>
+   </extension>
+   
+</plugin>

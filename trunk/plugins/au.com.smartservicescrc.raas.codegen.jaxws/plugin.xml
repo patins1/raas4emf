@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+         
+      <objectContribution
+            objectClass="org.eclipse.emf.codegen.ecore.genmodel.GenModel"
+            adaptable="false"
+            id="au.com.smartservicescrc.raas.codegen.jaxws.actions.contribution">
+                     
+         <action
+               class="au.com.smartservicescrc.raas.codegen.jaxws.actions.GenerateJAXWSAction"
+               enablesFor="*"
+               id="au.com.smartservicescrc.raas.genjaxws.AllJaxbAction"
+               label="Generate JAXWS webservice with EMF repository"
+               style="push"/>
+      </objectContribution>
+         
+   </extension>
+   
+
+</plugin>

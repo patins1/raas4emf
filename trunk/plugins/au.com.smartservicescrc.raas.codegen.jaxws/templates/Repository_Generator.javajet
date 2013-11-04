@@ -1,0 +1,75 @@
+<%@ jet package="au.com.smartservicescrc.raas.codegen.jaxws.jet" class="Repository_Generator" skeleton="Repository_Generator.skeleton" imports="java.util.* org.eclipse.emf.ecore.* org.eclipse.emf.codegen.ecore.genmodel.* org.eclipse.emf.codegen.util.CodeGenUtil" %>
+
+    <% GenModel genModel = genRepositoryRoots.iterator().next().getGenModel(); %>
+
+package <%=targetPackage%>;
+ 
+import javax.jws.WebService;
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+import javax.ws.rs.Path;
+    <% } %>
+
+<%genModel.markImportLocation(stringBuffer);%>
+
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+@Path("/<%=serviceName.substring(0,"Repository".length())%>")
+    <% } %>
+@WebService(endpointInterface = "<%=itfPackage%>.jaxws.<%=serviceName%>", serviceName = "<%=serviceName%>")
+public class <%=serviceName%>Impl extends <%=targetPackage%>.raas.WebserviceRepository implements <%=itfPackage%>.jaxws.<%=serviceName%> {
+ 
+ 	public <%=serviceName%>Impl() throws Exception {
+		super(<%for (GenPackage genPackage: genModel.getGenPackages()) { %><%=genPackage==genModel.getGenPackages().iterator().next()?"":", "%><%=genPackage.getImportedPackageInterfaceName()%>.eINSTANCE<%; } %>);
+	}
+  
+    <% for (GenClass genRepositoryRoot: genRepositoryRoots) { %>    
+    <% String repositoryRootName = genRepositoryRoot.getImportedInterfaceName(); %>
+	// RepositoryRoot operations for <%=repositoryRootName%>
+
+    <% for (GenFeature genFeature: genRepositoryRoot.getAllGenFeatures()) { %>
+	public <%=genFeature.getImportedType()%> Get<%=genFeature.getName()%>(<%=repositoryRootName%> rootRef) throws Exception {
+		return getter(rootRef,<%=genFeature.getQualifiedFeatureAccessorName()%>());
+	}
+
+	public void Set<%=genFeature.getName()%>(<%=repositoryRootName%> rootRef, <%=genFeature.getImportedType()%> valuesRef) throws Exception {
+		setter(rootRef,<%=genFeature.getQualifiedFeatureAccessorName()%>(),valuesRef);
+	}
+
+    <% } %>
+    <% } %>
+    <% for (GenClass genTopClass: genTopClasses) { %>
+    <%     String topClassName=genTopClass.getImportedInterfaceName(); %>
+	// CRUD operations for <%=topClassName%>
+
+	public <%=topClassName%> Create<%=topClassName%>(<%=topClassName%> value) throws Exception {
+		return create(value);
+	}
+
+	public <%=topClassName%> Get<%=topClassName%>AndGotoSubresource(<%=topClassName%> valueRef) throws Exception {
+		return get(valueRef);
+	}
+
+	public <%=topClassName%> Get<%=topClassName%>(<%=topClassName%> valueRef) throws Exception {
+		return get(valueRef);
+	}
+
+	public void Update<%=topClassName%>(<%=topClassName%> valueRef, <%=topClassName%> value) throws Exception {
+		update(valueRef, value);
+	}
+
+	public void Delete<%=topClassName%>(<%=topClassName%> valueRef) throws Exception {
+		delete(valueRef);
+	}
+
+	public List<<%=topClassName%>> GetAll<%=topClassName%>() throws Exception {
+		return getAllInstances(<%=genTopClass.getQualifiedClassifierAccessor()%>);
+	}
+	
+    <% } %>
+    
+	@Override
+	public List<?> Query(String queryString) throws Exception {
+		return query(queryString);
+	}
+	
+}
+<%genModel.emitSortedImports();%>

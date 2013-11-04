@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmi:id="13357093"
+    name="raas_small_test" nsURI="http://smartservicescrc.com.au/raas/small_test"
+    nsPrefix="rst">
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="11235945" name="ReposRoot">
+    <eAnnotations xmi:id="31746717" source="RaaS">
+      <details xmi:id="18053049" key="RepositoryRoot" value="Yes"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="18426842" name="raasRef"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="4509110" name="singleAttrString"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="17199707" name="multiContainClassA"
+        upperBound="-1" eType="#29373817" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="29470011" name="optionalContainClassB"
+        eType="#19723516" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="17079791" name="singleContainClassC"
+        lowerBound="1" eType="#7345254" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="6097798" name="multiRefClassD"
+        upperBound="-1" eType="#11832905"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="870802" name="multiAttrString"
+        upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="singleNonContainClassM"
+        lowerBound="1" eType="#//TopClassM"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="29373817" name="TopClassA">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="32948418" name="raasRef"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="18062351" name="multiContainClassE"
+        upperBound="-1" eType="#5656663" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="21522474" name="singleContainClassF"
+        lowerBound="1" eType="#16551649" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="19723516" name="TopClassB">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="8913756" name="raasRef"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="13925465" name="multi2lowerAttrInt"
+        lowerBound="2" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="21630715" name="singleAttrInt"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="29966200" name="optionalAttrInt"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="multiRefClassE" upperBound="-1"
+        eType="#5656663"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="7345254" name="TopClassC">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="4941575" name="raasRef"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="74477" name="multi2lowerAttrInt"
+        lowerBound="2" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="24579242" name="singleAttrInt"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="8474944" name="optionalAttrInt"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="12870534" name="singleContainClassF"
+        lowerBound="1" eType="#16551649" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="11832905" name="TopClassD">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="32083788" name="raasRef"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="7304044" name="multi2lowerAttrInt"
+        lowerBound="2" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="1523718" name="singleAttrInt"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="25589742" name="optionalAttrInt"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="optionalTimeZone" eType="#//TimeZone"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="5656663" name="UnderClassE">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="raasRef" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="16551649" name="UnderClassF">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="raasRef" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="17339349" name="singleAttrInt"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="30911270" name="ThirdLevelClassJ">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="raasRef" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="2459707" name="multi2lowerAttrInt"
+        lowerBound="2" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="161035" name="singleAttrInt"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="32205754" name="optionalAttrInt"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="3192324" name="optionalContainClassK"
+        eType="#10382437" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="10382437" name="FourthLevelClassK">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="raasRef" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="14583632" name="multi2lowerAttrInt"
+        lowerBound="2" upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="12835423" name="singleAttrInt"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="23727283" name="optionalAttrInt"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="6219850" name="DerivedUnderClassE1"
+      eSuperTypes="#5656663">
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="14964369" name="singleRefClassD"
+        lowerBound="1" eType="#11832905"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="13512600" name="DerivedUnderClassE2"
+      eSuperTypes="#5656663">
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="9885135" name="multiContainClassJ"
+        upperBound="-1" eType="#30911270" containment="true">
+      <eAnnotations xmi:id="11471190" source="RaaS">
+        <details xmi:id="26084619" key="AssertContainment" value="Yes"/>
+      </eAnnotations>
+    </eStructuralFeatures>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TopClassM" eSuperTypes="#5656663">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="singleAttrInt" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="TimeZone" instanceClassName="java.util.TimeZone"/>
+  <eClassifiers xsi:type="ecore:EClass" name="MergingE1AndE2" eSuperTypes="#6219850 #13512600">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="optionalAttrString" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+</ecore:EPackage>

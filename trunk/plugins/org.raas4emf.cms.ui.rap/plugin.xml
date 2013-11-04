@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+  <extension
+      id="org.raas4emf.cms.ui.rap.demoentrypoint"
+      point="org.eclipse.rap.ui.entrypoint">
+    <entrypoint
+          class="org.raas4emf.cms.ui.rap.DemoWorkbench"
+          id="org.raas4emf.cms.ui.rap.entrypoint1"
+          brandingId="org.raas4emf.cms.ui.rap.business.branding"
+          path="/raasold"/>
+    <entrypoint
+          class="org.raas4emf.cms.ui.rap.DemoWorkbench"
+          id="org.raas4emf.cms.ui.rap.entrypoint3"
+          path="/ui"
+          brandingId="org.raas4emf.cms.ui.rap.tea.branding"/>
+  </extension>
+  <extension
+        point="org.eclipse.equinox.http.registry.filters">
+     <filter
+           alias="/"
+           class="org.raas4emf.cms.ui.rap.ReplacingFilter"
+           httpcontextId="org.eclipse.rap.httpcontext"
+           load-on-startup="true">
+     </filter>
+  </extension>
+  
+  <extension point="org.eclipse.rap.ui.layouts">
+	<layout id="org.eclipse.rap.design.example.business.layout">
+		<layoutSet class="org.raas4emf.cms.ui.rap.RAASLogoInitializer" id="org.eclipse.rap.design.example.layoutset.logo" name="Logo Overriding" overridesId="org.eclipse.rap.design.example.layoutset.logo" >
+		</layoutSet>
+         <layoutSet
+               class="org.raas4emf.cms.ui.rap.RAASCoolbarInitializer"
+               id="org.eclipse.rap.design.example.layoutset.coolbar"
+               overridesId="org.eclipse.rap.design.example.layoutset.coolbar"
+               name="Coolbar">
+         </layoutSet>
+	</layout>
+  </extension>
+
+   <extension
+         point="org.eclipse.rap.ui.branding">
+     <branding
+           id="org.raas4emf.cms.ui.rap.tea.branding"
+           title="RAAS CMS"
+           themeId="org.eclipse.rap.rwt.theme.Default"
+           favicon="img/business/favicon.png">
+     </branding>
+      <branding
+            favicon="img/business/favicon.png"
+            id="org.raas4emf.cms.ui.rap.business.branding"
+            themeId="org.raas4emf.cms.ui.business.theme"
+            title="RAAS web interface">
+         <presentationFactory
+               defaultLayoutId="org.eclipse.rap.design.example.business.layout"
+               id="org.raas4emf.cms.ui.business.factory"
+               name="RAAS Business Presentation Factory"
+               viewActionsVisible="false">
+            <defaultStackPresentation
+                  id="org.eclipse.rap.design.example.stack.view">
+            </defaultStackPresentation>
+         </presentationFactory>
+      </branding>
+   </extension>
+   <extension
+         point="org.eclipse.rap.ui.serviceHandler">
+      <serviceHandler
+            class="org.raas4emf.cms.ui.rap.DownloadServiceHandler"
+            id="downloadServiceHandler">
+      </serviceHandler>
+   </extension>
+  
+   <extension
+         point="org.eclipse.ui.presentationFactories">
+      <factory
+            class="org.raas4emf.cms.ui.rap.RAASPresentationFactory"
+            id="org.raas4emf.cms.ui.business.factory"
+            name="RAAS Business Presentation Factory">
+      </factory>
+   </extension>
+
+   <extension
+         point="org.eclipse.rap.ui.themes">
+      <theme
+            file="theme/business/business.css"
+            id="org.raas4emf.cms.ui.business.theme"
+            name="RAAS Business Theme">
+      </theme>
+      <themeContribution
+            file="resource/theme/default.css"
+            themeId="org.eclipse.rap.rwt.theme.Default">
+      </themeContribution>
+   </extension>
+</plugin>
