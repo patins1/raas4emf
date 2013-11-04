@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+	<handler-chain>
+		<handler>
+			<handler-name>TeneoLogicalJAXWSHandler</handler-name>
+			<handler-class>raas.experiments.jaxbased.webservice.TeneoLogicalJAXWSHandler
+			</handler-class>
+		</handler>
+	</handler-chain>
+</handler-chains>

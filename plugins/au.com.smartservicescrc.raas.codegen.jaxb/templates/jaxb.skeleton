@@ -1,0 +1,14 @@
+
+import org.eclipse.emf.codegen.ecore.genmodel.GenClass;
+
+public class CLASS 
+ {
+ 
+/* (non-javadoc)
+    * @see IGenerator#generate(Object)
+    */
+public String generate(GenClass genClass, String jaxbUtilPackage)
+   {
+     return "";
+   }
+ }

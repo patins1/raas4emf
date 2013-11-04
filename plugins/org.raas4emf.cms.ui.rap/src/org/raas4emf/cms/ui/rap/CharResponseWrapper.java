@@ -1,0 +1,27 @@
+/**
+ * Copyright 2013 Smart Services CRC Pty Ltd
+ */
+package org.raas4emf.cms.ui.rap;
+
+import java.io.CharArrayWriter;
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+
+public class CharResponseWrapper extends HttpServletResponseWrapper {
+	private CharArrayWriter output;
+
+	public String toString() {
+		return output.toString();
+	}
+
+	public CharResponseWrapper(HttpServletResponse response) {
+		super(response);
+		output = new CharArrayWriter();
+	}
+
+	public PrintWriter getWriter() {
+		return new PrintWriter(output);
+	}
+}

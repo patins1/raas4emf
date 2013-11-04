@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+         
+      <objectContribution
+            objectClass="org.eclipse.emf.codegen.ecore.genmodel.GenModel"
+            adaptable="false"
+            id="au.com.smartservicescrc.raas.codegen.jaxb.actions.contribution">
+                     
+         <action
+               class="au.com.smartservicescrc.raas.codegen.jaxb.actions.AllJaxbAction"
+               enablesFor="*"
+               id="au.com.smartservicescrc.raas.genjaxb.AllJaxbAction"
+               label="Augment EMF code with JAXB annotations"
+               style="push"/>
+      </objectContribution>
+         
+   </extension>
+   
+
+</plugin>

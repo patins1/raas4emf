@@ -1,0 +1,12 @@
+import au.com.smartservicescrc.raas.codegen.jaxws.wizard.*;
+public class CLASS 
+ {
+ 
+/* (non-javadoc)
+    * @see IGenerator#generate(Object)
+    */
+public String generate(Collection<GenClass> genRepositoryRoots, Collection<GenClass> genTopClasses, String targetPackage, String serviceName, String itfPackage)
+   {
+     return "";
+   }
+ }

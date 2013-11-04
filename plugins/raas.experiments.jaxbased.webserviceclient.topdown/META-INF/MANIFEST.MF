@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Webserviceclient
+Bundle-SymbolicName: raas.experiments.jaxbased.webserviceclient.topdown
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: raas.experiments.jaxbased.webserviceclient.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.junit;bundle-version="4.8.1"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

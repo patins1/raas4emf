@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="org.raas4emf.fileserver">
+        <wb-resource deploy-path="/" source-path="/WebContent"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/org.raas4emf.cms.core/org.raas4emf.cms.core">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/org.raas4emf.cms.transformation/org.raas4emf.cms.transformation">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/org.raas4emf.metamodel.raascms/org.raas4emf.metamodel.raascms">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="java-output-path" value="/org.raas4emf.fileserver/build/classes"/>
+        <property name="context-root" value="org.raas4emf.fileserver"/>
+    </wb-module>
+</project-modules>

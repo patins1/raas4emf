@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:soap="http://cxf.apache.org/bindings/soap"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
+	http://cxf.apache.org/bindings/soap 
+	http://cxf.apache.org/schemas/configuration/soap.xsd 
+	http://cxf.apache.org/core
+    http://cxf.apache.org/schemas/core.xsd
+	http://cxf.apache.org/jaxrs 
+	http://cxf.apache.org/schemas/jaxrs.xsd
+	http://cxf.apache.org/jaxws 
+	http://cxf.apache.org/schemas/jaxws.xsd">
+
+    <!-- Load CXF modules from cxf.jar -->
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+
+    <bean id="jaxbBean"
+          class="org.apache.cxf.jaxb.JAXBDataBinding"
+          scope="prototype"/>
+
+    <bean id="jaxws-and-aegis-service-factory"
+          class="org.apache.cxf.jaxws.support.JaxWsServiceFactoryBean"
+          scope="prototype">
+        <property name="dataBinding" ref="jaxbBean"/>
+        <property name="serviceConfigurations">
+            <list>
+                <bean class="org.apache.cxf.jaxws.support.JaxWsServiceConfiguration"/>
+                <bean class="org.apache.cxf.aegis.databinding.AegisServiceConfiguration"/>
+                <bean class="org.apache.cxf.service.factory.DefaultServiceConfiguration"/>
+            </list>
+        </property>
+    </bean>
+
+ 	<jaxrs:server id="RestServer" address="/">
+		<jaxrs:serviceBeans>
+            <!-- Exposing the reposrootrepository service as a rest service -->
+ 			<ref bean="reposrootrepositoryBean" />
+ 	
+            <!-- Exposing the topclassarepository service as a rest service -->
+ 			<ref bean="topclassarepositoryBean" />
+ 	
+            <!-- Exposing the topclassbrepository service as a rest service -->
+ 			<ref bean="topclassbrepositoryBean" />
+ 	
+            <!-- Exposing the topclasscrepository service as a rest service -->
+ 			<ref bean="topclasscrepositoryBean" />
+ 	
+            <!-- Exposing the topclassdrepository service as a rest service -->
+ 			<ref bean="topclassdrepositoryBean" />
+ 	
+            <!-- Exposing the underclasserepository service as a rest service -->
+ 			<ref bean="underclasserepositoryBean" />
+ 	
+            <!-- Exposing the underclassfrepository service as a rest service -->
+ 			<ref bean="underclassfrepositoryBean" />
+ 	
+            <!-- Exposing the thirdlevelclassjrepository service as a rest service -->
+ 			<ref bean="thirdlevelclassjrepositoryBean" />
+ 	
+            <!-- Exposing the fourthlevelclasskrepository service as a rest service -->
+ 			<ref bean="fourthlevelclasskrepositoryBean" />
+ 	
+            <!-- Exposing the derivedunderclasse1repository service as a rest service -->
+ 			<ref bean="derivedunderclasse1repositoryBean" />
+ 	
+            <!-- Exposing the derivedunderclasse2repository service as a rest service -->
+ 			<ref bean="derivedunderclasse2repositoryBean" />
+ 	
+            <!-- Exposing the topclassmrepository service as a rest service -->
+ 			<ref bean="topclassmrepositoryBean" />
+ 	
+            <!-- Exposing the merginge1ande2repository service as a rest service -->
+ 			<ref bean="merginge1ande2repositoryBean" />
+ 	 			
+		</jaxrs:serviceBeans>
+	</jaxrs:server>
+	
+
+
+    <!-- The reposrootrepository service -->
+	<bean id="reposrootrepositoryBean" class="raas.experiments.jaxbased.webservice.ReposRootRepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the reposrootrepository service as a SOAP service -->
+	<jaxws:endpoint id="reposrootrepository"
+		implementor="#reposrootrepositoryBean"
+		address="/reposrootrepository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The topclassarepository service -->
+	<bean id="topclassarepositoryBean" class="raas.experiments.jaxbased.webservice.TopClassARepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the topclassarepository service as a SOAP service -->
+	<jaxws:endpoint id="topclassarepository"
+		implementor="#topclassarepositoryBean"
+		address="/topclassarepository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The topclassbrepository service -->
+	<bean id="topclassbrepositoryBean" class="raas.experiments.jaxbased.webservice.TopClassBRepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the topclassbrepository service as a SOAP service -->
+	<jaxws:endpoint id="topclassbrepository"
+		implementor="#topclassbrepositoryBean"
+		address="/topclassbrepository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The topclasscrepository service -->
+	<bean id="topclasscrepositoryBean" class="raas.experiments.jaxbased.webservice.TopClassCRepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the topclasscrepository service as a SOAP service -->
+	<jaxws:endpoint id="topclasscrepository"
+		implementor="#topclasscrepositoryBean"
+		address="/topclasscrepository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The topclassdrepository service -->
+	<bean id="topclassdrepositoryBean" class="raas.experiments.jaxbased.webservice.TopClassDRepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the topclassdrepository service as a SOAP service -->
+	<jaxws:endpoint id="topclassdrepository"
+		implementor="#topclassdrepositoryBean"
+		address="/topclassdrepository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The underclasserepository service -->
+	<bean id="underclasserepositoryBean" class="raas.experiments.jaxbased.webservice.UnderClassERepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the underclasserepository service as a SOAP service -->
+	<jaxws:endpoint id="underclasserepository"
+		implementor="#underclasserepositoryBean"
+		address="/underclasserepository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The underclassfrepository service -->
+	<bean id="underclassfrepositoryBean" class="raas.experiments.jaxbased.webservice.UnderClassFRepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the underclassfrepository service as a SOAP service -->
+	<jaxws:endpoint id="underclassfrepository"
+		implementor="#underclassfrepositoryBean"
+		address="/underclassfrepository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The thirdlevelclassjrepository service -->
+	<bean id="thirdlevelclassjrepositoryBean" class="raas.experiments.jaxbased.webservice.ThirdLevelClassJRepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the thirdlevelclassjrepository service as a SOAP service -->
+	<jaxws:endpoint id="thirdlevelclassjrepository"
+		implementor="#thirdlevelclassjrepositoryBean"
+		address="/thirdlevelclassjrepository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The fourthlevelclasskrepository service -->
+	<bean id="fourthlevelclasskrepositoryBean" class="raas.experiments.jaxbased.webservice.FourthLevelClassKRepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the fourthlevelclasskrepository service as a SOAP service -->
+	<jaxws:endpoint id="fourthlevelclasskrepository"
+		implementor="#fourthlevelclasskrepositoryBean"
+		address="/fourthlevelclasskrepository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The derivedunderclasse1repository service -->
+	<bean id="derivedunderclasse1repositoryBean" class="raas.experiments.jaxbased.webservice.DerivedUnderClassE1RepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the derivedunderclasse1repository service as a SOAP service -->
+	<jaxws:endpoint id="derivedunderclasse1repository"
+		implementor="#derivedunderclasse1repositoryBean"
+		address="/derivedunderclasse1repository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The derivedunderclasse2repository service -->
+	<bean id="derivedunderclasse2repositoryBean" class="raas.experiments.jaxbased.webservice.DerivedUnderClassE2RepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the derivedunderclasse2repository service as a SOAP service -->
+	<jaxws:endpoint id="derivedunderclasse2repository"
+		implementor="#derivedunderclasse2repositoryBean"
+		address="/derivedunderclasse2repository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The topclassmrepository service -->
+	<bean id="topclassmrepositoryBean" class="raas.experiments.jaxbased.webservice.TopClassMRepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the topclassmrepository service as a SOAP service -->
+	<jaxws:endpoint id="topclassmrepository"
+		implementor="#topclassmrepositoryBean"
+		address="/topclassmrepository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+	
+
+    <!-- The merginge1ande2repository service -->
+	<bean id="merginge1ande2repositoryBean" class="raas.experiments.jaxbased.webservice.MergingE1AndE2RepositoryImpl" autowire="autodetect" />
+	
+    <!-- Exposing the merginge1ande2repository service as a SOAP service -->
+	<jaxws:endpoint id="merginge1ande2repository"
+		implementor="#merginge1ande2repositoryBean"
+		address="/merginge1ande2repository">
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>				
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>	
+	</jaxws:endpoint>
+		
+</beans>

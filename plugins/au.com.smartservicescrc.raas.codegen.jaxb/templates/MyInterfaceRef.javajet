@@ -1,0 +1,49 @@
+<%@ jet package="au.com.smartservicescrc.raas.codegen.jaxb.jet" class="MyInterfaceRef_Generator" skeleton="jaxb.skeleton" imports="org.eclipse.emf.ecore.EAttribute au.com.smartservicescrc.raas.codegen.jaxb.util.MetamodelUtil" %>
+package <%=genClass.getGenPackage().getQualifiedPackageName()%>.jaxb;
+
+import javax.xml.bind.annotation.*;
+import <%=jaxbUtilPackage%>.*;
+
+<%genClass.getGenModel().markImportLocation(stringBuffer, genClass.getGenPackage());%>
+
+<% EAttribute idAttribute = genClass.getEcoreClass().getEIDAttribute(); %>
+@XmlRootElement(name = "<%=genClass.getInterfaceName()%>RefElement")
+<% boolean definesID = idAttribute!=null && idAttribute.getEContainingClass()==genClass.getEcoreClass(); %>
+
+<% if (genClass.isAbstract()) { %>abstract <% } %>public class <%=genClass.getInterfaceName()%>Ref<% if (genClass.getBaseGenClass()==null) { %> extends <%=MetamodelUtil.getRefClass(genClass.getGenModel().getRootExtendsInterface())%> <% } else if (genClass.getBaseGenClass()!=null && !genClass.getBaseGenClass().isEObject()) { %> extends <%=MetamodelUtil.getRefClass(genClass.getBaseGenClass().getQualifiedInterfaceName())%> <% } else { %> implements EObjectRef<% } %> {
+
+	<% if (definesID) { %>
+	private String id;
+
+	@XmlValue
+	@Override
+	public String getID() {
+		return id;
+	}
+
+	@Override
+	public void setID(String id) {
+		this.id = id;
+	}
+	<% } %>
+
+	<% if (!genClass.isAbstract()) { %>
+	@Override
+	public <%=genClass.getImportedInterfaceName()%> createInstance() {
+		return <%=genClass.getGenPackage().getQualifiedFactoryInstanceAccessor()%>.create<%=genClass.getInterfaceName()%>();
+	}
+	
+	public static <%=genClass.getInterfaceName()%>Ref valueOf(String id) {
+		<%=genClass.getInterfaceName()%>Ref result = new <%=genClass.getInterfaceName()%>Ref();
+		result.setID(id);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return getID();
+	}
+	<% } %>
+
+}
+<%genClass.getGenModel().emitSortedImports();%>

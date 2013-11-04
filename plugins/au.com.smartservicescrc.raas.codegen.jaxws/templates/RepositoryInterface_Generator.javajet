@@ -1,0 +1,102 @@
+<%@ jet package="au.com.smartservicescrc.raas.codegen.jaxws.jet" class="RepositoryInterface_Generator" skeleton="Repository_Generator.skeleton" imports="java.util.* org.eclipse.emf.ecore.* org.eclipse.emf.codegen.ecore.genmodel.* org.eclipse.emf.codegen.util.CodeGenUtil" %>
+
+    <% GenModel genModel = genRepositoryRoots.iterator().next().getGenModel(); %>
+    
+package <%=targetPackage%>;
+ 
+import javax.jws.WebParam;
+import javax.jws.WebService;
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+import javax.ws.rs.*;
+    <% } %>
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+    <% for (GenClass genTopClass: genTopClasses) { %>
+import <%=genTopClass.getGenPackage().getQualifiedPackageName()%>.jaxb.<%=genTopClass.getName()%>RefAdapter;
+    <% } %>
+
+<%genModel.markImportLocation(stringBuffer);%>
+
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+@Path("/<%=serviceName.substring(0,"Repository".length())%>")
+    <% } %>
+@WebService
+public interface <%=serviceName%> {
+  
+    <% for (GenClass genRepositoryRoot: genRepositoryRoots) { %>    
+    <% String repositoryRootName = genRepositoryRoot.getImportedInterfaceName(); %>
+	// RepositoryRoot operations for <%=repositoryRootName%>
+
+    <% for (GenFeature genFeature: genRepositoryRoot.getAllGenFeatures()) { %>
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+	@GET
+	@Path("/Get<%=genFeature.getName()%>/{id}")
+	@Produces(<%=GenerateJAXWS.mimeTypes%>)
+    <% } %>
+	<%=genFeature.getImportedType()%> Get<%=genFeature.getName()%>(@WebParam(name="<%=repositoryRootName%>_ROOTID") @PathParam("id") @XmlJavaTypeAdapter(<%=repositoryRootName%>RefAdapter.class) <%=repositoryRootName%> <%=repositoryRootName%>_ROOTID) throws Exception;
+
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+	@PUT
+	@Path("/Set<%=genFeature.getName()%>/{id}<% if (!(genFeature.getEcoreFeature().getEType() instanceof EClass)) { %>/{value:[^/]*}<% } %>")
+	@Produces(<%=GenerateJAXWS.mimeTypes%>)
+	@Consumes(<%=GenerateJAXWS.mimeTypes%>)
+    <% } %>
+	void Set<%=genFeature.getName()%>(@WebParam(name="<%=repositoryRootName%>_ROOTID") @PathParam("id") @XmlJavaTypeAdapter(<%=repositoryRootName%>RefAdapter.class) <%=repositoryRootName%> <%=repositoryRootName%>_ROOTID, <% if (!(genFeature.getEcoreFeature().getEType() instanceof EClass)) { %>@WebParam(name="<%=genFeature.getRawListItemType()%>_VALUE") @PathParam("value") <%=genFeature.getImportedType()%> <%=genFeature.getRawListItemType()%>_VALUE<% } %><% if (genFeature.getEcoreFeature().getEType() instanceof EClass) { %>@WebParam(name="<%=genFeature.getRawListItemType()%>_ID")  @XmlJavaTypeAdapter(<%=genFeature.getRawListItemType()%>RefAdapter.class) <%=genFeature.getImportedType()%> <%=genFeature.getRawListItemType()%>_ID<% } %>) throws Exception;
+
+    <% } %>
+    <% } %>
+    <% for (GenClass genTopClass: genTopClasses) { %>
+    <%     String topClassName=genTopClass.getImportedInterfaceName(); %>
+	// CRUD operations for <%=topClassName%>
+
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+	@POST
+	@Path("/Create<%=topClassName%>")
+	@Produces(<%=GenerateJAXWS.mimeTypes%>)
+	@Consumes(<%=GenerateJAXWS.mimeTypes%>)
+    <% } %>
+	@XmlJavaTypeAdapter(<%=topClassName%>RefAdapter.class)
+	<%=topClassName%> Create<%=topClassName%>(@WebParam(name="<%=topClassName%>_VALUE") <%=topClassName%> <%=topClassName%>_VALUE) throws Exception;
+
+    <% if (GenerateJAXWS.enableJAXRS) { %>	    
+	@Path("/Get<%=topClassName%>/{id}/")
+    <% } %>
+	<%=topClassName%> Get<%=topClassName%>AndGotoSubresource(@WebParam(name="<%=topClassName%>_ID") @PathParam("id") @XmlJavaTypeAdapter(<%=topClassName%>RefAdapter.class) <%=topClassName%> <%=topClassName%>_ID) throws Exception;
+    
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+	@GET
+	@Path("/Get<%=topClassName%>/{id}")
+	@Produces(<%=GenerateJAXWS.mimeTypes%>)
+    <% } %>
+	<%=topClassName%> Get<%=topClassName%>(@WebParam(name="<%=topClassName%>_ID") @PathParam("id") @XmlJavaTypeAdapter(<%=topClassName%>RefAdapter.class) <%=topClassName%> <%=topClassName%>_ID) throws Exception;
+
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+	@PUT
+	@Path("/Update<%=topClassName%>/{id}")
+	@Consumes(<%=GenerateJAXWS.mimeTypes%>)
+    <% } %>
+	void Update<%=topClassName%>(@WebParam(name="<%=topClassName%>_ID") @PathParam("id") @XmlJavaTypeAdapter(<%=topClassName%>RefAdapter.class) <%=topClassName%> <%=topClassName%>_ID, @WebParam(name="<%=topClassName%>_VALUE") <%=topClassName%> <%=topClassName%>_VALUE) throws Exception;
+
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+	@DELETE
+	@Path("/Delete<%=topClassName%>/{id}")
+    <% } %>
+	void Delete<%=topClassName%>(@WebParam(name="<%=topClassName%>_ID") @PathParam("id") @XmlJavaTypeAdapter(<%=topClassName%>RefAdapter.class) <%=topClassName%> <%=topClassName%>_ID) throws Exception;
+
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+	@GET
+	@Path("/GetAll<%=topClassName%>")
+	@Produces(<%=GenerateJAXWS.mimeTypes%>)
+    <% } %>
+	List<<%=topClassName%>> GetAll<%=topClassName%>() throws Exception;
+	
+    <% } %>
+    
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+	@GET
+	@Path("/Query/{queryString}")
+	@Produces(<%=GenerateJAXWS.mimeTypes%>)
+    <% } %>
+	List<?> Query(@WebParam(name="QueryString") @PathParam("queryString") String queryString) throws Exception;
+	
+}
+<%genModel.emitSortedImports();%>

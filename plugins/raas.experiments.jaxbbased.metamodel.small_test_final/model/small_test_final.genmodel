@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/raas.experiments.jaxbbased.metamodel.small_test_final/src"
+    modelPluginID="raas.experiments.jaxbbased.metamodel.small_test_final" modelName="small_test_final"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="6.0" copyrightFields="false">
+  <foreignModel>small_test_final.ecore</foreignModel>
+  <genPackages prefix="Rst" basePackage="au.com.smartservicescrc" disposableProviderFactory="true"
+      ecorePackage="small_test_final.ecore#13357093">
+    <genClasses ecoreClass="small_test_final.ecore#11235945">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#18426842"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#4509110"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference small_test_final.ecore#17199707"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference small_test_final.ecore#29470011"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference small_test_final.ecore#17079791"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference small_test_final.ecore#6097798"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#870802"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference small_test_final.ecore#//ReposRoot/singleNonContainClassM"/>
+    </genClasses>
+    <genClasses ecoreClass="small_test_final.ecore#29373817">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#32948418"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference small_test_final.ecore#18062351"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference small_test_final.ecore#21522474"/>
+    </genClasses>
+    <genClasses ecoreClass="small_test_final.ecore#19723516">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#8913756"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#13925465"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#21630715"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#29966200"/>
+    </genClasses>
+    <genClasses ecoreClass="small_test_final.ecore#7345254">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#4941575"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#74477"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#24579242"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#8474944"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference small_test_final.ecore#12870534"/>
+    </genClasses>
+    <genClasses ecoreClass="small_test_final.ecore#11832905">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#32083788"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#7304044"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#1523718"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#25589742"/>
+    </genClasses>
+    <genClasses ecoreClass="small_test_final.ecore#5656663">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#//UnderClassE/raasRef"/>
+    </genClasses>
+    <genClasses ecoreClass="small_test_final.ecore#16551649">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#//UnderClassF/raasRef"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#17339349"/>
+    </genClasses>
+    <genClasses ecoreClass="small_test_final.ecore#30911270">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#//ThirdLevelClassJ/raasRef"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#2459707"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#161035"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#32205754"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference small_test_final.ecore#3192324"/>
+    </genClasses>
+    <genClasses ecoreClass="small_test_final.ecore#10382437">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#//FourthLevelClassK/raasRef"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#14583632"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#12835423"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#23727283"/>
+    </genClasses>
+    <genClasses ecoreClass="small_test_final.ecore#6219850">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference small_test_final.ecore#14964369"/>
+    </genClasses>
+    <genClasses ecoreClass="small_test_final.ecore#13512600">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference small_test_final.ecore#9885135"/>
+    </genClasses>
+    <genClasses ecoreClass="small_test_final.ecore#//TopClassM">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute small_test_final.ecore#//TopClassM/singleAttrInt"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

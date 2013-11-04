@@ -1,0 +1,78 @@
+<%@ jet package="au.com.smartservicescrc.raas.codegen.jaxws.jet" class="CXF_Servlet_Generator" imports="java.util.*" skeleton="cxf-servlet.skeleton" %>
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:soap="http://cxf.apache.org/bindings/soap"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
+	http://cxf.apache.org/bindings/soap 
+	http://cxf.apache.org/schemas/configuration/soap.xsd 
+	http://cxf.apache.org/core
+    http://cxf.apache.org/schemas/core.xsd
+	http://cxf.apache.org/jaxrs 
+	http://cxf.apache.org/schemas/jaxrs.xsd
+	http://cxf.apache.org/jaxws 
+	http://cxf.apache.org/schemas/jaxws.xsd">
+
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+    <!-- Load CXF modules from cxf.jar -->
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+
+    <bean id="jaxbBean"
+          class="org.apache.cxf.jaxb.JAXBDataBinding"
+          scope="prototype"/>
+
+    <bean id="jaxws-and-aegis-service-factory"
+          class="org.apache.cxf.jaxws.support.JaxWsServiceFactoryBean"
+          scope="prototype">
+        <property name="dataBinding" ref="jaxbBean"/>
+        <property name="serviceConfigurations">
+            <list>
+                <bean class="org.apache.cxf.jaxws.support.JaxWsServiceConfiguration"/>
+                <bean class="org.apache.cxf.aegis.databinding.AegisServiceConfiguration"/>
+                <bean class="org.apache.cxf.service.factory.DefaultServiceConfiguration"/>
+            </list>
+        </property>
+    </bean>
+
+ 	<jaxrs:server id="RestServer" address="/">
+		<jaxrs:serviceBeans>
+    <% for (String implementor: implementors) { %>
+    <%     String serviceIdOriginalCase=implementor.substring(implementor.lastIndexOf(".")+1, implementor.lastIndexOf("Impl")); %>
+    <%     String serviceId=implementor.substring(implementor.lastIndexOf(".")+1, implementor.lastIndexOf("Impl")).toLowerCase(); %>
+            <!-- Exposing the <%=serviceId%> service as a rest service -->
+ 			<ref bean="<%=serviceId%>Bean" />
+ 	<% } %> 			
+		</jaxrs:serviceBeans>
+	</jaxrs:server>
+	
+    <% } %>
+
+    <% for (String implementor: implementors) { %>
+    <%     String serviceIdOriginalCase=implementor.substring(implementor.lastIndexOf(".")+1, implementor.lastIndexOf("Impl")); %>
+    <%     String serviceId=implementor.substring(implementor.lastIndexOf(".")+1, implementor.lastIndexOf("Impl")).toLowerCase(); %>
+
+    <!-- The <%=serviceId%> service -->
+	<bean id="<%=serviceId%>Bean" class="<%=implementor%>" autowire="autodetect" />
+	
+    <!-- Exposing the <%=serviceId%> service as a SOAP service -->
+	<jaxws:endpoint id="<%=serviceId%>"
+		implementor="#<%=serviceId%>Bean"
+		address="/<%=serviceId%>">
+    <% if (GenerateJAXWS.enableJAXRS) { %>
+        <jaxws:serviceFactory>
+            <ref bean="jaxws-and-aegis-service-factory"/>
+        </jaxws:serviceFactory>		
+    <% } %>
+    <% if (enableLogging) { %>		
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>
+    <% } %>	
+	</jaxws:endpoint>
+	
+    <% } %>	
+</beans>

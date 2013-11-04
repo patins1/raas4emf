@@ -1,0 +1,12 @@
+import au.com.smartservicescrc.raas.codegen.jaxws.wizard.*;
+public class CLASS 
+ {
+ 
+/* (non-javadoc)
+    * @see IGenerator#generate(Object)
+    */
+public String generate(List<String> implementors, boolean enableLogging)
+   {
+     return "";
+   }
+ }
