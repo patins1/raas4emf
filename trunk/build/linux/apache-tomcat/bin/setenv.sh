@@ -1,0 +1,1 @@
+export JAVA_OPTS="$JAVA_OPTS -Xms256m -Xmx2812m -XX:MaxPermSize=256m -Dh2.lobInDatabase=false"

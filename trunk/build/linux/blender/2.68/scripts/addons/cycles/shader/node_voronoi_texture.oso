@@ -1,0 +1,520 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.3.2
+shader node_voronoi_texture
+param	int	use_mapping	0 		 %read{2,2} %write{2147483647,-1}
+param	matrix	mapping	0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0		 %read{3,3} %write{2147483647,-1}
+param	string	Coloring	"Intensity" 		 %read{176,176} %write{2147483647,-1}
+param	float	Scale	5 		 %read{4,4} %write{2147483647,-1}
+param	point	Vector	0 0 0 		 %read{1,1} %write{0,0}
+oparam	float	Fac	0 		 %read{180,180} %write{179,201}
+oparam	color	Color	0 0 0 		 %read{195,198} %write{180,194}
+global	point	P	 %read{0,0} %write{2147483647,-1}
+local	float	___607_r	 %read{19,194} %write{19,183}
+local	float	___607_g	 %read{19,194} %write{19,188}
+local	float	___607_b	 %read{19,194} %write{19,193}
+local	int	___608_xx	 %read{19,175} %write{19,175}
+local	int	___608_yy	 %read{19,175} %write{19,175}
+local	int	___608_zz	 %read{19,175} %write{19,175}
+local	int	___608_xi	 %read{20,21} %write{8,8}
+local	int	___608_yi	 %read{24,25} %write{11,11}
+local	int	___608_zi	 %read{28,29} %write{14,14}
+local	point	___614_ip	 %read{19,175} %write{19,175}
+local	point	___614_vp	 %read{19,175} %write{19,175}
+local	point	___614_pd	 %read{19,175} %write{19,175}
+local	float	___614_d	 %read{19,175} %write{19,175}
+local	point	p	 %read{3,4} %write{1,3}
+local	float[4]	da	 %read{19,178} %write{15,175}
+local	point[4]	pa	 %read{19,181} %write{19,175}
+temp	point	$tmp1	 %read{6,175} %write{4,175}
+const	string	$const1	"Distance Squared"		 %read{52,104} %write{2147483647,-1}
+const	float	$const2	1		 %read{108,200} %write{2147483647,-1}
+const	string	$const3	"voronoi"		 %read{5,5} %write{2147483647,-1}
+temp	float	$tmp2	 %read{8,8} %write{7,7}
+const	int	$const4	0		 %read{6,195} %write{2147483647,-1}
+temp	float	$tmp3	 %read{7,7} %write{6,6}
+temp	float	$tmp4	 %read{11,11} %write{10,10}
+const	int	$const5	1		 %read{9,196} %write{2147483647,-1}
+temp	float	$tmp5	 %read{10,10} %write{9,9}
+temp	float	$tmp6	 %read{14,14} %write{13,13}
+const	int	$const6	2		 %read{12,198} %write{2147483647,-1}
+temp	float	$tmp7	 %read{13,13} %write{12,12}
+const	float	$const7	1e+10		 %read{15,18} %write{2147483647,-1}
+const	int	$const8	3		 %read{18,169} %write{2147483647,-1}
+temp	int	$tmp8	 %read{22,22} %write{21,21}
+temp	int	$tmp9	 %read{19,175} %write{19,175}
+temp	int	$tmp10	 %read{26,26} %write{25,25}
+temp	int	$tmp11	 %read{23,173} %write{23,173}
+temp	int	$tmp12	 %read{30,30} %write{29,29}
+temp	int	$tmp13	 %read{27,171} %write{27,171}
+temp	float	$tmp14	 %read{34,34} %write{31,31}
+temp	float	$tmp15	 %read{34,34} %write{32,32}
+temp	float	$tmp16	 %read{34,34} %write{33,33}
+temp	color	$tmp17	 %read{48,48} %write{47,47}
+const	string	$const9	"cellnoise_color"		 %read{35,182} %write{2147483647,-1}
+temp	point	$tmp18	 %read{41,41} %write{40,40}
+temp	float	$tmp19	 %read{40,40} %write{37,37}
+temp	float	$tmp20	 %read{40,40} %write{38,38}
+temp	float	$tmp21	 %read{40,40} %write{39,39}
+temp	point	$tmp22	 %read{46,46} %write{45,45}
+temp	float	$tmp23	 %read{45,45} %write{42,42}
+temp	float	$tmp24	 %read{45,45} %write{43,43}
+temp	float	$tmp25	 %read{45,45} %write{44,44}
+temp	point	$tmp26	 %read{50,50} %write{49,49}
+const	string	$const10	"voronoi_distance"		 %read{51,51} %write{2147483647,-1}
+temp	int	$tmp27	 %read{53,53} %write{52,52}
+const	string	$const11	"Actual Distance"		 %read{56,56} %write{2147483647,-1}
+temp	int	$tmp28	 %read{57,57} %write{56,56}
+const	string	$const12	"Manhattan"		 %read{60,60} %write{2147483647,-1}
+temp	int	$tmp29	 %read{61,61} %write{60,60}
+temp	float	$tmp30	 %read{66,66} %write{63,63}
+temp	float	$tmp31	 %read{63,63} %write{62,62}
+temp	float	$tmp32	 %read{66,66} %write{65,65}
+temp	float	$tmp33	 %read{65,65} %write{64,64}
+temp	float	$tmp34	 %read{69,69} %write{66,66}
+temp	float	$tmp35	 %read{69,69} %write{68,68}
+temp	float	$tmp36	 %read{68,68} %write{67,67}
+const	string	$const13	"Chebychev"		 %read{71,71} %write{2147483647,-1}
+temp	int	$tmp37	 %read{72,72} %write{71,71}
+temp	float	$tmp38	 %read{80,80} %write{74,74}
+temp	float	$tmp39	 %read{74,74} %write{73,73}
+temp	float	$tmp40	 %read{80,80} %write{79,79}
+temp	float	$tmp41	 %read{79,79} %write{76,76}
+temp	float	$tmp42	 %read{76,76} %write{75,75}
+temp	float	$tmp43	 %read{79,79} %write{78,78}
+temp	float	$tmp44	 %read{78,78} %write{77,77}
+const	string	$const14	"Minkovsky 1/2"		 %read{82,82} %write{2147483647,-1}
+temp	int	$tmp45	 %read{83,83} %write{82,82}
+temp	float	$tmp46	 %read{90,90} %write{86,86}
+temp	float	$tmp47	 %read{86,86} %write{85,85}
+temp	float	$tmp48	 %read{85,85} %write{84,84}
+temp	float	$tmp49	 %read{90,90} %write{89,89}
+temp	float	$tmp50	 %read{89,89} %write{88,88}
+temp	float	$tmp51	 %read{88,88} %write{87,87}
+temp	float	$tmp52	 %read{94,94} %write{90,90}
+temp	float	$tmp53	 %read{94,94} %write{93,93}
+temp	float	$tmp54	 %read{93,93} %write{92,92}
+temp	float	$tmp55	 %read{92,92} %write{91,91}
+const	string	$const15	"Minkovsky 4"		 %read{96,96} %write{2147483647,-1}
+temp	int	$tmp56	 %read{97,97} %write{96,96}
+temp	float	$tmp57	 %read{102,102} %write{101,101}
+temp	float	$tmp58	 %read{101,101} %write{100,100}
+temp	vector	$tmp59	 %read{100,100} %write{98,98}
+temp	vector	$tmp60	 %read{100,100} %write{99,99}
+const	string	$const16	"Minkovsky"		 %read{104,104} %write{2147483647,-1}
+temp	int	$tmp61	 %read{105,105} %write{104,104}
+temp	float	$tmp62	 %read{112,112} %write{108,108}
+temp	float	$tmp63	 %read{108,108} %write{107,107}
+temp	float	$tmp64	 %read{107,107} %write{106,106}
+temp	float	$tmp65	 %read{112,112} %write{111,111}
+temp	float	$tmp66	 %read{111,111} %write{110,110}
+temp	float	$tmp67	 %read{110,110} %write{109,109}
+temp	float	$tmp68	 %read{116,116} %write{112,112}
+temp	float	$tmp69	 %read{116,116} %write{115,115}
+temp	float	$tmp70	 %read{115,115} %write{114,114}
+temp	float	$tmp71	 %read{114,114} %write{113,113}
+temp	float	$tmp72	 %read{118,118} %write{116,116}
+temp	float	$tmp73	 %read{118,118} %write{117,117}
+const	float	$const17	0		 %read{120,120} %write{2147483647,-1}
+temp	point	$tmp74	 %read{125,125} %write{124,124}
+temp	float	$tmp75	 %read{124,124} %write{121,121}
+temp	float	$tmp76	 %read{124,124} %write{122,122}
+temp	float	$tmp77	 %read{124,124} %write{123,123}
+temp	float	$tmp78	 %read{127,127} %write{126,126}
+temp	int	$tmp79	 %read{128,128} %write{127,127}
+temp	float	$tmp80	 %read{130,130} %write{129,129}
+temp	float	$tmp81	 %read{132,132} %write{131,131}
+temp	float	$tmp82	 %read{134,134} %write{133,133}
+temp	point	$tmp83	 %read{137,137} %write{136,136}
+temp	point	$tmp84	 %read{139,139} %write{138,138}
+temp	point	$tmp85	 %read{141,141} %write{140,140}
+temp	float	$tmp86	 %read{144,144} %write{143,143}
+temp	int	$tmp87	 %read{145,145} %write{144,144}
+temp	float	$tmp88	 %read{147,147} %write{146,146}
+temp	float	$tmp89	 %read{149,149} %write{148,148}
+temp	point	$tmp90	 %read{152,152} %write{151,151}
+temp	point	$tmp91	 %read{154,154} %write{153,153}
+temp	float	$tmp92	 %read{157,157} %write{156,156}
+temp	int	$tmp93	 %read{158,158} %write{157,157}
+temp	float	$tmp94	 %read{160,160} %write{159,159}
+temp	point	$tmp95	 %read{163,163} %write{162,162}
+temp	float	$tmp96	 %read{166,166} %write{165,165}
+temp	int	$tmp97	 %read{167,167} %write{166,166}
+temp	int	$tmp98	 %read{2147483647,-1} %write{170,170}
+temp	int	$tmp99	 %read{2147483647,-1} %write{172,172}
+temp	int	$tmp100	 %read{2147483647,-1} %write{174,174}
+const	string	$const18	"Intensity"		 %read{176,176} %write{2147483647,-1}
+temp	int	$tmp101	 %read{177,177} %write{176,176}
+temp	float	$tmp102	 %read{179,179} %write{178,178}
+temp	point	$tmp103	 %read{183,191} %write{181,181}
+temp	point	$tmp104	 %read{188,188} %write{187,187}
+temp	float	$tmp105	 %read{187,187} %write{184,184}
+temp	float	$tmp106	 %read{187,187} %write{185,185}
+temp	float	$tmp107	 %read{187,187} %write{186,186}
+temp	point	$tmp108	 %read{193,193} %write{192,192}
+temp	float	$tmp109	 %read{192,192} %write{189,189}
+temp	float	$tmp110	 %read{192,192} %write{190,190}
+temp	float	$tmp111	 %read{192,192} %write{191,191}
+temp	float	$tmp112	 %read{197,197} %write{195,195}
+temp	float	$tmp113	 %read{197,197} %write{196,196}
+temp	float	$tmp114	 %read{199,199} %write{197,197}
+temp	float	$tmp115	 %read{199,199} %write{198,198}
+temp	float	$tmp116	 %read{201,201} %write{199,199}
+const	float	$const19	3		 %read{200,200} %write{2147483647,-1}
+temp	float	$tmp117	 %read{201,201} %write{200,200}
+code Vector
+# intern/cycles/kernel/shaders/node_voronoi_texture.osl:29
+# 	point Vector = P,
+	assign		Vector P 	%filename{"intern/cycles/kernel/shaders/node_voronoi_texture.osl"} %line{29} %argrw{"wr"}
+code ___main___
+# intern/cycles/kernel/shaders/node_voronoi_texture.osl:33
+# 	point p = Vector;
+	assign		p Vector 	%filename{"intern/cycles/kernel/shaders/node_voronoi_texture.osl"} %line{33} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_voronoi_texture.osl:35
+# 	if (use_mapping)
+	if		use_mapping 4 4 	%line{35} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_voronoi_texture.osl:36
+# 		p = transform(mapping, p);
+	transform	p mapping p 	%line{36} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_voronoi_texture.osl:42
+# 	voronoi(p * Scale, "Distance Squared", 1.0, da, pa);
+	mul		$tmp1 p Scale 	%line{42} %argrw{"wrr"}
+	functioncall	$const3 176 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:55
+#  * along with this program; if not, write to the Free Software Foundation,
+	compref		$tmp3 $tmp1 $const4 	%filename{"intern/cycles/kernel/shaders/node_texture.h"} %line{55} %argrw{"wrr"}
+	floor		$tmp2 $tmp3 	%argrw{"wr"}
+	assign		___608_xi $tmp2 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_texture.h:56
+#  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+	compref		$tmp5 $tmp1 $const5 	%line{56} %argrw{"wrr"}
+	floor		$tmp4 $tmp5 	%argrw{"wr"}
+	assign		___608_yi $tmp4 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_texture.h:57
+#  */
+	compref		$tmp7 $tmp1 $const6 	%line{57} %argrw{"wrr"}
+	floor		$tmp6 $tmp7 	%argrw{"wr"}
+	assign		___608_zi $tmp6 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_texture.h:59
+# /* Voronoi Distances */
+	aassign		da $const4 $const7 	%line{59} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:60
+# 
+	aassign		da $const5 $const7 	%line{60} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:61
+# float voronoi_distance(string distance_metric, vector d, float e)
+	aassign		da $const6 $const7 	%line{61} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:62
+# {
+	aassign		da $const8 $const7 	%line{62} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:64
+# 		return dot(d, d);
+	for		$tmp9 21 23 174 176 	%line{64} %argrw{"r"}
+	sub		___608_xx ___608_xi $const5 	%argrw{"wrr"}
+	add		$tmp8 ___608_xi $const5 	%argrw{"wrr"}
+	le		$tmp9 ___608_xx $tmp8 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:65
+# 	if (distance_metric == "Actual Distance")
+	for		$tmp11 25 27 172 174 	%line{65} %argrw{"r"}
+	sub		___608_yy ___608_yi $const5 	%argrw{"wrr"}
+	add		$tmp10 ___608_yi $const5 	%argrw{"wrr"}
+	le		$tmp11 ___608_yy $tmp10 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:66
+# 		return length(d);
+	for		$tmp13 29 31 170 172 	%line{66} %argrw{"r"}
+	sub		___608_zz ___608_zi $const5 	%argrw{"wrr"}
+	add		$tmp12 ___608_zi $const5 	%argrw{"wrr"}
+	le		$tmp13 ___608_zz $tmp12 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:67
+# 	if (distance_metric == "Manhattan")
+	assign		$tmp14 ___608_xx 	%line{67} %argrw{"wr"}
+	assign		$tmp15 ___608_yy 	%argrw{"wr"}
+	assign		$tmp16 ___608_zz 	%argrw{"wr"}
+	point		___614_ip $tmp14 $tmp15 $tmp16 	%argrw{"wrrr"}
+# intern/cycles/kernel/shaders/node_texture.h:68
+# 		return fabs(d[0]) + fabs(d[1]) + fabs(d[2]);
+	functioncall	$const9 48 	%line{68} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:43
+# 	float r = cellnoise(p);
+	cellnoise	___607_r ___614_ip 	%line{43} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_texture.h:44
+# 	float g = cellnoise(point(p[1], p[0], p[2]));
+	compref		$tmp19 ___614_ip $const5 	%line{44} %argrw{"wrr"}
+	compref		$tmp20 ___614_ip $const4 	%argrw{"wrr"}
+	compref		$tmp21 ___614_ip $const6 	%argrw{"wrr"}
+	point		$tmp18 $tmp19 $tmp20 $tmp21 	%argrw{"wrrr"}
+	cellnoise	___607_g $tmp18 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_texture.h:45
+# 	float b = cellnoise(point(p[1], p[2], p[0]));
+	compref		$tmp23 ___614_ip $const5 	%line{45} %argrw{"wrr"}
+	compref		$tmp24 ___614_ip $const6 	%argrw{"wrr"}
+	compref		$tmp25 ___614_ip $const4 	%argrw{"wrr"}
+	point		$tmp22 $tmp23 $tmp24 $tmp25 	%argrw{"wrrr"}
+	cellnoise	___607_b $tmp22 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_texture.h:47
+# 	return color(r, g, b);
+	color		$tmp17 ___607_r ___607_g ___607_b 	%line{47} %argrw{"wrrr"}
+# intern/cycles/kernel/shaders/node_texture.h:68
+# 				point vp = (point)cellnoise_color(ip);
+	assign		___614_vp $tmp17 	%line{68} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_texture.h:69
+# 				point pd = p - (vp + ip);
+	add		$tmp26 ___614_vp ___614_ip 	%line{69} %argrw{"wrr"}
+	sub		___614_pd $tmp1 $tmp26 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:70
+# 				float d = voronoi_distance(distance_metric, pd, e);
+	functioncall	$const10 121 	%line{70} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:21
+# 	if (distance_metric == "Distance Squared")
+	eq		$tmp27 $const1 $const1 	%line{21} %argrw{"wrr"}
+	if		$tmp27 56 56 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:22
+# 		return dot(d, d);
+	dot		___614_d ___614_pd ___614_pd 	%line{22} %argrw{"wrr"}
+	return
+# intern/cycles/kernel/shaders/node_texture.h:23
+# 	if (distance_metric == "Actual Distance")
+	eq		$tmp28 $const1 $const11 	%line{23} %argrw{"wrr"}
+	if		$tmp28 60 60 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:24
+# 		return length(d);
+	length		___614_d ___614_pd 	%line{24} %argrw{"wr"}
+	return
+# intern/cycles/kernel/shaders/node_texture.h:25
+# 	if (distance_metric == "Manhattan")
+	eq		$tmp29 $const1 $const12 	%line{25} %argrw{"wrr"}
+	if		$tmp29 71 71 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:26
+# 		return fabs(d[0]) + fabs(d[1]) + fabs(d[2]);
+	compref		$tmp31 ___614_pd $const4 	%line{26} %argrw{"wrr"}
+	fabs		$tmp30 $tmp31 	%argrw{"wr"}
+	compref		$tmp33 ___614_pd $const5 	%argrw{"wrr"}
+	fabs		$tmp32 $tmp33 	%argrw{"wr"}
+	add		$tmp34 $tmp30 $tmp32 	%argrw{"wrr"}
+	compref		$tmp36 ___614_pd $const6 	%argrw{"wrr"}
+	fabs		$tmp35 $tmp36 	%argrw{"wr"}
+	add		___614_d $tmp34 $tmp35 	%argrw{"wrr"}
+	return
+# intern/cycles/kernel/shaders/node_texture.h:27
+# 	if (distance_metric == "Chebychev")
+	eq		$tmp37 $const1 $const13 	%line{27} %argrw{"wrr"}
+	if		$tmp37 82 82 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:28
+# 		return max(fabs(d[0]), max(fabs(d[1]), fabs(d[2])));
+	compref		$tmp39 ___614_pd $const4 	%line{28} %argrw{"wrr"}
+	fabs		$tmp38 $tmp39 	%argrw{"wr"}
+	compref		$tmp42 ___614_pd $const5 	%argrw{"wrr"}
+	fabs		$tmp41 $tmp42 	%argrw{"wr"}
+	compref		$tmp44 ___614_pd $const6 	%argrw{"wrr"}
+	fabs		$tmp43 $tmp44 	%argrw{"wr"}
+	max		$tmp40 $tmp41 $tmp43 	%argrw{"wrr"}
+	max		___614_d $tmp38 $tmp40 	%argrw{"wrr"}
+	return
+# intern/cycles/kernel/shaders/node_texture.h:29
+# 	if (distance_metric == "Minkovsky 1/2")
+	eq		$tmp45 $const1 $const14 	%line{29} %argrw{"wrr"}
+	if		$tmp45 96 96 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:30
+# 		return sqrt(fabs(d[0])) + sqrt(fabs(d[1])) + sqrt(fabs(d[1]));
+	compref		$tmp48 ___614_pd $const4 	%line{30} %argrw{"wrr"}
+	fabs		$tmp47 $tmp48 	%argrw{"wr"}
+	sqrt		$tmp46 $tmp47 	%argrw{"wr"}
+	compref		$tmp51 ___614_pd $const5 	%argrw{"wrr"}
+	fabs		$tmp50 $tmp51 	%argrw{"wr"}
+	sqrt		$tmp49 $tmp50 	%argrw{"wr"}
+	add		$tmp52 $tmp46 $tmp49 	%argrw{"wrr"}
+	compref		$tmp55 ___614_pd $const5 	%argrw{"wrr"}
+	fabs		$tmp54 $tmp55 	%argrw{"wr"}
+	sqrt		$tmp53 $tmp54 	%argrw{"wr"}
+	add		___614_d $tmp52 $tmp53 	%argrw{"wrr"}
+	return
+# intern/cycles/kernel/shaders/node_texture.h:31
+# 	if (distance_metric == "Minkovsky 4")
+	eq		$tmp56 $const1 $const15 	%line{31} %argrw{"wrr"}
+	if		$tmp56 104 104 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:32
+# 		return sqrt(sqrt(dot(d * d, d * d)));
+	mul		$tmp59 ___614_pd ___614_pd 	%line{32} %argrw{"wrr"}
+	mul		$tmp60 ___614_pd ___614_pd 	%argrw{"wrr"}
+	dot		$tmp58 $tmp59 $tmp60 	%argrw{"wrr"}
+	sqrt		$tmp57 $tmp58 	%argrw{"wr"}
+	sqrt		___614_d $tmp57 	%argrw{"wr"}
+	return
+# intern/cycles/kernel/shaders/node_texture.h:33
+# 	if (distance_metric == "Minkovsky")
+	eq		$tmp61 $const1 $const16 	%line{33} %argrw{"wrr"}
+	if		$tmp61 120 120 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:34
+# 		return pow(pow(fabs(d[0]), e) + pow(fabs(d[1]), e) + pow(fabs(d[2]), e), 1.0 / e);
+	compref		$tmp64 ___614_pd $const4 	%line{34} %argrw{"wrr"}
+	fabs		$tmp63 $tmp64 	%argrw{"wr"}
+	pow		$tmp62 $tmp63 $const2 	%argrw{"wrr"}
+	compref		$tmp67 ___614_pd $const5 	%argrw{"wrr"}
+	fabs		$tmp66 $tmp67 	%argrw{"wr"}
+	pow		$tmp65 $tmp66 $const2 	%argrw{"wrr"}
+	add		$tmp68 $tmp62 $tmp65 	%argrw{"wrr"}
+	compref		$tmp71 ___614_pd $const6 	%argrw{"wrr"}
+	fabs		$tmp70 $tmp71 	%argrw{"wr"}
+	pow		$tmp69 $tmp70 $const2 	%argrw{"wrr"}
+	add		$tmp72 $tmp68 $tmp69 	%argrw{"wrr"}
+	div		$tmp73 $const2 $const2 	%argrw{"wrr"}
+	pow		___614_d $tmp72 $tmp73 	%argrw{"wrr"}
+	return
+# intern/cycles/kernel/shaders/node_texture.h:36
+# 	return 0.0;
+	assign		___614_d $const17 	%line{36} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_texture.h:72
+# 				vp += point(xx, yy, zz);
+	assign		$tmp75 ___608_xx 	%line{72} %argrw{"wr"}
+	assign		$tmp76 ___608_yy 	%argrw{"wr"}
+	assign		$tmp77 ___608_zz 	%argrw{"wr"}
+	point		$tmp74 $tmp75 $tmp76 $tmp77 	%argrw{"wrrr"}
+	add		___614_vp ___614_vp $tmp74 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:74
+# 				if (d < da[0]) {
+	aref		$tmp78 da $const4 	%line{74} %argrw{"wrr"}
+	lt		$tmp79 ___614_d $tmp78 	%argrw{"wrr"}
+	if		$tmp79 143 170 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:75
+# 					da[3] = da[2];
+	aref		$tmp80 da $const6 	%line{75} %argrw{"wrr"}
+	aassign		da $const8 $tmp80 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:76
+# 					da[2] = da[1];
+	aref		$tmp81 da $const5 	%line{76} %argrw{"wrr"}
+	aassign		da $const6 $tmp81 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:77
+# 					da[1] = da[0];
+	aref		$tmp82 da $const4 	%line{77} %argrw{"wrr"}
+	aassign		da $const5 $tmp82 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:78
+# 					da[0] = d;
+	aassign		da $const4 ___614_d 	%line{78} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:80
+# 					pa[3] = pa[2];
+	aref		$tmp83 pa $const6 	%line{80} %argrw{"wrr"}
+	aassign		pa $const8 $tmp83 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:81
+# 					pa[2] = pa[1];
+	aref		$tmp84 pa $const5 	%line{81} %argrw{"wrr"}
+	aassign		pa $const6 $tmp84 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:82
+# 					pa[1] = pa[0];
+	aref		$tmp85 pa $const4 	%line{82} %argrw{"wrr"}
+	aassign		pa $const5 $tmp85 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:83
+# 					pa[0] = vp;
+	aassign		pa $const4 ___614_vp 	%line{83} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:85
+# 				else if (d < da[1]) {
+	aref		$tmp86 da $const5 	%line{85} %argrw{"wrr"}
+	lt		$tmp87 ___614_d $tmp86 	%argrw{"wrr"}
+	if		$tmp87 156 170 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:86
+# 					da[3] = da[2];
+	aref		$tmp88 da $const6 	%line{86} %argrw{"wrr"}
+	aassign		da $const8 $tmp88 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:87
+# 					da[2] = da[1];
+	aref		$tmp89 da $const5 	%line{87} %argrw{"wrr"}
+	aassign		da $const6 $tmp89 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:88
+# 					da[1] = d;
+	aassign		da $const5 ___614_d 	%line{88} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:90
+# 					pa[3] = pa[2];
+	aref		$tmp90 pa $const6 	%line{90} %argrw{"wrr"}
+	aassign		pa $const8 $tmp90 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:91
+# 					pa[2] = pa[1];
+	aref		$tmp91 pa $const5 	%line{91} %argrw{"wrr"}
+	aassign		pa $const6 $tmp91 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:92
+# 					pa[1] = vp;
+	aassign		pa $const5 ___614_vp 	%line{92} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:94
+# 				else if (d < da[2]) {
+	aref		$tmp92 da $const6 	%line{94} %argrw{"wrr"}
+	lt		$tmp93 ___614_d $tmp92 	%argrw{"wrr"}
+	if		$tmp93 165 170 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:95
+# 					da[3] = da[2];
+	aref		$tmp94 da $const6 	%line{95} %argrw{"wrr"}
+	aassign		da $const8 $tmp94 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:96
+# 					da[2] = d;
+	aassign		da $const6 ___614_d 	%line{96} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:98
+# 					pa[3] = pa[2];
+	aref		$tmp95 pa $const6 	%line{98} %argrw{"wrr"}
+	aassign		pa $const8 $tmp95 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:99
+# 					pa[2] = vp;
+	aassign		pa $const6 ___614_vp 	%line{99} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:101
+# 				else if (d < da[3]) {
+	aref		$tmp96 da $const8 	%line{101} %argrw{"wrr"}
+	lt		$tmp97 ___614_d $tmp96 	%argrw{"wrr"}
+	if		$tmp97 170 170 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:102
+# 					da[3] = d;
+	aassign		da $const8 ___614_d 	%line{102} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:103
+# 					pa[3] = vp;
+	aassign		pa $const8 ___614_vp 	%line{103} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:66
+# 			for (zz = zi - 1; zz <= zi + 1; zz++) {
+	assign		$tmp98 ___608_zz 	%line{66} %argrw{"wr"}
+	add		___608_zz ___608_zz $const5 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:65
+# 		for (yy = yi - 1; yy <= yi + 1; yy++) {
+	assign		$tmp99 ___608_yy 	%line{65} %argrw{"wr"}
+	add		___608_yy ___608_yy $const5 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_texture.h:64
+# 	for (xx = xi - 1; xx <= xi + 1; xx++) {
+	assign		$tmp100 ___608_xx 	%line{64} %argrw{"wr"}
+	add		___608_xx ___608_xx $const5 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_voronoi_texture.osl:45
+# 	if (Coloring == "Intensity") {
+	eq		$tmp101 Coloring $const18 	%filename{"intern/cycles/kernel/shaders/node_voronoi_texture.osl"} %line{45} %argrw{"wrr"}
+	if		$tmp101 181 202 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_voronoi_texture.osl:46
+# 		Fac = fabs(da[0]);
+	aref		$tmp102 da $const4 	%line{46} %argrw{"wrr"}
+	fabs		Fac $tmp102 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_voronoi_texture.osl:47
+# 		Color = color(Fac);
+	assign		Color Fac 	%line{47} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_voronoi_texture.osl:50
+# 		Color = cellnoise_color(pa[0]);
+	aref		$tmp103 pa $const4 	%line{50} %argrw{"wrr"}
+	functioncall	$const9 195 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_texture.h:43
+# 	float r = cellnoise(p);
+	cellnoise	___607_r $tmp103 	%filename{"intern/cycles/kernel/shaders/node_texture.h"} %line{43} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_texture.h:44
+# 	float g = cellnoise(point(p[1], p[0], p[2]));
+	compref		$tmp105 $tmp103 $const5 	%line{44} %argrw{"wrr"}
+	compref		$tmp106 $tmp103 $const4 	%argrw{"wrr"}
+	compref		$tmp107 $tmp103 $const6 	%argrw{"wrr"}
+	point		$tmp104 $tmp105 $tmp106 $tmp107 	%argrw{"wrrr"}
+	cellnoise	___607_g $tmp104 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_texture.h:45
+# 	float b = cellnoise(point(p[1], p[2], p[0]));
+	compref		$tmp109 $tmp103 $const5 	%line{45} %argrw{"wrr"}
+	compref		$tmp110 $tmp103 $const6 	%argrw{"wrr"}
+	compref		$tmp111 $tmp103 $const4 	%argrw{"wrr"}
+	point		$tmp108 $tmp109 $tmp110 $tmp111 	%argrw{"wrrr"}
+	cellnoise	___607_b $tmp108 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_texture.h:47
+# 	return color(r, g, b);
+	color		Color ___607_r ___607_g ___607_b 	%line{47} %argrw{"wrrr"}
+# intern/cycles/kernel/shaders/node_voronoi_texture.osl:51
+#  * This program is free software; you can redistribute it and/or
+	compref		$tmp112 Color $const4 	%filename{"intern/cycles/kernel/shaders/node_voronoi_texture.osl"} %line{51} %argrw{"wrr"}
+	compref		$tmp113 Color $const5 	%argrw{"wrr"}
+	add		$tmp114 $tmp112 $tmp113 	%argrw{"wrr"}
+	compref		$tmp115 Color $const6 	%argrw{"wrr"}
+	add		$tmp116 $tmp114 $tmp115 	%argrw{"wrr"}
+	div		$tmp117 $const2 $const19 	%argrw{"wrr"}
+	mul		Fac $tmp116 $tmp117 	%argrw{"wrr"}
+	end

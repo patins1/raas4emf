@@ -1,0 +1,3 @@
+Architect:a
+Librarian:l
+Operator:o

@@ -1,0 +1,880 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.3.2
+shader node_sky_texture
+param	int	use_mapping	0 		 %read{2,2} %write{2147483647,-1}
+param	matrix	mapping	0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0		 %read{3,3} %write{2147483647,-1}
+param	vector	Vector	0 0 0 		 %read{1,1} %write{0,0}
+param	vector	sun_direction	0 0 1 		 %read{6,16} %write{2147483647,-1}
+param	float	turbidity	2.2 		 %read{19,19} %write{2147483647,-1}
+oparam	color	Color	0 0 0 		 %read{2147483647,-1} %write{325,325}
+global	point	P	 %read{0,0} %write{2147483647,-1}
+local	float	___611_X	 %read{305,305} %write{291,292}
+local	float	___611_Z	 %read{305,305} %write{303,304}
+local	float	___621_cospsi	 %read{213,221} %write{212,212}
+local	float	___623_ctheta	 %read{131,271} %write{127,267}
+local	float	___623_cgamma	 %read{142,283} %write{128,268}
+local	vector	___624_spherical	 %read{200,201} %write{199,199}
+local	float	___624_theta	 %read{203,267} %write{200,223}
+local	float	___624_phi	 %read{206,206} %write{201,201}
+local	float	___624_gamma	 %read{226,277} %write{215,221}
+local	float	___624_x	 %read{290,300} %write{244,244}
+local	float	___624_y	 %read{288,302} %write{265,265}
+local	float	___624_Y	 %read{291,305} %write{286,286}
+local	color	___624_xyz	 %read{306,308} %write{305,305}
+local	vector	___625_spherical	 %read{12,13} %write{11,11}
+local	float	___625_theta	 %read{14,181} %write{12,12}
+local	float	___625_phi	 %read{15,15} %write{13,13}
+local	float	___625_theta2	 %read{18,74} %write{17,17}
+local	float	___625_theta3	 %read{37,73} %write{18,18}
+local	float	___625_T	 %read{20,123} %write{19,19}
+local	float	___625_T2	 %read{42,64} %write{20,20}
+local	float	___625_chi	 %read{29,29} %write{26,26}
+local	vector	p	 %read{3,197} %write{1,3}
+local	float	sunsky.theta	 %read{204,210} %write{14,14} %mystruct{sunsky} %mystructfield{0}
+local	float	sunsky.phi	 %read{206,206} %write{15,15} %mystruct{sunsky} %mystructfield{1}
+local	vector	sunsky.dir	 %read{2147483647,-1} %write{16,16} %mystruct{sunsky} %mystructfield{2}
+local	float	sunsky.zenith_Y	 %read{34,286} %write{33,147} %mystruct{sunsky} %mystructfield{3}
+local	float	sunsky.zenith_x	 %read{58,244} %write{57,169} %mystruct{sunsky} %mystructfield{4}
+local	float	sunsky.zenith_y	 %read{80,265} %write{79,191} %mystruct{sunsky} %mystructfield{5}
+local	float[5]	sunsky.perez_Y	 %read{129,281} %write{83,95} %mystruct{sunsky} %mystructfield{6}
+local	float[5]	sunsky.perez_x	 %read{151,239} %write{98,110} %mystruct{sunsky} %mystructfield{7}
+local	float[5]	sunsky.perez_y	 %read{173,260} %write{113,125} %mystruct{sunsky} %mystructfield{8}
+const	string	$const1	"precompute_sunsky"		 %read{4,4} %write{2147483647,-1}
+const	string	$const2	"sky_spherical_coordinates"		 %read{5,193} %write{2147483647,-1}
+temp	float	$tmp1	 %read{11,11} %write{7,7}
+const	int	$const3	2		 %read{6,308} %write{2147483647,-1}
+temp	float	$tmp2	 %read{7,7} %write{6,6}
+temp	float	$tmp3	 %read{11,11} %write{10,10}
+const	int	$const4	0		 %read{8,306} %write{2147483647,-1}
+temp	float	$tmp4	 %read{10,10} %write{8,8}
+const	int	$const5	1		 %read{9,307} %write{2147483647,-1}
+temp	float	$tmp5	 %read{10,10} %write{9,9}
+const	float	$const6	0		 %read{11,304} %write{2147483647,-1}
+const	float	$const7	4		 %read{21,21} %write{2147483647,-1}
+const	float	$const8	9		 %read{21,21} %write{2147483647,-1}
+temp	float	$tmp6	 %read{23,23} %write{21,21}
+const	float	$const9	120		 %read{22,22} %write{2147483647,-1}
+temp	float	$tmp7	 %read{23,23} %write{22,22}
+temp	float	$tmp8	 %read{26,26} %write{23,23}
+const	float	$const10	3.1415927		 %read{25,219} %write{2147483647,-1}
+const	float	$const11	2		 %read{24,24} %write{2147483647,-1}
+temp	float	$tmp9	 %read{25,25} %write{24,24}
+temp	float	$tmp10	 %read{26,26} %write{25,25}
+const	float	$const12	4.0453		 %read{27,27} %write{2147483647,-1}
+temp	float	$tmp11	 %read{28,28} %write{27,27}
+const	float	$const13	4.9710002		 %read{28,28} %write{2147483647,-1}
+temp	float	$tmp12	 %read{30,30} %write{28,28}
+temp	float	$tmp13	 %read{30,30} %write{29,29}
+temp	float	$tmp14	 %read{32,32} %write{30,30}
+const	float	$const14	0.2155		 %read{31,31} %write{2147483647,-1}
+temp	float	$tmp15	 %read{32,32} %write{31,31}
+temp	float	$tmp16	 %read{33,33} %write{32,32}
+const	float	$const15	2.4191999		 %read{33,33} %write{2147483647,-1}
+const	float	$const16	0.059999999		 %read{35,35} %write{2147483647,-1}
+const	float	$const17	0.00166		 %read{37,37} %write{2147483647,-1}
+temp	float	$tmp17	 %read{39,39} %write{37,37}
+const	float	$const18	0.0037499999		 %read{38,38} %write{2147483647,-1}
+temp	float	$tmp18	 %read{39,39} %write{38,38}
+temp	float	$tmp19	 %read{41,41} %write{39,39}
+const	float	$const19	0.0020900001		 %read{40,40} %write{2147483647,-1}
+temp	float	$tmp20	 %read{41,41} %write{40,40}
+temp	float	$tmp21	 %read{42,42} %write{41,41}
+temp	float	$tmp22	 %read{50,50} %write{42,42}
+const	float	$const20	-0.029030001		 %read{43,43} %write{2147483647,-1}
+temp	float	$tmp23	 %read{45,45} %write{43,43}
+const	float	$const21	0.063770004		 %read{44,44} %write{2147483647,-1}
+temp	float	$tmp24	 %read{45,45} %write{44,44}
+temp	float	$tmp25	 %read{47,47} %write{45,45}
+const	float	$const22	0.032019999		 %read{46,46} %write{2147483647,-1}
+temp	float	$tmp26	 %read{47,47} %write{46,46}
+temp	float	$tmp27	 %read{48,48} %write{47,47}
+const	float	$const23	0.0039400002		 %read{48,48} %write{2147483647,-1}
+temp	float	$tmp28	 %read{49,49} %write{48,48}
+temp	float	$tmp29	 %read{50,50} %write{49,49}
+temp	float	$tmp30	 %read{57,57} %write{50,50}
+const	float	$const24	0.11693		 %read{51,51} %write{2147483647,-1}
+temp	float	$tmp31	 %read{53,53} %write{51,51}
+const	float	$const25	0.21196		 %read{52,52} %write{2147483647,-1}
+temp	float	$tmp32	 %read{53,53} %write{52,52}
+temp	float	$tmp33	 %read{55,55} %write{53,53}
+const	float	$const26	0.060520001		 %read{54,54} %write{2147483647,-1}
+temp	float	$tmp34	 %read{55,55} %write{54,54}
+temp	float	$tmp35	 %read{56,56} %write{55,55}
+const	float	$const27	0.25885999		 %read{56,56} %write{2147483647,-1}
+temp	float	$tmp36	 %read{57,57} %write{56,56}
+const	float	$const28	0.00275		 %read{59,59} %write{2147483647,-1}
+temp	float	$tmp37	 %read{61,61} %write{59,59}
+const	float	$const29	0.0060999999		 %read{60,60} %write{2147483647,-1}
+temp	float	$tmp38	 %read{61,61} %write{60,60}
+temp	float	$tmp39	 %read{63,63} %write{61,61}
+const	float	$const30	0.0031699999		 %read{62,62} %write{2147483647,-1}
+temp	float	$tmp40	 %read{63,63} %write{62,62}
+temp	float	$tmp41	 %read{64,64} %write{63,63}
+temp	float	$tmp42	 %read{72,72} %write{64,64}
+const	float	$const31	-0.04214		 %read{65,65} %write{2147483647,-1}
+temp	float	$tmp43	 %read{67,67} %write{65,65}
+const	float	$const32	0.089699998		 %read{66,66} %write{2147483647,-1}
+temp	float	$tmp44	 %read{67,67} %write{66,66}
+temp	float	$tmp45	 %read{69,69} %write{67,67}
+const	float	$const33	0.041529998		 %read{68,68} %write{2147483647,-1}
+temp	float	$tmp46	 %read{69,69} %write{68,68}
+temp	float	$tmp47	 %read{70,70} %write{69,69}
+const	float	$const34	0.0051600002		 %read{70,70} %write{2147483647,-1}
+temp	float	$tmp48	 %read{71,71} %write{70,70}
+temp	float	$tmp49	 %read{72,72} %write{71,71}
+temp	float	$tmp50	 %read{79,79} %write{72,72}
+const	float	$const35	0.15346		 %read{73,73} %write{2147483647,-1}
+temp	float	$tmp51	 %read{75,75} %write{73,73}
+const	float	$const36	0.26756001		 %read{74,74} %write{2147483647,-1}
+temp	float	$tmp52	 %read{75,75} %write{74,74}
+temp	float	$tmp53	 %read{77,77} %write{75,75}
+const	float	$const37	0.066699997		 %read{76,76} %write{2147483647,-1}
+temp	float	$tmp54	 %read{77,77} %write{76,76}
+temp	float	$tmp55	 %read{78,78} %write{77,77}
+const	float	$const38	0.26688001		 %read{78,78} %write{2147483647,-1}
+temp	float	$tmp56	 %read{79,79} %write{78,78}
+const	float	$const39	0.1787		 %read{81,81} %write{2147483647,-1}
+temp	float	$tmp57	 %read{82,82} %write{81,81}
+const	float	$const40	1.4630001		 %read{82,82} %write{2147483647,-1}
+temp	float	$tmp58	 %read{83,83} %write{82,82}
+const	float	$const41	-0.3554		 %read{84,84} %write{2147483647,-1}
+temp	float	$tmp59	 %read{85,85} %write{84,84}
+const	float	$const42	0.42750001		 %read{85,85} %write{2147483647,-1}
+temp	float	$tmp60	 %read{86,86} %write{85,85}
+const	float	$const43	-0.022700001		 %read{87,87} %write{2147483647,-1}
+temp	float	$tmp61	 %read{88,88} %write{87,87}
+const	float	$const44	5.3250999		 %read{88,88} %write{2147483647,-1}
+temp	float	$tmp62	 %read{89,89} %write{88,88}
+const	float	$const45	0.1206		 %read{90,90} %write{2147483647,-1}
+temp	float	$tmp63	 %read{91,91} %write{90,90}
+const	float	$const46	2.5771		 %read{91,91} %write{2147483647,-1}
+temp	float	$tmp64	 %read{92,92} %write{91,91}
+const	int	$const47	3		 %read{92,276} %write{2147483647,-1}
+const	float	$const48	-0.067000002		 %read{93,93} %write{2147483647,-1}
+temp	float	$tmp65	 %read{94,94} %write{93,93}
+const	float	$const49	0.37029999		 %read{94,94} %write{2147483647,-1}
+temp	float	$tmp66	 %read{95,95} %write{94,94}
+const	int	$const50	4		 %read{95,281} %write{2147483647,-1}
+const	float	$const51	-0.019300001		 %read{96,96} %write{2147483647,-1}
+temp	float	$tmp67	 %read{97,97} %write{96,96}
+const	float	$const52	0.25920001		 %read{97,97} %write{2147483647,-1}
+temp	float	$tmp68	 %read{98,98} %write{97,97}
+const	float	$const53	-0.066500001		 %read{99,99} %write{2147483647,-1}
+temp	float	$tmp69	 %read{100,100} %write{99,99}
+const	float	$const54	0.00079999998		 %read{100,100} %write{2147483647,-1}
+temp	float	$tmp70	 %read{101,101} %write{100,100}
+const	float	$const55	-0.00039999999		 %read{102,102} %write{2147483647,-1}
+temp	float	$tmp71	 %read{103,103} %write{102,102}
+const	float	$const56	0.21250001		 %read{103,103} %write{2147483647,-1}
+temp	float	$tmp72	 %read{104,104} %write{103,103}
+const	float	$const57	-0.064099997		 %read{105,105} %write{2147483647,-1}
+temp	float	$tmp73	 %read{106,106} %write{105,105}
+const	float	$const58	0.89889997		 %read{106,106} %write{2147483647,-1}
+temp	float	$tmp74	 %read{107,107} %write{106,106}
+const	float	$const59	-0.0033		 %read{108,108} %write{2147483647,-1}
+temp	float	$tmp75	 %read{109,109} %write{108,108}
+const	float	$const60	0.045200001		 %read{109,109} %write{2147483647,-1}
+temp	float	$tmp76	 %read{110,110} %write{109,109}
+const	float	$const61	-0.0167		 %read{111,111} %write{2147483647,-1}
+temp	float	$tmp77	 %read{112,112} %write{111,111}
+const	float	$const62	0.2608		 %read{112,112} %write{2147483647,-1}
+temp	float	$tmp78	 %read{113,113} %write{112,112}
+const	float	$const63	-0.094999999		 %read{114,114} %write{2147483647,-1}
+temp	float	$tmp79	 %read{115,115} %write{114,114}
+const	float	$const64	0.0092000002		 %read{115,115} %write{2147483647,-1}
+temp	float	$tmp80	 %read{116,116} %write{115,115}
+const	float	$const65	-0.0078999996		 %read{117,117} %write{2147483647,-1}
+temp	float	$tmp81	 %read{118,118} %write{117,117}
+const	float	$const66	0.2102		 %read{118,118} %write{2147483647,-1}
+temp	float	$tmp82	 %read{119,119} %write{118,118}
+const	float	$const67	-0.044100001		 %read{120,120} %write{2147483647,-1}
+temp	float	$tmp83	 %read{121,121} %write{120,120}
+const	float	$const68	1.6537		 %read{121,121} %write{2147483647,-1}
+temp	float	$tmp84	 %read{122,122} %write{121,121}
+const	float	$const69	-0.0109		 %read{123,123} %write{2147483647,-1}
+temp	float	$tmp85	 %read{124,124} %write{123,123}
+const	float	$const70	0.052900001		 %read{124,124} %write{2147483647,-1}
+temp	float	$tmp86	 %read{125,125} %write{124,124}
+temp	float	$tmp87	 %read{146,146} %write{145,145}
+const	string	$const71	"sky_perez_function"		 %read{126,266} %write{2147483647,-1}
+const	float	$const72	1		 %read{134,300} %write{2147483647,-1}
+temp	float	$tmp88	 %read{133,133} %write{129,129}
+temp	float	$tmp89	 %read{133,133} %write{132,132}
+temp	float	$tmp90	 %read{131,131} %write{130,130}
+temp	float	$tmp91	 %read{132,132} %write{131,131}
+temp	float	$tmp92	 %read{134,134} %write{133,133}
+temp	float	$tmp93	 %read{145,145} %write{134,134}
+temp	float	$tmp94	 %read{139,139} %write{135,135}
+temp	float	$tmp95	 %read{139,139} %write{138,138}
+temp	float	$tmp96	 %read{137,137} %write{136,136}
+temp	float	$tmp97	 %read{138,138} %write{137,137}
+temp	float	$tmp98	 %read{140,140} %write{139,139}
+temp	float	$tmp99	 %read{144,144} %write{140,140}
+temp	float	$tmp100	 %read{142,142} %write{141,141}
+temp	float	$tmp101	 %read{143,143} %write{142,142}
+temp	float	$tmp102	 %read{144,144} %write{143,143}
+temp	float	$tmp103	 %read{145,145} %write{144,144}
+temp	float	$tmp104	 %read{168,168} %write{167,167}
+temp	float	$tmp105	 %read{155,155} %write{151,151}
+temp	float	$tmp106	 %read{155,155} %write{154,154}
+temp	float	$tmp107	 %read{153,153} %write{152,152}
+temp	float	$tmp108	 %read{154,154} %write{153,153}
+temp	float	$tmp109	 %read{156,156} %write{155,155}
+temp	float	$tmp110	 %read{167,167} %write{156,156}
+temp	float	$tmp111	 %read{161,161} %write{157,157}
+temp	float	$tmp112	 %read{161,161} %write{160,160}
+temp	float	$tmp113	 %read{159,159} %write{158,158}
+temp	float	$tmp114	 %read{160,160} %write{159,159}
+temp	float	$tmp115	 %read{162,162} %write{161,161}
+temp	float	$tmp116	 %read{166,166} %write{162,162}
+temp	float	$tmp117	 %read{164,164} %write{163,163}
+temp	float	$tmp118	 %read{165,165} %write{164,164}
+temp	float	$tmp119	 %read{166,166} %write{165,165}
+temp	float	$tmp120	 %read{167,167} %write{166,166}
+temp	float	$tmp121	 %read{190,190} %write{189,189}
+temp	float	$tmp122	 %read{177,177} %write{173,173}
+temp	float	$tmp123	 %read{177,177} %write{176,176}
+temp	float	$tmp124	 %read{175,175} %write{174,174}
+temp	float	$tmp125	 %read{176,176} %write{175,175}
+temp	float	$tmp126	 %read{178,178} %write{177,177}
+temp	float	$tmp127	 %read{189,189} %write{178,178}
+temp	float	$tmp128	 %read{183,183} %write{179,179}
+temp	float	$tmp129	 %read{183,183} %write{182,182}
+temp	float	$tmp130	 %read{181,181} %write{180,180}
+temp	float	$tmp131	 %read{182,182} %write{181,181}
+temp	float	$tmp132	 %read{184,184} %write{183,183}
+temp	float	$tmp133	 %read{188,188} %write{184,184}
+temp	float	$tmp134	 %read{186,186} %write{185,185}
+temp	float	$tmp135	 %read{187,187} %write{186,186}
+temp	float	$tmp136	 %read{188,188} %write{187,187}
+temp	float	$tmp137	 %read{189,189} %write{188,188}
+const	string	$const73	"sky_xyz_radiance"		 %read{192,192} %write{2147483647,-1}
+temp	float	$tmp138	 %read{199,199} %write{195,195}
+temp	float	$tmp139	 %read{195,195} %write{194,194}
+temp	float	$tmp140	 %read{199,199} %write{198,198}
+temp	float	$tmp141	 %read{198,198} %write{196,196}
+temp	float	$tmp142	 %read{198,198} %write{197,197}
+const	string	$const74	"sky_angle_between"		 %read{202,202} %write{2147483647,-1}
+temp	float	$tmp143	 %read{205,205} %write{203,203}
+temp	float	$tmp144	 %read{205,205} %write{204,204}
+temp	float	$tmp145	 %read{208,208} %write{205,205}
+temp	float	$tmp146	 %read{208,208} %write{207,207}
+temp	float	$tmp147	 %read{207,207} %write{206,206}
+temp	float	$tmp148	 %read{212,212} %write{208,208}
+temp	float	$tmp149	 %read{211,211} %write{209,209}
+temp	float	$tmp150	 %read{211,211} %write{210,210}
+temp	float	$tmp151	 %read{212,212} %write{211,211}
+temp	int	$tmp152	 %read{214,214} %write{213,213}
+const	float	$const75	-1		 %read{217,217} %write{2147483647,-1}
+temp	int	$tmp153	 %read{218,218} %write{217,217}
+const	float	$const76	1.5707964		 %read{222,222} %write{2147483647,-1}
+const	float	$const77	0.001		 %read{222,222} %write{2147483647,-1}
+temp	float	$tmp154	 %read{223,223} %write{222,222}
+temp	float	$tmp155	 %read{244,244} %write{243,243}
+temp	float	$tmp156	 %read{231,231} %write{227,227}
+temp	float	$tmp157	 %read{231,231} %write{230,230}
+temp	float	$tmp158	 %read{229,229} %write{228,228}
+temp	float	$tmp159	 %read{230,230} %write{229,229}
+temp	float	$tmp160	 %read{232,232} %write{231,231}
+temp	float	$tmp161	 %read{243,243} %write{232,232}
+temp	float	$tmp162	 %read{237,237} %write{233,233}
+temp	float	$tmp163	 %read{237,237} %write{236,236}
+temp	float	$tmp164	 %read{235,235} %write{234,234}
+temp	float	$tmp165	 %read{236,236} %write{235,235}
+temp	float	$tmp166	 %read{238,238} %write{237,237}
+temp	float	$tmp167	 %read{242,242} %write{238,238}
+temp	float	$tmp168	 %read{240,240} %write{239,239}
+temp	float	$tmp169	 %read{241,241} %write{240,240}
+temp	float	$tmp170	 %read{242,242} %write{241,241}
+temp	float	$tmp171	 %read{243,243} %write{242,242}
+temp	float	$tmp172	 %read{265,265} %write{264,264}
+temp	float	$tmp173	 %read{252,252} %write{248,248}
+temp	float	$tmp174	 %read{252,252} %write{251,251}
+temp	float	$tmp175	 %read{250,250} %write{249,249}
+temp	float	$tmp176	 %read{251,251} %write{250,250}
+temp	float	$tmp177	 %read{253,253} %write{252,252}
+temp	float	$tmp178	 %read{264,264} %write{253,253}
+temp	float	$tmp179	 %read{258,258} %write{254,254}
+temp	float	$tmp180	 %read{258,258} %write{257,257}
+temp	float	$tmp181	 %read{256,256} %write{255,255}
+temp	float	$tmp182	 %read{257,257} %write{256,256}
+temp	float	$tmp183	 %read{259,259} %write{258,258}
+temp	float	$tmp184	 %read{263,263} %write{259,259}
+temp	float	$tmp185	 %read{261,261} %write{260,260}
+temp	float	$tmp186	 %read{262,262} %write{261,261}
+temp	float	$tmp187	 %read{263,263} %write{262,262}
+temp	float	$tmp188	 %read{264,264} %write{263,263}
+temp	float	$tmp189	 %read{286,286} %write{285,285}
+temp	float	$tmp190	 %read{273,273} %write{269,269}
+temp	float	$tmp191	 %read{273,273} %write{272,272}
+temp	float	$tmp192	 %read{271,271} %write{270,270}
+temp	float	$tmp193	 %read{272,272} %write{271,271}
+temp	float	$tmp194	 %read{274,274} %write{273,273}
+temp	float	$tmp195	 %read{285,285} %write{274,274}
+temp	float	$tmp196	 %read{279,279} %write{275,275}
+temp	float	$tmp197	 %read{279,279} %write{278,278}
+temp	float	$tmp198	 %read{277,277} %write{276,276}
+temp	float	$tmp199	 %read{278,278} %write{277,277}
+temp	float	$tmp200	 %read{280,280} %write{279,279}
+temp	float	$tmp201	 %read{284,284} %write{280,280}
+temp	float	$tmp202	 %read{282,282} %write{281,281}
+temp	float	$tmp203	 %read{283,283} %write{282,282}
+temp	float	$tmp204	 %read{284,284} %write{283,283}
+temp	float	$tmp205	 %read{285,285} %write{284,284}
+const	string	$const78	"xyY_to_xyz"		 %read{287,287} %write{2147483647,-1}
+temp	int	$tmp206	 %read{289,289} %write{288,288}
+temp	float	$tmp207	 %read{291,291} %write{290,290}
+temp	int	$tmp208	 %read{294,294} %write{293,293}
+temp	int	$tmp209	 %read{295,299} %write{294,298}
+temp	int	$tmp210	 %read{297,297} %write{296,296}
+temp	int	$tmp211	 %read{298,298} %write{297,297}
+temp	float	$tmp212	 %read{301,301} %write{300,300}
+temp	float	$tmp213	 %read{302,302} %write{301,301}
+temp	float	$tmp214	 %read{303,303} %write{302,302}
+temp	float	$tmp215	 %read{310,320} %write{306,306}
+temp	float	$tmp216	 %read{311,321} %write{307,307}
+temp	float	$tmp217	 %read{313,323} %write{308,308}
+const	string	$const79	"xyz_to_rgb"		 %read{309,309} %write{2147483647,-1}
+const	float	$const80	3.240479		 %read{310,310} %write{2147483647,-1}
+temp	float	$tmp218	 %read{312,312} %write{310,310}
+const	float	$const81	-1.53715		 %read{311,311} %write{2147483647,-1}
+temp	float	$tmp219	 %read{312,312} %write{311,311}
+temp	float	$tmp220	 %read{314,314} %write{312,312}
+const	float	$const82	-0.49853501		 %read{313,313} %write{2147483647,-1}
+temp	float	$tmp221	 %read{314,314} %write{313,313}
+temp	float	$tmp222	 %read{325,325} %write{314,314}
+const	float	$const83	-0.96925598		 %read{315,315} %write{2147483647,-1}
+temp	float	$tmp223	 %read{317,317} %write{315,315}
+const	float	$const84	1.875991		 %read{316,316} %write{2147483647,-1}
+temp	float	$tmp224	 %read{317,317} %write{316,316}
+temp	float	$tmp225	 %read{319,319} %write{317,317}
+const	float	$const85	0.041556001		 %read{318,318} %write{2147483647,-1}
+temp	float	$tmp226	 %read{319,319} %write{318,318}
+temp	float	$tmp227	 %read{325,325} %write{319,319}
+const	float	$const86	0.055647999		 %read{320,320} %write{2147483647,-1}
+temp	float	$tmp228	 %read{322,322} %write{320,320}
+const	float	$const87	-0.204043		 %read{321,321} %write{2147483647,-1}
+temp	float	$tmp229	 %read{322,322} %write{321,321}
+temp	float	$tmp230	 %read{324,324} %write{322,322}
+const	float	$const88	1.0573111		 %read{323,323} %write{2147483647,-1}
+temp	float	$tmp231	 %read{324,324} %write{323,323}
+temp	float	$tmp232	 %read{325,325} %write{324,324}
+code Vector
+# intern/cycles/kernel/shaders/node_sky_texture.osl:135
+# 	vector Vector = P,
+	assign		Vector P 	%filename{"intern/cycles/kernel/shaders/node_sky_texture.osl"} %line{135} %argrw{"wr"}
+code ___main___
+# intern/cycles/kernel/shaders/node_sky_texture.osl:140
+# 	vector p = Vector;
+	assign		p Vector 	%filename{"intern/cycles/kernel/shaders/node_sky_texture.osl"} %line{140} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:142
+# 	if (use_mapping)
+	if		use_mapping 4 4 	%line{142} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:143
+# 		p = transform(mapping, p);
+	transformv	p mapping p 	%line{143} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:147
+# 	precompute_sunsky(sun_direction, turbidity, sunsky);
+	functioncall	$const1 192 	%line{147} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:82
+# 	vector spherical = sky_spherical_coordinates(dir);
+	functioncall	$const2 12 	%line{82} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:46
+# 	return vector(acos(dir[2]), atan2(dir[0], dir[1]), 0);
+	compref		$tmp2 sun_direction $const3 	%line{46} %argrw{"wrr"}
+	acos		$tmp1 $tmp2 	%argrw{"wr"}
+	compref		$tmp4 sun_direction $const4 	%argrw{"wrr"}
+	compref		$tmp5 sun_direction $const5 	%argrw{"wrr"}
+	atan2		$tmp3 $tmp4 $tmp5 	%argrw{"wrr"}
+	vector		___625_spherical $tmp1 $tmp3 $const6 	%argrw{"wrrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:83
+# 	float theta = spherical[0];
+	compref		___625_theta ___625_spherical $const4 	%line{83} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:84
+# 	float phi = spherical[1];
+	compref		___625_phi ___625_spherical $const5 	%line{84} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:86
+# 	sunsky.theta = theta;
+	assign		sunsky.theta ___625_theta 	%line{86} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:87
+# 	sunsky.phi = phi;
+	assign		sunsky.phi ___625_phi 	%line{87} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:88
+# 	sunsky.dir = dir;
+	assign		sunsky.dir sun_direction 	%line{88} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:90
+# 	float theta2 = theta * theta;
+	mul		___625_theta2 ___625_theta ___625_theta 	%line{90} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:91
+# 	float theta3 = theta2 * theta;
+	mul		___625_theta3 ___625_theta2 ___625_theta 	%line{91} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:92
+# 	float T = turbidity;
+	assign		___625_T turbidity 	%line{92} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:93
+# 	float T2 = T * T;
+	mul		___625_T2 ___625_T ___625_T 	%line{93} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:95
+# 	float chi = (4.0 / 9.0 - T / 120.0) * (M_PI - 2.0 * theta);
+	div		$tmp6 $const7 $const8 	%line{95} %argrw{"wrr"}
+	div		$tmp7 ___625_T $const9 	%argrw{"wrr"}
+	sub		$tmp8 $tmp6 $tmp7 	%argrw{"wrr"}
+	mul		$tmp9 $const11 ___625_theta 	%argrw{"wrr"}
+	sub		$tmp10 $const10 $tmp9 	%argrw{"wrr"}
+	mul		___625_chi $tmp8 $tmp10 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:96
+# 	sunsky.zenith_Y = (4.0453 * T - 4.9710) * tan(chi) - 0.2155 * T + 2.4192;
+	mul		$tmp11 $const12 ___625_T 	%line{96} %argrw{"wrr"}
+	sub		$tmp12 $tmp11 $const13 	%argrw{"wrr"}
+	tan		$tmp13 ___625_chi 	%argrw{"wr"}
+	mul		$tmp14 $tmp12 $tmp13 	%argrw{"wrr"}
+	mul		$tmp15 $const14 ___625_T 	%argrw{"wrr"}
+	sub		$tmp16 $tmp14 $tmp15 	%argrw{"wrr"}
+	add		sunsky.zenith_Y $tmp16 $const15 	%argrw{"wrr"}
+	assign		sunsky.zenith_Y sunsky.zenith_Y 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:97
+# 	sunsky.zenith_Y *= 0.06;
+	mul		sunsky.zenith_Y sunsky.zenith_Y $const16 	%line{97} %argrw{"wrr"}
+	assign		sunsky.zenith_Y sunsky.zenith_Y 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:100
+# 	        ( 0.00166 * theta3 - 0.00375 * theta2 + 0.00209 * theta) * T2 +
+	mul		$tmp17 $const17 ___625_theta3 	%line{100} %argrw{"wrr"}
+	mul		$tmp18 $const18 ___625_theta2 	%argrw{"wrr"}
+	sub		$tmp19 $tmp17 $tmp18 	%argrw{"wrr"}
+	mul		$tmp20 $const19 ___625_theta 	%argrw{"wrr"}
+	add		$tmp21 $tmp19 $tmp20 	%argrw{"wrr"}
+	mul		$tmp22 $tmp21 ___625_T2 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:101
+# 	        (-0.02903 * theta3 + 0.06377 * theta2 - 0.03202 * theta + 0.00394) * T +
+	mul		$tmp23 $const20 ___625_theta3 	%line{101} %argrw{"wrr"}
+	mul		$tmp24 $const21 ___625_theta2 	%argrw{"wrr"}
+	add		$tmp25 $tmp23 $tmp24 	%argrw{"wrr"}
+	mul		$tmp26 $const22 ___625_theta 	%argrw{"wrr"}
+	sub		$tmp27 $tmp25 $tmp26 	%argrw{"wrr"}
+	add		$tmp28 $tmp27 $const23 	%argrw{"wrr"}
+	mul		$tmp29 $tmp28 ___625_T 	%argrw{"wrr"}
+	add		$tmp30 $tmp22 $tmp29 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:102
+# 	        ( 0.11693 * theta3 - 0.21196 * theta2 + 0.06052 * theta + 0.25886);
+	mul		$tmp31 $const24 ___625_theta3 	%line{102} %argrw{"wrr"}
+	mul		$tmp32 $const25 ___625_theta2 	%argrw{"wrr"}
+	sub		$tmp33 $tmp31 $tmp32 	%argrw{"wrr"}
+	mul		$tmp34 $const26 ___625_theta 	%argrw{"wrr"}
+	add		$tmp35 $tmp33 $tmp34 	%argrw{"wrr"}
+	add		$tmp36 $tmp35 $const27 	%argrw{"wrr"}
+	add		sunsky.zenith_x $tmp30 $tmp36 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:99
+# 	sunsky.zenith_x =
+	assign		sunsky.zenith_x sunsky.zenith_x 	%line{99} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:105
+# 	        ( 0.00275 * theta3 - 0.00610 * theta2 + 0.00317 * theta) * T2 +
+	mul		$tmp37 $const28 ___625_theta3 	%line{105} %argrw{"wrr"}
+	mul		$tmp38 $const29 ___625_theta2 	%argrw{"wrr"}
+	sub		$tmp39 $tmp37 $tmp38 	%argrw{"wrr"}
+	mul		$tmp40 $const30 ___625_theta 	%argrw{"wrr"}
+	add		$tmp41 $tmp39 $tmp40 	%argrw{"wrr"}
+	mul		$tmp42 $tmp41 ___625_T2 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:106
+# 	        (-0.04214 * theta3 + 0.08970 * theta2 - 0.04153 * theta + 0.00516) * T +
+	mul		$tmp43 $const31 ___625_theta3 	%line{106} %argrw{"wrr"}
+	mul		$tmp44 $const32 ___625_theta2 	%argrw{"wrr"}
+	add		$tmp45 $tmp43 $tmp44 	%argrw{"wrr"}
+	mul		$tmp46 $const33 ___625_theta 	%argrw{"wrr"}
+	sub		$tmp47 $tmp45 $tmp46 	%argrw{"wrr"}
+	add		$tmp48 $tmp47 $const34 	%argrw{"wrr"}
+	mul		$tmp49 $tmp48 ___625_T 	%argrw{"wrr"}
+	add		$tmp50 $tmp42 $tmp49 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:107
+# 	        ( 0.15346 * theta3 - 0.26756 * theta2 + 0.06670 * theta + 0.26688);
+	mul		$tmp51 $const35 ___625_theta3 	%line{107} %argrw{"wrr"}
+	mul		$tmp52 $const36 ___625_theta2 	%argrw{"wrr"}
+	sub		$tmp53 $tmp51 $tmp52 	%argrw{"wrr"}
+	mul		$tmp54 $const37 ___625_theta 	%argrw{"wrr"}
+	add		$tmp55 $tmp53 $tmp54 	%argrw{"wrr"}
+	add		$tmp56 $tmp55 $const38 	%argrw{"wrr"}
+	add		sunsky.zenith_y $tmp50 $tmp56 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:104
+# 	sunsky.zenith_y =
+	assign		sunsky.zenith_y sunsky.zenith_y 	%line{104} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:109
+# 	sunsky.perez_Y[0] = ( 0.1787 * T - 1.4630);
+	mul		$tmp57 $const39 ___625_T 	%line{109} %argrw{"wrr"}
+	sub		$tmp58 $tmp57 $const40 	%argrw{"wrr"}
+	aassign		sunsky.perez_Y $const4 $tmp58 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:110
+# 	sunsky.perez_Y[1] = (-0.3554 * T + 0.4275);
+	mul		$tmp59 $const41 ___625_T 	%line{110} %argrw{"wrr"}
+	add		$tmp60 $tmp59 $const42 	%argrw{"wrr"}
+	aassign		sunsky.perez_Y $const5 $tmp60 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:111
+# 	sunsky.perez_Y[2] = (-0.0227 * T + 5.3251);
+	mul		$tmp61 $const43 ___625_T 	%line{111} %argrw{"wrr"}
+	add		$tmp62 $tmp61 $const44 	%argrw{"wrr"}
+	aassign		sunsky.perez_Y $const3 $tmp62 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:112
+# 	sunsky.perez_Y[3] = ( 0.1206 * T - 2.5771);
+	mul		$tmp63 $const45 ___625_T 	%line{112} %argrw{"wrr"}
+	sub		$tmp64 $tmp63 $const46 	%argrw{"wrr"}
+	aassign		sunsky.perez_Y $const47 $tmp64 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:113
+# 	sunsky.perez_Y[4] = (-0.0670 * T + 0.3703);
+	mul		$tmp65 $const48 ___625_T 	%line{113} %argrw{"wrr"}
+	add		$tmp66 $tmp65 $const49 	%argrw{"wrr"}
+	aassign		sunsky.perez_Y $const50 $tmp66 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:115
+# 	sunsky.perez_x[0] = (-0.0193 * T - 0.2592);
+	mul		$tmp67 $const51 ___625_T 	%line{115} %argrw{"wrr"}
+	sub		$tmp68 $tmp67 $const52 	%argrw{"wrr"}
+	aassign		sunsky.perez_x $const4 $tmp68 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:116
+# 	sunsky.perez_x[1] = (-0.0665 * T + 0.0008);
+	mul		$tmp69 $const53 ___625_T 	%line{116} %argrw{"wrr"}
+	add		$tmp70 $tmp69 $const54 	%argrw{"wrr"}
+	aassign		sunsky.perez_x $const5 $tmp70 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:117
+# 	sunsky.perez_x[2] = (-0.0004 * T + 0.2125);
+	mul		$tmp71 $const55 ___625_T 	%line{117} %argrw{"wrr"}
+	add		$tmp72 $tmp71 $const56 	%argrw{"wrr"}
+	aassign		sunsky.perez_x $const3 $tmp72 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:118
+# 	sunsky.perez_x[3] = (-0.0641 * T - 0.8989);
+	mul		$tmp73 $const57 ___625_T 	%line{118} %argrw{"wrr"}
+	sub		$tmp74 $tmp73 $const58 	%argrw{"wrr"}
+	aassign		sunsky.perez_x $const47 $tmp74 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:119
+# 	sunsky.perez_x[4] = (-0.0033 * T + 0.0452);
+	mul		$tmp75 $const59 ___625_T 	%line{119} %argrw{"wrr"}
+	add		$tmp76 $tmp75 $const60 	%argrw{"wrr"}
+	aassign		sunsky.perez_x $const50 $tmp76 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:121
+# 	sunsky.perez_y[0] = (-0.0167 * T - 0.2608);
+	mul		$tmp77 $const61 ___625_T 	%line{121} %argrw{"wrr"}
+	sub		$tmp78 $tmp77 $const62 	%argrw{"wrr"}
+	aassign		sunsky.perez_y $const4 $tmp78 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:122
+# 	sunsky.perez_y[1] = (-0.0950 * T + 0.0092);
+	mul		$tmp79 $const63 ___625_T 	%line{122} %argrw{"wrr"}
+	add		$tmp80 $tmp79 $const64 	%argrw{"wrr"}
+	aassign		sunsky.perez_y $const5 $tmp80 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:123
+# 	sunsky.perez_y[2] = (-0.0079 * T + 0.2102);
+	mul		$tmp81 $const65 ___625_T 	%line{123} %argrw{"wrr"}
+	add		$tmp82 $tmp81 $const66 	%argrw{"wrr"}
+	aassign		sunsky.perez_y $const3 $tmp82 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:124
+# 	sunsky.perez_y[3] = (-0.0441 * T - 1.6537);
+	mul		$tmp83 $const67 ___625_T 	%line{124} %argrw{"wrr"}
+	sub		$tmp84 $tmp83 $const68 	%argrw{"wrr"}
+	aassign		sunsky.perez_y $const47 $tmp84 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:125
+# 	sunsky.perez_y[4] = (-0.0109 * T + 0.0529);
+	mul		$tmp85 $const69 ___625_T 	%line{125} %argrw{"wrr"}
+	add		$tmp86 $tmp85 $const70 	%argrw{"wrr"}
+	aassign		sunsky.perez_y $const50 $tmp86 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:127
+# 	sunsky.zenith_Y /= sky_perez_function(sunsky.perez_Y, 0, theta);
+	functioncall	$const71 146 	%line{127} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:51
+# 	float ctheta = cos(theta);
+	cos		___623_ctheta $const6 	%line{51} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:52
+# 	float cgamma = cos(gamma);
+	cos		___623_cgamma ___625_theta 	%line{52} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:54
+# 	return (1.0 + lam[0] * exp(lam[1] / ctheta)) * (1.0 + lam[2] * exp(lam[3] * gamma) + lam[4] * cgamma * cgamma);
+	aref		$tmp88 sunsky.perez_Y $const4 	%line{54} %argrw{"wrr"}
+	aref		$tmp90 sunsky.perez_Y $const5 	%argrw{"wrr"}
+	div		$tmp91 $tmp90 ___623_ctheta 	%argrw{"wrr"}
+	exp		$tmp89 $tmp91 	%argrw{"wr"}
+	mul		$tmp92 $tmp88 $tmp89 	%argrw{"wrr"}
+	add		$tmp93 $const72 $tmp92 	%argrw{"wrr"}
+	aref		$tmp94 sunsky.perez_Y $const3 	%argrw{"wrr"}
+	aref		$tmp96 sunsky.perez_Y $const47 	%argrw{"wrr"}
+	mul		$tmp97 $tmp96 ___625_theta 	%argrw{"wrr"}
+	exp		$tmp95 $tmp97 	%argrw{"wr"}
+	mul		$tmp98 $tmp94 $tmp95 	%argrw{"wrr"}
+	add		$tmp99 $const72 $tmp98 	%argrw{"wrr"}
+	aref		$tmp100 sunsky.perez_Y $const50 	%argrw{"wrr"}
+	mul		$tmp101 $tmp100 ___623_cgamma 	%argrw{"wrr"}
+	mul		$tmp102 $tmp101 ___623_cgamma 	%argrw{"wrr"}
+	add		$tmp103 $tmp99 $tmp102 	%argrw{"wrr"}
+	mul		$tmp87 $tmp93 $tmp103 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:127
+# 	sunsky.zenith_Y /= sky_perez_function(sunsky.perez_Y, 0, theta);
+	div		sunsky.zenith_Y sunsky.zenith_Y $tmp87 	%line{127} %argrw{"wrr"}
+	assign		sunsky.zenith_Y sunsky.zenith_Y 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:128
+# 	sunsky.zenith_x /= sky_perez_function(sunsky.perez_x, 0, theta);
+	functioncall	$const71 168 	%line{128} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:51
+# 	float ctheta = cos(theta);
+	cos		___623_ctheta $const6 	%line{51} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:52
+# 	float cgamma = cos(gamma);
+	cos		___623_cgamma ___625_theta 	%line{52} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:54
+# 	return (1.0 + lam[0] * exp(lam[1] / ctheta)) * (1.0 + lam[2] * exp(lam[3] * gamma) + lam[4] * cgamma * cgamma);
+	aref		$tmp105 sunsky.perez_x $const4 	%line{54} %argrw{"wrr"}
+	aref		$tmp107 sunsky.perez_x $const5 	%argrw{"wrr"}
+	div		$tmp108 $tmp107 ___623_ctheta 	%argrw{"wrr"}
+	exp		$tmp106 $tmp108 	%argrw{"wr"}
+	mul		$tmp109 $tmp105 $tmp106 	%argrw{"wrr"}
+	add		$tmp110 $const72 $tmp109 	%argrw{"wrr"}
+	aref		$tmp111 sunsky.perez_x $const3 	%argrw{"wrr"}
+	aref		$tmp113 sunsky.perez_x $const47 	%argrw{"wrr"}
+	mul		$tmp114 $tmp113 ___625_theta 	%argrw{"wrr"}
+	exp		$tmp112 $tmp114 	%argrw{"wr"}
+	mul		$tmp115 $tmp111 $tmp112 	%argrw{"wrr"}
+	add		$tmp116 $const72 $tmp115 	%argrw{"wrr"}
+	aref		$tmp117 sunsky.perez_x $const50 	%argrw{"wrr"}
+	mul		$tmp118 $tmp117 ___623_cgamma 	%argrw{"wrr"}
+	mul		$tmp119 $tmp118 ___623_cgamma 	%argrw{"wrr"}
+	add		$tmp120 $tmp116 $tmp119 	%argrw{"wrr"}
+	mul		$tmp104 $tmp110 $tmp120 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:128
+# 	sunsky.zenith_x /= sky_perez_function(sunsky.perez_x, 0, theta);
+	div		sunsky.zenith_x sunsky.zenith_x $tmp104 	%line{128} %argrw{"wrr"}
+	assign		sunsky.zenith_x sunsky.zenith_x 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:129
+# 	sunsky.zenith_y /= sky_perez_function(sunsky.perez_y, 0, theta);
+	functioncall	$const71 190 	%line{129} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:51
+# 	float ctheta = cos(theta);
+	cos		___623_ctheta $const6 	%line{51} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:52
+# 	float cgamma = cos(gamma);
+	cos		___623_cgamma ___625_theta 	%line{52} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:54
+# 	return (1.0 + lam[0] * exp(lam[1] / ctheta)) * (1.0 + lam[2] * exp(lam[3] * gamma) + lam[4] * cgamma * cgamma);
+	aref		$tmp122 sunsky.perez_y $const4 	%line{54} %argrw{"wrr"}
+	aref		$tmp124 sunsky.perez_y $const5 	%argrw{"wrr"}
+	div		$tmp125 $tmp124 ___623_ctheta 	%argrw{"wrr"}
+	exp		$tmp123 $tmp125 	%argrw{"wr"}
+	mul		$tmp126 $tmp122 $tmp123 	%argrw{"wrr"}
+	add		$tmp127 $const72 $tmp126 	%argrw{"wrr"}
+	aref		$tmp128 sunsky.perez_y $const3 	%argrw{"wrr"}
+	aref		$tmp130 sunsky.perez_y $const47 	%argrw{"wrr"}
+	mul		$tmp131 $tmp130 ___625_theta 	%argrw{"wrr"}
+	exp		$tmp129 $tmp131 	%argrw{"wr"}
+	mul		$tmp132 $tmp128 $tmp129 	%argrw{"wrr"}
+	add		$tmp133 $const72 $tmp132 	%argrw{"wrr"}
+	aref		$tmp134 sunsky.perez_y $const50 	%argrw{"wrr"}
+	mul		$tmp135 $tmp134 ___623_cgamma 	%argrw{"wrr"}
+	mul		$tmp136 $tmp135 ___623_cgamma 	%argrw{"wrr"}
+	add		$tmp137 $tmp133 $tmp136 	%argrw{"wrr"}
+	mul		$tmp121 $tmp127 $tmp137 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:129
+# 	sunsky.zenith_y /= sky_perez_function(sunsky.perez_y, 0, theta);
+	div		sunsky.zenith_y sunsky.zenith_y $tmp121 	%line{129} %argrw{"wrr"}
+	assign		sunsky.zenith_y sunsky.zenith_y 	%argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:148
+# 	Color = sky_xyz_radiance(sunsky, p);
+	functioncall	$const73 326 	%line{148} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:60
+# 	vector spherical = sky_spherical_coordinates(dir);
+	functioncall	$const2 200 	%line{60} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:46
+# 	return vector(acos(dir[2]), atan2(dir[0], dir[1]), 0);
+	compref		$tmp139 p $const3 	%line{46} %argrw{"wrr"}
+	acos		$tmp138 $tmp139 	%argrw{"wr"}
+	compref		$tmp141 p $const4 	%argrw{"wrr"}
+	compref		$tmp142 p $const5 	%argrw{"wrr"}
+	atan2		$tmp140 $tmp141 $tmp142 	%argrw{"wrr"}
+	vector		___624_spherical $tmp138 $tmp140 $const6 	%argrw{"wrrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:61
+# 	float theta = spherical[0];
+	compref		___624_theta ___624_spherical $const4 	%line{61} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:62
+# 	float phi = spherical[1];
+	compref		___624_phi ___624_spherical $const5 	%line{62} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:65
+# 	float gamma = sky_angle_between(theta, phi, sunsky.theta, sunsky.phi);
+	functioncall	$const74 222 	%line{65} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:34
+# 	float cospsi = sin(thetav) * sin(theta) * cos(phi - phiv) + cos(thetav) * cos(theta);
+	sin		$tmp143 ___624_theta 	%line{34} %argrw{"wr"}
+	sin		$tmp144 sunsky.theta 	%argrw{"wr"}
+	mul		$tmp145 $tmp143 $tmp144 	%argrw{"wrr"}
+	sub		$tmp147 sunsky.phi ___624_phi 	%argrw{"wrr"}
+	cos		$tmp146 $tmp147 	%argrw{"wr"}
+	mul		$tmp148 $tmp145 $tmp146 	%argrw{"wrr"}
+	cos		$tmp149 ___624_theta 	%argrw{"wr"}
+	cos		$tmp150 sunsky.theta 	%argrw{"wr"}
+	mul		$tmp151 $tmp149 $tmp150 	%argrw{"wrr"}
+	add		___621_cospsi $tmp148 $tmp151 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:36
+# 	if (cospsi > 1.0)
+	gt		$tmp152 ___621_cospsi $const72 	%line{36} %argrw{"wrr"}
+	if		$tmp152 217 217 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:37
+# 		return 0.0;
+	assign		___624_gamma $const6 	%line{37} %argrw{"wr"}
+	return
+# intern/cycles/kernel/shaders/node_sky_texture.osl:38
+# 	if (cospsi < -1.0)
+	lt		$tmp153 ___621_cospsi $const75 	%line{38} %argrw{"wrr"}
+	if		$tmp153 221 221 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:39
+# 		return M_PI;
+	assign		___624_gamma $const10 	%line{39} %argrw{"wr"}
+	return
+# intern/cycles/kernel/shaders/node_sky_texture.osl:41
+# 	return acos(cospsi);
+	acos		___624_gamma ___621_cospsi 	%line{41} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:68
+# 	theta = min(theta, M_PI_2 - 0.001);
+	sub		$tmp154 $const76 $const77 	%line{68} %argrw{"wrr"}
+	min		___624_theta ___624_theta $tmp154 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:71
+# 	float x = sunsky.zenith_x * sky_perez_function(sunsky.perez_x, theta, gamma);
+	functioncall	$const71 244 	%line{71} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:51
+# 	float ctheta = cos(theta);
+	cos		___623_ctheta ___624_theta 	%line{51} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:52
+# 	float cgamma = cos(gamma);
+	cos		___623_cgamma ___624_gamma 	%line{52} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:54
+# 	return (1.0 + lam[0] * exp(lam[1] / ctheta)) * (1.0 + lam[2] * exp(lam[3] * gamma) + lam[4] * cgamma * cgamma);
+	aref		$tmp156 sunsky.perez_x $const4 	%line{54} %argrw{"wrr"}
+	aref		$tmp158 sunsky.perez_x $const5 	%argrw{"wrr"}
+	div		$tmp159 $tmp158 ___623_ctheta 	%argrw{"wrr"}
+	exp		$tmp157 $tmp159 	%argrw{"wr"}
+	mul		$tmp160 $tmp156 $tmp157 	%argrw{"wrr"}
+	add		$tmp161 $const72 $tmp160 	%argrw{"wrr"}
+	aref		$tmp162 sunsky.perez_x $const3 	%argrw{"wrr"}
+	aref		$tmp164 sunsky.perez_x $const47 	%argrw{"wrr"}
+	mul		$tmp165 $tmp164 ___624_gamma 	%argrw{"wrr"}
+	exp		$tmp163 $tmp165 	%argrw{"wr"}
+	mul		$tmp166 $tmp162 $tmp163 	%argrw{"wrr"}
+	add		$tmp167 $const72 $tmp166 	%argrw{"wrr"}
+	aref		$tmp168 sunsky.perez_x $const50 	%argrw{"wrr"}
+	mul		$tmp169 $tmp168 ___623_cgamma 	%argrw{"wrr"}
+	mul		$tmp170 $tmp169 ___623_cgamma 	%argrw{"wrr"}
+	add		$tmp171 $tmp167 $tmp170 	%argrw{"wrr"}
+	mul		$tmp155 $tmp161 $tmp171 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:71
+# 	float x = sunsky.zenith_x * sky_perez_function(sunsky.perez_x, theta, gamma);
+	mul		___624_x sunsky.zenith_x $tmp155 	%line{71} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:72
+# 	float y = sunsky.zenith_y * sky_perez_function(sunsky.perez_y, theta, gamma);
+	functioncall	$const71 265 	%line{72} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:51
+# 	float ctheta = cos(theta);
+	cos		___623_ctheta ___624_theta 	%line{51} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:52
+# 	float cgamma = cos(gamma);
+	cos		___623_cgamma ___624_gamma 	%line{52} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:54
+# 	return (1.0 + lam[0] * exp(lam[1] / ctheta)) * (1.0 + lam[2] * exp(lam[3] * gamma) + lam[4] * cgamma * cgamma);
+	aref		$tmp173 sunsky.perez_y $const4 	%line{54} %argrw{"wrr"}
+	aref		$tmp175 sunsky.perez_y $const5 	%argrw{"wrr"}
+	div		$tmp176 $tmp175 ___623_ctheta 	%argrw{"wrr"}
+	exp		$tmp174 $tmp176 	%argrw{"wr"}
+	mul		$tmp177 $tmp173 $tmp174 	%argrw{"wrr"}
+	add		$tmp178 $const72 $tmp177 	%argrw{"wrr"}
+	aref		$tmp179 sunsky.perez_y $const3 	%argrw{"wrr"}
+	aref		$tmp181 sunsky.perez_y $const47 	%argrw{"wrr"}
+	mul		$tmp182 $tmp181 ___624_gamma 	%argrw{"wrr"}
+	exp		$tmp180 $tmp182 	%argrw{"wr"}
+	mul		$tmp183 $tmp179 $tmp180 	%argrw{"wrr"}
+	add		$tmp184 $const72 $tmp183 	%argrw{"wrr"}
+	aref		$tmp185 sunsky.perez_y $const50 	%argrw{"wrr"}
+	mul		$tmp186 $tmp185 ___623_cgamma 	%argrw{"wrr"}
+	mul		$tmp187 $tmp186 ___623_cgamma 	%argrw{"wrr"}
+	add		$tmp188 $tmp184 $tmp187 	%argrw{"wrr"}
+	mul		$tmp172 $tmp178 $tmp188 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:72
+# 	float y = sunsky.zenith_y * sky_perez_function(sunsky.perez_y, theta, gamma);
+	mul		___624_y sunsky.zenith_y $tmp172 	%line{72} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:73
+# 	float Y = sunsky.zenith_Y * sky_perez_function(sunsky.perez_Y, theta, gamma);
+	functioncall	$const71 286 	%line{73} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:51
+# 	float ctheta = cos(theta);
+	cos		___623_ctheta ___624_theta 	%line{51} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:52
+# 	float cgamma = cos(gamma);
+	cos		___623_cgamma ___624_gamma 	%line{52} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:54
+# 	return (1.0 + lam[0] * exp(lam[1] / ctheta)) * (1.0 + lam[2] * exp(lam[3] * gamma) + lam[4] * cgamma * cgamma);
+	aref		$tmp190 sunsky.perez_Y $const4 	%line{54} %argrw{"wrr"}
+	aref		$tmp192 sunsky.perez_Y $const5 	%argrw{"wrr"}
+	div		$tmp193 $tmp192 ___623_ctheta 	%argrw{"wrr"}
+	exp		$tmp191 $tmp193 	%argrw{"wr"}
+	mul		$tmp194 $tmp190 $tmp191 	%argrw{"wrr"}
+	add		$tmp195 $const72 $tmp194 	%argrw{"wrr"}
+	aref		$tmp196 sunsky.perez_Y $const3 	%argrw{"wrr"}
+	aref		$tmp198 sunsky.perez_Y $const47 	%argrw{"wrr"}
+	mul		$tmp199 $tmp198 ___624_gamma 	%argrw{"wrr"}
+	exp		$tmp197 $tmp199 	%argrw{"wr"}
+	mul		$tmp200 $tmp196 $tmp197 	%argrw{"wrr"}
+	add		$tmp201 $const72 $tmp200 	%argrw{"wrr"}
+	aref		$tmp202 sunsky.perez_Y $const50 	%argrw{"wrr"}
+	mul		$tmp203 $tmp202 ___623_cgamma 	%argrw{"wrr"}
+	mul		$tmp204 $tmp203 ___623_cgamma 	%argrw{"wrr"}
+	add		$tmp205 $tmp201 $tmp204 	%argrw{"wrr"}
+	mul		$tmp189 $tmp195 $tmp205 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:73
+# 	float Y = sunsky.zenith_Y * sky_perez_function(sunsky.perez_Y, theta, gamma);
+	mul		___624_Y sunsky.zenith_Y $tmp189 	%line{73} %argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:76
+# 	color xyz = xyY_to_xyz(x, y, Y);
+	functioncall	$const78 306 	%line{76} %argrw{"r"}
+# intern/cycles/kernel/shaders/node_color.h:65
+# 	if (y != 0.0) X = (x / y) * Y;
+	neq		$tmp206 ___624_y $const6 	%filename{"intern/cycles/kernel/shaders/node_color.h"} %line{65} %argrw{"wrr"}
+	if		$tmp206 292 293 	%argrw{"r"}
+	div		$tmp207 ___624_x ___624_y 	%argrw{"wrr"}
+	mul		___611_X $tmp207 ___624_Y 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_color.h:66
+# 	else X = 0.0;
+	assign		___611_X $const6 	%line{66} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_color.h:68
+# 	if (y != 0.0 && Y != 0.0) Z = ((1.0 - x - y) / y) * Y;
+	neq		$tmp208 ___624_y $const6 	%line{68} %argrw{"wrr"}
+	neq		$tmp209 $tmp208 $const4 	%argrw{"wrr"}
+	if		$tmp209 299 299 	%argrw{"r"}
+	neq		$tmp210 ___624_Y $const6 	%argrw{"wrr"}
+	neq		$tmp211 $tmp210 $const4 	%argrw{"wrr"}
+	assign		$tmp209 $tmp211 	%argrw{"wr"}
+	if		$tmp209 304 305 	%argrw{"r"}
+	sub		$tmp212 $const72 ___624_x 	%argrw{"wrr"}
+	sub		$tmp213 $tmp212 ___624_y 	%argrw{"wrr"}
+	div		$tmp214 $tmp213 ___624_y 	%argrw{"wrr"}
+	mul		___611_Z $tmp214 ___624_Y 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_color.h:69
+# 	else Z = 0.0;
+	assign		___611_Z $const6 	%line{69} %argrw{"wr"}
+# intern/cycles/kernel/shaders/node_color.h:71
+# 	return color(X, Y, Z);
+	color		___624_xyz ___611_X ___624_Y ___611_Z 	%line{71} %argrw{"wrrr"}
+# intern/cycles/kernel/shaders/node_sky_texture.osl:77
+#  * as published by the Free Software Foundation; either version 2
+	compref		$tmp215 ___624_xyz $const4 	%filename{"intern/cycles/kernel/shaders/node_sky_texture.osl"} %line{77} %argrw{"wrr"}
+	compref		$tmp216 ___624_xyz $const5 	%argrw{"wrr"}
+	compref		$tmp217 ___624_xyz $const3 	%argrw{"wrr"}
+	functioncall	$const79 326 	%argrw{"r"}
+# intern/cycles/kernel/shaders/node_color.h:76
+# 	return color( 3.240479 * x + -1.537150 * y + -0.498535 * z,
+	mul		$tmp218 $const80 $tmp215 	%filename{"intern/cycles/kernel/shaders/node_color.h"} %line{76} %argrw{"wrr"}
+	mul		$tmp219 $const81 $tmp216 	%argrw{"wrr"}
+	add		$tmp220 $tmp218 $tmp219 	%argrw{"wrr"}
+	mul		$tmp221 $const82 $tmp217 	%argrw{"wrr"}
+	add		$tmp222 $tmp220 $tmp221 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_color.h:77
+# 	             -0.969256 * x +  1.875991 * y +  0.041556 * z,
+	mul		$tmp223 $const83 $tmp215 	%line{77} %argrw{"wrr"}
+	mul		$tmp224 $const84 $tmp216 	%argrw{"wrr"}
+	add		$tmp225 $tmp223 $tmp224 	%argrw{"wrr"}
+	mul		$tmp226 $const85 $tmp217 	%argrw{"wrr"}
+	add		$tmp227 $tmp225 $tmp226 	%argrw{"wrr"}
+# intern/cycles/kernel/shaders/node_color.h:78
+# 	              0.055648 * x + -0.204043 * y +  1.057311 * z);
+	mul		$tmp228 $const86 $tmp215 	%line{78} %argrw{"wrr"}
+	mul		$tmp229 $const87 $tmp216 	%argrw{"wrr"}
+	add		$tmp230 $tmp228 $tmp229 	%argrw{"wrr"}
+	mul		$tmp231 $const88 $tmp217 	%argrw{"wrr"}
+	add		$tmp232 $tmp230 $tmp231 	%argrw{"wrr"}
+	color		Color $tmp222 $tmp227 $tmp232 	%argrw{"wrrr"}
+	end
