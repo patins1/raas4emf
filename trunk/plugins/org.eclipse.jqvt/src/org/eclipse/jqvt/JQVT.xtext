@@ -1,0 +1,63 @@
+/**
+ * Copyright 2013 Smart Services CRC Pty Ltd
+ */
+grammar org.eclipse.jqvt.JQVT with org.eclipse.xtext.xbase.Xbase
+ 
+generate jQVT "http://www.eclipse.org/jqvt/JQVT"
+import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
+import "http://www.eclipse.org/xtext/xbase/Xbase" as xbase
+
+PackageDeclaration:
+	'package' name=QualifiedName ';'
+	imports+=Import*
+	transformation=Transformation;
+
+Import:
+	'import' importedNamespace=QualifiedNameWithWildCard2 ';';
+
+QualifiedNameWithWildCard2:
+	QualifiedName ('.' '*')?;
+
+Transformation:
+	'transformation' transformationName=ID '(' directions+=Direction (',' directions+=Direction)* ')' '{'
+	(rules+=Relation | queries+=Query)*
+	'}';
+
+Query:
+    'query' name=ValidID '('(params+=FullJvmFormalParameter (',' params+=FullJvmFormalParameter)*)?')' ':' type=JvmTypeReference body=XBlockExpression;
+
+Direction:
+	name=ID ':' imp=QualifiedName;
+
+Relation:
+	(topRelation?='top')? 'relation' name=ID '{'
+	vars+=VarDecl*
+	(domains+=RelationDomain)*
+	('when {'
+	(when+=XExpression';')*
+	'}')?
+	('where {'
+	(where+=XExpression';')*
+	'}')?
+	'}';
+	
+VarDecl returns xbase::XVariableDeclaration:
+	name=ID ':' type=JvmTypeReference writeable?=';';
+ 
+RelationDomain: 
+	'enforce' 'domain' direction=[Direction] rootTemplate=ObjectTemplate ';'?;
+
+ObjectTemplate returns xbase::XVariableDeclaration:
+	{ObjectTemplate}
+	name=ValidID ':' type=JvmTypeReference writeable?='{'
+	(part+=PropertyTemplateItem (','|';')?)*
+	'}';
+
+PropertyTemplateItem:
+	referredProperty=[types::JvmOperation|ValidID] '=' value= (ObjectTemplate |  XExpression);
+
+QualifiedName:
+  (ValidID (=>('.'|'::') ValidID)*);
+
+terminal SL_COMMENT : ('--'|'//') !('\n'|'\r')* ('\r'? '\n')?;
+ 
