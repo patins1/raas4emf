@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="http://IFC2X3.ecore"
+            class="IFC2X3.IFC2X3Package"
+            genModel="model/ifc2x3.genmodel"/>
+   </extension>
+   <extension
+         point="org.eclipse.emf.ecore.extension_parser">
+      <parser
+            class="IFC2X3.util.IFC2X3ResourceFactoryImpl"
+            type="ifc">
+      </parser>
+   </extension>
+   <extension
+         point="org.eclipse.emf.ecore.generated_package">
+      <package
+            class="express2ecore.Express2ecorePackage"
+            genModel="model/express2ecore.genmodel"
+            uri="http://express2ecore.ecore">
+      </package>
+   </extension>
+
+</plugin>

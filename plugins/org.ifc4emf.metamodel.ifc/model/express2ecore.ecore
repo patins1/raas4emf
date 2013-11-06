@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="express2ecore"
+    nsURI="http://express2ecore.ecore" nsPrefix="express2ecore">
+  <eClassifiers xsi:type="ecore:EClass" name="TypeMap">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceType" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetType" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EClassifier"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Entity2Class" eSuperTypes="#//TypeMap"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Schema2Package">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="schema" eType="ecore:EClass ../../org.ifc4emf.metamodel.express/model/express.ecore#//core/Schema"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="package" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EPackage"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Attribute2Feature">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="attribute" eType="ecore:EClass ../../org.ifc4emf.metamodel.express/model/express.ecore#//core/Attribute"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="feature" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EStructuralFeature"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Attribute2Reference" eSuperTypes="#//Attribute2Feature"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Attribute2Attribute" eSuperTypes="#//Attribute2Feature"/>
+  <eClassifiers xsi:type="ecore:EClass" name="EntitySelect" eSuperTypes="#//TypeMap"/>
+  <eClassifiers xsi:type="ecore:EClass" name="NonEntitySelect" eSuperTypes="#//TypeMap"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SelectMember2Feature">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="selectType" eType="ecore:EClass ../../org.ifc4emf.metamodel.express/model/express.ecore#//core/SelectType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="memberType" eType="ecore:EClass ../../org.ifc4emf.metamodel.express/model/express.ecore#//core/NamedType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="feature" eType="ecore:EClass platform:/plugin/org.eclipse.emf.ecore/model/Ecore.ecore#//EStructuralFeature"/>
+  </eClassifiers>
+</ecore:EPackage>

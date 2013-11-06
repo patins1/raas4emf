@@ -1,0 +1,556 @@
+TRANSFORMATION express2ecore : express -> ecore
+
+NAMESPACE http://express.ecore
+//NAMESPACE http://express.ecore#//core
+//NAMESPACE http://express.ecore#//instances
+NAMESPACE http://www.eclipse.org/emf/2002/Ecore
+NAMESPACE http://express2ecore.ecore
+
+RULE schema2package
+FORALL Schema s
+MAKE EPackage pkg {
+ 	name: s.name;
+ 	nsURI: append("http://",s.name,".ecore");
+ 	nsPrefix: s.name;
+}
+LINKING Schema2Package WITH schema=s, package=pkg
+;
+
+//RULE schema2modelclass
+//FORALL Schema s
+//WHERE Schema2Package LINKS schema=s, package=pkg
+//MAKE EClass cls {
+//	name: append(s.name,"Model");
+//	eStructuralFeatures: EReference _ {
+//		name: "contents";
+//		containment: true;
+//		eType: <http://www.eclipse.org/emf/2002/Ecore#//EObject>;
+//		lowerBound: 0;
+//		upperBound: -1;
+//	};
+//}
+//SET pkg.eClassifiers = cls
+//;
+
+RULE entity2class
+FORALL EntityType e
+WHERE scopedId2name(e.id, name)
+AND e.definedIn = s
+AND Schema2Package LINKS schema=s, package=pkg
+MAKE EClass cls
+SET cls.name = name, pkg.eClassifiers = cls
+LINKING Entity2Class WITH sourceType=e, targetType=cls
+;
+
+RULE inheritance
+FORALL EntityType e1, EntityType e2
+WHERE e1.subtypeOf = e2
+AND Entity2Class LINKS sourceType=e1, targetType=c1
+AND Entity2Class LINKS sourceType=e2, targetType=c2
+SET c1.eSuperTypes = c2
+;
+
+/****************** References ******************/
+
+RULE baseReferences(a,reference)
+FORALL Attribute a
+WHERE a.ofEntity.declaredIn = e
+AND (InvertibleAttribute a OR InverseAttribute a OR (a.attributeType = t AND ( SelectType t OR (ConcreteAggregationType t AND t.memberType = t2 AND SelectType t2 ) ) ) ) 
+AND NOT AsymmetricAttribute(a)
+AND scopedId2name(a.id, name)
+AND Entity2Class LINKS sourceType=e, targetType=c
+MAKE EReference reference
+SET c.eStructuralFeatures = reference, reference.name = name
+LINKING Attribute2Reference WITH attribute=a, feature=reference
+;
+
+RULE asymmetricReferences(a,reference)
+FORALL InverseAttribute a
+WHERE AsymmetricAttribute(a)
+AND a.explicit.attributeType = oppType
+AND IF AggregationType oppType THEN oppType.memberType = e
+	ELSE oppType = e
+	ENDIF
+AND scopedId2name(a.id, name)
+AND TypeMap LINKS sourceType=e, targetType=c
+MAKE EReference reference FROM asymmetric(e, name)
+SET c.eStructuralFeatures = reference, reference.name = name
+LINKING Attribute2Reference WITH attribute=a, feature=reference
+;
+
+RULE simpleReferences
+//EXTENDS baseReferences(a,reference)
+FORALL Attribute attr//, EntityType aType
+WHERE Attribute2Reference LINKS attribute=attr, feature=reference
+AND attr.attributeType = aType
+AND IF (ExplicitAttribute attr AND attr.isOptional = true) THEN
+	lowerBound = 0
+    ELSE
+    	lowerBound = 1
+    ENDIF
+AND TypeMap LINKS sourceType=aType, targetType=refType
+SET reference.eType = refType,
+	reference.upperBound = 1,
+	reference.lowerBound = lowerBound
+;
+
+RULE aggregateTypeReferences
+//EXTENDS baseReferences(a,reference)
+FORALL Attribute attr, ConcreteAggregationType aggType
+WHERE attr.attributeType = aggType
+AND aggType.memberType = eType
+AND IF (ExplicitAttribute attr AND attr.isOptional = true) THEN
+	lowerBound = 0
+    ELSE
+    	lowerBound = aggType.lowerBound.bound
+    ENDIF
+AND IF aggType.ordering="Ordered" OR aggType.ordering="Indexed" THEN
+	hasOrder = true
+    ELSE
+    	hasOrder = false
+    ENDIF
+AND TypeMap LINKS sourceType=eType, targetType=refType
+AND Attribute2Reference LINKS attribute=attr, feature=ref
+//MAKE EReference ref { eType: refType;
+//	upperBound: aggType.upperBound.bound;
+//	lowerBound: aggType.lowerBound.bound;
+//	}
+SET ref.eType = refType,
+  ref.upperBound = aggType.upperBound.bound,
+  ref.lowerBound = lowerBound,
+  ref.ordered = hasOrder
+;
+
+//PATTERN lowerBound(attribute, bound)
+//FORALL Attribute attribute
+//WHERE attribute.attributeType = aType
+//AND IF ((ExplicitAttribute attribute) AND attribute.isOptional = true) THEN
+//	bound = 0
+//    ELSEIF AggregationType aType THEN
+//    	bound = aType.lowerBound.bound
+//    ELSE
+//    	bound = 1
+//    ENDIF
+//;
+
+RULE inverses
+FORALL InverseAttribute attr
+WHERE attr.explicit = opposite
+AND Attribute2Reference LINKS attribute=attr, feature=eRef
+AND Attribute2Reference LINKS attribute=opposite, feature=eOpp
+SET eRef.eOpposite = eOpp, eOpp.eOpposite = eRef
+; 
+
+PATTERN AsymmetricAttribute(a)
+FORALL InverseAttribute a
+WHERE a.explicit = opp
+AND opp.attributeType = aType
+AND IF AggregationType aType
+	THEN aType.memberType = oppType
+	ELSE oppType = aType
+	ENDIF
+AND oppType != a.ofEntity.declaredIn
+;
+
+RULE debugAsymmetricAttributes
+FORALL InverseAttribute a
+WHERE AsymmetricAttribute(a)
+AND scopedId2name(a.id,name)
+AND println("Asymmetric", name)
+;
+
+/**************** Attributes ******************/
+
+//RULE debugTypelessAttributes
+//FORALL Attribute attr
+//WHERE NOT (attr.attributeType = t)
+//AND name = attr.id.localName
+//AND println("No type for attribute", name)
+//;
+
+//Attributes
+RULE baseAttributes
+FORALL EXACT ExplicitAttribute srcAttr
+WHERE srcAttr.ofEntity.declaredIn = e
+AND NOT (srcAttr.attributeType = t AND ( SelectType t OR (AggregationType t AND t.memberType = t2 AND SelectType t2 ) ) )
+AND scopedId2name(srcAttr.id, name)
+AND Entity2Class LINKS sourceType=e, targetType=c
+AND IF name = "GlobalId" THEN IsID = true ELSE IsID = false ENDIF  
+MAKE EAttribute tgtAttr {
+	name: name;
+	iD: IsID;
+	}
+SET c.eStructuralFeatures = tgtAttr
+LINKING Attribute2Attribute WITH attribute=srcAttr, feature=tgtAttr
+;
+
+RULE simpleAttributes
+//EXTENDS baseReferences(a,reference)
+FORALL Attribute attr//, EntityType aType
+WHERE Attribute2Attribute LINKS attribute=attr, feature=eAttr
+AND attr.attributeType = aType
+AND NOT (AggregationType aType)
+AND IF (attr.isOptional = true) THEN
+	lowerBound = 0
+    ELSE
+    	lowerBound = 1
+    ENDIF
+//AND TypeMap LINKS sourceType=aType, targetType=refType
+AND mappedType(aType, refType)
+SET eAttr.eType = refType,
+	eAttr.upperBound = 1,
+	eAttr.lowerBound = lowerBound,
+	eAttr.unsettable = true
+;
+
+PATTERN hasAggregationType(attr,aggType)
+FORALL Attribute attr, AggregationType aggType
+WHERE attr.attributeType = aggType
+OR (attr.attributeType = sType AND SpecializedType sType AND sType.underlyingType = aggType)
+;
+
+RULE aggregateTypeAttributes
+FORALL Attribute attr, AggregationType aggType 
+WHERE Attribute2Attribute LINKS attribute=attr, feature=eAttr
+AND hasAggregationType(attr,aggType)
+AND IF (attr.isOptional = true) THEN
+	lowerBound = 0
+    ELSE
+    	lowerBound = aggType.lowerBound.bound
+    ENDIF
+AND mappedType(aggType.memberType, eAttrType)
+AND IF (aggType.upperBound.bound>=0 AND aggType.upperBound.bound<=1) THEN isUnsettable=true ELSE isUnsettable=false ENDIF
+SET eAttr.eType = eAttrType,
+	eAttr.upperBound = aggType.upperBound.bound,
+	eAttr.lowerBound = lowerBound,
+	eAttr.unsettable = isUnsettable
+;
+
+RULE ListTypes
+FORALL EXACT ExplicitAttribute attr, LISTType list
+WHERE hasAggregationType(attr,list)
+AND list.memberType = t
+AND (EntityType t OR SpecializedType t OR EnumerationType t OR AnonymousType t) 
+AND Attribute2Feature LINKS attribute=attr, feature=feat
+SET feat.unique=false
+;
+
+RULE BagTypes
+FORALL EXACT ExplicitAttribute attr, BAGType bag
+WHERE hasAggregationType(attr,bag)
+//EMF Prohibits bidirectional references from being unique
+AND bag.memberType = t
+AND (EntityType t OR SpecializedType t OR EnumerationType t OR AnonymousType t) 
+AND Attribute2Feature LINKS attribute=attr, feature=feat
+SET feat.unique=false
+;
+
+// I'm not doing anything special for SET Types, because unorderedness shouldn't matter. I don't think EMF optimises for it
+
+/***********  ATTRIBUTE/REFERENCE ORDER ************/
+
+//RULE inversesLast
+//FORALL InverseAttribute inverse, ExplicitAttribute explicit
+//WHERE inverse.ofEntity.declaredIn = e
+//AND explicit.ofEntity.declaredIn = e
+//AND Attribute2Feature LINKS attribute=inverse, feature=invFeature
+//AND Attribute2Feature LINKS attribute=explicit, feature=expFeature
+//AND Entity2Class LINKS sourceType=e, targetType=cls
+//SET expFeature BEFORE invFeature IN cls.eStructuralFeatures
+//;
+
+RULE explicitOrder
+FORALL Attribute attr1, Attribute attr2
+WHERE attr1.ofEntity.declaredIn = e
+AND attr2.ofEntity.declaredIn = e
+AND attr1.position < attr2.position
+AND Attribute2Feature LINKS attribute=attr1, feature=feature1
+AND Attribute2Feature LINKS attribute=attr2, feature=feature2
+AND Entity2Class LINKS sourceType=e, targetType=cls
+AND cls.eStructuralFeatures = feature1
+AND cls.eStructuralFeatures = feature2
+SET feature1 BEFORE feature2 IN cls.eStructuralFeatures
+//AND println("ordering",attr1.id.localName, attr2.id.localName)
+;
+
+
+/***********  BUILTIN EXPRESS TYPES ***************/ 
+RULE realType
+FORALL RealType r, Schema s
+WHERE Schema2Package LINKS schema=s, package=pkg
+MAKE EDataType edt FROM datatype(s,"REAL") {
+	name: r.id;
+	instanceClassName: "java.lang.Double";
+	}
+SET pkg.eClassifiers = edt
+LINKING TypeMap WITH sourceType=r, targetType=edt
+;
+
+RULE logicType
+FORALL LogicType l, Schema s
+WHERE Schema2Package LINKS schema=s, package=pkg
+MAKE EDataType edt FROM datatype(s,l.id) {
+	name: l.id;
+	instanceClassName: "java.lang.Boolean";
+	}
+SET pkg.eClassifiers = edt
+LINKING TypeMap WITH sourceType=l, targetType=edt
+;
+
+RULE numericType
+FORALL EXACT NumericType nType, Schema s
+WHERE Schema2Package LINKS schema=s, package=pkg
+AND IF nType.id="NUMBER" THEN javaType="java.lang.Double" ELSE javaType="java.lang.Integer" ENDIF
+MAKE EDataType edt FROM datatype(s,nType.id) {
+	name: nType.id;
+	instanceClassName: javaType;
+	}
+SET pkg.eClassifiers = edt
+LINKING TypeMap WITH sourceType=nType, targetType=edt
+;
+
+RULE stringType
+FORALL StringType sType, Schema s
+WHERE Schema2Package LINKS schema=s, package=pkg
+//AND UNDEF sType.stringLengthConstraint
+MAKE EDataType edt FROM datatype(s,sType.id) {
+	name: sType.id;
+	instanceClassName: "java.lang.String";
+	}
+SET pkg.eClassifiers = edt
+LINKING TypeMap WITH sourceType=sType, targetType=edt
+;
+
+RULE binaryType
+FORALL BinaryType bType, Schema s
+WHERE Schema2Package LINKS schema=s, package=pkg
+//AND UNDEF bType.binaryLengthConstraint
+MAKE EDataType edt FROM datatype(s,bType.id) {
+	name: bType.id;
+	instanceClassName: "byte";
+	}
+SET pkg.eClassifiers = edt
+LINKING TypeMap WITH sourceType=bType, targetType=edt
+;
+
+/************ Enumerations **************/
+RULE enums
+FORALL EnumerationType enumType
+WHERE scopedId2name(enumType.id, name)
+AND enumType.definedIn = s
+AND Schema2Package LINKS schema=s, package=p
+MAKE EEnum eenum {
+	name: name;
+	}
+SET p.eClassifiers = eenum
+LINKING TypeMap WITH sourceType=enumType, targetType=eenum
+;
+
+RULE enumLiterals
+FORALL EnumerationItem enumItem
+WHERE scopedId2name(enumItem.id, name)
+AND enumItem.declaredIn = enum
+AND TypeMap LINKS sourceType=enum, targetType=eenum
+MAKE EEnumLiteral literal
+SET eenum.eLiterals = literal, literal.name = name, literal.value = enumItem.position
+;
+
+PATTERN scopedId2name(id, name)
+FORALL ScopedId id
+WHERE id.localName = name
+;
+
+/*************** Type Aliases **************/
+
+RULE typealias
+FORALL SpecializedType sType
+WHERE sType.underlyingType = uType
+AND TypeMap LINKS sourceType=uType, targetType=baseType
+LINKING TypeMap WITH sourceType=sType, targetType=baseType
+;
+
+PATTERN mappedType(srcType, tgtType)
+WHERE (TypeMap LINKS sourceType=srcType, targetType=tgtType
+OR (SpecializedType s AND mappedType(s.underlyingType,tgtType))
+);
+
+/**************** Select Types ****************/
+
+//RULE EntitySelect
+//FORALL SelectType selectType
+//WHERE selectType.definedIn = schema
+//AND (NOT notEntitySelect(selectType))
+//AND (NOT nes2(selectType))
+//AND Schema2Package LINKS schema=schema, package=pkg
+//AND scopedId2name(selectType.id, name)
+//MAKE EClass absSuper FROM eselect(selectType)
+//SET absSuper.name = name, absSuper.abstract = true,
+//	pkg.eClassifiers = absSuper
+//LINKING EntitySelect WITH sourceType=selectType, targetType=absSuper
+//;
+
+RULE SelectTypes
+FORALL SelectType selectType
+WHERE selectType.definedIn = schema
+AND Schema2Package LINKS schema=schema, package=pkg
+AND scopedId2name(selectType.id, name)
+MAKE EClass sClass
+SET sClass.name = name, pkg.eClassifiers = sClass
+LINKING EntitySelect WITH sourceType=selectType, targetType=sClass
+;
+
+RULE EntitySelectEntityTypes
+FORALL SelectType selectType, EntityType listType
+WHERE (NOT notEntitySelect(selectType))
+AND EntitySelect LINKS sourceType=selectType, targetType=absSuper
+AND selectType.selectList = listType
+AND TypeMap LINKS sourceType=listType, targetType=listClass
+SET listClass.eSuperTypes = absSuper, absSuper.abstract = true
+;
+
+RULE EntitySelectSelectTypes
+FORALL SelectType selectType, SelectType listType
+WHERE (NOT notEntitySelect(selectType))
+AND selectType.selectList = listType
+AND (NOT notEntitySelect(listType))
+AND EntitySelect LINKS sourceType=selectType, targetType=absSuper
+AND TypeMap LINKS sourceType=listType, targetType=listClass
+SET listClass.eSuperTypes = absSuper, absSuper.abstract = true
+;
+
+//Ignore recursion for now
+//PATTERN notEntitySelect(select)
+//FORALL SelectType select
+//WHERE select.selectList = listType
+//AND ( ( NOT ( EntityType listType OR SelectType listType) )
+//	OR notEntitySelect(listType)
+//	)
+//;
+
+PATTERN notEntitySelect(select)
+FORALL SelectType select
+WHERE select.selectList = listType
+AND (SpecializedType listType
+	OR EnumerationType listType
+	OR (SelectType listType AND notEntitySelect(listType))
+     )
+;
+
+// Other SELECT Types just become Struct-like classes, with a field for each list type. Exclusion is not enforced at this point
+// One option for the future would be to map select types that are not entity-only but are homogeneous (e.g. all STRINGS) to
+// that type. We are not doing this for now.
+//RULE OtherSelectTypes
+//FORALL SelectType sType
+//WHERE notEntitySelect(sType)
+//WHERE nes2(sType)
+//AND sType.definedIn = schema
+//AND Schema2Package LINKS schema=schema, package=pkg
+//AND scopedId2name(sType.id, name)
+//MAKE EClass cls FROM neselect(sType) { name: name; }
+//SET pkg.eClassifiers = cls
+//LINKING NonEntitySelect WITH sourceType=sType, targetType=cls
+//;
+
+// If the list type is either an entity type or a select type, then we need a eReference.
+RULE OtherSelectEntityListTypes
+FORALL SelectType sType, NamedType listType
+WHERE notEntitySelect(sType)
+//AND sType.selectList = listType
+AND listType_of_nonEntitySelect(sType, listType)
+AND ( (EntityType listType) OR (SelectType listType))
+AND EntitySelect LINKS sourceType=sType, targetType=cls
+AND TypeMap LINKS sourceType=listType, targetType=attrType
+//AND EClass attrType
+AND scopedId2name(listType.id, listTypeName)
+MAKE EReference eRef {
+	name: append(listTypeName,"value");
+	eType: attrType;
+	containment: false;
+	lowerBound: 0;
+	upperBound: 1;
+	}
+SET cls.eStructuralFeatures = eRef, cls.abstract = false
+LINKING SelectMember2Feature WITH selectType=sType, memberType=listType, feature=eRef
+;
+
+// Otherwise, if its neither of those, its an eAttribute
+RULE OtherSelectNonEntityListTypes
+FORALL SelectType sType, NamedType listType
+WHERE notEntitySelect(sType)
+//AND sType.selectList = listType
+AND listType_of_nonEntitySelect(sType, listType)
+AND NOT (EntityType listType OR SelectType listType)
+AND EntitySelect LINKS sourceType=sType, targetType=cls
+AND TypeMap LINKS sourceType=listType, targetType=attrType
+//AND ( (EDataType attrType) OR (EEnum attrType) )
+AND scopedId2name(listType.id, listTypeName)
+MAKE EAttribute eAttr {
+	name: append(listTypeName,"value");
+	eType: attrType;
+	lowerBound: 0;
+	upperBound: 1;
+	unsettable: true;
+	}
+SET cls.eStructuralFeatures = eAttr, cls.abstract = false
+LINKING SelectMember2Feature WITH selectType=sType, memberType=listType, feature=eAttr
+;
+
+PATTERN listType_of_nonEntitySelect(sType,listType)
+FORALL SelectType sType, NamedType listType
+WHERE (   ( sType.selectList = listType AND terminalType(listType))
+     OR ( sType.selectList = intermediateSelect
+            AND SelectType intermediateSelect
+            AND notEntitySelect(intermediateSelect)
+            AND listType_of_nonEntitySelect(intermediateSelect, listType)
+         )
+     )
+;
+
+PATTERN terminalType(listType)
+WHERE EntityType listType
+OR EnumerationType listType
+OR (SelectType listType AND NOT notEntitySelect(listType) )
+OR (SpecializedType listType AND listType.underlyingType = u AND basicType(u) )
+OR (SpecializedType listType AND terminalType(listType.underlyingType) )
+OR (AggregationType listType)
+;
+
+PATTERN basicType(listType)
+WHERE SimpleType listType
+OR EnumerationType listType
+OR EntityType listType
+;
+
+RULE compositeReferencesForNonEntitySelects
+FORALL SelectType selectType, ExplicitAttribute expAttr
+WHERE expAttr.attributeType = selectType
+AND notEntitySelect(selectType)
+AND Attribute2Reference LINKS attribute=expAttr, feature = feat
+SET feat.containment = true
+; 
+
+RULE compositeNaryReferencesForNonEntitySelects
+FORALL SelectType selectType, ExplicitAttribute expAttr
+WHERE expAttr.attributeType = aggType
+AND AggregationType aggType
+AND aggType.memberType = selectType
+AND notEntitySelect(selectType)
+AND Attribute2Reference LINKS attribute=expAttr, feature = feat
+SET feat.containment = true
+;
+
+
+//RULE debugAggregatedSelects
+//FORALL ExplicitAttribute attr, AggregationType aggType, SelectType select
+//WHERE attr.attributeType = aggType
+//AND attr.isOptional = true
+//AND attr.id.localName = aname
+//AND aggType.memberType = select
+//AND NOT notEntitySelect(select)
+//AND select.id.localName = selectname
+//AND select.definedIn = schema
+//AND Schema2Package LINKS schema=schema, package=pkg
+//AND TypeMap LINKS sourceType=select, targetType=refType
+//AND aggType.upperBound.bound = blah
+//AND println("Aggregated SELECT", aname, selectname, pkg, refType)
+//;
