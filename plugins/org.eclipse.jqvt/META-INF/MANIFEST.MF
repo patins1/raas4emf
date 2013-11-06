@@ -1,0 +1,36 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.eclipse.jqvt
+Bundle-Vendor: My Company
+Bundle-Version: 2.0.0
+Bundle-SymbolicName: org.eclipse.jqvt; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext;visibility:=reexport,
+ org.apache.log4j;visibility:=reexport,
+ org.apache.commons.logging;resolution:=optional;visibility:=reexport,
+ org.eclipse.xtext.generator;resolution:=optional,
+ org.eclipse.emf.codegen.ecore;resolution:=optional,
+ org.eclipse.emf.mwe.utils;resolution:=optional,
+ org.eclipse.emf.mwe2.launch;resolution:=optional,
+ org.eclipse.xtext.util,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.common,
+ org.antlr.runtime,
+ org.eclipse.xtext.common.types,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtext.xbase,
+ org.eclipse.xtext.xbase.lib
+Import-Package: org.apache.log4j,
+ org.apache.commons.logging
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.jqvt,
+ org.eclipse.jqvt.services,
+ org.eclipse.jqvt.jQVT,
+ org.eclipse.jqvt.jQVT.impl,
+ org.eclipse.jqvt.jQVT.util,
+ org.eclipse.jqvt.serializer,
+ org.eclipse.jqvt.parser.antlr,
+ org.eclipse.jqvt.parser.antlr.internal,
+ org.eclipse.jqvt.validation,
+ org.eclipse.jqvt.formatting,
+ org.eclipse.jqvt.jvmmodel

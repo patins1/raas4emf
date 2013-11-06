@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.eclipse.jqvt/src-gen" editDirectory="/org.eclipse.jqvt.edit/src"
+    editorDirectory="/org.eclipse.jqvt.editor/src" modelPluginID="org.eclipse.jqvt"
+    forceOverwrite="true" modelName="JQVT" updateClasspath="false" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    complianceLevel="5.0" copyrightFields="false" editPluginID="org.eclipse.jqvt.edit"
+    editorPluginID="org.eclipse.jqvt.editor" runtimeVersion="2.9" usedGenPackages="../../../../../org.eclipse.xtext.common.types/model/JavaVMTypes.genmodel#//types ../../../../../org.eclipse.xtext.xbase/model/Xbase.genmodel#//xbase">
+  <genPackages prefix="JQVT" basePackage="org.eclipse.jqvt" disposableProviderFactory="true"
+      ecorePackage="JQVT.ecore#/">
+    <genClasses ecoreClass="JQVT.ecore#//PackageDeclaration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JQVT.ecore#//PackageDeclaration/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//PackageDeclaration/imports"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//PackageDeclaration/transformation"/>
+    </genClasses>
+    <genClasses ecoreClass="JQVT.ecore#//Import">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JQVT.ecore#//Import/importedNamespace"/>
+    </genClasses>
+    <genClasses ecoreClass="JQVT.ecore#//Transformation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JQVT.ecore#//Transformation/transformationName"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//Transformation/directions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//Transformation/rules"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//Transformation/queries"/>
+    </genClasses>
+    <genClasses ecoreClass="JQVT.ecore#//Query">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JQVT.ecore#//Query/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//Query/params"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//Query/type"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//Query/body"/>
+    </genClasses>
+    <genClasses ecoreClass="JQVT.ecore#//Direction">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JQVT.ecore#//Direction/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JQVT.ecore#//Direction/imp"/>
+    </genClasses>
+    <genClasses ecoreClass="JQVT.ecore#//Relation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JQVT.ecore#//Relation/topRelation"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute JQVT.ecore#//Relation/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//Relation/vars"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//Relation/domains"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//Relation/when"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//Relation/where"/>
+    </genClasses>
+    <genClasses ecoreClass="JQVT.ecore#//RelationDomain">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference JQVT.ecore#//RelationDomain/direction"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//RelationDomain/rootTemplate"/>
+    </genClasses>
+    <genClasses ecoreClass="JQVT.ecore#//PropertyTemplateItem">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference JQVT.ecore#//PropertyTemplateItem/referredProperty"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//PropertyTemplateItem/value"/>
+    </genClasses>
+    <genClasses ecoreClass="JQVT.ecore#//ObjectTemplate">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference JQVT.ecore#//ObjectTemplate/part"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

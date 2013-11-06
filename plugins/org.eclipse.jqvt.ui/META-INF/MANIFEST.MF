@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.eclipse.jqvt.ui
+Bundle-Vendor: My Company
+Bundle-Version: 2.0.0
+Bundle-SymbolicName: org.eclipse.jqvt.ui; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.jqvt;visibility:=reexport,
+ org.eclipse.xtext.ui,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide,
+ org.eclipse.xtext.ui.shared,
+ org.eclipse.ui,
+ org.eclipse.xtext.builder,
+ org.antlr.runtime,
+ org.eclipse.xtext.common.types.ui,
+ org.eclipse.xtext.xbase.ui,
+ org.eclipse.xtext.ui.codetemplates.ui,
+ org.eclipse.compare
+Import-Package: org.apache.log4j,
+ org.apache.commons.logging
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.eclipse.jqvt.ui.contentassist,
+ org.eclipse.jqvt.ui.contentassist.antlr,
+ org.eclipse.jqvt.ui.internal,
+ org.eclipse.jqvt.ui.quickfix
+Bundle-Activator: org.eclipse.jqvt.ui.internal.JQVTActivator
