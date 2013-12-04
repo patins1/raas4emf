@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:Shapes="urn:Shapes.ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmi:id="_gac3MPccEeGvscb959a68g" type="Shapes" measurementUnit="Pixel">
+  <children xmi:type="notation:Node" xmi:id="_gaxAQPccEeGvscb959a68g" type="2003">
+    <children xmi:type="notation:Node" xmi:id="_gaxAQ_ccEeGvscb959a68g" type="5008"/>
+    <children xmi:type="notation:Node" xmi:id="_gaxARPccEeGvscb959a68g" type="7001">
+      <children xmi:type="notation:Node" xmi:id="_ga0DkPccEeGvscb959a68g" type="3005">
+        <children xmi:type="notation:Node" xmi:id="_ga0Dk_ccEeGvscb959a68g" type="5004">
+          <layoutConstraint xmi:type="notation:Location" xmi:id="_ga0DlPccEeGvscb959a68g" y="5"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_ga0DkfccEeGvscb959a68g"/>
+        <element xmi:type="Shapes:Circle" href="target.shapes#//@modelElement.0/@modelElement.0"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_ga0DkvccEeGvscb959a68g" x="30" y="32"/>
+      </children>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_gaxARfccEeGvscb959a68g"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_gaxARvccEeGvscb959a68g"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_gaxAQfccEeGvscb959a68g"/>
+    <element xmi:type="Shapes:Block" href="target.shapes#//@modelElement.0"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_gaxAQvccEeGvscb959a68g" x="30" y="240"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_gaxAR_ccEeGvscb959a68g" type="2003">
+    <children xmi:type="notation:Node" xmi:id="_gaxnUPccEeGvscb959a68g" type="5008"/>
+    <children xmi:type="notation:Node" xmi:id="_gaxnUfccEeGvscb959a68g" type="7001">
+      <children xmi:type="notation:Node" xmi:id="_ga1RsPccEeGvscb959a68g" type="3005">
+        <children xmi:type="notation:Node" xmi:id="_ga14wPccEeGvscb959a68g" type="5004">
+          <layoutConstraint xmi:type="notation:Location" xmi:id="_ga14wfccEeGvscb959a68g" y="5"/>
+        </children>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_ga1RsfccEeGvscb959a68g"/>
+        <element xmi:type="Shapes:Circle" href="target.shapes#//@modelElement.1/@modelElement.0"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_ga1RsvccEeGvscb959a68g" x="30" y="29"/>
+      </children>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_gaxnUvccEeGvscb959a68g"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_gaxnU_ccEeGvscb959a68g"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_gaxASPccEeGvscb959a68g"/>
+    <element xmi:type="Shapes:Block" href="target.shapes#//@modelElement.1"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_gaxASfccEeGvscb959a68g" x="30" y="120"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_gayOYPccEeGvscb959a68g" type="2005">
+    <children xmi:type="notation:Node" xmi:id="_gayOY_ccEeGvscb959a68g" type="5003">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_gayOZPccEeGvscb959a68g" y="5"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_gayOYfccEeGvscb959a68g"/>
+    <element xmi:type="Shapes:Triangle" href="target.shapes#//@modelElement.3"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_gayOYvccEeGvscb959a68g" x="100" y="30"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_gac3MfccEeGvscb959a68g"/>
+  <element xmi:type="Shapes:RootBlock" href="target.shapes#/"/>
+</notation:Diagram>

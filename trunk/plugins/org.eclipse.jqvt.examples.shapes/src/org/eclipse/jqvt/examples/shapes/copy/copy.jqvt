@@ -1,0 +1,161 @@
+package org.eclipse.jqvt.examples.shapes.copy;
+
+
+import Shapes.Arrow;  
+
+transformation Copy(source : Shapes, target : Shapes) { 
+	 
+	top relation ArrowSource2ArrowSource {  
+		        
+		enforce domain source sourceArrow : Arrow {
+			source = sourceArrowSource : Shapes.Shape {  
+			}           
+		};                
+		       
+		enforce domain target targetArrow : Shapes.Arrow {
+			source = targetArrowSource : Shapes.Shape {
+			}    
+		};                 
+		            
+		when {         
+			Source2Target(sourceArrowSource, targetArrowSource);
+			Source2Target(sourceArrow, targetArrow); 
+		}     
+		   
+	}          
+
+	top relation ArrowTarget2ArrowTarget {
+		 
+		enforce domain source sourceArrow : Shapes.Arrow {
+			target = sourceArrowTarget : Shapes.Shape {
+			}   
+		}; 
+		
+		enforce domain target targetArrow : Shapes.Arrow {
+			target = targetArrowTarget : Shapes.Shape {
+			}
+		};
+		
+		when {
+			Source2Target(sourceArrow, targetArrow);
+			Source2Target(sourceArrowTarget, targetArrowTarget);
+		}
+		
+	} 
+	
+	top relation ModelElementName2ModelElementName {
+		
+		varName : String;
+		
+		enforce domain source sourceModelElement : Shapes.ModelElement {
+			name = varName
+		};
+		
+		enforce domain target targetModelElement : Shapes.ModelElement {
+			name = varName
+		};
+		     
+		when { 
+			Source2Target(sourceModelElement, targetModelElement);
+		}
+		
+	}
+	
+	top relation ModelElementblock2ModelElementblock { 
+		
+		enforce domain source sourceModelElement : Shapes.ModelElement {
+			block = sourceblock : Shapes.Block { 
+			}
+		};
+		
+		enforce domain target targetModelElement : Shapes.ModelElement {
+			block = targetblock : Shapes.Block {
+			}
+		};
+		   
+		when {
+			Source2Target(sourceModelElement, targetModelElement);
+			Source2Target(sourceblock, targetblock);
+		} 
+		    
+	}   
+	 
+	top relation Source2Target {
+		 
+		enforce domain source s : Shapes.ModelElement {
+		};
+		
+		enforce domain target t : Shapes.ModelElement {
+		};      
+		
+		when {   
+			MapBlock(s, t) || MapRootBlock(s, t) || MapCircle(s, t) || MapTriangle(s, t) || MapSquare(s, t) || MapArrow(s, t);
+		} 
+		     
+	}     
+	       
+	top relation MapRootBlock {
+		 
+		enforce domain source s : Shapes.RootBlock {
+		};
+		
+		enforce domain target t : Shapes.RootBlock {
+		};
+		
+	}
+	
+	top relation MapBlock {
+		
+		enforce domain source s : Shapes.Block {
+		};
+		
+		enforce domain target t : Shapes.Block {
+		}; 
+		
+		when {
+			!MapRootBlock(s, t); 
+		}  
+		 
+	}  
+	   
+	top relation MapCircle {
+		
+		enforce domain source s : Shapes.Circle {
+		}; 
+		
+		enforce domain target t : Shapes.Circle {
+		}; 
+		
+	}
+	
+	top relation MapTriangle {
+		
+		enforce domain source s : Shapes.Triangle {
+		};
+		
+		enforce domain target t : Shapes.Triangle {
+		};
+		
+	}
+	
+	top relation MapSquare {
+		
+		enforce domain source s : Shapes.Square {
+		};
+		
+		enforce domain target t : Shapes.Square {
+		};
+		
+	}
+	
+	top relation MapArrow {
+		
+		enforce domain source s : Shapes.Arrow {
+		};
+		
+		enforce domain target t : Shapes.Arrow {
+		};
+		
+	}
+	
+}
