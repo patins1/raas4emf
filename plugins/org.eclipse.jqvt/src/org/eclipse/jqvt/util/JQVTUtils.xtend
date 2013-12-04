@@ -119,7 +119,7 @@ class JQVTUtils {
 	}
 	
 	def boolean isMany(JvmTypeReference type) {
-		isConformant(type.newTypeRef(typeof(Collection)),type,true) || type instanceof JvmGenericArrayTypeReference
+		isConformant(type.newTypeRef(typeof(Collection)),type,true) || type.type!=null && type.type.eIsProxy && type.type.toString().contains("EList") || type instanceof JvmGenericArrayTypeReference
 	}
 	
 	def static String toQVT(EObject clause) {
@@ -138,6 +138,10 @@ class JQVTUtils {
 	
 	def static String toQVTWithinComment(EObject clause) {
 		return toQVT(clause).trim.replace("\n", "\n// ").replace("\r", "");
+	}
+		
+	def static String toQVTWithinString(EObject clause) {
+		return toQVT(clause).trim.replace("\n", "\\n").replace("\"", "\\\"").replace("\r", "");
 	}
 	
 }

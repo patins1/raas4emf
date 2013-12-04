@@ -12,6 +12,7 @@ import org.eclipse.jqvt.jQVT.Relation
 import org.eclipse.jqvt.jQVT.RelationDomain
 import org.eclipse.jqvt.jQVT.Transformation
 import org.eclipse.jqvt.util.JQVTUtils
+import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.eclipse.xtend2.lib.StringConcatenation
 import org.eclipse.xtext.common.types.JvmPrimitiveType
 import org.eclipse.xtext.common.types.util.TypeReferences
@@ -70,7 +71,7 @@ class JQVTJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def String simpleTypeName(XVariableDeclaration decl) {
-		if (decl.type!=null) decl.type.simpleName else "unknown_type"
+		if (decl.type!=null) decl.type.qualifiedName else "unknown_type"
 	}
 	
 	def EObject eNull() {
@@ -113,16 +114,7 @@ class JQVTJvmModelInferrer extends AbstractModelInferrer {
        documentation = transformation.documentation
      ]
      acceptor.accept(trafoType)
-     
-       for (Query query:transformation.queries) {
-             trafoType.members += query.toMethod(query.name, query.type) [
-               for (p : query.params) {
-                 parameters += p.toParameter(p.name, p.parameterType)
-               }
-               documentation = query.documentation
-               body = query.body
-             ]                   
-       	}
+    
 		
        for (relation : transformation.rules) {
 	     val c =relation.toClass(relation.fullyQualifiedName) [
@@ -159,6 +151,7 @@ return true;'''
 				body = [append(b)]
 			]
 		]
+		if (c!=null) {
 	    acceptor.accept(c);
 	    
 	       val mapMethod = new StringConcatenation()
@@ -207,6 +200,10 @@ return true;'''
 											body = clause.value
 										]
 									} 
+									val printFailure = '''trafo.logFailure(«NodeModelUtils::getNode(clause).getStartLine()»);
+		'''
+									val printSuccess = '''trafo.logSuccess(«NodeModelUtils::getNode(clause).getStartLine()»);
+		'''
 									mapMethod.append('''// «propName.toFirstLower» = «JQVTUtils::toQVTWithinComment(clause.value)»
 		''')
 									if (info.isTarget) {
@@ -234,19 +231,19 @@ return true;'''
 											val componentType =  field.returnType.componentType
 											val conformant = rhs.type.isConformant(componentType);
 											mapMethod.append('''for («componentType.qualifiedName» __«rhs.name» : «objectTemplate.name».get«propName»()) {
-«IF !conformant»if (!(__«rhs.name» instanceof «rhs.simpleTypeName»)) «stopTuple»«ENDIF»
+«IF !conformant»if (!(__«rhs.name» instanceof «rhs.simpleTypeName»)) {«printFailure»«stopTuple»}«printSuccess»«ENDIF»
 «rhs.name» = «IF !conformant»(«rhs.simpleTypeName»)«ENDIF»__«rhs.name»;
 			''')
 										} else
 										if (clause.value.asVar!=null && info.isWrite(clause.value.asVar) && !info.isRead(clause.value.asVar)) {
 												val rhs = clause.value.asVar;
 												val conformant = rhs.type.isConformant(field.returnType);
-												mapMethod.append('''«IF !conformant»if (!(«objectTemplate.name».get«propName»() instanceof «rhs.simpleTypeName»)) «stopTuple»«ENDIF»
-«IF conformant && (clause.value instanceof ObjectTemplate || rhs.type.type instanceof JvmPrimitiveType && !(field.returnType.type instanceof JvmPrimitiveType))»if («objectTemplate.name».get«propName»() == null) «stopTuple»«ENDIF»
+												mapMethod.append('''«IF !conformant»if (!(«objectTemplate.name».get«propName»() instanceof «rhs.simpleTypeName»)) {«printFailure»«stopTuple»}«printSuccess»«ENDIF»
+«IF conformant && (clause.value instanceof ObjectTemplate || rhs.type.type instanceof JvmPrimitiveType && !(field.returnType.type instanceof JvmPrimitiveType))»if («objectTemplate.name».get«propName»() == null) {«printFailure»«stopTuple»}«printSuccess»«ENDIF»
 «rhs.name» = «IF !conformant»(«rhs.simpleTypeName»)«ENDIF» «objectTemplate.name».get«propName»();
 			''')
 										} else 
-												mapMethod.append('''if («objectTemplate.name».get«propName»() == null ? «rhsExp» != null : !«objectTemplate.name».get«propName»().equals(«rhsExp»)) «stopTuple»
+												mapMethod.append('''if («objectTemplate.name».get«propName»() == null ? «rhsExp» != null : !«objectTemplate.name».get«propName»().equals(«rhsExp»)) {«printFailure»«stopTuple»}«printSuccess»
 			''')										
 									}
 								
@@ -257,8 +254,12 @@ return true;'''
 							c.members += eNull.toMethod("evaluateClause"+i, if (booleanTyped) relation.newTypeRef(typeof(boolean)) else relation.newTypeRef(Void::TYPE)) [	
 								body = clause
 							]			
+							val printFailure = '''trafo.logFailure(«NodeModelUtils::getNode(clause).getStartLine()»);
+		'''
+							val printSuccess = '''trafo.logSuccess(«NodeModelUtils::getNode(clause).getStartLine()»);
+		'''
 								mapMethod.append('''// «JQVTUtils::toQVTWithinComment(clause)»
-«IF booleanTyped»if (!evaluateClause«i»()) «stopTuple»«ELSE»evaluateClause«i»();«ENDIF»
+«IF booleanTyped»if (!evaluateClause«i»()) {«printFailure»«stopTuple»}«printSuccess»«ELSE»evaluateClause«i»();«ENDIF»
 '''	)								
 						}
 					}
@@ -283,7 +284,7 @@ return true;'''
                parameters += eNull.toParameter("transformation", trafoType.createTypeRef())
 		       body = [append(mapMethod)] 
 			]
-	     
+	     }
 	   }
 	   
        for (relation : transformation.rules) {
@@ -294,8 +295,19 @@ return true;'''
 			]			
 		}
 	     
+       for (Query query:transformation.queries) {
+             trafoType.members += query.toMethod(query.name, query.type) [
+               for (p : query.params) {
+                 parameters += p.toParameter(p.name, p.parameterType)
+               }
+               documentation = query.documentation
+               body = query.body
+             ]                   
+       	}
+	    
        for (relation : transformation.sortedRelations) {
        		val c = relation.typeForRelation;
+       		if (c!=null) {
        		val relationType = c.createTypeRef();  	
        		
 			val hashMap = relation.newTypeRef("java.util.HashMap", c.createTypeRef(), c.createTypeRef());
@@ -314,6 +326,7 @@ return true;'''
                 for (domain:relation.uniqueDomains) if (!domain.isTarget) parameters += eNull.toParameter(domain.paramName, domain.type)
 				body = [append(relBody(relation,true, true))]
 			]
+			}
        }    
        
        

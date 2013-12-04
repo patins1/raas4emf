@@ -20,8 +20,7 @@ import org.eclipse.xtext.xbase.XExpression;
 import org.eclipse.xtext.xbase.XFeatureCall;
 import org.eclipse.xtext.xbase.XVariableDeclaration;
 import org.eclipse.xtext.xbase.XbasePackage;
-import org.eclipse.xtext.xbase.typing.ITypeProvider;
-import org.eclipse.xtext.xbase.typing.JvmOnlyTypeConformanceComputer;
+import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference;
 
 import com.google.inject.Inject;
 
@@ -41,12 +40,6 @@ public class JQVTJavaValidator extends AbstractJQVTJavaValidator {
 	JQVTUtils jQVTUtils;
 
 	@Inject
-	private ITypeProvider _iTypeProvider;
-
-	@Inject
-	private JvmOnlyTypeConformanceComputer _jvmOnlyTypeConformanceComputer;
-
-	@Inject
 	private ValidatingDependencyProcessor validatingDependencyProcessor;
 
 	@Check
@@ -63,10 +56,10 @@ public class JQVTJavaValidator extends AbstractJQVTJavaValidator {
 		Relation relation = jQVTUtils.getReferredRelation(featureCall);
 		if (relation != null) {
 			for (ParamPair pair : jQVTUtils.getParamPairs(featureCall, null)) {
-				JvmTypeReference actualType = _iTypeProvider.getType(pair.exp);
-				JvmTypeReference expectedType = pair.domain.getRootTemplate().getType();
-				if (!(this._jvmOnlyTypeConformanceComputer.isConformant(actualType, expectedType) || this._jvmOnlyTypeConformanceComputer.isConformant(expectedType, actualType)))
-					error("Incompatible relation call argument. Expected " + getNameOfTypes(toLightweightTypeReference(expectedType)) + " but was " + canonicalName(toLightweightTypeReference(actualType)), pair.exp, null, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);
+				LightweightTypeReference actualType = getActualType(pair.exp);
+				LightweightTypeReference expectedType = toLightweightTypeReference(pair.domain.getRootTemplate().getType());
+				if (!(actualType.isAssignableFrom(expectedType) || expectedType.isAssignableFrom(actualType)))
+					error("Incompatible relation call argument. Expected " + getNameOfTypes(expectedType) + " but was " + canonicalName(actualType), pair.exp, null, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);
 			}
 		}
 	}
@@ -83,16 +76,17 @@ public class JQVTJavaValidator extends AbstractJQVTJavaValidator {
 			JvmTypeReference expectedType = item.getReferredProperty().getReturnType();
 			if (value instanceof ObjectTemplate) {
 				ObjectTemplate ot = (ObjectTemplate) value;
-				JvmTypeReference actualType = ot.getType();
+				LightweightTypeReference actualType = toLightweightTypeReference(ot.getType());
 				if (jQVTUtils.isMany(expectedType))
 					expectedType = jQVTUtils.getComponentType(expectedType);
-				if (!this._jvmOnlyTypeConformanceComputer.isConformant(expectedType, actualType))
-					error("Incompatible RHS value of property template item. Expected " + getNameOfTypes(toLightweightTypeReference(expectedType)) + " but was " + canonicalName(toLightweightTypeReference(actualType)), ot, XbasePackage.eINSTANCE.getXVariableDeclaration_Type(), ValidationMessageAcceptor.INSIGNIFICANT_INDEX,
-							INCOMPATIBLE_TYPES);
+				LightweightTypeReference expectedTypeLight = toLightweightTypeReference(expectedType);
+				if (!expectedTypeLight.isAssignableFrom(actualType))
+					error("Incompatible RHS value of property template item. Expected " + getNameOfTypes(expectedTypeLight) + " but was " + canonicalName(actualType), ot, XbasePackage.eINSTANCE.getXVariableDeclaration_Type(), ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);
 			} else {
-				JvmTypeReference actualType = _iTypeProvider.getType(value);
-				if (!(this._jvmOnlyTypeConformanceComputer.isConformant(actualType, expectedType) || this._jvmOnlyTypeConformanceComputer.isConformant(expectedType, actualType)))
-					error("Incompatible RHS value of property template item. Expected " + getNameOfTypes(toLightweightTypeReference(expectedType)) + " but was " + canonicalName(toLightweightTypeReference(actualType)), value, null, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);
+				LightweightTypeReference actualType = getActualType(value);
+				LightweightTypeReference expectedTypeLight = toLightweightTypeReference(expectedType);
+				if (!(actualType.isAssignableFrom(expectedTypeLight) || expectedTypeLight.isAssignableFrom(actualType)))
+					error("Incompatible RHS value of property template item. Expected " + getNameOfTypes(expectedTypeLight) + " but was " + canonicalName(actualType), value, null, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);
 			}
 		}
 	}
