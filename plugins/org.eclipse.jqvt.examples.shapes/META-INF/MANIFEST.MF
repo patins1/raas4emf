@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Testpplugin
+Bundle-SymbolicName: org.eclipse.jqvt.examples.shapes
+Bundle-Version: 1.0.0.qualifier
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.xtext.xbase.lib,
+ Shapes,
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.emf.ecore,
+ org.junit,
+ org.eclipse.jqvt.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

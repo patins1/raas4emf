@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:Shapes="urn:Shapes.ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmi:id="_gaz5APcbEeGvscb959a68g" type="Shapes" measurementUnit="Pixel">
+  <children xmi:type="notation:Node" xmi:id="_gpnxEPcbEeGvscb959a68g" type="2005">
+    <children xmi:type="notation:Node" xmi:id="_gpnxE_cbEeGvscb959a68g" type="5003">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_gpnxFPcbEeGvscb959a68g" y="5"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_gpnxEfcbEeGvscb959a68g"/>
+    <element xmi:type="Shapes:Triangle" href="target.shapes#//@modelElement.0"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_gpnxEvcbEeGvscb959a68g" x="30" y="300"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_gpoYIPcbEeGvscb959a68g" type="2006">
+    <children xmi:type="notation:Node" xmi:id="_gpoYI_cbEeGvscb959a68g" type="5001">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_gpoYJPcbEeGvscb959a68g" y="5"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_gpoYIfcbEeGvscb959a68g"/>
+    <element xmi:type="Shapes:Square" href="target.shapes#//@modelElement.1"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_gpoYIvcbEeGvscb959a68g" x="30" y="210"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_gpoYJfcbEeGvscb959a68g" type="2004">
+    <children xmi:type="notation:Node" xmi:id="_gpo_MPcbEeGvscb959a68g" type="5002">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_gpo_MfcbEeGvscb959a68g" y="5"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_gpoYJvcbEeGvscb959a68g"/>
+    <element xmi:type="Shapes:Circle" href="target.shapes#//@modelElement.3"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_gpoYJ_cbEeGvscb959a68g" x="30" y="120"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_gpo_MvcbEeGvscb959a68g" type="2004">
+    <children xmi:type="notation:Node" xmi:id="_gpo_NfcbEeGvscb959a68g" type="5002">
+      <layoutConstraint xmi:type="notation:Location" xmi:id="_gpo_NvcbEeGvscb959a68g" y="5"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_gpo_M_cbEeGvscb959a68g"/>
+    <element xmi:type="Shapes:Circle" href="target.shapes#//@modelElement.4"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_gpo_NPcbEeGvscb959a68g" x="30" y="30"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_gaz5AfcbEeGvscb959a68g"/>
+  <element xmi:type="Shapes:RootBlock" href="target.shapes#/"/>
+</notation:Diagram>

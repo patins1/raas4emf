@@ -1,0 +1,26 @@
+package org.eclipse.jqvt.examples.shapes.r12;
+
+-- The magic of this solution is relation ModelElementName2ModelElementName_Pattern1 and ModelElementName2ModelElementName_Pattern2, which have precedence over relation ModelElementName2ModelElementName by using negation;
+--  ModelElementName2ModelElementName_Pattern1 requires that ModelElementName2ModelElementName_Pattern2 not matches: instead claiming that this relation not holds, a simple inequality condition is used in this solution
+transformation r12(source : Shapes, target : Shapes) {
+	
+	query MyQuery(Shapes::Arrow ar): boolean {
+		ArrowSource2ArrowSource(ar); 
+		true
+	} 
+	
+	
+	top relation ArrowSource2ArrowSource {
+		
+		aname:String; 
+			
+		enforce domain source sourceArrow : Shapes::Arrow {
+		};
+		
+		when {
+			aname = "Asf";
+			MyQuery(sourceArrow);
+		}
+	}
+	
+}
