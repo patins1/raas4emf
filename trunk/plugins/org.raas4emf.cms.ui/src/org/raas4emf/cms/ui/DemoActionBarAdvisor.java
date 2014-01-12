@@ -104,6 +104,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 	private Action changeRendererAction, change3dFormatAction;
 	private Action shutdownServerAction;
 	private Action generateFingerprintAction;
+	private Action downloadDirectAction;
 	private Action setPasswordList;
 	private Action originalConfigAction;
 	private static int browserIndex;
@@ -214,6 +215,21 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		generateFingerprintAction.setText("Generate Fingerprint");
 		generateFingerprintAction.setId("org.raas4emf.cms.ui.GenerateFingerprintAction");
 		register(generateFingerprintAction);
+
+		downloadDirectAction = new Action() {
+			public void run() {
+				Shell shell = window.getShell();
+				InputDialog dialog = new InputDialog(shell, "Specify Name", "Enter name for file", null, null);
+				if (dialog.open() == Window.OK) {
+					String name = dialog.getValue();
+					CMSActivator.getSessionInstance().exportFolderContents(new File(name));
+				}
+			}
+
+		};
+		downloadDirectAction.setText("Download Direct");
+		downloadDirectAction.setId("org.raas4emf.cms.ui.DownloadDirectAction");
+		register(downloadDirectAction);
 
 		setPasswordList = new Action() {
 			public void run() {
@@ -348,6 +364,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		shutdownServerAction = new Action() {
 			public void run() {
 				if (MessageDialog.openQuestion(window.getShell(), "", "Do you really want to shutdown the server?")) {
+					CMSActivator.dbapp.stop();
 					window.close();
 				}
 			}
@@ -610,6 +627,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		fileMenu.add(saveAllAction);
 		fileMenu.add(closeAction);
 		fileMenu.add(closeAllAction);
+		fileMenu.add(downloadDirectAction);
 		if (CMSActivator.getSessionInstance().isOperator())
 			fileMenu.add(adminMenu);
 		permisssionsMenu.add(generateFingerprintAction);

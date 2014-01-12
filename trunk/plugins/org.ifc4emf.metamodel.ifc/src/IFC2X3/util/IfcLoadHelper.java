@@ -49,6 +49,7 @@ import org.ifc4emf.metamodel.express.core.SimpleType;
 import org.ifc4emf.metamodel.express.core.SpecializedType;
 import org.ifc4emf.metamodel.express.util.ExpressResourceFactoryImpl;
 import org.ifc4emf.metamodel.ifcheader.Model;
+import org.ifc4emf.metamodel.ifcheader.Part21Factory;
 import org.ifc4emf.part21.loader.BasicBiMap;
 import org.ifc4emf.part21.loader.NoSuchAttributeException;
 import org.ifc4emf.part21.loader.NoSuchClassException;
@@ -63,6 +64,7 @@ import IFC2X3.IfcDimensionalExponents;
 import IFC2X3.IfcObject;
 import IFC2X3.IfcProduct;
 import IFC2X3.IfcProject;
+import IFC2X3.IfcRoot;
 import IFC2X3.IfcSIUnit;
 import IFC2X3.IfcSite;
 import IFC2X3.IfcSpace;
@@ -576,7 +578,7 @@ public class IfcLoadHelper implements Part21LoadHelper {
 	}
 
 	@Override
-	public void addedObject(Model model, EObject ifcObject) {
+	public void addedObject(Model model, EObject ifcObject, int index) {
 		if (ifcObject instanceof IfcProject || model.getRoot() == null && ifcObject instanceof IfcBuildingStorey) {
 			model.setRoot(ifcObject);
 		}
@@ -600,6 +602,15 @@ public class IfcLoadHelper implements Part21LoadHelper {
 		}
 		if (ifcObject instanceof IfcProduct) {
 			model.setNumProducts(model.getNumProducts() + 1);
+		}
+		if (ifcObject instanceof IfcRoot) {
+			IfcRoot ifcRoot = (IfcRoot) ifcObject;
+			String guid = ifcRoot.getGlobalId();
+			if (guid != null && !"".equalsIgnoreCase(guid)) {
+				if (model.getGuidToPart21() == null)
+					model.setGuidToPart21(Part21Factory.eINSTANCE.createGuidToPart21Container());
+				model.getGuidToPart21().getGuidToPart21().put(guid, index);
+			}
 		}
 	}
 

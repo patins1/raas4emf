@@ -5,6 +5,7 @@ package org.raas4emf.cms.ui.actions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.emf.cdo.common.revision.CDOList;
 import org.eclipse.emf.cdo.eresource.CDOResource;
 import org.eclipse.emf.cdo.view.CDOQuery;
 import org.eclipse.emf.cdo.view.CDOView;
@@ -41,13 +43,17 @@ public class QueryAction extends AbstractHandler {
 	}
 
 	public List<?> query(String queryString) {
+
+		int v = queryString.indexOf('v');
+		if (queryString.startsWith("OID") && v >= 0) {
+			queryString = queryString.substring("OID".length(), v);
+			EObject eObject = RAASUtils.findObjectById(queryString, res);
+			if (eObject != null)
+				return Arrays.asList(eObject);
+		}
 		if (queryString.toLowerCase().startsWith("select") || queryString.toLowerCase().startsWith("alter table")) {
 			CDOView view = ((CDOResource) res).cdoView();
-			CDOQuery q = view.createQuery("sql", queryString);
-			if (!queryString.toLowerCase().startsWith("select"))
-				q.setParameter("queryStatement", false);
-			q.setParameter("cdoObjectQuery", false);
-			List<Object> result = q.getResult();
+			List<Object> result = execSql(queryString, view);
 			for (Object x : result) {
 				System.out.println(x.getClass());
 				System.out.println(x);
@@ -56,6 +62,32 @@ public class QueryAction extends AbstractHandler {
 		}
 		CDOQuery q = createOclQuery(queryString);
 		return q.getResult();
+	}
+
+	static public CDOList oldList;
+
+	public static List<Object> execSql(String queryString, CDOView view) {
+		// Options options = view.options();
+		// CDORevisionPrefetchingPolicy pref = options.getRevisionPrefetchingPolicy();
+		// CDOSession session = view.getSession();
+		// org.eclipse.emf.cdo.session.CDOSession.Options options2 = session.options();
+		// CDOCollectionLoadingPolicy collLoad = options2.getCollectionLoadingPolicy();
+
+		// view.options().setRevisionPrefetchingPolicy(new CDORevisionPrefetchingPolicyImpl(1000000) {
+		// @Override
+		// public List<CDOID> loadAhead(CDORevisionManager revisionManager, CDOBranchPoint branchPoint, EObject eObject, EStructuralFeature feature, CDOList list, int accessIndex, CDOID accessID) {
+		// // if (oldList == list)
+		// // System.out.println("Should look ahead " + feature.getName() + "[" + accessIndex + "]");
+		// // oldList = list;
+		// return super.loadAhead(revisionManager, branchPoint, eObject, feature, list, accessIndex, accessID);
+		// }
+		// });
+		CDOQuery q = view.createQuery("sql", queryString);
+		if (!queryString.toLowerCase().startsWith("select") && !queryString.toLowerCase().startsWith("explain"))
+			q.setParameter("queryStatement", false);
+		q.setParameter("cdoObjectQuery", false);
+		List<Object> result = q.getResult();
+		return result;
 	}
 
 	private CDOQuery createOclQuery(String queryString) {
@@ -110,6 +142,7 @@ public class QueryAction extends AbstractHandler {
 
 							try {
 
+								StringBuilder builder = new StringBuilder();
 								message = "";
 								long started = System.currentTimeMillis();
 								List<?> x = query(queryString);
@@ -117,11 +150,12 @@ public class QueryAction extends AbstractHandler {
 								message += "Returned " + x.size() + " results in " + (ended - started) + " milliseconds\n";
 								Collection<EObject> roots = new HashSet<EObject>();
 								for (Object object : x) {
-									message += object + "\n";
+									builder.append((object instanceof Object[] ? Arrays.toString((Object[]) object) : object) + "\n");
 									if (object instanceof EObject) {
 										roots.add((EObject) object);
 									}
 								}
+								message += builder.toString();
 								if (!roots.isEmpty()) {
 									for (PreviewView view : PreviewView.findView()) {
 										view.selectShape(roots, modelFile);
@@ -129,6 +163,7 @@ public class QueryAction extends AbstractHandler {
 								}
 								setErrorMessage(message);
 							} catch (Throwable e) {
+								e.printStackTrace();
 								setErrorMessage(e.getMessage());
 							}
 							return;

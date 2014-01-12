@@ -19,6 +19,8 @@ public class CMSActivator implements BundleActivator {
 	public static final String PLUGIN_ID = "org.raas4emf.cms.ui";
 	private static BundleContext context;
 
+	static public CDOServerApplication dbapp;
+
 	public static BundleContext getContext() {
 		return context;
 	}
@@ -40,8 +42,8 @@ public class CMSActivator implements BundleActivator {
 			@Override
 			public void run() {
 				try {
-					CDOServerApplication app = new CDOServerApplication();
-					app.start(null);
+					dbapp = new CDOServerApplication();
+					dbapp.start(null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
