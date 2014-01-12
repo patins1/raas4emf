@@ -32,8 +32,8 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.raas4emf.cms.core.RAASUtils;
-import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.CMSActivator;
+import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.views.DirectoryView;
 
 import raascms.Folder;

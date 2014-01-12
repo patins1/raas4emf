@@ -19,8 +19,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.raas4emf.cms.core.ILogicalParentChildRelationship;
-import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.CMSActivator;
+import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
 
 import raascms.Artifact;
@@ -99,6 +99,11 @@ public class DirectoryView extends FilesView {
 			if (!canRead(folder)) {
 				return Collections.emptyList();
 			}
+		}
+		if (object instanceof Artifact) {
+			// default implementation resolves proxies in contents list, so use this one
+			Artifact artifact = (Artifact) object;
+			return artifact.getContents();
 		}
 		Object adapter = Platform.getAdapterManager().getAdapter(object, ILogicalParentChildRelationship.class);
 		if (adapter instanceof ILogicalParentChildRelationship) {

@@ -3521,7 +3521,7 @@ function load(ii) {
         		result.geometry.computeVertexNormals(true);
         	if (USE_BUFFERGEOMETRY && g_renderer == "webgl") {
 	        	var bufferGeometry = hasVertexNormals(result.geometry) ? THREE.BufferGeometryUtils.fromGeometry( result.geometry ) : THREE.BufferGeometryUtils.fromGeometryWithoutNormals( result.geometry );
-	        	if (!hasVertexNormals(result.geometry)) bufferGeometry.computeVertexNormals();
+	        	if (effectController.vertexnormals && !hasVertexNormals(result.geometry)) bufferGeometry.computeVertexNormals();
 	        	result.geometry = bufferGeometry;
         	}
         	return result;

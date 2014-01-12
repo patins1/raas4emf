@@ -24,8 +24,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.raas4emf.cms.core.RAASUtils;
-import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.CMSActivator;
+import org.raas4emf.cms.ui.RAASUIUtils;
 
 import raascms.Artifact;
 import raascms.Folder;
@@ -43,7 +43,7 @@ public class BuildModelAction extends AbstractHandler {
 		final Shell shell = HandlerUtil.getActiveShellChecked(event);
 		final List<EObject> selection = RAASUIUtils.getSelection(event, EObject.class);
 
-		Job job = new Job("Build model(s)") {
+		Job job = new RAASJob("Build model(s)") {
 
 			protected IStatus run(final IProgressMonitor monitor) {
 				for (EObject element : selection) {
@@ -68,6 +68,9 @@ public class BuildModelAction extends AbstractHandler {
 					return;
 				if (element instanceof Artifact) {
 					Artifact artifact = (Artifact) element;
+
+					this.processedArtifat = artifact;
+					this.monitor = monitor;
 
 					long start = System.currentTimeMillis();
 					// try {

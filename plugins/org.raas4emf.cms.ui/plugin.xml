@@ -259,6 +259,10 @@
             name="Examine Geometry">
       </command>
       <command
+            id="org.raas4emf.cms.ui.actions.FindGUIDCommand"
+            name="Find GUID">
+      </command>
+      <command
             id="org.raas4emf.cms.ui.actions.ComparePart21Command"
             name="Compare Part21 Files">
       </command>
@@ -306,6 +310,29 @@
                      </instanceof>
                      <instanceof
                            value="IFC2X3.IfcProduct">
+                     </instanceof>
+                  </or>
+               </iterate>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="org.raas4emf.cms.ui.actions.FindGUIDAction"
+            commandId="org.raas4emf.cms.ui.actions.FindGUIDCommand">
+         <enabledWhen>
+            <with
+                  variable="selection">
+               <iterate
+                     operator="or">
+                  <or>
+                     <instanceof
+                           value="raascms.Folder">
+                     </instanceof>
+                     <instanceof
+                           value="raascms.Artifact">
+                     </instanceof>
+                     <instanceof
+                           value="org.ifc4emf.metamodel.ifcheader.Model">
                      </instanceof>
                   </or>
                </iterate>
@@ -834,6 +861,11 @@
             <command
                   commandId="org.raas4emf.cms.ui.actions.ExamineGeometryCommand"
                   label="Examine Geometry"
+                  style="push">
+            </command>
+            <command
+                  commandId="org.raas4emf.cms.ui.actions.FindGUIDCommand"
+                  label="Find GUID"
                   style="push">
             </command>
             <command
