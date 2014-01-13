@@ -41,6 +41,10 @@ public class FileUtil {
 		os.close();
 	}
 
+	public static void inputstreamToOutputstream(InputStream is, OutputStream os) throws IOException {
+		inputstreamToOutputstream(is, os, Long.MAX_VALUE);
+	}
+
 	/**
 	 * Writes length bytes from is to os, which is not closed at the end
 	 * 
@@ -65,7 +69,7 @@ public class FileUtil {
 	public static String inputstreamToString(InputStream is) throws IOException {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			FileUtil.inputstreamToOutputstream(is, os, Integer.MAX_VALUE);
+			FileUtil.inputstreamToOutputstream(is, os);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

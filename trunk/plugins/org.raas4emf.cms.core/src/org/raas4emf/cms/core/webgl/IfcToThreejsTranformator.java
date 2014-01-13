@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.raas4emf.cms.core.FileUtil;
 import org.raas4emf.cms.core.LoggingUtil;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.transformation.ITranformator;
@@ -19,6 +20,7 @@ import org.raas4emf.cms.transformation.TransformationUtils;
 
 public class IfcToThreejsTranformator implements ITranformator {
 
+	public static final boolean USE_GUIDS = true;
 	static File DEFAULT_BLENDER_LOCATION = null;
 	private int worked;
 	private String errorMessages = "";
@@ -37,7 +39,10 @@ public class IfcToThreejsTranformator implements ITranformator {
 		File ifcFile = new File(dir, pureFilename + ".ifc");
 		File blendFile = new File(dir, pureFilename + ".blend");
 		FileOutputStream y = new FileOutputStream(ifcFile);
-		new IFCGuidByIndexPatch(ifcStream, y).trigger();
+		if (USE_GUIDS)
+			FileUtil.inputstreamToOutputstream(ifcStream, y);
+		else
+			new IFCGuidByIndexPatch(ifcStream, y).trigger();
 		y.flush();
 		y.close();
 		ifcStream.close();
