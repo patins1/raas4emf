@@ -4,6 +4,8 @@ package raascms;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -194,13 +196,33 @@ public interface RaascmsPackage extends EPackage {
 	int ARTIFACT_FEATURE_COUNT = 7;
 
 	/**
+	 * The operation id for the '<em>Get Jobs</em>' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ARTIFACT___GET_JOBS = 0;
+
+	/**
 	 * The number of operations of the '<em>Artifact</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int ARTIFACT_OPERATION_COUNT = 0;
+	int ARTIFACT_OPERATION_COUNT = 1;
+
+
+	/**
+	 * The meta object id for the '<em>Artifact Job</em>' data type.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.core.runtime.jobs.Job
+	 * @see raascms.impl.RaascmsPackageImpl#getArtifactJob()
+	 * @generated
+	 */
+	int ARTIFACT_JOB = 2;
 
 
 	/**
@@ -334,6 +356,27 @@ public interface RaascmsPackage extends EPackage {
 	EAttribute getArtifact_BlobDate();
 
 	/**
+	 * Returns the meta object for the '{@link raascms.Artifact#getJobs() <em>Get Jobs</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the '<em>Get Jobs</em>' operation.
+	 * @see raascms.Artifact#getJobs()
+	 * @generated
+	 */
+	EOperation getArtifact__GetJobs();
+
+	/**
+	 * Returns the meta object for data type '{@link org.eclipse.core.runtime.jobs.Job <em>Artifact Job</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for data type '<em>Artifact Job</em>'.
+	 * @see org.eclipse.core.runtime.jobs.Job
+	 * @model instanceClass="org.eclipse.core.runtime.jobs.Job"
+	 * @generated
+	 */
+	EDataType getArtifactJob();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -455,6 +498,24 @@ public interface RaascmsPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute ARTIFACT__BLOB_DATE = eINSTANCE.getArtifact_BlobDate();
+
+		/**
+		 * The meta object literal for the '<em><b>Get Jobs</b></em>' operation.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EOperation ARTIFACT___GET_JOBS = eINSTANCE.getArtifact__GetJobs();
+
+		/**
+		 * The meta object literal for the '<em>Artifact Job</em>' data type.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.core.runtime.jobs.Job
+		 * @see raascms.impl.RaascmsPackageImpl#getArtifactJob()
+		 * @generated
+		 */
+		EDataType ARTIFACT_JOB = eINSTANCE.getArtifactJob();
 
 	}
 

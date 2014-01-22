@@ -8,7 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +22,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.cdo.common.lob.CDOBlob;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
@@ -217,6 +221,29 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 		eSet(RaascmsPackage.Literals.ARTIFACT__BLOB_DATE, newBlobDate);
 	}
 
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EList<Job> getJobs() {
+		return new BasicEList<Job>(Arrays.asList(Job.getJobManager().find(this)));
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
+		switch (operationID) {
+		case RaascmsPackage.ARTIFACT___GET_JOBS:
+			return getJobs();
+		}
+		return super.eInvoke(operationID, arguments);
+	}
+
 	public InputStream asFile(String filename, IProgressMonitor monitor) throws IOException {
 		Object result = getFileOrStream(filename, monitor);
 		if (result instanceof File) {
@@ -244,10 +271,7 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 				TransformationUtils.ADDITIONAL_TRANSFORMATORS = _ADDITIONAL_TRANSFORMATORS.toArray(new IConfigurationElement[] {});
 			}
 			List<ITranformator> chain = TransformationUtils.getConverterChain(sourceFileExtension, targetFileExtension);
-			String tmpDir = CACHE_DIR;
-			File artifactsDir = new File(new File(tmpDir), "transformations");
-			File dir = new File(artifactsDir, HexUtil.bytesToHex(getFileContent().getID()));
-			dir.mkdirs();
+			File dir = getTransformationsDirectory();
 			if (chain.isEmpty()) {
 				File file = new File(dir, filename);
 				if (file.exists()) {
@@ -298,6 +322,14 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 		if (isBlobUpToDate())
 			return this.getFileContent().getContents();
 		return new FileInputStream(serializeModel(this, filename, monitor));
+	}
+
+	public File getTransformationsDirectory() {
+		String tmpDir = CACHE_DIR;
+		File artifactsDir = new File(new File(tmpDir), "transformations");
+		File dir = new File(artifactsDir, HexUtil.bytesToHex(getFileContent().getID()));
+		dir.mkdirs();
+		return dir;
 	}
 
 	public boolean isBlobUpToDate() {
