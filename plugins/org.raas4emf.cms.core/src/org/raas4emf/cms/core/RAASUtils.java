@@ -921,6 +921,16 @@ public class RAASUtils {
 		return string;
 	}
 
+	public static int getCompletionRatio(Artifact artifact) {
+		for (EObject model : artifact.getContents()) {
+			Double ratio = RAASUtils.getCompletionRatio(model);
+			if (ratio != null) {
+				return (int) (100 * ratio);
+			}
+		}
+		return 0;
+	}
+
 	public static Double getCompletionRatio(EObject model) {
 		try {
 			java.lang.reflect.Method method = model.getClass().getMethod("getCompletionRatio");
