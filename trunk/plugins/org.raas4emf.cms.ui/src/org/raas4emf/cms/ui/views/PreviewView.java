@@ -4,7 +4,6 @@
 package org.raas4emf.cms.ui.views;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,7 +17,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.action.MenuManager;
@@ -56,6 +54,7 @@ import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.core.geometry.BoundingBoxXYZ;
 import org.raas4emf.cms.core.geometry.XYZ;
 import org.raas4emf.cms.ui.CMSActivator;
+import org.raas4emf.cms.ui.actions.GeometryJob;
 import org.raas4emf.cms.ui.actions.IsolateAction;
 import org.raas4emf.cms.ui.graf.GrafUtil;
 
@@ -410,8 +409,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				ids += "-" + artifact.cdoID().toURIFragment();
 			}
 			final String fids = ids.substring(1);
-			final String filename = "scene" + (doThreejs ? CMSActivator.getSessionInstance().get3dFormat().substring(0, CMSActivator.getSessionInstance().get3dFormat().indexOf(" ")) : "o3djson");
-			String g_path = CMSActivator.getSessionInstance().createDownloadUrl(fids) + "&filename=" + filename;
+			String g_path = CMSActivator.getSessionInstance().createDownloadUrl(fids) + "&filename=" + getScene3dName();
 			// scroll bar for safari & chrome
 			String scss = "";
 			scss += "::-webkit-scrollbar {width: 25px; height: 25px;}\n";
@@ -516,15 +514,13 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			artifactsToProcess = artifacts.size();
 			for (final Artifact artifact : artifacts) {
 				// if (JobManager.getInstance().find(artifact))
-				Job job = new Job("Generate WebGL for " + artifact.getName()) {
+				Job job = new GeometryJob(artifact) {
+
 					protected IStatus run(final IProgressMonitor monitor) {
-						try {
-							InputStream is = artifact.asFile(filename, monitor);
-							if (is == null)
-								return Status.OK_STATUS;
-							is.close();
-							if (monitor.isCanceled())
-								return Status.OK_STATUS;
+						final IStatus status = super.run(monitor);
+						if (monitor.isCanceled())
+							return status;
+						if (status.getSeverity() == IStatus.OK) {
 							artifactsToProcess--;
 							if (artifactsToProcess == 0)
 								getSite().getShell().getDisplay().asyncExec(new Runnable() {
@@ -538,29 +534,20 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 										new CustomFunction(browser, "theJavaFunction");
 									}
 								});
-						} catch (final Exception e) {
-							e.printStackTrace(System.out);
-							e.printStackTrace();
-							if (monitor.isCanceled())
-								return Status.OK_STATUS;
+						}
+						if (status.getSeverity() == IStatus.ERROR) {
 							artifactsToProcess--;
 							if (artifactsToProcess >= 0)
 								getSite().getShell().getDisplay().asyncExec(new Runnable() {
 									public void run() {
 										if (!alreadyDisplayed(false, artifacts))
 											return;
-										browser.setText("Error when generating WebGL for " + artifact.getName() + ":" + e.getMessage());
+										browser.setText("Error when generating WebGL for " + artifact.getName() + ":" + status.getMessage());
 									}
 								});
 							artifactsToProcess = -1;
-							return new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, e.getMessage(), e);
 						}
-						return Status.OK_STATUS;
-					}
-
-					@Override
-					public boolean belongsTo(Object family) {
-						return family == artifact;
+						return status;
 					}
 
 				};
@@ -571,6 +558,12 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			return true;
 		}
 		return false;
+	}
+
+	public static String getScene3dName() {
+		String renderer = CMSActivator.getSessionInstance().getRenderer().toLowerCase();
+		final boolean doThreejs = !renderer.contains("o3d");
+		return "scene" + (doThreejs ? CMSActivator.getSessionInstance().get3dFormat().substring(0, CMSActivator.getSessionInstance().get3dFormat().indexOf(" ")) : "o3djson");
 	}
 
 	private boolean alreadyDisplayed(boolean makeVisible, List<Artifact> artifacts) {

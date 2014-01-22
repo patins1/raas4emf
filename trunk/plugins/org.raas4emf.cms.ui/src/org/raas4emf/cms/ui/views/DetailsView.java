@@ -4,7 +4,6 @@
 package org.raas4emf.cms.ui.views;
 
 import org.eclipse.emf.cdo.CDOObject;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -140,13 +139,7 @@ public class DetailsView extends ViewPart implements ISelectionListener {
 		if (firstElement instanceof Artifact) {
 			Artifact artifact = (Artifact) firstElement;
 			textFilename.setText(artifact.getName());
-			progressBar.setSelection(0);
-			for (EObject model : artifact.getContents()) {
-				Double ratio = RAASUtils.getCompletionRatio(model);
-				if (ratio != null) {
-					progressBar.setSelection((int) (100 * ratio));
-				}
-			}
+			progressBar.setSelection(RAASUtils.getCompletionRatio(artifact));
 			progressBar.setToolTipText(progressBar.getSelection() + "%");
 			textSize.setText(artifact.getFileContent() != null ? "" + artifact.getFileContent().getSize() : "");
 			textState.setText(artifact.getState() != null ? artifact.getState() : "");

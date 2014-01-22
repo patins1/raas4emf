@@ -8,20 +8,21 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.cdo.common.lob.CDOBlob;
 import org.raas4emf.cms.core.RAASUtils;
-import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.CMSActivator;
+import org.raas4emf.cms.ui.RAASUIUtils;
 
 import raascms.Artifact;
 
 public class UnBuildModelAction extends BuildModelAction {
-	public void buildArtifact(final IProgressMonitor monitor, Artifact artifact) {
-		buildArtifact(monitor, artifact, artifact);
+	public void buildArtifact(Artifact artifact) {
+		buildArtifact(new NullProgressMonitor(), artifact, artifact);
 	}
 
-	public void buildArtifact(final IProgressMonitor monitor, Artifact artifact, Artifact target) {
+	public IStatus buildArtifact(final IProgressMonitor monitor, Artifact artifact, Artifact target) {
 		if (RAASUIUtils.isModelComplete(artifact)) {
 			try {
 				monitor.subTask("Unbuild " + artifact.getName());
@@ -32,9 +33,10 @@ public class UnBuildModelAction extends BuildModelAction {
 				RAASUtils.setModificationDate(target, new Date());
 			} catch (Exception e) {
 				e.printStackTrace();
-				stati.add(new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, "Error while unfolding " + RAASUtils.getPath(artifact), e));
+				return new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, "Error while unfolding " + RAASUtils.getPath(artifact), e);
 			}
 		}
+		return Status.OK_STATUS;
 	}
 
 }
