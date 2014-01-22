@@ -2,6 +2,7 @@
  */
 package raascms;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -13,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.cdo.CDOObject;
 import org.eclipse.emf.cdo.common.lob.CDOBlob;
 import org.eclipse.emf.common.util.EList;
@@ -217,6 +219,14 @@ public interface Artifact extends CDOObject {
 	 */
 	void setBlobDate(Date value);
 
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @model kind="operation" dataType="raascms.ArtifactJob"
+	 * @generated
+	 */
+	EList<Job> getJobs();
+
 	@GET
 	@Path("{filename}")
 	@Produces({ "application/octet-stream" })
@@ -232,5 +242,7 @@ public interface Artifact extends CDOObject {
 	public Object getFileOrStream(String filename, IProgressMonitor monitor) throws IOException;
 
 	public boolean isBlobUpToDate();
+
+	public File getTransformationsDirectory();
 	
 } // Artifact

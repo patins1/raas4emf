@@ -2,9 +2,12 @@
  */
 package raascms.impl;
 
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.cdo.etypes.EtypesPackage;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EcorePackage;
@@ -35,6 +38,13 @@ public class RaascmsPackageImpl extends EPackageImpl implements RaascmsPackage {
 	 * @generated
 	 */
 	private EClass artifactEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EDataType artifactJobEDataType = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -213,6 +223,24 @@ public class RaascmsPackageImpl extends EPackageImpl implements RaascmsPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EOperation getArtifact__GetJobs() {
+		return artifactEClass.getEOperations().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EDataType getArtifactJob() {
+		return artifactJobEDataType;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public RaascmsFactory getRaascmsFactory() {
 		return (RaascmsFactory)getEFactoryInstance();
 	}
@@ -249,6 +277,10 @@ public class RaascmsPackageImpl extends EPackageImpl implements RaascmsPackage {
 		createEAttribute(artifactEClass, ARTIFACT__NAME);
 		createEAttribute(artifactEClass, ARTIFACT__MODEL_DATE);
 		createEAttribute(artifactEClass, ARTIFACT__BLOB_DATE);
+		createEOperation(artifactEClass, ARTIFACT___GET_JOBS);
+
+		// Create data types
+		artifactJobEDataType = createEDataType(ARTIFACT_JOB);
 	}
 
 	/**
@@ -298,6 +330,11 @@ public class RaascmsPackageImpl extends EPackageImpl implements RaascmsPackage {
 		initEAttribute(getArtifact_Name(), theEcorePackage.getEString(), "name", null, 0, 1, Artifact.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getArtifact_ModelDate(), theEcorePackage.getEDate(), "modelDate", null, 0, 1, Artifact.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getArtifact_BlobDate(), theEcorePackage.getEDate(), "blobDate", null, 0, 1, Artifact.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEOperation(getArtifact__GetJobs(), this.getArtifactJob(), "getJobs", 0, -1, IS_UNIQUE, IS_ORDERED);
+
+		// Initialize data types
+		initEDataType(artifactJobEDataType, Job.class, "ArtifactJob", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);
