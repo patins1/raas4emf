@@ -19,14 +19,14 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.SingletonUtil;
 import org.eclipse.swt.SWT;
-import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
 import org.raas4emf.cms.ui.discriminator.IRAASSessionSingletonService;
+import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
 
 import raascms.Artifact;
 
 public class RAASSessionSingletonService implements IRAASSessionSingletonService {
 
-	static class RAPRAASSessionSingleton extends RAASSessionSingleton {
+	public static class RAPRAASSessionSingleton extends RAASSessionSingleton {
 
 		public Artifact workingArtifact;
 		File zippedContents;
@@ -145,7 +145,7 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 			// writer.setExtraClass(new Class[] { ProductLineResponseImpl.class, ObjectLibraryResponseImpl.class });
 			writer.setDropRootElement(true);
 			writer.setSerializeAsArray(true);
-			writer.setArrayKeys(Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles"));
+			writer.setArrayKeys(Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents"));
 
 			ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
 
