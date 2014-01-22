@@ -161,7 +161,7 @@ public class LinksView extends ViewPart implements ISelectionListener {
 				webglUri += "&renderer=svg";
 			if (renderer.contains("software"))
 				webglUri += "&renderer=software";
-			final String filename = "scene" + (doThreejs ? CMSActivator.getSessionInstance().get3dFormat().substring(0, CMSActivator.getSessionInstance().get3dFormat().indexOf(" ")) : "o3djson");
+			final String filename = PreviewView.getScene3dName();
 			webglUri += "&filename=" + filename;
 			html.append("<a href=\"");
 			html.append(webglUri);
