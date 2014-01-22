@@ -8,6 +8,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -51,6 +53,7 @@ public class IfcToThreejsTranformator implements ITranformator {
 			return null;
 		monitor.subTask("Creating geometry");
 		File targetFile = new File(dir, pureFilename + getExportExt());
+		File errorFile = new File(dir, pureFilename + getExportExt() + ".error");
 		File untitledBlenderFile = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "untitled.blend");
 		// TODO Toowoomba-2012-05-17_optimized.ifc and Door Sliding have problem with splitting, so disable for now
 		File script = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "IfcImportExport.py");
@@ -116,6 +119,7 @@ public class IfcToThreejsTranformator implements ITranformator {
 			if (exitValue != 0) {
 				LoggingUtil.log("IFC transformation error:");
 				LoggingUtil.log(errorMessages);
+				FileUtil.inputstreamToOutputstream(new StringBufferInputStream("Blender exit value = " + exitValue + "\n" + errorMessages), new FileOutputStream(errorFile));
 			}
 			System.out.println("Exit value=" + exitValue);
 			System.out.println("Written to " + targetFile);
@@ -126,6 +130,7 @@ public class IfcToThreejsTranformator implements ITranformator {
 				blendFile.delete();
 			monitor.worked(1);
 		} catch (Exception e) {
+			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace())), new FileOutputStream(errorFile));
 			System.out.println("Stopped conversion with message: " + e.getMessage());
 			LoggingUtil.log(e.getMessage(), e);
 			e.printStackTrace();
