@@ -54,6 +54,8 @@ public class IfcToThreejsTranformator implements ITranformator {
 		monitor.subTask("Creating geometry");
 		File targetFile = new File(dir, pureFilename + getExportExt());
 		File errorFile = new File(dir, pureFilename + getExportExt() + ".error");
+		if (errorFile.exists())
+			errorFile.delete();
 		File untitledBlenderFile = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "untitled.blend");
 		// TODO Toowoomba-2012-05-17_optimized.ifc and Door Sliding have problem with splitting, so disable for now
 		File script = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "IfcImportExport.py");
