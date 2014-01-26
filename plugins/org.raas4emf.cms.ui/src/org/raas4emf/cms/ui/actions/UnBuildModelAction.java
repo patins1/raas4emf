@@ -22,6 +22,10 @@ public class UnBuildModelAction extends BuildModelAction {
 		buildArtifact(new NullProgressMonitor(), artifact, artifact);
 	}
 
+	public IStatus buildArtifact(final IProgressMonitor monitor, Artifact artifact) {
+		return buildArtifact(monitor, artifact, artifact);
+	}
+
 	public IStatus buildArtifact(final IProgressMonitor monitor, Artifact artifact, Artifact target) {
 		if (RAASUIUtils.isModelComplete(artifact)) {
 			try {
