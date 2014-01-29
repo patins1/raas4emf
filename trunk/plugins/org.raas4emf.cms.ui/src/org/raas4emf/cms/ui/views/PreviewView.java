@@ -406,7 +406,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			String dir = CMSActivator.getSessionInstance().get3dRendererUrl();
 			String ids = "";
 			for (Artifact artifact : artifacts) {
-				ids += "-" + artifact.cdoID().toURIFragment();
+				ids += "," + artifact.cdoID().toURIFragment();
 			}
 			final String fids = ids.substring(1);
 			String g_path = CMSActivator.getSessionInstance().createDownloadUrl(fids) + "&filename=" + getScene3dName();
