@@ -369,7 +369,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 
 	private boolean processImage(Artifact artifact) {
 		if (isImage(artifact) && !alreadyDisplayed(true, Arrays.asList(artifact))) {
-			String url = RAASUtils.getRAASProp("RAASSERVICEURL") + "services/Artifact/GetArtifact/" + artifact.cdoID().toURIFragment() + "/" + artifact.getName();
+			String url = LinksView.getArtifactUri(artifact);
 			StringBuilder html = new StringBuilder();
 			if (isPdf(artifact)) {
 				html.append("<object data=\"" + url + "\" type=\"application/pdf\" width=\"100%\" height=\"100%\">");
@@ -401,9 +401,9 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 	private boolean processWebGL(final List<Artifact> artifacts) {
 		if ((isWebGL(artifacts) || isCollada(artifacts) || isGeometryModel(artifacts)) && !alreadyDisplayed(true, artifacts)) {
 			currentlyDisplayedArtifact = artifacts;
+			final boolean doThreejs = isThreeJS();
 			String renderer = CMSActivator.getSessionInstance().getRenderer().toLowerCase();
-			final boolean doThreejs = !renderer.contains("o3d");
-			String dir = RAASUtils.getRAASProp("RAASSERVICEURL") + (doThreejs ? "threejs/" : "o3d/");
+			String dir = CMSActivator.getSessionInstance().get3dRendererUrl();
 			String ids = "";
 			for (Artifact artifact : artifacts) {
 				ids += "-" + artifact.cdoID().toURIFragment();
@@ -561,9 +561,14 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 	}
 
 	public static String getScene3dName() {
+		final boolean doThreejs = isThreeJS();
+		return "scene" + (doThreejs ? CMSActivator.getSessionInstance().get3dFormat().substring(0, CMSActivator.getSessionInstance().get3dFormat().indexOf(" ")) : "o3djson");
+	}
+
+	public static boolean isThreeJS() {
 		String renderer = CMSActivator.getSessionInstance().getRenderer().toLowerCase();
 		final boolean doThreejs = !renderer.contains("o3d");
-		return "scene" + (doThreejs ? CMSActivator.getSessionInstance().get3dFormat().substring(0, CMSActivator.getSessionInstance().get3dFormat().indexOf(" ")) : "o3djson");
+		return doThreejs;
 	}
 
 	private boolean alreadyDisplayed(boolean makeVisible, List<Artifact> artifacts) {

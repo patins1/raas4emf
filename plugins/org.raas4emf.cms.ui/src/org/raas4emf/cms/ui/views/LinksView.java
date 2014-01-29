@@ -130,7 +130,8 @@ public class LinksView extends ViewPart implements ISelectionListener {
 		html.append("<br>");
 		fileName = RAASUtils.getSerializationName(artifact, RAASUtils.withoutExtension(fileName) + RAASUtils.getExtension(artifact));
 		String pureFilename = TransformationUtils.getPureFilename(fileName);
-		String artifactUri = OWN_PROVISION ? CMSActivator.getSessionInstance().createFullDownloadUrl(artifact) : RAASUtils.getRAASProp("RAASSERVICEURL") + "services/Artifact/GetArtifact/" + artifact.cdoID().toURIFragment() + "/";
+		String artifactUri = getArtifactUri(artifact);
+		artifactUri = artifactUri.substring(0, artifactUri.length() - artifact.getName().length());
 		raasUri = artifactUri + fileName;
 		html.append("<a href=\"");
 		html.append(raasUri);
@@ -170,6 +171,10 @@ public class LinksView extends ViewPart implements ISelectionListener {
 			html.append("</a> ");
 
 		}
+	}
+
+	public static String getArtifactUri(Artifact artifact) {
+		return OWN_PROVISION ? CMSActivator.getSessionInstance().createFullDownloadUrl(artifact) : RAASUtils.getRAASProp("RAASSERVICEURL") + "services/Artifact/GetArtifact/" + artifact.cdoID().toURIFragment() + "/" + artifact.getName();
 	}
 
 	private void appendWebDavURI(String path, StringBuilder html) {

@@ -21,6 +21,7 @@ import org.eclipse.rap.rwt.SingletonUtil;
 import org.eclipse.swt.SWT;
 import org.raas4emf.cms.ui.discriminator.IRAASSessionSingletonService;
 import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
+import org.raas4emf.cms.ui.views.PreviewView;
 
 import raascms.Artifact;
 
@@ -39,6 +40,11 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 			url.append(filename);
 			String encodedURL = RWT.getResponse().encodeURL(url.toString());
 			return encodedURL;
+		}
+
+		@Override
+		public String get3dRendererUrl() {
+			return createDownloadUrl("WebContent/") + (PreviewView.isThreeJS() ? "threejs/" : "o3d/");
 		}
 
 		@Override
