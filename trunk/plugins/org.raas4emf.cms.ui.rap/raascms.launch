@@ -24,7 +24,7 @@
 <stringAttribute key="org.eclipse.rap.launch.entryPoint" value=""/>
 <stringAttribute key="org.eclipse.rap.launch.libraryVariant" value="STANDARD"/>
 <booleanAttribute key="org.eclipse.rap.launch.openBrowser" value="true"/>
-<intAttribute key="org.eclipse.rap.launch.port" value="10085"/>
+<intAttribute key="org.eclipse.rap.launch.port" value="80"/>
 <stringAttribute key="org.eclipse.rap.launch.servletName" value="raas"/>
 <stringAttribute key="org.eclipse.rap.launch.servletPath" value="/ui"/>
 <intAttribute key="org.eclipse.rap.launch.sessionTimeout" value="0"/>

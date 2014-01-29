@@ -95,6 +95,8 @@ abstract public class RAASSessionSingleton {
 
 	abstract public String createDownloadUrl(String ids);
 
+	abstract public String get3dRendererUrl();
+
 	abstract public String createFullDownloadUrl(Artifact artifact);
 
 	abstract public int getBrowserType();
