@@ -133,6 +133,20 @@ var overrideSettings;
 if (overrideSettings == null) overrideSettings = {}; 
 var USE_BUFFERGEOMETRY = true;
 
+
+function processMessage(event) {
+	if (!event.data.g_path) { alert("Unknown message received! "+event.data); return; }
+	g_path = event.data.g_path;
+	if (g_clients.length>0) {
+		calcPaths();
+		load2(0);
+	} else {
+		start();
+	}
+}
+
+window.addEventListener("message", processMessage, false);
+
 function myLogHTML(msg)
 {
 
@@ -464,7 +478,7 @@ function calcPaths() {
 		if (!g_path) g_path = window.location.href;
 	    var index = g_path.lastIndexOf('/threejs');
 	    // Point at the parent directory's assets directory for the moment
-	    g_ids = getParameterByName(g_path,'artifact').split("-"); 
+	    g_ids = getParameterByName(g_path,'artifact').split(","); 
 	    var filename = getParameterByName(g_path,'filename'); 
 	  	g_num_clients = g_ids.length;
 	  	NUM_DOWN = g_num_clients / NUM_ACROSS;
@@ -475,7 +489,7 @@ function calcPaths() {
 	   	//path = path.substring(0, index)+'/services/Artifact/GetArtifact/'+path.substring(index2+9)+'/scene.o3djson';
 	} else {
 	    var index2 = g_path.lastIndexOf('artifact=');
-	    g_ids = getParameterByName(g_path,'artifact').split("-"); 
+	    g_ids = getParameterByName(g_path,'artifact').split(","); 
 	    var filename = getParameterByName(g_path,'filename'); 
 	  	g_num_clients = g_ids.length;
 	  	NUM_DOWN = g_num_clients / NUM_ACROSS;
@@ -3138,13 +3152,7 @@ function hasVertexNormals(geometry) {
 }
 
 function load(ii) {
-	g_pickInfoElem = document.getElementById('pickInfo');
-	g_loadingElement = document.getElementById('loading');
-    g_loadingElement.innerHTML = "Loading: " + g_paths[ii];
-    try {
-    startTime = new Date().getTime();
-    
-    
+
     if (effectController.quickmode) {
     	
     THREE.Geometry.prototype.computeCentroids = function () {
@@ -3530,7 +3538,16 @@ function load(ii) {
     };
 
     THREE.JSONLoader2.prototype = Object.create( THREE.JSONLoader.prototype );
-    	    
+    
+	load2(ii);
+}
+function load2(ii) {
+	g_pickInfoElem = document.getElementById('pickInfo');
+	g_loadingElement = document.getElementById('loading');
+    g_loadingElement.style.display = "block";
+    g_loadingElement.innerHTML = "Loading: " + g_paths[ii];
+    try {
+    startTime = new Date().getTime(); 
     if (doJsonLoader) {
 		document.getElementById('progress').style.display = "block";
 		drawBar(0,"Start");	
@@ -3778,17 +3795,27 @@ function init(root,g_client) {
 	startTime = new Date().getTime();
 	try{
     
+	if (!g_client.controls) {
     g_client.controls = new THREE.OrbitControls( null, g_client );
     g_client.controls.oriUpdate = g_client.controls.update;
     g_client.controls.update = function () {if (this.active) this.oriUpdate(); };
     g_client.controls.noPan = true;
     g_client.controls.active = true;
     g_client.additionalObjectsToSelect = [];
+	}
     
     var scene;
     if (root instanceof THREE.Scene) {
-    	scene = g_client.scene = root;
-    	root = root.children[0];
+    	if (g_client.scene) {
+    		while (g_client.scene.children.length>0) {
+    	    	g_client.scene.remove(g_client.scene.children[0]);
+    	    }
+    		g_client.scene.add(root = root.children[0]);
+    		scene = g_client.scene;
+    	} else {
+	    	scene = g_client.scene = root;
+	    	root = root.children[0];
+    	}
 //	    scene = g_client.scene = new THREE.Scene();
 //	    scene.add( root );	
 //	    root.rotation.x += -Math.PI / 2;
@@ -3883,7 +3910,7 @@ function init(root,g_client) {
 	plane.name = "intersection plane";
 	plane.visible = false;
 	plane.lookAt( up );
-	scene.add( plane );
+	//scene.add( plane );
 	
 	if (!hasSomething)
 		 g_loadingElement.innerHTML = "Found no solid geometry"; else
@@ -3935,6 +3962,7 @@ function setupColors(g_client) {
 //			}
 
 		var materialColor = g_colors[m];
+		if (!(materialColor instanceof THREE.MeshPhongMaterial))
 		if (materialColor instanceof Array) {
 			materialColor = g_colors[m] = new THREE.MeshPhongMaterial({	
 				color:new THREE.Color().setRGB(materialColor[0],materialColor[1],materialColor[2]), 

@@ -17,6 +17,7 @@ import org.raas4emf.cms.core.LoggingUtil;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.DemoWorkbenchAdvisor;
 import org.raas4emf.cms.ui.LoginDialog;
+import org.raas4emf.cms.ui.views.PreviewView;
 
 public class DemoWorkbench implements EntryPoint {
 
@@ -49,6 +50,13 @@ public class DemoWorkbench implements EntryPoint {
 				JSExecutor.executeJS("try {window.external.closeWindow();} catch (e) {}");
 			}
 		});
+
+		// JSExecutor.executeJS(" if (parent) {parent.raasSessionId=rwt.remote.Server.getInstance().getConnectionId(); alert('for parent='+rwt.remote.Server.getInstance().getConnectionId());}");
+
+		// JSExecutor.executeJS(" window.parent.postMessage({'raasSessionId':rwt.remote.Server.getInstance().getConnectionId()},'*'); ");
+		String g_path = CMSActivator.getSessionInstance().createDownloadUrl("REPLACEHERE") + "&filename=" + PreviewView.getScene3dName();
+		g_path = "'" + g_path.replace("REPLACEHERE", "'+event.data.loadPath+'") + "'";
+		JSExecutor.executeJS("window.addEventListener('message', function (event) { if (event.data.loadPath) document.getElementsByTagName('iframe')[0].contentWindow.postMessage({'g_path':" + g_path + "}, '*'); }, false); ");
 
 		// String dir = RAASUtils.getRAASProp("RAASSERVICEURL") + "threejs/";
 		// JavaScriptLoader loader = RWT.getClient().getService(JavaScriptLoader.class);

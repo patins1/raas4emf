@@ -19,6 +19,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.service.ServiceHandler;
 import org.raas4emf.cms.core.FileUtil;
@@ -30,6 +31,7 @@ import org.raas4emf.cms.ui.actions.ZipAction;
 import org.raas4emf.cms.ui.rap.RAASSessionSingletonService.RAPRAASSessionSingleton;
 
 import raascms.Artifact;
+import raascms.Folder;
 
 public class DownloadServiceHandler implements ServiceHandler {
 
@@ -38,7 +40,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 	public void service(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 
 		String artifactId = RWT.getRequest().getParameter("artifact");
-		if (artifactId.contains("/")) {
+		if (artifactId.startsWith("WebContent/")) {
 			URL fileURL = new URL("platform:/plugin/org.raas4emf.service/" + artifactId);
 			try {
 				URL u = FileLocator.resolve(fileURL);
@@ -94,8 +96,6 @@ public class DownloadServiceHandler implements ServiceHandler {
 
 		if (OWN_PROVISION) {
 
-			Artifact artifact = (Artifact) RAASUIUtils.findObjectById(artifactId);
-
 			response.addHeader("Access-Control-Allow-Origin", "*");
 			response.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 			// Send the file in the response
@@ -103,10 +103,32 @@ public class DownloadServiceHandler implements ServiceHandler {
 
 			String filename = RWT.getRequest().getParameter("filename");
 			if (filename == null)
-				throw new RuntimeException("No filename provided when requesting " + artifact.getName() + "!");
+				throw new RuntimeException("No filename provided when requesting " + artifactId + "!");
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-			Object fileObject = artifact.getFileOrStream(filename, new NullProgressMonitor());
+			Object fileObject = null;
+			Artifact artifact = null;
+			if (artifactId.startsWith("RepositoryRoot/")) {
+				EObject eObject = RAASUIUtils.findByPath(artifactId.split("/"));
+				if (eObject instanceof Artifact) {
+					artifact = (Artifact) eObject;
+					fileObject = artifact.getFileOrStream(filename, new NullProgressMonitor());
+				}
+				if (eObject instanceof Folder) {
+					Folder folder = (Folder) eObject;
+					for (Artifact a : folder.getArtifacts()) {
+						fileObject = a.getFileOrStream(filename, new NullProgressMonitor());
+						if (fileObject != null) {
+							artifact = a;
+							break;
+						}
+					}
+				}
+			} else {
+				artifact = (Artifact) RAASUIUtils.findObjectById(artifactId);
+				fileObject = artifact.getFileOrStream(filename, new NullProgressMonitor());
+			}
+
 			InputStream inputStream;
 			if (fileObject instanceof File) {
 				File file = (File) fileObject;
