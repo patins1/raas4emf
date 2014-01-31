@@ -66,7 +66,7 @@ import raascms.util.XMIExportResource;
 @XmlType(name = "Artifact")
 @XmlRootElement(name = "ArtifactElement")
 public class ArtifactImpl extends CDOObjectImpl implements Artifact {
-	private static final String CACHE_DIR = "/bim/NOLServer/cache";
+	public static String CACHE_DIR = "/bim/NOLServer/cache";
 	static public final String OPTION_CONTENTSLIST = EList.class.getName();
 	public static final String OPTION_SAVE_PROGRESS_MONITOR = IProgressMonitor.class.getName();
 	static public final String OPTION_MVD = "OPTION_MVD";

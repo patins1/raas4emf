@@ -473,6 +473,9 @@ public class RAASUtils {
 					FileInputStream fis = new FileInputStream(configIni);
 					RAASPROPERTIES.load(fis);
 					fis.close();
+					String cacheDir = getRAASProp("CACHE_DIR");
+					if (cacheDir != null)
+						ArtifactImpl.CACHE_DIR = cacheDir;
 				} catch (IOException e) {
 					e.printStackTrace();
 					throw new RuntimeException(e);
