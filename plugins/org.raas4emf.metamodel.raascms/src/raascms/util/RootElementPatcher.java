@@ -53,6 +53,7 @@ public class RootElementPatcher {
 			y.write(xLine.getBytes());
 			firstLine = false;
 		}
+		x.close();
 	}
 
 }
