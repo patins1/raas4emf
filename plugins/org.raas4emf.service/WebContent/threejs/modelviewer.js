@@ -4,6 +4,7 @@ var g_ids = [];
 var zoomId;
 var countProgress;
 var g_colors;
+var modelviewerSelectionChanged = function () {};
 if (g_colors == null) g_colors= {};
 var basicColors =
 {
@@ -4511,6 +4512,7 @@ function generateEvent(eventType,e,g_client) {
     for (var ee = 0; ee < g_selectedInfo.length; ee++) {
     	g_selectedIDs += g_selectedInfo[ee].name + " ";
     }
+    modelviewerSelectionChanged();
     var mainParams = [g_selectedIDs,type,g_client.id,e.clientX,e.clientY,e.which,eventType];
 	if ( g_selectedInfo.length != 0 ) {
 		if (g_worldPosition) {
