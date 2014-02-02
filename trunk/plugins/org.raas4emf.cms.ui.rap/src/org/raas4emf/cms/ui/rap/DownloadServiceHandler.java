@@ -40,8 +40,12 @@ public class DownloadServiceHandler implements ServiceHandler {
 	public void service(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 
 		String artifactId = RWT.getRequest().getParameter("artifact");
-		if (artifactId.startsWith("WebContent/")) {
-			URL fileURL = new URL("platform:/plugin/org.raas4emf.service/" + artifactId);
+		if (artifactId.startsWith("WebContent/"))
+			artifactId = "platform:/plugin/org.raas4emf.service/" + artifactId;
+		if (artifactId.startsWith("/plugin/"))
+			artifactId = "platform:" + artifactId;
+		if (artifactId.startsWith("platform:")) {
+			URL fileURL = new URL(artifactId);
 			try {
 				URL u = FileLocator.resolve(fileURL);
 				String fileName = u.getFile();
