@@ -12,6 +12,7 @@ import java.util.WeakHashMap;
 import org.eclipse.emf.cdo.net4j.CDONet4jSession;
 import org.eclipse.emf.cdo.view.CDOView;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.raas4emf.cms.core.RAASUtils;
 
 import raascms.Artifact;
@@ -212,6 +213,11 @@ abstract public class RAASSessionSingleton {
 
 	public Object decodeJSON(String arg, EClass eClass) {
 		return null;
+	}
+
+	@Deprecated
+	public Object decodeJSON(String arg, EObject eObject) {
+		return decodeJSON(arg, eObject.eClass());
 	}
 
 	public byte[] encodeJSON(Object arg) {
