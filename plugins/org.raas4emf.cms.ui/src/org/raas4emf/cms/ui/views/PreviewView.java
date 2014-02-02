@@ -75,6 +75,8 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 	private MenuManager menuMgr;
 	private Menu menu;
 	public String attachedOnLoad = null;
+	public static String attachedOnLoadAdditional = null;
+	public static String attachedHeadContent = null;
 
 	public String attachedImmediately = null;
 
@@ -494,6 +496,10 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			}
 			if (attachedImmediately != null)
 				text += "<script type=\"text/javascript\">" + attachedImmediately + "</script>\n";
+			if (attachedHeadContent != null)
+				text += attachedHeadContent;
+			if (attachedOnLoadAdditional != null)
+				attachedOnLoad += attachedOnLoadAdditional;
 			if (attachedOnLoad != null)
 				text += "<script type=\"text/javascript\">var g_customInit=function() {" + attachedOnLoad + "};</script>\n";
 			attachedOnLoad = null;

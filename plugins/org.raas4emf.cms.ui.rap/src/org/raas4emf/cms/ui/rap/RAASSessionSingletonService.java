@@ -8,14 +8,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
 import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.apache.cxf.jaxrs.provider.JSONProvider;
-import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.SingletonUtil;
 import org.eclipse.swt.SWT;
@@ -143,41 +145,46 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 			}
 		}
 
-		@Override
-		public byte[] encodeJSON(Object arg) {
+		public static void encodeJSON(Object arg, OutputStream outputStream, List<String> arrayKeys, boolean dropRootElement) {
 
 			JSONProvider writer = new JSONProvider();
 
-			// writer.setExtraClass(new Class[] { ProductLineResponseImpl.class, ObjectLibraryResponseImpl.class });
-			writer.setDropRootElement(true);
+			writer.setDropRootElement(dropRootElement);
 			writer.setSerializeAsArray(true);
-			writer.setArrayKeys(Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents"));
-
-			ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
+			writer.setArrayKeys(arrayKeys);
 
 			try {
-				writer.writeTo(arg, arg.getClass(), arg.getClass(), new Annotation[] {}, MediaType.APPLICATION_JSON_TYPE, new MetadataMap<String, Object>(), requestBody);
+				writer.writeTo(arg, arg.getClass(), arg.getClass(), new Annotation[] {}, MediaType.APPLICATION_JSON_TYPE, new MetadataMap<String, Object>(), outputStream);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
+		}
+
+		@Override
+		public byte[] encodeJSON(Object arg) {
+			ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
+			encodeJSON(arg, requestBody, Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents"), true);
 			return requestBody.toByteArray();
 		}
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
-		public Object decodeJSON(String arg, EObject rootElement) {
+		public Object decodeJSON(String arg, EClass eClass) {
+			arg = "{\"" + eClass.getName() + "Element\":" + arg + "}";
+			InputStream responseBody = new ByteArrayInputStream(arg.getBytes());
+			return decodeJSON(responseBody, eClass);
+		}
 
-			arg = "{\"" + rootElement.eClass().getName() + "Element\":" + arg + "}";
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		public static Object decodeJSON(InputStream inputStream, EClass eClass) {
 
 			JSONProvider reader = new JSONProvider();
 
 			// writer.setExtraClass(new Class[] { ProductLineResponseImpl.class, ObjectLibraryResponseImpl.class });
 			reader.setDropRootElement(true);
 
-			InputStream responseBody = new ByteArrayInputStream(arg.getBytes());
-			Class targetType = rootElement.getClass();
+			Class targetType = eClass.getInstanceClass();
 			try {
-				return reader.readFrom(targetType, targetType, new Annotation[] {}, MediaType.APPLICATION_JSON_TYPE, new MetadataMap<String, String>(), responseBody);
+				return reader.readFrom(targetType, targetType, new Annotation[] {}, MediaType.APPLICATION_JSON_TYPE, new MetadataMap<String, String>(), inputStream);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
