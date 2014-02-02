@@ -602,8 +602,13 @@ public class RAASUtils {
 	}
 
 	public static EObject findByPath(CDOView trans, String[] path, boolean forceExisting) {
-		if (trans.getRootResource().eContents().isEmpty())
-			return null;
+		if (trans.getRootResource().eContents().isEmpty()) {
+			if (forceExisting) {
+				((CDOTransaction) trans).createResource(RAASUtils.ROOT_RESOURCE_NAME);
+			} else {
+				return null;
+			}
+		}
 		EObject root = trans.getRootResource().eContents().get(0);
 		EObject sampleBuilding = selectByPath(root, path, forceExisting);
 		return sampleBuilding;
@@ -943,7 +948,7 @@ public class RAASUtils {
 					return (Double) x;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			// do nothing
 		}
 		return null;
 	}
