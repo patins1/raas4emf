@@ -28,6 +28,8 @@ public class LoggingUtil {
 	public void log2(String message) {
 		try {
 			if (!logFile.exists()) {
+				if (!new File(RAASUtils.ROOTPATH).exists())
+					return;
 				logFile.getParentFile().mkdirs();
 				logFile.createNewFile();
 			}

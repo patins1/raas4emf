@@ -423,7 +423,10 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		register(saveBackup);
 
 		final File raasServerDir = new File(RAASUtils.ROOTPATH);
-		for (final String filename : raasServerDir.list()) {
+		String[] list = raasServerDir.list();
+		if (list == null)
+			list = new String[] {};
+		for (final String filename : list) {
 			if (filename.endsWith(".ini") && filename.startsWith("config")) {
 				Action configAction = new Action() {
 					public void run() {
