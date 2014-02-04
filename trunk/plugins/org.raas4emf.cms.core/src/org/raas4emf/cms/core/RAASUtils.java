@@ -93,7 +93,7 @@ public class RAASUtils {
 	private static final Properties RAASPROPERTIES = new Properties();
 	private static long configLastModified = 0;
 	private static final String A_PROJECT_WITH_NAME = "An artifact with name \"";
-	public static final String ROOTPATH = "/bim/NOLServer";
+	public static String ROOTPATH = "/bim/NOLServer";
 	public static final String repositoryName = "bim";
 	public static final String ROOT_RESOURCE_NAME = "bim";
 
@@ -459,13 +459,36 @@ public class RAASUtils {
 		return null;
 	}
 
+	static {
+		try {
+			String rootPath = getRAASProp("ROOTPATH");
+			if (rootPath != null)
+				ROOTPATH = rootPath;
+		} catch (Exception e) {
+			// catch any exception - or this class is not initialized
+		}
+		try {
+			String cacheDir = getRAASProp("CACHE_DIR");
+			if (cacheDir != null)
+				ArtifactImpl.CACHE_DIR = cacheDir;
+		} catch (Exception e) {
+			// catch any exception - or this class is not initialized
+		}
+	}
+
 	public static String getRAASProp(String name) {
+
+		final String value = System.getProperty(name);
+		if (value != null) {
+			return value;
+		}
+
 		String configIni = RAASUtils.ROOTPATH + "/config.ini";
 
 		synchronized (RAASPROPERTIES) {
 			long lastModified = new File(configIni).lastModified();
 			if (lastModified == 0)
-				throw new RuntimeException("Cannot read config file at " + configIni + "!");
+				throw new RuntimeException("Cannot read config file at " + configIni + " to read property '" + name + "'!\nNote: You can also provide this property using an environment variable.");
 			if (configLastModified != lastModified) {
 				configLastModified = lastModified;
 				// Read properties file.
@@ -473,9 +496,6 @@ public class RAASUtils {
 					FileInputStream fis = new FileInputStream(configIni);
 					RAASPROPERTIES.load(fis);
 					fis.close();
-					String cacheDir = getRAASProp("CACHE_DIR");
-					if (cacheDir != null)
-						ArtifactImpl.CACHE_DIR = cacheDir;
 				} catch (IOException e) {
 					e.printStackTrace();
 					throw new RuntimeException(e);
