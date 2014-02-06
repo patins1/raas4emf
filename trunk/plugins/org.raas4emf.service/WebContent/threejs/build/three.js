@@ -6790,7 +6790,7 @@ THREE.EventDispatcher.prototype = {
 
 	var intersectObject = function ( object, raycaster, intersects ) {
 
-		if ( object instanceof THREE.Particle ) {
+		if ( object instanceof THREE.Sprite ) {
 
 			matrixPosition.getPositionFromMatrix( object.matrixWorld );
 			var distance = raycaster.ray.distanceToPoint( matrixPosition );
