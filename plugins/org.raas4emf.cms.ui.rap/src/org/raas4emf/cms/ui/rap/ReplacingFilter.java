@@ -35,7 +35,8 @@ public final class ReplacingFilter implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-		((HttpServletResponse) response).addHeader("Access-Control-Allow-Origin", "null");
+		// ((HttpServletResponse) response).addHeader("Access-Control-Allow-Origin", "null");
+		((HttpServletResponse) response).addHeader("Access-Control-Allow-Origin", "*");
 		((HttpServletResponse) response).addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
 		HttpServletRequest hr = (HttpServletRequest) request;
