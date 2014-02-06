@@ -271,8 +271,8 @@ function printBoundingBox(lines, artifactId) {
 //  var id = lines[tt+6];
 //	var transform = getObjectsWithSplittings(id,g_client);
 	
-    var min = asVector3([lines[tt+0]/1000,lines[tt+1]/1000,lines[tt+2]/1000]);
-    var max = asVector3([lines[tt+3]/1000,lines[tt+4]/1000,lines[tt+5]/1000]);
+    var min = asVector3M([lines[tt+0],lines[tt+1],lines[tt+2]]);
+    var max = asVector3M([lines[tt+3],lines[tt+4],lines[tt+5]]);
     
     paintBoundingBox(new THREE.Box3(min,max),g_client);
 	
@@ -367,8 +367,19 @@ function asVector3(a) {
 	return new THREE.Vector3(a[0],a[2],-a[1]);
 }
 
+function asVector3M(a) {
+	var v = asVector3(a);
+	return new THREE.Vector3(v.x/1000,v.y/1000,v.z/1000);
+}
+
 function vector3ToArray(v) {
 	return [v.x,-v.z,v.y];
+}
+
+
+function vector3ToArrayMM(v) {
+	var a = vector3ToArray(v);	
+	return [Math.round(a[0]*1000),Math.round(a[1]*1000),Math.round(a[2]*1000)];
 }
 
 function doSetCamera(eye,target,angle,ortho,steps,g_client) {
@@ -599,6 +610,7 @@ function createRenderer(container,ii) {
 		return;
 	}
     var g_client = renderer.domElement;
+    g_client.setAttribute('tabindex','0'); // make canvas focusable
     g_client.id = 'threejs' + g_ids[ii];
     g_client.name = 'threejs' + g_ids[ii];
     g_client.renderer = renderer;
@@ -1215,7 +1227,7 @@ function printLines(lines, artifactId, prefix, message) {
     		pred = null;
     		segments++;
     	} else {
-	    	var nextPoint = asVector3([lines[tt+0]/1000,lines[tt+1]/1000,lines[tt+2]/1000]);
+	    	var nextPoint = asVector3M([lines[tt+0],lines[tt+1],lines[tt+2]]);
 	    	points.push(nextPoint);
 	    	if (lastPoint!=null && !prune) {
 				  if (pred!=null)
@@ -3027,6 +3039,7 @@ function start() {
 	initializeMap();
 	
 	document.onkeydown = function(e) {
+		if (e.target && e.target.tagName == "INPUT") return;
 		  var keyChar = e.keyCode;
 		  if (!keyIsDown[keyChar]) {
 			  keyIsDown[keyChar] = true;
@@ -4161,7 +4174,8 @@ function unSelectAll(g_client) {
     	if (g_selectedInfo[tt].originalParent) {
 			g_selectedInfo[tt].originalParent.add(g_selectedInfo[tt]);
 			g_selectedInfo[tt].originalParent = null;
-    	} else {
+    	} else
+    	if (!(g_selectedInfo[tt] instanceof THREE.Sprite)){
     		g_client.scene.remove(g_selectedInfo[tt]);
     	}
     }
@@ -4172,7 +4186,8 @@ function unSelectRecursive(transform) {
     for (var tt = 0; tt < transform.children.length; tt++) {
     	unSelectRecursive(transform.children[tt]);
     }
-    transform.material = transform.originalMaterial;
+    if (transform.originalMaterial)
+    	transform.material = transform.originalMaterial;
     if (transform.pred!=null) {
     	unSelectRecursive(transform.pred);
     }
@@ -4233,7 +4248,7 @@ function selectRecursive(transform) {
     for (var tt = 0; tt < transform.children.length; tt++) {
     	selectRecursive(transform.children[tt]);
     }
-    if (transform.material) {
+    if (transform.material && !(transform instanceof THREE.Sprite)) {
 	    transform.originalMaterial = transform.material;
 	    g_selectionMaterial.side = transform.material.side;
 	    g_selectionMaterial.polygonOffset= true;
@@ -4383,8 +4398,10 @@ function onDocumentMouseDown(e) {
 	
 	var calledFromDblClickEvent = (e.type == "dblclick");
 	
-	if (!calledFromDblClickEvent)
+	if (!calledFromDblClickEvent) {
 		myLog("onDocumentMouseDown #selection="+g_selectedInfo.length+" which="+e.which);
+		e.target.focus();
+	}
     
 	e.preventDefault();	
 
