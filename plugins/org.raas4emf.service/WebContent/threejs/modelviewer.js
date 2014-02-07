@@ -1527,7 +1527,7 @@ function expect(controller, value) {
 
 function generateGui() {	
 
-	if (gui!=null) return;
+	if (gui!=null || !effectController.opencontrols) return;
 	
 	gui = new dat.GUI({width: 275});
 	gui.close();
@@ -3018,7 +3018,8 @@ function start() {
 			quickmode: false,
 			antialias: true,
 			vertexnormals: true,
-			select_face: false
+			select_face: false,
+			opencontrols: true
 
 		};
 
@@ -3805,6 +3806,7 @@ function init(root,g_client) {
 		return this;
 	};
 
+	var loadingComplete = false;
 	myLog("Model load time="+(new Date().getTime() - startTime));
 	startTime = new Date().getTime();
 	try{
@@ -3930,10 +3932,10 @@ function init(root,g_client) {
 		 g_loadingElement.innerHTML = "Found no solid geometry"; else
     g_loadingElement.style.display = "none";
 
-    
+    loadingComplete = true;
     //} catch (e) {
 	} finally {
-		if (!gui) myLog("loading failed after retrieving model successful");
+		if (!loadingComplete) myLog("loading failed after retrieving model successful");
 		myLog("Model setup time="+(new Date().getTime() - startTime));
 //        g_loadingElement.innerHTML = "loading failed after retrieving model successful: " + e;
     //    throw e;
