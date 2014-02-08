@@ -48,6 +48,8 @@ public class LoggingUtil {
 	public void log2(String message, Throwable e) {
 		log2(message);
 		log2("WTH FOLLOWING ERROR:");
+		if (out == null)
+			return;
 		e.printStackTrace(out);
 		out.flush();
 		out.println();
