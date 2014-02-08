@@ -15,6 +15,7 @@ import java.util.Dictionary;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -62,6 +63,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.raas4emf.cms.core.LoggingUtil;
 import org.raas4emf.cms.core.RAASUtils;
+import org.raas4emf.cms.transformation.StreamGobbler;
 import org.raas4emf.cms.transformation.TransformationUtils;
 import org.raas4emf.cms.ui.actions.AddArtifactAction;
 import org.raas4emf.cms.ui.actions.ComboInputDialog;
@@ -103,6 +105,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 	private Action saveBackup;
 	private Action changeRendererAction, change3dFormatAction;
 	private Action shutdownServerAction;
+	private Action promptAction;
 	private Action generateFingerprintAction;
 	private Action downloadDirectAction;
 	private Action setPasswordList;
@@ -222,7 +225,16 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 				InputDialog dialog = new InputDialog(shell, "Specify Name", "Enter name for file", null, null);
 				if (dialog.open() == Window.OK) {
 					String name = dialog.getValue();
-					CMSActivator.getSessionInstance().exportFolderContents(new File(name));
+					if (new File(name).isDirectory()) {
+						String list = "";
+						for (String child : new File(name).list()) {
+							list += name + child + "\n";
+
+						}
+						MemoDialog.openInformation(window.getShell(), "Directory contents", list);
+
+					} else
+						CMSActivator.getSessionInstance().exportFolderContents(new File(name));
 				}
 			}
 
@@ -257,7 +269,9 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		showEclipseLogAction = new Action() {
 			public void run() {
 				try {
-					MemoDialog.openInformation(window.getShell(), "Eclipse Log", TransformationUtils.stringFromFile(new File(RAASUtils.ROOTPATH + "/apache-tomcat/work/Catalina/localhost/raascms/eclipse/workspace/.metadata/.log")));
+					File workspaceDirectory = Platform.getLocation().toFile();
+					MemoDialog.openInformation(window.getShell(), "Eclipse Log", "File=" + workspaceDirectory);
+					MemoDialog.openInformation(window.getShell(), "Eclipse Log", TransformationUtils.stringFromFile(new File(workspaceDirectory + "/.metadata/.log")));
 				} catch (IOException e) {
 					MemoDialog.openInformation(window.getShell(), "Error", e.getMessage());
 					throw new RuntimeException(e);
@@ -360,6 +374,59 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		restartRAASServerAction.setText("Restart RaaS Server");
 		restartRAASServerAction.setId("org.raas4emf.cms.ui.RestartRAASServerAction");
 		register(restartRAASServerAction);
+
+		promptAction = new Action() {
+			public void run() {
+				InputDialog i = new InputDialog(window.getShell(), "Prompt", "Execute command:", "", null);
+				if (i.open() == Window.OK) {
+					try {
+						String cmd = i.getValue();
+						if (cmd.startsWith("platform:")) {
+							URL fileURL = new URL(cmd);
+							URL u = FileLocator.resolve(fileURL);
+							String fileName = u.getFile();
+							MemoDialog.openInformation(window.getShell(), "Resolve", fileName);
+							return;
+						}
+						final StringBuffer sb = new StringBuffer();
+
+						Process process = Runtime.getRuntime().exec(cmd, null);
+						StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR") {
+
+							@Override
+							protected void println(String line) {
+								super.println(line);
+								sb.append("ERROR" + ">" + line + "\n");
+							}
+
+						};
+						StreamGobbler outputGobbler = new StreamGobbler(process.getErrorStream(), "OUTPUT") {
+
+							@Override
+							protected void println(String line) {
+								super.println(line);
+								sb.append("OUTPUT" + ">" + line + "\n");
+							}
+
+						};
+
+						errorGobbler.start();
+						outputGobbler.start();
+						process.waitFor();
+						int exitValue = process.exitValue();
+						MemoDialog.openInformation(window.getShell(), "Prompt result", "Exit code=" + exitValue + "\n" + sb.toString());
+
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		promptAction.setText("Execute Prompt Command");
+		promptAction.setId("org.raas4emf.cms.ui.PromptAction");
+		register(promptAction);
 
 		shutdownServerAction = new Action() {
 			public void run() {
@@ -646,6 +713,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		adminMenu.add(showAccessLogAction);
 		adminMenu.add(showEclipseLogAction);
 		adminMenu.add(showTomcatLogAction);
+		adminMenu.add(promptAction);
 		adminMenu.add(loadBackup);
 		adminMenu.add(saveBackup);
 		for (Action action : configActions)

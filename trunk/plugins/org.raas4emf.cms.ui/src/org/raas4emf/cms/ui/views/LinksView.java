@@ -151,25 +151,29 @@ public class LinksView extends ViewPart implements ISelectionListener {
 			html.append("</a> ");
 		}
 
-		if (PreviewView.isWebGL(Arrays.asList(artifact)) || PreviewView.isCollada(Arrays.asList(artifact)) || PreviewView.isGeometryModel(Arrays.asList(artifact))) {
-			html.append("<br>");
-			String renderer = CMSActivator.getSessionInstance().getRenderer().toLowerCase();
-			final boolean doThreejs = !renderer.contains("o3d");
-			String webglUri = RAASUtils.getRAASProp("RAASSERVICEURL") + (doThreejs ? "threejs/" : "o3d/") + "modelviewer.html?artifact=" + artifact.cdoID().toURIFragment();
-			if (renderer.contains("canvas"))
-				webglUri += "&renderer=canvas";
-			if (renderer.contains("svg"))
-				webglUri += "&renderer=svg";
-			if (renderer.contains("software"))
-				webglUri += "&renderer=software";
-			final String filename = PreviewView.getScene3dName();
-			webglUri += "&filename=" + filename;
-			html.append("<a href=\"");
-			html.append(webglUri);
-			html.append("\">");
-			html.append("Standalone View");
-			html.append("</a> ");
+		try {
+			if (PreviewView.isWebGL(Arrays.asList(artifact)) || PreviewView.isCollada(Arrays.asList(artifact)) || PreviewView.isGeometryModel(Arrays.asList(artifact))) {
+				String renderer = CMSActivator.getSessionInstance().getRenderer().toLowerCase();
+				final boolean doThreejs = !renderer.contains("o3d");
+				String webglUri = RAASUtils.getRAASProp("RAASSERVICEURL") + (doThreejs ? "threejs/" : "o3d/") + "modelviewer.html?artifact=" + artifact.cdoID().toURIFragment();
+				if (renderer.contains("canvas"))
+					webglUri += "&renderer=canvas";
+				if (renderer.contains("svg"))
+					webglUri += "&renderer=svg";
+				if (renderer.contains("software"))
+					webglUri += "&renderer=software";
+				final String filename = PreviewView.getScene3dName();
+				webglUri += "&filename=" + filename;
+				html.append("<br>");
+				html.append("<a href=\"");
+				html.append(webglUri);
+				html.append("\">");
+				html.append("Standalone View");
+				html.append("</a> ");
 
+			}
+		} catch (Exception e) {
+			// case standalone view is not supported
 		}
 	}
 
