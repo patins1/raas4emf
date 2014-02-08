@@ -1061,6 +1061,8 @@ function updateGuiControl(c) {
 }
 
 function updateGui(gui) {
+	
+	  if (!gui) return;
 
 	  // Iterate over all controllers
 	  for (var i in gui.__controllers) {
