@@ -33,35 +33,35 @@ public class IfcToThreejsTranformator implements ITranformator {
 
 	public File transform(InputStream ifcStream, File dir, String pureFilename, final IProgressMonitor monitor) throws IOException {
 		System.out.println("Start transforming " + pureFilename);
-		if (DEFAULT_BLENDER_LOCATION == null)
-			DEFAULT_BLENDER_LOCATION = new File(RAASUtils.getRAASProp("BLENDER"));
 		worked = 0;
 		Date started = new Date();
 		monitor.subTask("Prepare IFC file");
 		File ifcFile = new File(dir, pureFilename + ".ifc");
 		File blendFile = new File(dir, pureFilename + ".blend");
-		FileOutputStream y = new FileOutputStream(ifcFile);
-		if (USE_GUIDS)
-			FileUtil.inputstreamToOutputstream(ifcStream, y);
-		else
-			new IFCGuidByIndexPatch(ifcStream, y).trigger();
-		y.flush();
-		y.close();
-		ifcStream.close();
-		monitor.worked(1);
-		if (monitor.isCanceled())
-			return null;
-		monitor.subTask("Creating geometry");
 		File targetFile = new File(dir, pureFilename + getExportExt());
 		File errorFile = new File(dir, pureFilename + getExportExt() + ".error");
-		if (errorFile.exists())
-			errorFile.delete();
-		File untitledBlenderFile = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "untitled.blend");
-		// TODO Toowoomba-2012-05-17_optimized.ifc and Door Sliding have problem with splitting, so disable for now
-		File script = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "IfcImportExport.py");
-		String cmd = TransformationUtils.quote(DEFAULT_BLENDER_LOCATION) + " -nojoystick -noaudio -b " + TransformationUtils.quote(untitledBlenderFile) + " -P " + TransformationUtils.quote(script) + " -- " + TransformationUtils.quote(ifcFile) + " " + TransformationUtils.quote(targetFile);
-		System.out.println("Executing " + cmd);
 		try {
+			FileOutputStream y = new FileOutputStream(ifcFile);
+			if (USE_GUIDS)
+				FileUtil.inputstreamToOutputstream(ifcStream, y);
+			else
+				new IFCGuidByIndexPatch(ifcStream, y).trigger();
+			y.flush();
+			y.close();
+			ifcStream.close();
+			monitor.worked(1);
+			if (monitor.isCanceled())
+				return null;
+			monitor.subTask("Creating geometry");
+			if (errorFile.exists())
+				errorFile.delete();
+			File untitledBlenderFile = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "untitled.blend");
+			// TODO Toowoomba-2012-05-17_optimized.ifc and Door Sliding have problem with splitting, so disable for now
+			File script = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "IfcImportExport.py");
+			if (DEFAULT_BLENDER_LOCATION == null)
+				DEFAULT_BLENDER_LOCATION = new File(RAASUtils.getRAASProp("BLENDER"));
+			String cmd = TransformationUtils.quote(DEFAULT_BLENDER_LOCATION) + " -nojoystick -noaudio -b " + TransformationUtils.quote(untitledBlenderFile) + " -P " + TransformationUtils.quote(script) + " -- " + TransformationUtils.quote(ifcFile) + " " + TransformationUtils.quote(targetFile);
+			System.out.println("Executing " + cmd);
 			Process process = Runtime.getRuntime().exec(cmd, null);
 			StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR") {
 
