@@ -3,6 +3,9 @@
  */
 package org.raas4emf.cms.ui.views;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,9 +20,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -27,11 +32,13 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
@@ -504,8 +511,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				text += "<script type=\"text/javascript\">var g_customInit=function() {" + attachedOnLoad + "};</script>\n";
 			attachedOnLoad = null;
 			text += "</head>\n";
-			text += "<body style=\"overflow:hidden; \" onload=\"try{start();}catch(e2){var t=document.getElementById('clients'); var s='The RaaS server at " + RAASUtils.getRAASProp("RAASSERVICEURL") + " does not respond.&lt;br&gt;This URL can be configured on server side in " + RAASUtils.ROOTPATH
-					+ "/config.ini. ('+e2+')'; t.innerHTML=s;}\" onunload=\"try{uninit();}catch(e2){}\" oncontextmenu=\"return false;\">\n";
+			text += "<body style=\"overflow:hidden; \" onload=\"try{start();}catch(e2){var t=document.getElementById('clients'); var s='The RaaS server does not respond. ('+e2+')'; t.innerHTML=s;}\" onunload=\"try{uninit();}catch(e2){}\" oncontextmenu=\"return false;\">\n";
 			text += "<div style=\"color: gray;\" id=\"loading\"></div>\n";
 			if (artifacts.size() != 1)
 				text += "<div style=\"overflow:auto; width:100%; height:100%; position:absolute; top:0; left:0; \"><table style=\"width: 100%;" + (artifacts.size() == 1 ? "height: 100%; " : "") + " \"><tbody id=\"clients\"></tbody></table></div>\n";
@@ -549,9 +555,34 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 										if (!alreadyDisplayed(false, artifacts))
 											return;
 										browser.setText("Error when generating WebGL for " + artifact.getName() + ":" + status.getMessage());
+										FileDialog fileDialog = new FileDialog(getSite().getShell(), SWT.TITLE);
+										fileDialog.setFilterNames(new String[] { "JSON Geometry Files" });
+										fileDialog.setFilterExtensions(new String[] { "*.js" });
+										fileDialog.setText("Upload geometry file manually");
+										fileDialog.setFilterIndex(0);
+										if (fileDialog.open() == null)
+											return;
+										final String[] fileNames = fileDialog.getFileNames();
+										int i = 0;
+										for (String f : fileNames) {
+											if (!new File(f).exists()) {
+												fileNames[i] = f = new File(new File(fileDialog.getFilterPath()), f).toString();
+											}
+											try {
+												FileUtil.inputstreamToOutputstream(new FileInputStream(new File(f)), new FileOutputStream(new File(artifact.getTransformationsDirectory(), "scene.js")));
+												browser.setText(ftext);
+												new CustomFunction(browser, "theJavaFunction");
+											} catch (Exception e) {
+												e.printStackTrace();
+												ErrorDialog.openError(getSite().getShell(), "Error copying uploaded geometry file", e.getMessage(), new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, "Error copying uploaded geometry file", e));
+											}
+											i++;
+										}
 									}
 								});
 							artifactsToProcess = -1;
+							return Status.CANCEL_STATUS;
+
 						}
 						return status;
 					}
