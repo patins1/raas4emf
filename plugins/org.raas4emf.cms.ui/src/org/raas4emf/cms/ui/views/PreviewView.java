@@ -570,6 +570,9 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 											}
 											try {
 												FileUtil.inputstreamToOutputstream(new FileInputStream(new File(f)), new FileOutputStream(new File(artifact.getTransformationsDirectory(), "scene.js")));
+												File errorFile = new File(artifact.getTransformationsDirectory(), "scene.js.error");
+												if (errorFile.exists())
+													errorFile.delete();
 												browser.setText(ftext);
 												new CustomFunction(browser, "theJavaFunction");
 											} catch (Exception e) {
