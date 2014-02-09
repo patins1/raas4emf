@@ -3,6 +3,7 @@
  */
 package org.raas4emf.cms.ui.rcp;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.raas4emf.cms.ui.discriminator.IRAASSessionSingletonService;
@@ -17,7 +18,7 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -26,21 +27,22 @@ public class Activator extends AbstractUIPlugin {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		plugin = this;		
+		plugin = this;
 		IRAASSessionSingletonService service = new RAASSessionSingletonService();
 		// Third parameter is a hashmap which allows to configure the service
 		// Not required in this example
-		context.registerService(IRAASSessionSingletonService.class.getName(), service,
-				null);
-		System.out.println("IRAASSessionSingletonService is registered");
+		context.registerService(IRAASSessionSingletonService.class.getName(), service, null);
+		log("IRAASSessionSingletonService is registered");
 	}
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
@@ -50,11 +52,14 @@ public class Activator extends AbstractUIPlugin {
 
 	/**
 	 * Returns the shared instance
-	 *
+	 * 
 	 * @return the shared instance
 	 */
 	public static Activator getDefault() {
 		return plugin;
 	}
 
+	public static void log(String msg) {
+		getDefault().getLog().log(new Status(Status.INFO, getDefault().getBundle().getSymbolicName(), Status.OK, msg, null));
+	}
 }
