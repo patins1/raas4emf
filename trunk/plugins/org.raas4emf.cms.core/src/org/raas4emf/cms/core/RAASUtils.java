@@ -199,7 +199,7 @@ public class RAASUtils {
 							String string = (String) val;
 							int maxLength = 255;// string.substring(0, 255).replace("\n", "").length();
 							if (string.length() > maxLength) {
-								System.out.println("Cannot truncate " + string);
+								Activator.err("Cannot truncate " + string);
 							}
 						}
 					}
@@ -229,7 +229,7 @@ public class RAASUtils {
 			return;
 		try {
 			modelElement.eResource().save(saveOptions);
-			LoggingUtil.log(message);
+			Activator.log(message);
 		} catch (Throwable e) {
 			handleFailure(modelElement, message, e);
 		}
@@ -240,7 +240,7 @@ public class RAASUtils {
 	}
 
 	private static void handleFailure(CDOObject modelElement, String message, Throwable e) {
-		LoggingUtil.log(message, e);
+		Activator.err(message, e);
 		CDOTransaction transaction = (CDOTransaction) modelElement.cdoResource().cdoView();
 		transaction.rollback();
 		if (modelElement instanceof Artifact) {
@@ -497,7 +497,7 @@ public class RAASUtils {
 					RAASPROPERTIES.load(fis);
 					fis.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					Activator.err(e);
 					throw new RuntimeException(e);
 				}
 			}
@@ -517,7 +517,7 @@ public class RAASUtils {
 		removeNulls(folder, result);
 		// if (result.remove(null)) {
 		// while (result.remove(null)) {
-		// System.out.println("Removed null");
+		// Activator.log("Removed null");
 		// i++;
 		// }
 		// folder.getArtifacts().clear();
@@ -530,12 +530,12 @@ public class RAASUtils {
 	public static void removeNulls(final Object container, List<?> result) {
 		int i;
 		while ((i = result.indexOf(null)) != -1) {
-			System.out.println("Delete #" + i + " in " + RAASUtils.getNameOf(container));
+			Activator.log("Delete #" + i + " in " + RAASUtils.getNameOf(container));
 			if (i - 1 >= 0 && result.get(i - 1) != null) {
-				System.out.println("Came before in " + RAASUtils.getNameOf(result.get(i - 1)));
+				Activator.log("Came before in " + RAASUtils.getNameOf(result.get(i - 1)));
 			}
 			if (i + 1 <= result.size() - 1 && result.get(i + 1) != null) {
-				System.out.println("Came after " + RAASUtils.getNameOf(result.get(i + 1)));
+				Activator.log("Came after " + RAASUtils.getNameOf(result.get(i + 1)));
 			}
 			result.remove(i);
 		}
@@ -544,7 +544,7 @@ public class RAASUtils {
 	public static List<EObject> getNamedChildren(final Folder folder) {
 		List<EObject> result = new ArrayList<EObject>(folder.eContents());
 		while (result.remove(null))
-			System.out.println("Removed null");
+			Activator.log("Removed null");
 		return result;
 	}
 
@@ -610,7 +610,7 @@ public class RAASUtils {
 	}
 
 	public static void doSaveAsSubTask(CDOObject modelElement, String message, IProgressMonitor monitor) {
-		System.out.println("Begin saving");
+		Activator.log("Begin saving");
 		monitor.subTask("Save changes");
 		final Map<Object, Object> saveOptions = new HashMap<Object, Object>();
 		saveOptions.put(CDOResource.OPTION_SAVE_PROGRESS_MONITOR, monitor);
