@@ -94,7 +94,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction saveAllAction;
 	private IWorkbenchAction closeAction;
 	private IWorkbenchAction closeAllAction;
-	private Action showEclipseLogAction, showTomcatLogAction;
+	private Action showEclipseLogAction;
 	private Action restartRAASServerAction;
 	private Action changeProjectionModeAction;
 	private Action changeFillModeAction;
@@ -254,9 +254,9 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		showEclipseLogAction = new Action() {
 			public void run() {
 				try {
-					File workspaceDirectory = Platform.getLocation().toFile();
-					MemoDialog.openInformation(window.getShell(), "Eclipse Log", "File=" + workspaceDirectory);
-					MemoDialog.openInformation(window.getShell(), "Eclipse Log", TransformationUtils.stringFromFile(new File(workspaceDirectory, "/.metadata/.log")));
+					File file = Platform.getLogFileLocation().toFile();
+					MemoDialog.openInformation(window.getShell(), "Eclipse Log", "File=" + file);
+					MemoDialog.openInformation(window.getShell(), "Eclipse Log", TransformationUtils.stringFromFile(file));
 				} catch (IOException e) {
 					MemoDialog.openInformation(window.getShell(), "Error", e.getMessage());
 					throw new RuntimeException(e);
@@ -266,20 +266,6 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		showEclipseLogAction.setText("Show Eclipse Log");
 		showEclipseLogAction.setId("org.raas4emf.cms.ui.ShowEclipseLogAction");
 		register(showEclipseLogAction);
-
-		showTomcatLogAction = new Action() {
-			public void run() {
-				try {
-					MemoDialog.openInformation(window.getShell(), "Tomcat Log", TransformationUtils.stringFromFile(new File(RAASUtils.ROOTPATH + "/apache-tomcat/logs/catalina.out")));
-				} catch (IOException e) {
-					MemoDialog.openInformation(window.getShell(), "Error", e.getMessage());
-					throw new RuntimeException(e);
-				}
-			}
-		};
-		showTomcatLogAction.setText("Show Tomcat Console Log");
-		showTomcatLogAction.setId("org.raas4emf.cms.ui.ShowTomcatLogAction");
-		register(showTomcatLogAction);
 
 		changeProjectionModeAction = new Action() {
 			public void run() {
@@ -696,7 +682,6 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		adminMenu.add(restartRAASServerAction);
 		adminMenu.add(shutdownServerAction);
 		adminMenu.add(showEclipseLogAction);
-		adminMenu.add(showTomcatLogAction);
 		adminMenu.add(promptAction);
 		adminMenu.add(loadBackup);
 		adminMenu.add(saveBackup);
