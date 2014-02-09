@@ -66,7 +66,7 @@ import raascms.util.XMIExportResource;
 @XmlType(name = "Artifact")
 @XmlRootElement(name = "ArtifactElement")
 public class ArtifactImpl extends CDOObjectImpl implements Artifact {
-	public static String CACHE_DIR = "/bim/NOLServer/cache";
+	public static File CACHE_DIR = new File(Platform.getLocation().toFile(), "cache");
 	static public final String OPTION_CONTENTSLIST = EList.class.getName();
 	public static final String OPTION_SAVE_PROGRESS_MONITOR = IProgressMonitor.class.getName();
 	static public final String OPTION_MVD = "OPTION_MVD";
@@ -325,8 +325,7 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 	}
 
 	public File getTransformationsDirectory() {
-		String tmpDir = CACHE_DIR;
-		File artifactsDir = new File(new File(tmpDir), "transformations");
+		File artifactsDir = new File(CACHE_DIR, "transformations");
 		File dir = new File(artifactsDir, HexUtil.bytesToHex(getFileContent().getID()));
 		dir.mkdirs();
 		return dir;
@@ -347,8 +346,7 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 
 	public static File serializeModel(Artifact artifact, String filename, final IProgressMonitor monitor) throws IOException {
 		ResourceSet resourceSet = new ResourceSetImpl();
-		String tmpDir = CACHE_DIR;
-		File artifactsDir = new File(new File(tmpDir), "serializations");
+		File artifactsDir = new File(CACHE_DIR, "serializations");
 		File dir = new File(artifactsDir, artifact.cdoID() != null ? artifact.cdoID().toURIFragment() : "temp");
 		dir.mkdirs();
 
