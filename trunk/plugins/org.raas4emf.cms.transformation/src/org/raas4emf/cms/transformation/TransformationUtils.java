@@ -110,7 +110,7 @@ public class TransformationUtils {
 		synchronized (extensionMap) {
 			if (extensionMap.isEmpty()) {
 				if (Platform.getExtensionRegistry() != null) {
-					IExtension[] extensions = Platform.getExtensionRegistry().getExtensionPoint(Activator.PLUGIN_ID, "transformator").getExtensions();
+					IExtension[] extensions = Platform.getExtensionRegistry().getExtensionPoint(Activator.getDefault().getBundle().getSymbolicName(), "transformator").getExtensions();
 					for (IExtension extension : extensions) {
 						IConfigurationElement[] configurationElements = extension.getConfigurationElements();
 						addConfigurationElements(configurationElements);
