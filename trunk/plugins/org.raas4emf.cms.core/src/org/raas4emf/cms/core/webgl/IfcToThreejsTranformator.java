@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
-import java.util.Arrays;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -132,7 +131,7 @@ public class IfcToThreejsTranformator implements ITranformator {
 				blendFile.delete();
 			monitor.worked(1);
 		} catch (Exception e) {
-			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace())), new FileOutputStream(errorFile));
+			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(e.getMessage()), new FileOutputStream(errorFile));
 			System.out.println("Stopped conversion with message: " + e.getMessage());
 			LoggingUtil.log(e.getMessage(), e);
 			e.printStackTrace();
