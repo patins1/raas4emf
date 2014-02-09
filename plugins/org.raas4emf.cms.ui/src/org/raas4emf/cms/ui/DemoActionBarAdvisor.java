@@ -271,7 +271,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 				try {
 					File workspaceDirectory = Platform.getLocation().toFile();
 					MemoDialog.openInformation(window.getShell(), "Eclipse Log", "File=" + workspaceDirectory);
-					MemoDialog.openInformation(window.getShell(), "Eclipse Log", TransformationUtils.stringFromFile(new File(workspaceDirectory + "/.metadata/.log")));
+					MemoDialog.openInformation(window.getShell(), "Eclipse Log", TransformationUtils.stringFromFile(new File(workspaceDirectory, "/.metadata/.log")));
 				} catch (IOException e) {
 					MemoDialog.openInformation(window.getShell(), "Error", e.getMessage());
 					throw new RuntimeException(e);
