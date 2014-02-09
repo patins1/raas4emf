@@ -26,8 +26,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.raas4emf.cms.core.RAASUtils;
-import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.CMSActivator;
+import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
 
 import raascms.Folder;
@@ -52,7 +52,7 @@ public class ZipAction extends AbstractHandler {
 		ZipUtility zip = new ZipUtility(monitor, sessionInstance);
 		try {
 			final File file = File.createTempFile(name + TEMP_SEPARATOR, ".zip");
-			System.out.println("Zipping at " + file);
+			CMSActivator.log("Zipping at " + file);
 			zip.zip(selection, file, level);
 			stati.addAll(zip.getStati());
 			monitor.done();
@@ -71,7 +71,7 @@ public class ZipAction extends AbstractHandler {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			CMSActivator.err(e);
 			monitor.done();
 			stati.add(new Status(Status.ERROR, CMSActivator.PLUGIN_ID, "Failed to zip contents", e));
 		}
@@ -123,7 +123,7 @@ public class ZipAction extends AbstractHandler {
 		try {
 			window.getActivePage().showView("org.eclipse.ui.views.ProgressView", null, IWorkbenchPage.VIEW_VISIBLE);
 		} catch (PartInitException e) {
-			e.printStackTrace();
+			CMSActivator.err(e);
 		}
 	}
 }

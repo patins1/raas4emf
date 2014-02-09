@@ -61,7 +61,6 @@ import org.eclipse.ui.menus.IMenuService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
-import org.raas4emf.cms.core.LoggingUtil;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.transformation.StreamGobbler;
 import org.raas4emf.cms.transformation.TransformationUtils;
@@ -95,7 +94,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction saveAllAction;
 	private IWorkbenchAction closeAction;
 	private IWorkbenchAction closeAllAction;
-	private Action showAccessLogAction, showEclipseLogAction, showTomcatLogAction;
+	private Action showEclipseLogAction, showTomcatLogAction;
 	private Action restartRAASServerAction;
 	private Action changeProjectionModeAction;
 	private Action changeFillModeAction;
@@ -165,10 +164,10 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 						browser.openURL(new URL("https://sites.google.com/site/nolwebinterfacetutorial/home#" + part.getSite().getId().substring(part.getSite().getId().lastIndexOf('.') + 1)));
 					else
 						browser.openURL(new URL("https://sites.google.com/site/nolwebinterfacetutorial/home"));
-					System.out.println("title=" + part.getTitle());
-					System.out.println("id=" + part.getSite().getId());
+					CMSActivator.log("title=" + part.getTitle());
+					CMSActivator.log("id=" + part.getSite().getId());
 				} catch (Exception e) {
-					e.printStackTrace();
+					CMSActivator.err(e);
 				}
 			}
 		};
@@ -178,20 +177,6 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		showViewMenuMgr = new MenuManager("Show View", "showView");
 		IContributionItem showViewMenu = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
 		showViewMenuMgr.add(showViewMenu);
-
-		showAccessLogAction = new Action() {
-			public void run() {
-				try {
-					MemoDialog.openInformation(window.getShell(), "Access Log", TransformationUtils.stringFromFile(LoggingUtil.getAccessLogFile()));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-			}
-		};
-		showAccessLogAction.setText("Show Access Log");
-		showAccessLogAction.setId("org.raas4emf.cms.ui.ShowAccessLogAction");
-		register(showAccessLogAction);
 
 		generateFingerprintAction = new Action() {
 			public void run() {
@@ -209,7 +194,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 					}
 					return;
 				} catch (NoSuchAlgorithmException e) {
-					e.printStackTrace();
+					CMSActivator.err(e);
 				}
 
 			}
@@ -366,7 +351,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 					try {
 						Runtime.getRuntime().exec("cmd /c start C:" + RAASUtils.ROOTPATH.replace('/', '\\') + "\\update_and_restart.bat");
 					} catch (IOException e) {
-						e.printStackTrace();
+						CMSActivator.err(e);
 					}
 				}
 			}
@@ -417,9 +402,9 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 						MemoDialog.openInformation(window.getShell(), "Prompt result", "Exit code=" + exitValue + "\n" + sb.toString());
 
 					} catch (IOException e) {
-						e.printStackTrace();
+						CMSActivator.err(e);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						CMSActivator.err(e);
 					}
 				}
 			}
@@ -461,7 +446,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 					});
 				} catch (Exception e) {
 					MessageDialog.openError(window.getShell(), "Error", e.getMessage());
-					e.printStackTrace();
+					CMSActivator.err(e);
 				}
 			}
 		};
@@ -481,7 +466,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 							selection.add(folder);
 					new ZipAction().execute(window, selection);
 				} catch (ExecutionException e) {
-					e.printStackTrace();
+					CMSActivator.err(e);
 				}
 			}
 		};
@@ -549,7 +534,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 				try {
 					window.getActivePage().showView(PreviewView.ID, String.valueOf(browserIndex), IWorkbenchPage.VIEW_ACTIVATE);
 				} catch (PartInitException e) {
-					e.printStackTrace();
+					CMSActivator.err(e);
 				}
 			}
 		};
@@ -592,7 +577,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 								if (this.isChecked())
 									window.getWorkbench().showPerspective(pers.getId(), window);
 							} catch (WorkbenchException e) {
-								e.printStackTrace();
+								CMSActivator.err(e);
 							}
 						}
 					};
@@ -677,7 +662,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 					if (url != null)
 						typeAction.setImageDescriptor(ImageDescriptor.createFromURL(new URL(url)));
 				} catch (MalformedURLException e) {
-					e.printStackTrace();
+					CMSActivator.err(e);
 				}
 				return true;
 			}
@@ -710,7 +695,6 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 
 		adminMenu.add(restartRAASServerAction);
 		adminMenu.add(shutdownServerAction);
-		adminMenu.add(showAccessLogAction);
 		adminMenu.add(showEclipseLogAction);
 		adminMenu.add(showTomcatLogAction);
 		adminMenu.add(promptAction);

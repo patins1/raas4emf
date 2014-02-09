@@ -18,6 +18,7 @@ import org.ifc4emf.part21.loader.ContainmentTreeOrderedByNumberHelper;
 import org.raas4emf.cms.core.IGeometricIDResolver;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.AdapterFactoryTyped;
+import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.actions.QueryAction;
 import org.raas4emf.cms.ui.views.DirectoryView;
 
@@ -56,10 +57,10 @@ public class GeometricIDResolverAdapterFactory extends AdapterFactoryTyped<Strin
 						// long end1 = System.currentTimeMillis();
 						// Integer index2 = guidToPart21.get(guid);
 						// long end2 = System.currentTimeMillis();
-						System.out.println("SQL find index for guid took " + (end0 - start) + " milliseconds");
-						// System.out.println("Get index for guid took " + (end1 - end0) + " milliseconds");
-						// System.out.println("Find index for guid took " + (end2 - end1) + " milliseconds");
-						// System.out.println(index + "=" + index2);
+						CMSActivator.log("SQL find index for guid took " + (end0 - start) + " milliseconds");
+						// CMSActivator.log("Get index for guid took " + (end1 - end0) + " milliseconds");
+						// CMSActivator.log("Find index for guid took " + (end2 - end1) + " milliseconds");
+						// CMSActivator.log(index + "=" + index2);
 						if (index != null) {
 							EObject result = getFromIndex(index, artifact);
 							if (result != null)
@@ -93,7 +94,7 @@ public class GeometricIDResolverAdapterFactory extends AdapterFactoryTyped<Strin
 
 				List<Object> result = QueryAction.execSql(sql, model.cdoResource().cdoView());
 				if (result.size() == 1 && result.get(0) instanceof String) {
-					System.out.println((String) result.get(0));
+					CMSActivator.log((String) result.get(0));
 				}
 				if (result.size() == 1 && result.get(0) instanceof Integer) {
 					return (Integer) result.get(0);
@@ -109,7 +110,7 @@ public class GeometricIDResolverAdapterFactory extends AdapterFactoryTyped<Strin
 						ContainmentTreeOrderedByNumberHelper helper = new ContainmentTreeOrderedByNumberHelper(model);
 						EObject result = helper.get(integer);
 						long end = System.currentTimeMillis();
-						System.out.println("Find EObject from index " + (end - start) + " milliseconds");
+						CMSActivator.log("Find EObject from index " + (end - start) + " milliseconds");
 						return result;
 					}
 				}
@@ -180,7 +181,7 @@ public class GeometricIDResolverAdapterFactory extends AdapterFactoryTyped<Strin
 
 		List<Object> result = QueryAction.execSql(sql, model.cdoResource().cdoView());
 		if (result.size() == 1 && result.get(0) instanceof String) {
-			System.out.println((String) result.get(0));
+			CMSActivator.log((String) result.get(0));
 		}
 		if (result.size() == 1 && result.get(0) instanceof Integer) {
 			return (Integer) result.get(0);

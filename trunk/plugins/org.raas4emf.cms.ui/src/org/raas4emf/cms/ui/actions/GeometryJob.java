@@ -29,7 +29,7 @@ public class GeometryJob extends RAASJob {
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;
 		} catch (final Exception e) {
-			e.printStackTrace();
+			CMSActivator.err(e);
 			return new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, e.getMessage(), e);
 		}
 		return Status.OK_STATUS;

@@ -25,8 +25,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.raas4emf.cms.core.RAASUtils;
-import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.CMSActivator;
+import org.raas4emf.cms.ui.RAASUIUtils;
 
 import raascms.Artifact;
 import raascms.Folder;
@@ -78,7 +78,7 @@ public class UnzipAction extends AbstractHandler {
 					try {
 						return runJob((Folder) zipArtifact.eContainer(), zipArtifact.getFileContent().getContents(), monitor, shell.getDisplay());
 					} catch (IOException e) {
-						e.printStackTrace();
+						CMSActivator.err(e);
 						return Status.CANCEL_STATUS;
 					}
 				}
@@ -88,7 +88,7 @@ public class UnzipAction extends AbstractHandler {
 			try {
 				HandlerUtil.getActiveWorkbenchWindowChecked(event).getActivePage().showView("org.eclipse.ui.views.ProgressView", null, IWorkbenchPage.VIEW_VISIBLE);
 			} catch (PartInitException e) {
-				e.printStackTrace();
+				CMSActivator.err(e);
 			}
 		}
 		return null;

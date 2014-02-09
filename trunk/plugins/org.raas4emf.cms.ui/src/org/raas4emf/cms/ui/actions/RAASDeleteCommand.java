@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.raas4emf.cms.ui.CMSActivator;
 
 import raascms.Artifact;
 import raascms.Folder;
@@ -35,7 +36,7 @@ public class RAASDeleteCommand extends DeleteCommand {
 				if (artifact != null) {
 					emfObjectsToSearch.add(artifact);
 				} else {
-					System.out.println("Couldn't find usages for " + eObject);
+					CMSActivator.log("Couldn't find usages for " + eObject);
 					return super.findReferences(eObjects);
 				}
 			}

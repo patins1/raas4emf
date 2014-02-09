@@ -181,7 +181,7 @@ public class RAASEditorInputImpl extends URIEditorInput implements RAASEditorInp
 					saveOptions.put(Resource.OPTION_SAVE_ONLY_IF_CHANGED, Resource.OPTION_SAVE_ONLY_IF_CHANGED_MEMORY_BUFFER);
 					blobArtifact.cdoResource().save(saveOptions);
 				} catch (IOException e) {
-					e.printStackTrace();
+					CMSActivator.err(e);
 					throw new RuntimeException(e);
 				}
 			}

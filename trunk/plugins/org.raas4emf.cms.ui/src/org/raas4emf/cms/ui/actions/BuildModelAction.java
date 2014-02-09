@@ -18,6 +18,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.statushandlers.StatusManager;
+import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
 
 import raascms.Artifact;
@@ -43,7 +44,7 @@ public class BuildModelAction extends AbstractHandler {
 		try {
 			HandlerUtil.getActiveWorkbenchWindowChecked(event).getActivePage().showView("org.eclipse.ui.views.ProgressView", null, IWorkbenchPage.VIEW_VISIBLE);
 		} catch (PartInitException e) {
-			e.printStackTrace();
+			CMSActivator.err(e);
 		}
 		return null;
 	}
@@ -74,7 +75,7 @@ public class BuildModelAction extends AbstractHandler {
 				long start = System.currentTimeMillis();
 				final IStatus status = super.run(monitor);
 				long end = System.currentTimeMillis();
-				System.out.println("Building " + artifact.getName() + " took " + (end - start) + "ms");
+				CMSActivator.log("Building " + artifact.getName() + " took " + (end - start) + "ms");
 				if (status.getSeverity() == IStatus.ERROR) {
 					shell.getDisplay().asyncExec(new Runnable() {
 						public void run() {

@@ -10,10 +10,11 @@ import java.io.StringBufferInputStream;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.cdo.internal.server.bundle.CDOServerApplication;
 import org.eclipse.net4j.internal.util.bundle.AbstractPlatform;
 import org.eclipse.osgi.framework.internal.core.FrameworkProperties;
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.raas4emf.cms.core.FileUtil;
@@ -22,7 +23,7 @@ import org.raas4emf.cms.ui.discriminator.IRAASSessionSingletonService;
 import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
 
 @SuppressWarnings("restriction")
-public class CMSActivator implements BundleActivator {
+public class CMSActivator extends Plugin {
 
 	public static final String PLUGIN_ID = "org.raas4emf.cms.ui";
 	private static BundleContext context;
@@ -33,6 +34,9 @@ public class CMSActivator implements BundleActivator {
 		return context;
 	}
 
+	// The shared instance
+	private static CMSActivator plugin;
+
 	static private IRAASSessionSingletonService service;
 
 	/*
@@ -41,7 +45,9 @@ public class CMSActivator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext )
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
+		super.start(bundleContext);
 		CMSActivator.context = bundleContext;
+		plugin = this;
 
 		URL fileURL = new URL("platform:/plugin/org.raas4emf.server/config/cdo-server.template.xml");
 		URL u = FileLocator.resolve(fileURL);
@@ -61,7 +67,7 @@ public class CMSActivator implements BundleActivator {
 		}
 		if (jdbc == null)
 			jdbc = "jdbc:hsqldb:mem:repo1";
-		System.out.println("JDBC_CONNECTION_STRING=" + jdbc);
+		CMSActivator.log("JDBC_CONNECTION_STRING=" + jdbc);
 
 		for (String db : new String[] { "h2", "hsqldb", "postgresql" }) {
 			if (jdbc.contains(db)) {
@@ -70,10 +76,10 @@ public class CMSActivator implements BundleActivator {
 				contents = replaceAttribute(contents, fromIndex, "url", jdbc);
 				contents = replaceAttribute(contents, fromIndex, "URL", jdbc);
 				FileUtil.inputstreamToOutputstream(new StringBufferInputStream(contents), new FileOutputStream(new File(file.getParentFile(), "cdo-server.xml")));
-				System.out.println("Created cdo-server.xml from template using " + jdbc);
+				CMSActivator.log("Created cdo-server.xml from template using " + jdbc);
 			}
 		}
-		System.out.println("Read config file from " + file.getParentFile().toString());
+		CMSActivator.log("Read config file from " + file.getParentFile().toString());
 		FrameworkProperties.setProperty(AbstractPlatform.SYSTEM_PROPERTY_NET4J_CONFIG, file.getParentFile().toString());
 
 		try {
@@ -90,7 +96,7 @@ public class CMSActivator implements BundleActivator {
 					dbapp = new CDOServerApplication();
 					dbapp.start(null);
 				} catch (Exception e) {
-					e.printStackTrace();
+					CMSActivator.err(e);
 				}
 			}
 
@@ -115,6 +121,8 @@ public class CMSActivator implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		CMSActivator.context = null;
+		plugin = null;
+		super.stop(bundleContext);
 	}
 
 	static public IRAASSessionSingletonService getService() {
@@ -130,4 +138,23 @@ public class CMSActivator implements BundleActivator {
 		return CMSActivator.getService().getInstance();
 	}
 
+	public static CMSActivator getDefault() {
+		return plugin;
+	}
+
+	public static void log(String msg) {
+		getDefault().getLog().log(new Status(Status.INFO, getDefault().getBundle().getSymbolicName(), Status.OK, msg, null));
+	}
+
+	public static void err(String msg) {
+		getDefault().getLog().log(new Status(Status.ERROR, getDefault().getBundle().getSymbolicName(), Status.OK, msg, null));
+	}
+
+	public static void err(String msg, Throwable e) {
+		getDefault().getLog().log(new Status(Status.ERROR, getDefault().getBundle().getSymbolicName(), Status.OK, msg, e));
+	}
+
+	public static void err(Throwable e) {
+		getDefault().getLog().log(new Status(Status.ERROR, getDefault().getBundle().getSymbolicName(), Status.OK, e.getMessage(), e));
+	}
 }

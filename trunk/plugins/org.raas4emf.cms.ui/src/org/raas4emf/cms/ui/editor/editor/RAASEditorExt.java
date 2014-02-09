@@ -382,7 +382,7 @@ public class RAASEditorExt extends RAASEditor {
 	// try {
 	// addPage(mePage);
 	// } catch (PartInitException e) {
-	// e.printStackTrace();
+	// CMSActivator.err(e);
 	// }
 	// }
 

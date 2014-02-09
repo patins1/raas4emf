@@ -17,6 +17,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.core.geometry.GeometryAlgorithms;
 import org.raas4emf.cms.core.geometry.XYZ;
+import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
 
 import raascms.Artifact;
@@ -130,7 +131,7 @@ public class ExamineGeometryAction extends AbstractHandler {
 		try {
 			artifact = RAASUtils.assureModelTree(RAASUtils.getModelBlob(artifact));
 		} catch (IOException e) {
-			e.printStackTrace();
+			CMSActivator.err(e);
 			return;
 		}
 		isInteresting = false;

@@ -338,7 +338,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 			getRootContent(trans.getRootResource(), trans);
 			viewer.setInput(getInitialInput(trans));
 		} catch (Exception e) {
-			e.printStackTrace();
+			CMSActivator.err(e);
 			// do nothing
 		}
 	}
@@ -470,7 +470,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 	public EList<EObject> getRootContent(CDOResource modelElement, CDOView trans) {
 		EList<EObject> result = modelElement.getContents();
 		if (result.isEmpty()) {
-			System.out.println("Adding root resource");
+			CMSActivator.log("Adding root resource");
 			((CDOTransaction) trans).createResource(RAASUtils.ROOT_RESOURCE_NAME);
 			result = modelElement.getContents();
 		}
@@ -486,7 +486,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 					CDOResource cdoResource = (CDOResource) res;
 					if (cdoResource.isModified()) {
 						cdoResource.save(Collections.EMPTY_MAP);
-						System.out.println("Saving root resource");
+						CMSActivator.log("Saving root resource");
 					}
 				}
 			} catch (IOException e) {
@@ -510,7 +510,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 		}
 		Folder result = RaascmsFactory.eINSTANCE.createFolder();
 		result.setName(name);
-		System.out.println("Adding folder " + name);
+		CMSActivator.log("Adding folder " + name);
 		RAASUtils.addToContent(parent, result);
 		return result;
 	}
