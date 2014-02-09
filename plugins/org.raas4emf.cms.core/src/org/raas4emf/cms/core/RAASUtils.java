@@ -470,7 +470,7 @@ public class RAASUtils {
 		try {
 			String cacheDir = getRAASProp("CACHE_DIR");
 			if (cacheDir != null)
-				ArtifactImpl.CACHE_DIR = cacheDir;
+				ArtifactImpl.CACHE_DIR = new File(cacheDir);
 		} catch (Exception e) {
 			// catch any exception - or this class is not initialized
 		}
