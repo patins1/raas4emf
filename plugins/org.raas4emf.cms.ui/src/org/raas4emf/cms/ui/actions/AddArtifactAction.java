@@ -97,18 +97,18 @@ public class AddArtifactAction extends AbstractHandler {
 						}
 					}
 					long ended = new Date().getTime();
-					System.out.println("Took " + (ended - started) + "ms to add to model");
+					CMSActivator.log("Took " + (ended - started) + "ms to add to model");
 					Resource resource = root.eResource();
 					increaseSessionTimeout(root);
 					final Map<Object, Object> saveOptions = new HashMap<Object, Object>();
 					saveOptions.put(CDOResource.OPTION_SAVE_PROGRESS_MONITOR, new SubProgressMonitor(monitor, 100));
 					resource.save(saveOptions);
 					long ended2 = new Date().getTime();
-					System.out.println("Took " + (ended2 - ended) + "ms to commit");
+					CMSActivator.log("Took " + (ended2 - ended) + "ms to commit");
 					if (finalizeAction != null)
 						finalizeAction.run();
 				} catch (Exception e) {
-					e.printStackTrace();
+					CMSActivator.err(e);
 					return new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, e.getMessage(), e);
 				}
 				return Status.OK_STATUS;

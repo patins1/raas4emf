@@ -33,6 +33,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.raas4emf.cms.core.RAASUtils;
+import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
 
 import raascms.Artifact;
@@ -171,16 +172,16 @@ public class MaterializeIFCAction extends AbstractHandler {
 								styles.add(style);
 							}
 							if (!styleNames.add(style.getName())) {
-								System.err.println(style.getName() + " added twice!");
+								CMSActivator.err(style.getName() + " added twice!");
 							}
-							System.out.println(style.getName() + " has " + styleMap.get(style).size() + " repitems from " + count + " elements" + (count != diffElements.size() ? "(" + diffElements.size() + " different elements)" : ""));
+							CMSActivator.log(style.getName() + " has " + styleMap.get(style).size() + " repitems from " + count + " elements" + (count != diffElements.size() ? "(" + diffElements.size() + " different elements)" : ""));
 							gColors += addItem2(style);
 						}
 						if (styleMap.isEmpty())
-							System.out.println("Stylemap empty!");
+							CMSActivator.log("Stylemap empty!");
 						if (gColors.length() > 0) {
 							gColors = "{\n" + gColors.substring(0, gColors.length() - 1) + "\n}";
-							System.out.println(gColors);
+							CMSActivator.log(gColors);
 
 							monitor.subTask("Restructure geometry in " + folder.getName());
 
@@ -220,8 +221,8 @@ public class MaterializeIFCAction extends AbstractHandler {
 						}
 					}
 				} catch (Exception e) {
-					System.err.println("Failed to separate materials for " + artifact.getName());
-					e.printStackTrace();
+					CMSActivator.err("Failed to separate materials for " + artifact.getName());
+					CMSActivator.err(e);
 				}
 				monitor.worked(1);
 				shell.getDisplay().readAndDispatch();
@@ -348,16 +349,16 @@ public class MaterializeIFCAction extends AbstractHandler {
 						if (items == null)
 							styleMap.put(surfaceStyle, items = new HashSet<IfcRepresentationItem>());
 						if (!items.add(item)) {
-							System.err.println("repitem has style twice!");
+							CMSActivator.err("repitem has style twice!");
 						}
 					} else {
-						System.err.println("No style for " + element.getGlobalId() + " of type " + element.eClass().getName());
-						System.err.println("getIfcCurveStylevalue=" + sel.getIfcCurveStylevalue());
-						System.err.println("getIfcFillAreaStylevalue=" + sel.getIfcFillAreaStylevalue());
-						System.err.println("getIfcNullStylevalue=" + sel.getIfcNullStylevalue());
-						System.err.println("getIfcSurfaceStylevalue=" + sel.getIfcSurfaceStylevalue());
-						System.err.println("getIfcSymbolStylevalue=" + sel.getIfcSymbolStylevalue());
-						System.err.println("getIfcTextStylevalue=" + sel.getIfcTextStylevalue());
+						CMSActivator.err("No style for " + element.getGlobalId() + " of type " + element.eClass().getName());
+						CMSActivator.err("getIfcCurveStylevalue=" + sel.getIfcCurveStylevalue());
+						CMSActivator.err("getIfcFillAreaStylevalue=" + sel.getIfcFillAreaStylevalue());
+						CMSActivator.err("getIfcNullStylevalue=" + sel.getIfcNullStylevalue());
+						CMSActivator.err("getIfcSurfaceStylevalue=" + sel.getIfcSurfaceStylevalue());
+						CMSActivator.err("getIfcSymbolStylevalue=" + sel.getIfcSymbolStylevalue());
+						CMSActivator.err("getIfcTextStylevalue=" + sel.getIfcTextStylevalue());
 					}
 				}
 			}

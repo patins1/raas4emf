@@ -63,7 +63,7 @@ public class GrafUtil {
 			return null;
 		Map<EObject, Object> infos = new HashMap<EObject, Object>();
 		GraphAlgorithms bestAlgo = GrafUtil.getBestPath(startPoints, endPoints, blackList);
-		System.out.println("bestAlgo:" + (bestAlgo != null ? bestAlgo.getWays().size() : "no path"));
+		CMSActivator.log("bestAlgo:" + (bestAlgo != null ? bestAlgo.getWays().size() : "no path"));
 		Set<EObject> newSel = new HashSet<EObject>();
 		if (bestAlgo != null) {
 			for (List<Object> way : bestAlgo.getWays()) {
@@ -143,7 +143,6 @@ public class GrafUtil {
 		XYZ lastProduct = null;
 		Object lastInfo = null;
 		boolean prune = false;
-		System.out.println();
 		for (int i = 0; i < products.size(); i++) {
 			EObject product = products.get(i);
 			if (product == null) {
@@ -153,7 +152,7 @@ public class GrafUtil {
 				prune = false;
 				wayCount++;
 			} else if (!prune) {
-				// System.out.println("class=" + product.eClass().getName() + " " + GrafUtil.getDefaultFactory().getVerticesFrom(Arrays.asList(product)).iterator().next().getName());
+				// CMSActivator.log("class=" + product.eClass().getName() + " " + GrafUtil.getDefaultFactory().getVerticesFrom(Arrays.asList(product)).iterator().next().getName());
 				if (infos.get(product) != null)
 					lastInfo = infos.get(product);
 				Object adapter = Platform.getAdapterManager().getAdapter(product, IGeometricCenter.class);

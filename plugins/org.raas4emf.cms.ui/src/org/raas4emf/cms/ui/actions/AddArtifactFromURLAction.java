@@ -27,8 +27,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.raas4emf.cms.core.RAASUtils;
-import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.CMSActivator;
+import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.views.DirectoryView;
 
 import raascms.Folder;
@@ -59,7 +59,7 @@ public class AddArtifactFromURLAction extends AbstractHandler {
 						try {
 							HandlerUtil.getActiveWorkbenchWindowChecked(event).getActivePage().showView("org.eclipse.ui.views.ProgressView", null, IWorkbenchPage.VIEW_ACTIVATE);
 						} catch (PartInitException e) {
-							e.printStackTrace();
+							CMSActivator.err(e);
 						}
 					}
 					Job job = new Job(desc) {
@@ -79,16 +79,16 @@ public class AddArtifactFromURLAction extends AbstractHandler {
 										RAASUtils.addFile(root, null, name, c.getInputStream());
 								}
 								long ended = new Date().getTime();
-								System.out.println("Took " + (ended - started) + "ms to add to model");
+								CMSActivator.log("Took " + (ended - started) + "ms to add to model");
 								Resource resource = root.eResource();
 								AddArtifactAction.increaseSessionTimeout(root);
 								final Map<Object, Object> saveOptions = new HashMap<Object, Object>();
 								saveOptions.put(CDOResource.OPTION_SAVE_PROGRESS_MONITOR, new SubProgressMonitor(monitor, 100));
 								resource.save(saveOptions);
 								long ended2 = new Date().getTime();
-								System.out.println("Took " + (ended2 - ended) + "ms to commit");
+								CMSActivator.log("Took " + (ended2 - ended) + "ms to commit");
 							} catch (Exception e) {
-								e.printStackTrace();
+								CMSActivator.err(e);
 								return new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, e.getMessage(), e);
 							}
 							return Status.OK_STATUS;
@@ -99,7 +99,7 @@ public class AddArtifactFromURLAction extends AbstractHandler {
 					try {
 						HandlerUtil.getActiveWorkbenchWindowChecked(event).getActivePage().showView("org.eclipse.ui.views.ProgressView", null, IWorkbenchPage.VIEW_VISIBLE);
 					} catch (PartInitException e) {
-						e.printStackTrace();
+						CMSActivator.err(e);
 					}
 				}
 			}

@@ -74,7 +74,7 @@ public class FindGUIDAction extends AbstractHandler {
 		// try {
 		// artifact = RAASUtils.assureModelTree(artifact);
 		// } catch (IOException e) {
-		// e.printStackTrace();
+		// CMSActivator.err(e);
 		// return;
 		// }
 		examineArtifact(artifact);

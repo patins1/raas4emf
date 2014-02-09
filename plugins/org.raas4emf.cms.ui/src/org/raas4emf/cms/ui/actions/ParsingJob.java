@@ -36,7 +36,7 @@ public class ParsingJob extends RAASJob {
 				AddArtifactAction.increaseSessionTimeout(artifact);
 				RAASUtils.generateModel(getResourceSet(), URI.createFileURI("/dev/" + artifact.getName()), artifact, monitor);
 			} catch (Exception e) {
-				e.printStackTrace();
+				CMSActivator.err(e);
 				return new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, "Error while building " + RAASUtils.getPath(artifact), e);
 			}
 		}

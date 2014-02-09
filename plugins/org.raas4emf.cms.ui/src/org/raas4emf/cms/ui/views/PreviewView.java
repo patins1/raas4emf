@@ -270,7 +270,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 	 * @return
 	 */
 	static public String doDrawLines(Artifact modelArtifact, List<XYZ> pts, Map<XYZ, Object> infos, String prefix, String message) {
-		System.out.println("Draw lines begins, length=" + pts.size());
+		CMSActivator.log("Draw lines begins, length=" + pts.size());
 		String artifactId = modelArtifact.cdoID().toURIFragment();
 		StringBuffer buf = new StringBuffer();
 		for (XYZ xyz : pts) {
@@ -286,7 +286,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			try {
 				return "printLines([" + RAASUtils.pruneLastChar(buf.toString()) + "],'" + artifactId + "','" + prefix + "','" + message + "');";
 			} catch (SWTException e) {
-				System.out.println("Could not execute printLines()");
+				CMSActivator.err("Could not execute printLines()");
 			}
 		}
 		return null;
@@ -298,10 +298,10 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			try {
 				browser.evaluate(command);
 			} catch (SWTException e) {
-				System.out.println("Could not execute printLines()");
+				CMSActivator.err("Could not execute printLines()");
 			}
 		}
-		System.out.println("Draw lines ends, elapsed=" + (System.currentTimeMillis() - start));
+		CMSActivator.log("Draw lines ends, elapsed=" + (System.currentTimeMillis() - start));
 	}
 
 	/**
@@ -317,7 +317,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			try {
 				browser.evaluate("printCameras([" + RAASUtils.pruneLastChar(ids) + "],'" + artifactId + "');");
 			} catch (SWTException e) {
-				System.out.println("Could not execute printCameras()");
+				CMSActivator.err("Could not execute printCameras()");
 			}
 		}
 	}
@@ -329,7 +329,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				try {
 					browser.evaluate("changeFillMode('" + mode_string + "','" + artifactId + "');");
 				} catch (SWTException e) {
-					System.out.println("Could not execute changeFillMode()");
+					CMSActivator.err("Could not execute changeFillMode()");
 				}
 			}
 		}
@@ -342,7 +342,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				try {
 					browser.evaluate("changeProjectionMode(" + orthogonal + ",'" + artifactId + "');");
 				} catch (SWTException e) {
-					System.out.println("Could not execute changeProjectionMode()");
+					CMSActivator.err("Could not execute changeProjectionMode()");
 				}
 			}
 		}
@@ -388,7 +388,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				try {
 					html.append(FileUtil.inputstreamToString(artifact.asFile("index.html")));
 				} catch (IOException e) {
-					e.printStackTrace();
+					CMSActivator.err(e);
 				}
 			} else {
 				html.append("<img alt=\"[Preview image]\" src=\"");
@@ -576,7 +576,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 												browser.setText(ftext);
 												new CustomFunction(browser, "theJavaFunction");
 											} catch (Exception e) {
-												e.printStackTrace();
+												CMSActivator.err(e);
 												ErrorDialog.openError(getSite().getShell(), "Error copying uploaded geometry file", e.getMessage(), new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, "Error copying uploaded geometry file", e));
 											}
 											i++;
@@ -952,9 +952,9 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			browser.evaluate(js);
 		} catch (SWTException e) {
 			if (js.indexOf("(") != -1) {
-				System.out.println("Could not execute " + js.substring(0, js.indexOf("(")) + "()");
+				CMSActivator.err("Could not execute " + js.substring(0, js.indexOf("(")) + "()");
 			} else {
-				System.out.println("Could not execute javascript!");
+				CMSActivator.err("Could not execute javascript!");
 			}
 		}
 		return true;
@@ -1001,7 +1001,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 					try {
 						view.getSite().getPage().showView(view.getViewSite().getId(), view.getViewSite().getSecondaryId(), IWorkbenchPage.VIEW_VISIBLE);
 					} catch (PartInitException e) {
-						e.printStackTrace();
+						CMSActivator.err(e);
 					}
 					makeVisible = false;
 				}

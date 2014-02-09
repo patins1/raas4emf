@@ -40,6 +40,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.progress.UIJob;
 import org.raas4emf.cms.core.RAASUtils;
+import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
 
 import raascms.Artifact;
@@ -107,7 +108,7 @@ public class NewArtifactAction extends AbstractHandler {
 									InputStream is = artifact.asFile(artifact.getName());
 									artifact.setFileContent(new CDOBlob(is));
 								} catch (IOException e) {
-									e.printStackTrace();
+									CMSActivator.err(e);
 									throw new RuntimeException(e);
 								}
 								artifact.getContents().clear();
@@ -178,7 +179,7 @@ public class NewArtifactAction extends AbstractHandler {
 					for (int i = 0; i < elements.length / 10 + 1; i++)
 						job.runInUIThread(new NullProgressMonitor());
 				} catch (Exception e) {
-					e.printStackTrace();
+					CMSActivator.err(e);
 				}
 		}
 

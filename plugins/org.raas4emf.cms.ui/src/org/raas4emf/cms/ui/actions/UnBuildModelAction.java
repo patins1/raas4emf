@@ -36,7 +36,7 @@ public class UnBuildModelAction extends BuildModelAction {
 				target.setModelDate(null);
 				RAASUtils.setModificationDate(target, new Date());
 			} catch (Exception e) {
-				e.printStackTrace();
+				CMSActivator.err(e);
 				return new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, "Error while unfolding " + RAASUtils.getPath(artifact), e);
 			}
 		}

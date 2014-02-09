@@ -14,6 +14,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.actions.IsolateAction;
 
@@ -59,7 +60,7 @@ public class TypeSelectionView extends PreviewView {
 				view.tree.getFilterControl().setText(type);
 			}
 		} catch (PartInitException e) {
-			e.printStackTrace();
+			CMSActivator.err(e);
 		}
 	}
 

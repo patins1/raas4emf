@@ -164,7 +164,7 @@ public class BakeAction extends AbstractHandler {
 			});
 			monitor.done();
 		} catch (IOException e) {
-			e.printStackTrace();
+			CMSActivator.err(e);
 			return new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, e.getMessage(), e);
 		}
 		return Status.OK_STATUS;

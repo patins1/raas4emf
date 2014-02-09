@@ -26,6 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.raas4emf.cms.core.RAASUtils;
+import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.views.PreviewView;
 
@@ -55,8 +56,8 @@ public class QueryAction extends AbstractHandler {
 			CDOView view = ((CDOResource) res).cdoView();
 			List<Object> result = execSql(queryString, view);
 			for (Object x : result) {
-				System.out.println(x.getClass());
-				System.out.println(x);
+				CMSActivator.log("" + x.getClass());
+				CMSActivator.log("" + x);
 			}
 			return result;
 		}
@@ -77,7 +78,7 @@ public class QueryAction extends AbstractHandler {
 		// @Override
 		// public List<CDOID> loadAhead(CDORevisionManager revisionManager, CDOBranchPoint branchPoint, EObject eObject, EStructuralFeature feature, CDOList list, int accessIndex, CDOID accessID) {
 		// // if (oldList == list)
-		// // System.out.println("Should look ahead " + feature.getName() + "[" + accessIndex + "]");
+		// // CMSActivator.log("Should look ahead " + feature.getName() + "[" + accessIndex + "]");
 		// // oldList = list;
 		// return super.loadAhead(revisionManager, branchPoint, eObject, feature, list, accessIndex, accessID);
 		// }
@@ -163,7 +164,7 @@ public class QueryAction extends AbstractHandler {
 								}
 								setErrorMessage(message);
 							} catch (Throwable e) {
-								e.printStackTrace();
+								CMSActivator.err(e);
 								setErrorMessage(e.getMessage());
 							}
 							return;
@@ -176,7 +177,7 @@ public class QueryAction extends AbstractHandler {
 
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			CMSActivator.err(e);
 		}
 		return null;
 	}

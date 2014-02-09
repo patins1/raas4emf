@@ -21,7 +21,7 @@ public class Startup implements IStartup {
 		// CDOServerApplication app = new CDOServerApplication();
 		// app.start(null);
 		// } catch (Exception e) {
-		// e.printStackTrace();
+		// CMSActivator.err(e);
 		// }
 		// }
 		//

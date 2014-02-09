@@ -204,7 +204,7 @@ public class DirectoryView extends FilesView {
 			try {
 				fingerprints.add(RAASUIUtils.getFingerprint(password.trim()));
 			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
+				CMSActivator.err(e);
 			}
 		}
 		CMSActivator.getSessionInstance().setUserObject("cachedFingerprints", fingerprints);
