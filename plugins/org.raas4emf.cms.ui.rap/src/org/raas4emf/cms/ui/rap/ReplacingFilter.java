@@ -52,7 +52,7 @@ public final class ReplacingFilter implements Filter {
 		if (content.contains(from))
 			content = content.replace(from, to);
 		else
-			System.out.println("Could not repalce doctype!");
+			Activator.err("Could not repalce doctype!");
 		// content = content.replace("</title>", "</title><meta http-equiv=\"X-UA-Compatible\" content=\"IE=IE8\" >");
 
 		response.setContentLength(content.length());
