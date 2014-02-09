@@ -12,8 +12,8 @@ import java.io.StringBufferInputStream;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.raas4emf.cms.core.Activator;
 import org.raas4emf.cms.core.FileUtil;
-import org.raas4emf.cms.core.LoggingUtil;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.transformation.ITranformator;
 import org.raas4emf.cms.transformation.StreamGobbler;
@@ -31,7 +31,7 @@ public class IfcToThreejsTranformator implements ITranformator {
 	}
 
 	public File transform(InputStream ifcStream, File dir, String pureFilename, final IProgressMonitor monitor) throws IOException {
-		System.out.println("Start transforming " + pureFilename);
+		Activator.log("Start transforming " + pureFilename);
 		worked = 0;
 		Date started = new Date();
 		monitor.subTask("Prepare IFC file");
@@ -60,7 +60,7 @@ public class IfcToThreejsTranformator implements ITranformator {
 			if (DEFAULT_BLENDER_LOCATION == null)
 				DEFAULT_BLENDER_LOCATION = new File(RAASUtils.getRAASProp("BLENDER"));
 			String cmd = TransformationUtils.quote(DEFAULT_BLENDER_LOCATION) + " -nojoystick -noaudio -b " + TransformationUtils.quote(untitledBlenderFile) + " -P " + TransformationUtils.quote(script) + " -- " + TransformationUtils.quote(ifcFile) + " " + TransformationUtils.quote(targetFile);
-			System.out.println("Executing " + cmd);
+			Activator.log("Executing " + cmd);
 			Process process = Runtime.getRuntime().exec(cmd, null);
 			StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR") {
 
@@ -118,23 +118,20 @@ public class IfcToThreejsTranformator implements ITranformator {
 			process.waitFor();
 			int exitValue = process.exitValue();
 			if (exitValue != 0) {
-				LoggingUtil.log("IFC transformation error:");
-				LoggingUtil.log(errorMessages);
+				Activator.err("IFC transformation error:\n" + errorMessages);
 				FileUtil.inputstreamToOutputstream(new StringBufferInputStream("Blender exit value = " + exitValue + "\n" + errorMessages), new FileOutputStream(errorFile));
 			}
-			System.out.println("Exit value=" + exitValue);
-			System.out.println("Written to " + targetFile);
+			Activator.log("Exit value=" + exitValue);
+			Activator.log("Written to " + targetFile);
 			Date ended = new Date();
-			System.out.println("Seconds elapsed =  " + (ended.getTime() - started.getTime()) / 1000);
+			Activator.log("Seconds elapsed =  " + (ended.getTime() - started.getTime()) / 1000);
 			// ifcFile.delete();
 			if (!blendFileRequired())
 				blendFile.delete();
 			monitor.worked(1);
 		} catch (Exception e) {
 			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(e.getMessage()), new FileOutputStream(errorFile));
-			System.out.println("Stopped conversion with message: " + e.getMessage());
-			LoggingUtil.log(e.getMessage(), e);
-			e.printStackTrace();
+			Activator.err("Stopped conversion with message: " + e.getMessage(), e);
 		}
 		return targetFile;
 	}
