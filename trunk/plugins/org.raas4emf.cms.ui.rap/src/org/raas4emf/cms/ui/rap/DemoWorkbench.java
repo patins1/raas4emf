@@ -13,7 +13,6 @@ import org.eclipse.rap.rwt.application.EntryPoint;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.WorkbenchAdvisor;
-import org.raas4emf.cms.core.LoggingUtil;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.DemoWorkbenchAdvisor;
 import org.raas4emf.cms.ui.LoginDialog;
@@ -31,18 +30,12 @@ public class DemoWorkbench implements EntryPoint {
 		String username = RWT.getRequest().getParameter("username");
 		String cadtool = RWT.getRequest().getParameter("cadtool");
 		String ownversion = RWT.getRequest().getParameter("ownversion");
-		System.out.println("remoteaddr=" + remoteAddr);
-		System.out.println("osversion=" + osversion);
-		System.out.println("ieversion=" + ieversion);
-		System.out.println("username=" + username);
-		System.out.println("cadtool=" + cadtool);
-		System.out.println("ownversion=" + ownversion);
 		for (String name : RWT.getRequest().getParameterMap().keySet()) {
 			org.raas4emf.cms.ui.CMSActivator.getSessionInstance().setParameter(name, RWT.getRequest().getParameter(name));
 		}
 
 		boolean autoLogin = "true".equals(RWT.getRequest().getParameter("autologin"));
-		LoggingUtil.logAccess(" remoteaddr=" + remoteAddr + " osversion=" + osversion + " ieversion=" + ieversion + " username=" + username + " cadtool=" + cadtool + " ownversion=" + ownversion);
+		Activator.log("remoteaddr=" + remoteAddr + " osversion=" + osversion + " ieversion=" + ieversion + " username=" + username + " cadtool=" + cadtool + " ownversion=" + ownversion);
 		Display display = PlatformUI.createDisplay();
 		display.disposeExec(new Runnable() {
 			@Override

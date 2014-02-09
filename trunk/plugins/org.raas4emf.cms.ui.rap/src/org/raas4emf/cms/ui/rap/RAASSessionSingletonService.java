@@ -107,7 +107,7 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 			try {
 				RWT.getSettingStore().setAttribute("renderer", g_renderer);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Activator.err(e);
 			}
 		}
 
@@ -125,7 +125,7 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 			try {
 				RWT.getSettingStore().setAttribute("3dFormat", g_format);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Activator.err(e);
 			}
 		}
 
@@ -141,7 +141,7 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 				RWT.getSettingStore().setAttribute("passwords", value);
 				super.setPasswordList(value);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Activator.err(e);
 			}
 		}
 

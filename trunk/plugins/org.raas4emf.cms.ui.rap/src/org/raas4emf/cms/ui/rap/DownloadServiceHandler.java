@@ -54,7 +54,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 				else if (fileName.endsWith(".css"))
 					response.setContentType("text/css");
 				else
-					System.out.println("unknown content:" + fileName);
+					Activator.err("unknown content:" + fileName);
 				File fileForLastModified;
 				if (fileName.lastIndexOf("!") != -1) {
 					fileForLastModified = new File(fileName.substring(0, fileName.lastIndexOf("!")));
@@ -66,7 +66,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 				}
 				TransformationUtils.inputstreamToOutputstream(u.openStream(), response.getOutputStream(), Integer.MAX_VALUE);
 			} catch (URISyntaxException e) {
-				e.printStackTrace();
+				Activator.err(e);
 				throw new IOException(e);
 			}
 			return;
@@ -159,7 +159,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 			method.addRequestHeader("Accept", "application/octet-stream");
 			int responseCode = httpclient.executeMethod(method);
 			if (responseCode != 200 && responseCode != 204) {
-				System.err.println(method.getStatusText() + "\n" + method.getResponseBodyAsString());
+				Activator.err(method.getStatusText() + "\n" + method.getResponseBodyAsString());
 				throw new RuntimeException(method.getStatusText() + "\n" + method.getResponseBodyAsString());
 			}
 
