@@ -51,6 +51,8 @@ public class DownloadServiceHandler implements ServiceHandler {
 				String fileName = u.getFile();
 				if (fileName.endsWith(".js"))
 					response.setContentType("text/javascript");
+				else if (fileName.endsWith(".css"))
+					response.setContentType("text/css");
 				else
 					System.out.println("unknown content:" + fileName);
 				File fileForLastModified;
