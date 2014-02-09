@@ -3,6 +3,8 @@
  */
 package org.raas4emf.cms.ui.rap;
 
+import java.lang.reflect.Field;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
@@ -13,6 +15,10 @@ import org.eclipse.rap.rwt.application.EntryPoint;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.WorkbenchAdvisor;
+import org.eclipse.ui.internal.Workbench;
+import org.eclipse.ui.statushandlers.AbstractStatusHandler;
+import org.eclipse.ui.statushandlers.StatusAdapter;
+import org.eclipse.ui.statushandlers.WorkbenchErrorHandler;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.DemoWorkbenchAdvisor;
 import org.raas4emf.cms.ui.LoginDialog;
@@ -35,6 +41,7 @@ public class DemoWorkbench implements EntryPoint {
 		}
 
 		boolean autoLogin = "true".equals(RWT.getRequest().getParameter("autologin"));
+		DemoWorkbench.fixBug347967();
 		Activator.log("remoteaddr=" + remoteAddr + " osversion=" + osversion + " ieversion=" + ieversion + " username=" + username + " cadtool=" + cadtool + " ownversion=" + ownversion);
 		Display display = PlatformUI.createDisplay();
 		display.disposeExec(new Runnable() {
@@ -99,5 +106,36 @@ public class DemoWorkbench implements EntryPoint {
 
 	protected WorkbenchAdvisor getWorkbenchAdvistor() {
 		return new DemoWorkbenchAdvisor();
+	}
+
+	@SuppressWarnings("restriction")
+	public static void fixBug347967() {
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=347967
+		try {
+			Field advisorField = Workbench.getInstance().getClass().getDeclaredField("advisor");
+			advisorField.setAccessible(true);
+			if (advisorField.get(Workbench.getInstance()) == null) {
+				advisorField.set(Workbench.getInstance(), new WorkbenchAdvisor() {
+
+					@Override
+					public String getInitialWindowPerspectiveId() {
+						return null;
+					}
+
+					public synchronized AbstractStatusHandler getWorkbenchErrorHandler() {
+						return new WorkbenchErrorHandler() {
+							@Override
+							public void handle(StatusAdapter statusAdapter, int style) {
+								// do nothing!
+							}
+
+						};
+					}
+				});
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -38,6 +38,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 	private static final boolean OWN_PROVISION = true;
 
 	public void service(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+		DemoWorkbench.fixBug347967();
 
 		String artifactId = RWT.getRequest().getParameter("artifact");
 		if (artifactId.startsWith("WebContent/"))
