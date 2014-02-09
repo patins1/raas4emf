@@ -27,13 +27,13 @@ public class StreamGobbler extends Thread {
 			while ((line = br.readLine()) != null) {
 				println(line);
 			}
-            br.close();
+			br.close();
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			Activator.err(ioe);
 		}
 	}
 
 	protected void println(String line) {
-		System.out.println(this.type + ">" + line); //$NON-NLS-1$
+		Activator.log(this.type + ">" + line); //$NON-NLS-1$
 	}
 }
