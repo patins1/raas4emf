@@ -54,6 +54,10 @@ public class DownloadServiceHandler implements ServiceHandler {
 					response.setContentType("text/javascript");
 				else if (fileName.endsWith(".css"))
 					response.setContentType("text/css");
+				else if (fileName.endsWith(".png"))
+					response.setContentType("image/png");
+				else if (fileName.endsWith(".jpg"))
+					response.setContentType("image/jpg");
 				else
 					Activator.err("unknown content:" + fileName);
 				File fileForLastModified;

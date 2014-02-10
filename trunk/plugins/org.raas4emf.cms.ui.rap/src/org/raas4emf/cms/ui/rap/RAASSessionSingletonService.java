@@ -163,7 +163,7 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 		@Override
 		public byte[] encodeJSON(Object arg) {
 			ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
-			encodeJSON(arg, requestBody, Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents"), true);
+			encodeJSON(arg, requestBody, Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents", "objects", "comments"), true);
 			return requestBody.toByteArray();
 		}
 
