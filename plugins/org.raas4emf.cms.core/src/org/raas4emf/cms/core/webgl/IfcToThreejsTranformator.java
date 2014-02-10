@@ -59,6 +59,11 @@ public class IfcToThreejsTranformator implements ITranformator {
 			File script = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "IfcImportExport.py");
 			if (DEFAULT_BLENDER_LOCATION == null)
 				DEFAULT_BLENDER_LOCATION = new File(RAASUtils.getRAASProp("BLENDER"));
+			try {
+				DEFAULT_BLENDER_LOCATION.setExecutable(true);
+			} catch (Exception e) {
+				Activator.err("Cannot set blender to be executable!", e);
+			}
 			String cmd = TransformationUtils.quote(DEFAULT_BLENDER_LOCATION) + " -nojoystick -noaudio -b " + TransformationUtils.quote(untitledBlenderFile) + " -P " + TransformationUtils.quote(script) + " -- " + TransformationUtils.quote(ifcFile) + " " + TransformationUtils.quote(targetFile);
 			Activator.log("Executing " + cmd);
 			Process process = Runtime.getRuntime().exec(cmd, null);
