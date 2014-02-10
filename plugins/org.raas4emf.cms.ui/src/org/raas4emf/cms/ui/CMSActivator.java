@@ -6,14 +6,18 @@ package org.raas4emf.cms.ui;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.StringBufferInputStream;
 import java.net.URL;
+import java.net.URLConnection;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.cdo.internal.server.bundle.CDOServerApplication;
 import org.eclipse.net4j.internal.util.bundle.AbstractPlatform;
+import org.eclipse.net4j.util.io.ZIPUtil;
 import org.eclipse.osgi.framework.internal.core.FrameworkProperties;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -38,6 +42,8 @@ public class CMSActivator extends Plugin {
 	private static CMSActivator plugin;
 
 	static private IRAASSessionSingletonService service;
+	static public String REMOTE_PROVISIONING_STATUS = null;
+	static public File remoteProvisioningZip = null;
 
 	/*
 	 * (non-Javadoc)
@@ -48,6 +54,36 @@ public class CMSActivator extends Plugin {
 		super.start(bundleContext);
 		CMSActivator.context = bundleContext;
 		plugin = this;
+
+		final String url = System.getProperty("remoteProvisioningZip");
+		remoteProvisioningZip = new File(Platform.getLocation().toFile(), "remote_provisioning.zip");
+		if (url != null && !remoteProvisioningZip.exists()) {
+
+			Thread t = new Thread() {
+				@Override
+				public void run() {
+					try {
+						CMSActivator.log(REMOTE_PROVISIONING_STATUS = "Remote provisioning: Downloading " + url);
+						URL u = new URL(url);
+						String name = u.getFile();
+						name = name.substring(name.lastIndexOf('/') + 1);
+						URLConnection c = u.openConnection();
+						InputStream is = c.getInputStream();
+						FileUtil.inputstreamToOutputstream(is, new FileOutputStream(remoteProvisioningZip));
+						File targetFolder = new File(Platform.getLocation().toFile(), "remote_provisioning");
+						CMSActivator.log(REMOTE_PROVISIONING_STATUS = "Remote provisioning: Unzipping to " + targetFolder);
+						ZIPUtil.unzip(remoteProvisioningZip, targetFolder);
+						CMSActivator.log("Remote provisioning successful!");
+					} catch (Exception e) {
+						CMSActivator.err("Remote provisioning failed!", e);
+					}
+					REMOTE_PROVISIONING_STATUS = null;
+				}
+
+			};
+			t.start();
+
+		}
 
 		URL fileURL = new URL("platform:/plugin/org.raas4emf.server/config/cdo-server.template.xml");
 		URL u = FileLocator.resolve(fileURL);

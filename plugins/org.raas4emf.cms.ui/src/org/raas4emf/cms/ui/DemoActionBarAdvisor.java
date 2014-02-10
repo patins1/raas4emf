@@ -210,16 +210,17 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 				InputDialog dialog = new InputDialog(shell, "Specify Name", "Enter name for file", null, null);
 				if (dialog.open() == Window.OK) {
 					String name = dialog.getValue();
-					if (new File(name).isDirectory()) {
+					File file = new File(name);
+					if (file.isDirectory()) {
 						String list = "";
-						for (String child : new File(name).list()) {
-							list += name + child + "\n";
-
+						for (String child : file.list()) {
+							File f = new File(file, child);
+							list += f + " canExecute=" + f.canExecute() + " canRead=" + f.canRead() + " canWrite=" + f.canWrite() + "\n";
 						}
 						MemoDialog.openInformation(window.getShell(), "Directory contents", list);
 
 					} else
-						CMSActivator.getSessionInstance().exportFolderContents(new File(name));
+						CMSActivator.getSessionInstance().exportFolderContents(file);
 				}
 			}
 
@@ -359,6 +360,15 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 							MemoDialog.openInformation(window.getShell(), "Resolve", fileName);
 							return;
 						}
+						if (cmd.startsWith("setExecutable ")) {
+							File file = new File(cmd.substring("setExecutable ".length()));
+							try {
+								MessageDialog.openInformation(window.getShell(), "Result", "setExecutable returned" + file.setExecutable(true));
+							} catch (Throwable e) {
+								MessageDialog.openError(window.getShell(), "Error", e.getMessage());
+							}
+							return;
+						}
 						final StringBuffer sb = new StringBuffer();
 
 						Process process = Runtime.getRuntime().exec(cmd, null);
@@ -371,7 +381,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 							}
 
 						};
-						StreamGobbler outputGobbler = new StreamGobbler(process.getErrorStream(), "OUTPUT") {
+						StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT") {
 
 							@Override
 							protected void println(String line) {
