@@ -64,9 +64,13 @@ public class IfcToThreejsTranformator implements ITranformator {
 			} catch (Exception e) {
 				Activator.err("Cannot set blender to be executable!", e);
 			}
+
 			String cmd = TransformationUtils.quote(DEFAULT_BLENDER_LOCATION) + " -nojoystick -noaudio -b " + TransformationUtils.quote(untitledBlenderFile) + " -P " + TransformationUtils.quote(script) + " -- " + TransformationUtils.quote(ifcFile) + " " + TransformationUtils.quote(targetFile);
 			Activator.log("Executing " + cmd);
-			Process process = Runtime.getRuntime().exec(cmd, null);
+			String[] envp = null;
+			if (System.getProperty("LD_LIBRARY_PATH") != null)
+				envp = new String[] { "LD_LIBRARY_PATH=" + System.getProperty("LD_LIBRARY_PATH") };
+			Process process = Runtime.getRuntime().exec(cmd, envp);
 			StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR") {
 
 				@Override
