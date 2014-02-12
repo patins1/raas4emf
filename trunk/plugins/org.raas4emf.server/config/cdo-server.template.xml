@@ -99,10 +99,12 @@
 
   <!--<dbAdapter name="postgresql"/>
       <dataSource class="org.postgresql.ds.PGSimpleDataSource"
-        url="jdbc:postgresql://localhost:5432/repo1"
-        databaseName="repo1"
-        user="cdo"
-        password="cdodiwo4dDkq"/>
+        url="jdbc:postgresql://localhost:5432/cdo"
+        serverName="localhost"
+        databaseName="cdo"
+        portNumber="5432"
+        user="username"
+        password="password"/>
       -->
 
   <!--<dbAdapter name="oracle"/>
