@@ -8,8 +8,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -42,9 +49,32 @@ public class CMSActivator extends Plugin {
 	private static CMSActivator plugin;
 
 	static private IRAASSessionSingletonService service;
-	static public String REMOTE_PROVISIONING_STATUS = null;
-	static public File remoteProvisioningZip = null;
-	static public File remoteProvisioningTargetFolder = null;
+	public String remoteProvisioningStatus = null;
+	public File remoteProvisioningZip = null;
+	public File remoteProvisioningTargetFolder = null;
+
+	public static Map<String, List<String>> getUrlParameters(String url) throws UnsupportedEncodingException {
+		Map<String, List<String>> params = new HashMap<String, List<String>>();
+		String[] urlParts = url.split("\\?");
+		if (urlParts.length > 1) {
+			String query = urlParts[1];
+			for (String param : query.split("&")) {
+				String pair[] = param.split("=");
+				String key = URLDecoder.decode(pair[0], "UTF-8");
+				String value = "";
+				if (pair.length > 1) {
+					value = URLDecoder.decode(pair[1], "UTF-8");
+				}
+				List<String> values = params.get(key);
+				if (values == null) {
+					values = new ArrayList<String>();
+					params.put(key, values);
+				}
+				values.add(value);
+			}
+		}
+		return params;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -59,7 +89,7 @@ public class CMSActivator extends Plugin {
 		final String url = System.getProperty("remoteProvisioningZip");
 		remoteProvisioningZip = new File(Platform.getLocation().toFile(), "remote_provisioning.zip");
 		remoteProvisioningTargetFolder = new File(Platform.getLocation().toFile(), "remote_provisioning");
-		REMOTE_PROVISIONING_STATUS = null;
+		remoteProvisioningStatus = null;
 
 		if (url != null && !remoteProvisioningTargetFolder.exists()) {
 
@@ -67,20 +97,20 @@ public class CMSActivator extends Plugin {
 				@Override
 				public void run() {
 					try {
-						CMSActivator.log(REMOTE_PROVISIONING_STATUS = "Remote provisioning: Downloading " + url);
+						CMSActivator.log(remoteProvisioningStatus = "Remote provisioning: Downloading " + url);
 						URL u = new URL(url);
 						String name = u.getFile();
 						name = name.substring(name.lastIndexOf('/') + 1);
 						URLConnection c = u.openConnection();
 						InputStream is = c.getInputStream();
 						FileUtil.inputstreamToOutputstream(is, new FileOutputStream(remoteProvisioningZip));
-						CMSActivator.log(REMOTE_PROVISIONING_STATUS = "Remote provisioning: Unzipping to " + remoteProvisioningTargetFolder);
+						CMSActivator.log(remoteProvisioningStatus = "Remote provisioning: Unzipping to " + remoteProvisioningTargetFolder);
 						ZIPUtil.unzip(remoteProvisioningZip, remoteProvisioningTargetFolder);
 						CMSActivator.log("Remote provisioning successful!");
 					} catch (Exception e) {
 						CMSActivator.err("Remote provisioning failed!", e);
 					}
-					REMOTE_PROVISIONING_STATUS = null;
+					remoteProvisioningStatus = null;
 				}
 
 			};
@@ -114,6 +144,15 @@ public class CMSActivator extends Plugin {
 				contents = contents.substring(0, fromIndex) + contents.substring(fromIndex + "<!--".length());
 				contents = replaceAttribute(contents, fromIndex, "url", jdbc);
 				contents = replaceAttribute(contents, fromIndex, "URL", jdbc);
+				URI jdbcurl = new URI(jdbc.substring("jdbc:".length()));
+				if (jdbcurl.getHost() != null)
+					contents = replaceAttribute(contents, fromIndex, "serverName", jdbcurl.getHost());
+				if (jdbcurl.getPath() != null)
+					contents = replaceAttribute(contents, fromIndex, "databaseName", jdbcurl.getPath().substring("/".length()));
+				if (jdbcurl.getPort() != -1)
+					contents = replaceAttribute(contents, fromIndex, "portNumber", "" + jdbcurl.getPort());
+				for (Map.Entry<String, List<String>> param : getUrlParameters(jdbc).entrySet())
+					contents = replaceAttribute(contents, fromIndex, param.getKey(), param.getValue().get(0));
 				FileUtil.inputstreamToOutputstream(new StringBufferInputStream(contents), new FileOutputStream(new File(file.getParentFile(), "cdo-server.xml")));
 				CMSActivator.log("Created cdo-server.xml from template using " + jdbc);
 			}
@@ -161,6 +200,7 @@ public class CMSActivator extends Plugin {
 	public void stop(BundleContext bundleContext) throws Exception {
 		CMSActivator.context = null;
 		plugin = null;
+		remoteProvisioningStatus = null;
 		super.stop(bundleContext);
 	}
 
