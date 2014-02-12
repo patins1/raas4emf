@@ -110,7 +110,6 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 	private Action shutdownServerAction;
 	private Action promptAction;
 	private Action generateFingerprintAction;
-	private Action downloadDirectAction;
 	private Action setPasswordList;
 	private Action originalConfigAction;
 	private static int browserIndex;
@@ -207,31 +206,6 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		generateFingerprintAction.setText("Generate Fingerprint");
 		generateFingerprintAction.setId("org.raas4emf.cms.ui.GenerateFingerprintAction");
 		register(generateFingerprintAction);
-
-		downloadDirectAction = new Action() {
-			public void run() {
-				Shell shell = window.getShell();
-				InputDialog dialog = new InputDialog(shell, "Specify Name", "Enter name for file", null, null);
-				if (dialog.open() == Window.OK) {
-					String name = dialog.getValue();
-					File file = new File(name);
-					if (file.isDirectory()) {
-						String list = "";
-						for (String child : file.list()) {
-							File f = new File(file, child);
-							list += f + " canExecute=" + f.canExecute() + " canRead=" + f.canRead() + " canWrite=" + f.canWrite() + "\n";
-						}
-						MemoDialog.openInformation(window.getShell(), "Directory contents", list);
-
-					} else
-						CMSActivator.getSessionInstance().exportFolderContents(file);
-				}
-			}
-
-		};
-		downloadDirectAction.setText("Download Direct");
-		downloadDirectAction.setId("org.raas4emf.cms.ui.DownloadDirectAction");
-		register(downloadDirectAction);
 
 		setPasswordList = new Action() {
 			public void run() {
@@ -364,7 +338,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 							URL u = FileLocator.resolve(fileURL);
 							String fileName = u.getFile();
 							MemoDialog.openInformation(window.getShell(), "Resolve", fileName);
-							return;
+							continue;
 						}
 						if (cmd.startsWith("setExecutable ")) {
 							File file = new File(cmd.substring("setExecutable ".length()));
@@ -373,7 +347,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 							} catch (Throwable e) {
 								MessageDialog.openError(window.getShell(), "Error", e.getMessage());
 							}
-							return;
+							continue;
 						}
 
 						if (cmd.equals("upload")) {
@@ -400,7 +374,28 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 								CMSActivator.log("Uploaded as " + targetFile);
 							}
 
-							return;
+							continue;
+						}
+
+						if (cmd.equals("download")) {
+
+							Shell shell = window.getShell();
+							dialog = new InputDialog(shell, "Download File", "Enter local path of file", null, null);
+							if (dialog.open() == Window.OK) {
+								String name = dialog.getValue();
+								File file = new File(name);
+								if (file.isDirectory()) {
+									String list = "";
+									for (String child : file.list()) {
+										File f = new File(file, child);
+										list += f + " canExecute=" + f.canExecute() + " canRead=" + f.canRead() + " canWrite=" + f.canWrite() + "\n";
+									}
+									MemoDialog.openInformation(window.getShell(), "Directory contents", list);
+
+								} else
+									CMSActivator.getSessionInstance().exportFolderContents(file);
+							}
+							continue;
 						}
 
 						Process process = Runtime.getRuntime().exec(cmd, new String[] { "LD_LIBRARY_PATH=" + System.getProperty("LD_LIBRARY_PATH") });
@@ -710,7 +705,6 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		fileMenu.add(saveAllAction);
 		fileMenu.add(closeAction);
 		fileMenu.add(closeAllAction);
-		fileMenu.add(downloadDirectAction);
 		if (CMSActivator.getSessionInstance().isOperator())
 			fileMenu.add(adminMenu);
 		permisssionsMenu.add(generateFingerprintAction);
