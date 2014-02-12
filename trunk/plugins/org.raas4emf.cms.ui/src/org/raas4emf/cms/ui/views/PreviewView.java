@@ -591,8 +591,10 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 					}
 
 				};
-				if (Job.getJobManager().find(artifact).length > 0)
+				if (Job.getJobManager().find(artifact).length > 0) {
+					browser.setText("WebGL generation is in progress!");
 					return true;
+				}
 				job.schedule();
 			}
 			return true;
