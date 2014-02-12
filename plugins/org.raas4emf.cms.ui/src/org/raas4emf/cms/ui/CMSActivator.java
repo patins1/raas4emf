@@ -44,6 +44,7 @@ public class CMSActivator extends Plugin {
 	static private IRAASSessionSingletonService service;
 	static public String REMOTE_PROVISIONING_STATUS = null;
 	static public File remoteProvisioningZip = null;
+	static public File remoteProvisioningTargetFolder = null;
 
 	/*
 	 * (non-Javadoc)
@@ -57,7 +58,10 @@ public class CMSActivator extends Plugin {
 
 		final String url = System.getProperty("remoteProvisioningZip");
 		remoteProvisioningZip = new File(Platform.getLocation().toFile(), "remote_provisioning.zip");
-		if (url != null && !remoteProvisioningZip.exists()) {
+		remoteProvisioningTargetFolder = new File(Platform.getLocation().toFile(), "remote_provisioning");
+		REMOTE_PROVISIONING_STATUS = null;
+
+		if (url != null && !remoteProvisioningTargetFolder.exists()) {
 
 			Thread t = new Thread() {
 				@Override
@@ -70,9 +74,8 @@ public class CMSActivator extends Plugin {
 						URLConnection c = u.openConnection();
 						InputStream is = c.getInputStream();
 						FileUtil.inputstreamToOutputstream(is, new FileOutputStream(remoteProvisioningZip));
-						File targetFolder = new File(Platform.getLocation().toFile(), "remote_provisioning");
-						CMSActivator.log(REMOTE_PROVISIONING_STATUS = "Remote provisioning: Unzipping to " + targetFolder);
-						ZIPUtil.unzip(remoteProvisioningZip, targetFolder);
+						CMSActivator.log(REMOTE_PROVISIONING_STATUS = "Remote provisioning: Unzipping to " + remoteProvisioningTargetFolder);
+						ZIPUtil.unzip(remoteProvisioningZip, remoteProvisioningTargetFolder);
 						CMSActivator.log("Remote provisioning successful!");
 					} catch (Exception e) {
 						CMSActivator.err("Remote provisioning failed!", e);
