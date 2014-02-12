@@ -4,6 +4,8 @@
 package org.raas4emf.cms.ui;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,6 +41,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IPerspectiveRegistry;
@@ -61,6 +64,7 @@ import org.eclipse.ui.menus.IMenuService;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.raas4emf.cms.core.FileUtil;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.transformation.StreamGobbler;
 import org.raas4emf.cms.transformation.TransformationUtils;
@@ -349,10 +353,12 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 
 		promptAction = new Action() {
 			public void run() {
-				InputDialog i = new InputDialog(window.getShell(), "Prompt", "Execute command:", "", null);
-				if (i.open() == Window.OK) {
+				String cmd = "";
+				InputDialog dialog;
+				while ((dialog = new InputDialog(window.getShell(), "Prompt", "Execute command:", cmd, null)).open() == Window.OK) {
+					final StringBuffer sb = new StringBuffer();
 					try {
-						String cmd = i.getValue();
+						cmd = dialog.getValue();
 						if (cmd.startsWith("platform:")) {
 							URL fileURL = new URL(cmd);
 							URL u = FileLocator.resolve(fileURL);
@@ -369,18 +375,35 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 							}
 							return;
 						}
-						final StringBuffer sb = new StringBuffer();
 
-						Process process = Runtime.getRuntime().exec(cmd, null);
-						StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR") {
+						if (cmd.equals("upload")) {
 
-							@Override
-							protected void println(String line) {
-								super.println(line);
-								sb.append("ERROR" + ">" + line + "\n");
+							FileDialog fileDialog = new FileDialog(window.getShell(), SWT.TITLE | SWT.MULTI);
+							fileDialog.setFilterNames(new String[] { "All Files" });
+							fileDialog.setFilterExtensions(new String[] { "*.*" });
+							fileDialog.setText("Upload Files Into Workspace");
+							fileDialog.setFilterIndex(0);
+							if (fileDialog.open() == null)
+								return;
+							final String[] fileNames = fileDialog.getFileNames();
+							int i = 0;
+							for (String f : fileNames) {
+								if (!new File(f).exists()) {
+									fileNames[i] = f = new File(new File(fileDialog.getFilterPath()), f).toString();
+								}
+								i++;
+							}
+							for (String f : fileNames) {
+								File file = new File(f);
+								File targetFile = new File(Platform.getLocation().toFile(), file.getName());
+								FileUtil.inputstreamToOutputstream(new FileInputStream(file), new FileOutputStream(targetFile));
+								CMSActivator.log("Uploaded as " + targetFile);
 							}
 
-						};
+							return;
+						}
+
+						Process process = Runtime.getRuntime().exec(cmd, new String[] { "LD_LIBRARY_PATH=" + System.getProperty("LD_LIBRARY_PATH") });
 						StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT") {
 
 							@Override
@@ -391,16 +414,25 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 
 						};
 
-						errorGobbler.start();
+						StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR") {
+
+							@Override
+							protected void println(String line) {
+								super.println(line);
+								sb.append("ERROR" + ">" + line + "\n");
+							}
+
+						};
+
 						outputGobbler.start();
+						errorGobbler.start();
 						process.waitFor();
 						int exitValue = process.exitValue();
 						MemoDialog.openInformation(window.getShell(), "Prompt result", "Exit code=" + exitValue + "\n" + sb.toString());
 
-					} catch (IOException e) {
-						CMSActivator.err(e);
-					} catch (InterruptedException e) {
-						CMSActivator.err(e);
+					} catch (Exception e) {
+						MessageDialog.openError(window.getShell(), "Exception occured", e.getMessage() + "\n" + sb.toString());
+						CMSActivator.err(sb.toString(), e);
 					}
 				}
 			}
