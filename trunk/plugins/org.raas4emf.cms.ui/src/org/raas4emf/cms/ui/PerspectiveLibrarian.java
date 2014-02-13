@@ -24,6 +24,7 @@ public class PerspectiveLibrarian implements IPerspectiveFactory {
 		bottomLeft.addView(LinksView.ID);
 		bottomLeft.addView(DetailsView.ID);
 		bottomLeft.addView("org.eclipse.ui.views.ProgressView");
+		bottomLeft.addView("org.eclipse.ui.views.PropertySheet");
 		IFolderLayout topRight = layout.createFolder("topRight", IPageLayout.RIGHT, 0.70f, editorArea);
 		topRight.addView(PreviewView.ID);
 	}
