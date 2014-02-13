@@ -4534,6 +4534,7 @@ function generateEvent(eventType,e,g_client) {
     	g_selectedIDs += g_selectedInfo[ee].name + " ";
     }
     modelviewerSelectionChanged();
+	if (effectController.treeview==false && effectController.properties==false && e.which!=3) return;
     var mainParams = [g_selectedIDs,type,g_client.id,e.clientX,e.clientY,e.which,eventType];
 	if ( g_selectedInfo.length != 0 ) {
 		if (g_worldPosition) {
