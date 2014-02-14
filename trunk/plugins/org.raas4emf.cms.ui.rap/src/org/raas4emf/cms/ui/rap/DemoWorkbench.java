@@ -37,10 +37,10 @@ public class DemoWorkbench implements EntryPoint {
 		String cadtool = RWT.getRequest().getParameter("cadtool");
 		String ownversion = RWT.getRequest().getParameter("ownversion");
 		for (String name : RWT.getRequest().getParameterMap().keySet()) {
-			org.raas4emf.cms.ui.CMSActivator.getSessionInstance().setParameter(name, RWT.getRequest().getParameter(name));
+			CMSActivator.getSessionInstance().setParameter(name, RWT.getRequest().getParameter(name));
 		}
 
-		boolean autoLogin = "true".equals(RWT.getRequest().getParameter("autologin"));
+		boolean autoLogin = "true".equals(RWT.getRequest().getParameter("autologin")) || doAlwaysAutoLogin();
 		DemoWorkbench.fixBug347967();
 		Activator.log("remoteaddr=" + remoteAddr + " osversion=" + osversion + " ieversion=" + ieversion + " username=" + username + " cadtool=" + cadtool + " ownversion=" + ownversion);
 		Display display = PlatformUI.createDisplay();
@@ -65,10 +65,9 @@ public class DemoWorkbench implements EntryPoint {
 		// Display login dialog until logged in
 		while (true) {
 			String message = "Please sign in with your username and password:";
-			final LoginDialog loginDialog = new LoginDialog(display.getActiveShell(), "Login", message);
-			loginDialog.setItems("Architect", "Librarian", "Operator");
+			final LoginDialog loginDialog = autoLogin ? null : new LoginDialog(display.getActiveShell(), "Login", message, "Architect", "Librarian", "Operator");
 			int returnCode = autoLogin ? Window.OK : loginDialog.open();
-			if (returnCode == Window.OK) {
+			if (returnCode == Window.OK && checkAdditionalConditions(display)) {
 				String userID = autoLogin ? getAutoLoginID() : loginDialog.getUsername();
 				String password = autoLogin ? getAutoLoginPassword() : loginDialog.getPassword();
 				org.raas4emf.cms.ui.CMSActivator.getSessionInstance().setCredentials(userID, password);
@@ -78,9 +77,7 @@ public class DemoWorkbench implements EntryPoint {
 				} catch (Exception e) {
 					IStatus status = new Status(IStatus.ERROR, "org.raas4emf.cms.ui", e.getMessage(), e);
 					if (ErrorDialog.openError(display.getActiveShell(), "Error", "DB Login was not successful! Continue without DB connection?", status) != Dialog.OK) {
-						// User authentication failed, stop application
-						display.dispose();
-						return PlatformUI.RETURN_EMERGENCY_CLOSE;
+						break;
 					}
 				}
 				// The user is authenticated, start the workbench
@@ -89,11 +86,19 @@ public class DemoWorkbench implements EntryPoint {
 				display.dispose();
 				return result;
 			}
-			// User authentication failed, stop application
-			display.dispose();
-			return PlatformUI.RETURN_EMERGENCY_CLOSE;
+			break;
 		}
+		// User authentication failed, stop application
+		display.dispose();
+		return PlatformUI.RETURN_EMERGENCY_CLOSE;
+	}
 
+	protected boolean checkAdditionalConditions(Display display) {
+		return true;
+	}
+
+	protected boolean doAlwaysAutoLogin() {
+		return false;
 	}
 
 	protected String getAutoLoginID() {
