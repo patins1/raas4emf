@@ -3017,7 +3017,7 @@ function start() {
 			select_by_dblclick: false,
 			double_side_material: false,
 			lazy_rendering: true,
-			quickmode: false,
+			quickmode: true,
 			antialias: true,
 			vertexnormals: true,
 			select_face: false,
