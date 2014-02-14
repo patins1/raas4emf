@@ -114,6 +114,24 @@ class JQVTUtils {
 		objectTemplate.eContainer instanceof RelationDomain
 	}
 	
+	def static String toGetterName(JvmOperation property) {
+		property.simpleName
+	}
+	
+	def static String toSetterName(JvmOperation property) {
+		return "set" + property.toPropertyName
+	}
+	
+	def static String toPropertyName(JvmOperation op) {
+		if (op == null || op.simpleName == null)
+			return null;
+		if (op.simpleName.startsWith("get"))
+			return op.simpleName.substring(3);
+		if (op.simpleName.startsWith("is"))
+			return op.simpleName.substring(2);
+		return null;
+	}
+	
 	def getComponentType(JvmTypeReference type) {
 		if (type instanceof JvmParameterizedTypeReference) (type as JvmParameterizedTypeReference).arguments.get(0) else type.newTypeRef(typeof(Object));
 	}
