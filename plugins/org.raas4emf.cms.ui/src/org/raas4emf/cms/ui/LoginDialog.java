@@ -35,8 +35,9 @@ public class LoginDialog extends Dialog {
 
 	private Label passLabel;
 
-	public LoginDialog(final Shell parent, final String title, final String message) {
+	public LoginDialog(final Shell parent, final String title, final String message, String... items) {
 		super(parent);
+		this.items = items;
 		this.title = title;
 		this.message = message;
 	}
