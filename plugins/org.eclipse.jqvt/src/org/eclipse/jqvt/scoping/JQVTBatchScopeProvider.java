@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.jqvt.jQVT.JQVTPackage;
 import org.eclipse.jqvt.jQVT.ObjectTemplate;
 import org.eclipse.jqvt.jQVT.PropertyTemplateItem;
+import org.eclipse.jqvt.util.JQVTUtils;
 import org.eclipse.xtext.common.types.JvmDeclaredType;
 import org.eclipse.xtext.common.types.JvmFeature;
 import org.eclipse.xtext.common.types.JvmOperation;
@@ -46,8 +47,9 @@ public class JQVTBatchScopeProvider extends XbaseBatchScopeProvider {
 						for (JvmFeature feature : jvmDeclaredType.getAllFeatures()) {
 							if (feature instanceof JvmOperation) {
 								final JvmOperation op = (JvmOperation) feature;
-								if (op.getSimpleName().startsWith("get"))
-									result.add(EObjectDescription.create(QualifiedName.create(op.getSimpleName().substring(3)), op));
+								String propertyName = JQVTUtils.toPropertyName(op);
+								if (propertyName != null)
+									result.add(EObjectDescription.create(QualifiedName.create(propertyName), op));
 							}
 						}
 						return result;

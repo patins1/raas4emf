@@ -187,9 +187,10 @@ return true;'''
 						}
 						PropertyTemplateItem: {
 								val objectTemplate = clause.eContainer as ObjectTemplate;
-								if (clause.referredProperty!=null && clause.referredProperty.simpleName!=null) {
+								val propName = JQVTUtils::toPropertyName(clause.referredProperty);
+								if (propName!=null) {
 									val field = clause.referredProperty;
-									val propName = clause.referredProperty.simpleName.substring(3).toFirstUpper
+									val getter = JQVTUtils::toGetterName(clause.referredProperty);
 									val isMany = field.returnType.isMany 
 									var rhsExp = 'unknown';
 									if (clause.value.asVar!=null) {
@@ -204,20 +205,20 @@ return true;'''
 		'''
 									val printSuccess = '''trafo.logSuccess(«NodeModelUtils::getNode(clause).getStartLine()»);
 		'''
-									mapMethod.append('''// «propName.toFirstLower» = «JQVTUtils::toQVTWithinComment(clause.value)»
+									mapMethod.append('''// «propName» = «JQVTUtils::toQVTWithinComment(clause.value)»
 		''')
 									if (info.isTarget) {
 										if (isMany && clause.value instanceof ObjectTemplate)
-											mapMethod.append('''«objectTemplate.name».get«propName»().add(«rhsExp»);
+											mapMethod.append('''«objectTemplate.name».«getter»().add(«rhsExp»);
 		''')
 										else
 										if (isMany) {
-											mapMethod.append('''«objectTemplate.name».get«propName»().retainAll(«rhsExp»);
-«objectTemplate.name».get«propName»().addAll(«rhsExp»);
+											mapMethod.append('''«objectTemplate.name».«getter»().retainAll(«rhsExp»);
+«objectTemplate.name».«getter»().addAll(«rhsExp»);
 		''')								
 										}
 										else
-											mapMethod.append('''«objectTemplate.name».set«propName»(«rhsExp»);
+											mapMethod.append('''«objectTemplate.name».«JQVTUtils::toSetterName(clause.referredProperty)»(«rhsExp»);
 		''');
 									} else {
 										if (clause.value instanceof ObjectTemplate && isMany) {
@@ -230,7 +231,7 @@ return true;'''
 											val rhs = clause.value as ObjectTemplate;
 											val componentType =  field.returnType.componentType
 											val conformant = rhs.type.isConformant(componentType);
-											mapMethod.append('''for («componentType.qualifiedName» __«rhs.name» : «objectTemplate.name».get«propName»()) {
+											mapMethod.append('''for («componentType.qualifiedName» __«rhs.name» : «objectTemplate.name».«getter»()) {
 «IF !conformant»if (!(__«rhs.name» instanceof «rhs.simpleTypeName»)) {«printFailure»«stopTuple»}«printSuccess»«ENDIF»
 «rhs.name» = «IF !conformant»(«rhs.simpleTypeName»)«ENDIF»__«rhs.name»;
 			''')
@@ -238,12 +239,12 @@ return true;'''
 										if (clause.value.asVar!=null && info.isWrite(clause.value.asVar) && !info.isRead(clause.value.asVar)) {
 												val rhs = clause.value.asVar;
 												val conformant = rhs.type.isConformant(field.returnType);
-												mapMethod.append('''«IF !conformant»if (!(«objectTemplate.name».get«propName»() instanceof «rhs.simpleTypeName»)) {«printFailure»«stopTuple»}«printSuccess»«ENDIF»
-«IF conformant && (clause.value instanceof ObjectTemplate || rhs.type.type instanceof JvmPrimitiveType && !(field.returnType.type instanceof JvmPrimitiveType))»if («objectTemplate.name».get«propName»() == null) {«printFailure»«stopTuple»}«printSuccess»«ENDIF»
-«rhs.name» = «IF !conformant»(«rhs.simpleTypeName»)«ENDIF» «objectTemplate.name».get«propName»();
+												mapMethod.append('''«IF !conformant»if (!(«objectTemplate.name».«getter»() instanceof «rhs.simpleTypeName»)) {«printFailure»«stopTuple»}«printSuccess»«ENDIF»
+«IF conformant && (clause.value instanceof ObjectTemplate || rhs.type.type instanceof JvmPrimitiveType && !(field.returnType.type instanceof JvmPrimitiveType))»if («objectTemplate.name».«getter»() == null) {«printFailure»«stopTuple»}«printSuccess»«ENDIF»
+«rhs.name» = «IF !conformant»(«rhs.simpleTypeName»)«ENDIF» «objectTemplate.name».«getter»();
 			''')
 										} else 
-												mapMethod.append('''if («objectTemplate.name».get«propName»() == null ? «rhsExp» != null : !«objectTemplate.name».get«propName»().equals(«rhsExp»)) {«printFailure»«stopTuple»}«printSuccess»
+												mapMethod.append('''if («objectTemplate.name».«getter»() == null ? «rhsExp» != null : !«objectTemplate.name».«getter»().equals(«rhsExp»)) {«printFailure»«stopTuple»}«printSuccess»
 			''')										
 									}
 								
