@@ -5,6 +5,7 @@ var zoomId;
 var countProgress;
 var g_colors;
 var modelviewerSelectionChanged = function () {};
+var reviseSelection = function (s) { return s; };
 if (g_colors == null) g_colors= {};
 var basicColors =
 {
@@ -408,7 +409,7 @@ function doSetCamera(eye,target,angle,ortho,steps,g_client) {
 		countProgress++;
 		var t=countProgress/steps;
 		g_angle = lerpScalar(oldAngle, angle, t);
-		setEyeAndTarget(lerpVector(oldEye, eye, t), lerpVector(oldTarget, target, t),g_client, countProgress<steps ? lerpVector(oldUp, newUp, t) : oriUp);
+		setEyeAndTarget(lerpVector(oldEye, eye, t), lerpVector(oldTarget, target, t),g_client, /*countProgress<steps ? lerpVector(oldUp, newUp, t) :*/ oriUp);
 		updateClient(g_client);
 		if (countProgress>=steps) 
 			window.clearInterval(zoomId);
@@ -4503,7 +4504,7 @@ function onDocumentMouseDown(e) {
 	
 	enableOrbit(e.which!=3 && !isShift(e.shiftKey),g_client);
 	
-	if (canChangeSelection) select(oldSelection,g_client);
+	if (canChangeSelection) select(reviseSelection(oldSelection),g_client);
 
 	if (canChangeSelection) generateEvent(e.type,e,g_client);
 	
