@@ -2010,7 +2010,7 @@ function generateGui() {
 	
 	// building material (color enablement)
 
-	var vis = misc.addFolder( "Material visibility" );
+	var vis = gui.addFolder( "Material visibility" );
 
 
     var g_visibility_sorted = [];
@@ -2030,7 +2030,7 @@ function generateGui() {
 
 	// selection info
 
-	selectionInfoGui = misc.addFolder( "Selection info" );
+	selectionInfoGui = gui.addFolder( "Selection info" );
 
 	effectController.id = "";
 	selectionInfoGui.add( effectController, "id");
