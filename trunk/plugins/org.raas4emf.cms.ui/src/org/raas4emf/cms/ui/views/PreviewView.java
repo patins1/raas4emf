@@ -460,6 +460,8 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			text += "		<script src=\"" + dir + "webglhelper.js\" type=\"text/javascript\"></script>";
 			if (doThreejs) {
 				text += "		<script src=\"" + dir + "js/libs/stats.min.js\"></script>";
+				text += "		<script src=\"" + dir + "build/three.js\"></script>";
+				text += "		<script src=\"" + dir + "js/libs/dat.gui.min.js\"></script>";
 				// text += "		<script src=\"" + dir + "touchgen.js\"></script>";
 				text += "		<script src=\"" + dir + "modelviewer.js\"></script>";
 				if (renderer.contains("canvas"))
