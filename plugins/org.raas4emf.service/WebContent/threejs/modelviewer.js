@@ -1080,6 +1080,49 @@ function updateGui(gui) {
 
 }
 
+dat.gui.GUI.prototype.removeFolder =
+	function(name) {
+		var folder =this.__folders[name];
+		if (!folder) return;
+		folder.close();
+		folder.__ul.parentNode.removeChild(folder.__ul);
+//		dom.removeClass(this.__folders[name].li, 'folder');
+		this.__folders[name] = undefined;
+//		this.onResize();
+	};
+
+function reduceGui(gui) {
+	
+	  if (!overrideSettings.opencontrols.length || overrideSettings.opencontrols.split(",").indexOf(gui.name)!=-1) return false;
+
+	  var allControlsReduced=true;
+	  for (var i in gui.__controllers) {
+		  var c = gui.__controllers[i];
+		  if (overrideSettings.opencontrols.split(",").indexOf(c.property)==-1) {
+			  try {
+				  c.remove(c); 
+			  } catch (e) {
+				  // maybe already be removed!
+			  }
+		  } else {
+			  allControlsReduced = false;
+		  }
+	  } 
+
+	  var allFoldersReduced=true;
+	  for (var i in gui.__folders) {
+		  var folder = gui.__folders[i];
+		  if (reduceGui(folder)) {
+			  gui.removeFolder(i);
+		  } else {
+			  allFoldersReduced = false;
+		  }
+	  }
+
+	  return allFoldersReduced && allControlsReduced;
+
+}
+
 function printLines(lines, artifactId, prefix, message) {
     g_pickInfoElem.innerHTML = message;
 	var g_client = resolveArtifact(artifactId);
@@ -2359,7 +2402,7 @@ function generateGui() {
 	};
 	thirdParty.add( effectController, "threex.rendererstats" );
 
-
+	reduceGui(gui);
 	
 }
 
@@ -3099,7 +3142,7 @@ function start() {
 		container.innerHTML = '';
     }
 	    
-    require([g_dir+"build/three.js",g_dir+"js/libs/dat.gui.min.js"], function () {
+//    require([g_dir+"build/three.js",g_dir+"js/libs/dat.gui.min.js"], function () {
 
     	projector = new THREE.Projector();    	
     	window.addEventListener( 'resize', onWindowResize, false );
@@ -3127,7 +3170,7 @@ function start() {
             	load(ii);
             }
         });
-    });
+//    });
 }
 
 var barLog="";
