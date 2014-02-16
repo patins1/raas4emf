@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.raas4emf.cms.core.ILogicalParentChildRelationship;
+import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
@@ -230,6 +231,18 @@ public class DirectoryView extends FilesView {
 	}
 
 	protected Object getInitialInput(CDOView trans) {
+		String path = CMSActivator.getSessionInstance().getParameter("path");
+		if (path != null) {
+			EObject eObject = RAASUtils.findByPath(trans, path.split("/"));
+			if (eObject instanceof Folder) {
+				Folder folder = (Folder) eObject;
+				for (Artifact artifact : folder.getArtifacts()) {
+					if (artifact.getName().endsWith(".ifc")) {
+						return artifact;
+					}
+				}
+			}
+		}
 		EObject result = trans.getRootResource().eContents().get(0);
 		result = result.eContents().get(0);
 		return result;
