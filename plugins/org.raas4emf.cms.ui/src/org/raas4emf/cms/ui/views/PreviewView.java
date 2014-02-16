@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,16 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
+import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.edit.domain.IEditingDomainProvider;
+import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
+import org.eclipse.emf.edit.provider.ReflectiveItemProviderAdapterFactory;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryContentProvider;
+import org.eclipse.emf.edit.ui.view.ExtendedPropertySheetPage;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.SafeRunnable;
@@ -48,6 +58,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.raas4emf.cms.core.FileUtil;
 import org.raas4emf.cms.core.IGeometricCenter;
 import org.raas4emf.cms.core.IGeometricClick;
@@ -68,7 +79,7 @@ import org.raas4emf.cms.ui.graf.GrafUtil;
 import raascms.Artifact;
 import raascms.Folder;
 
-public class PreviewView extends ViewPart implements ISelectionProvider, ISelectionListener {
+public class PreviewView extends ViewPart implements ISelectionProvider, ISelectionListener, IEditingDomainProvider {
 
 	public static final String ID = PreviewView.class.getName();
 	public Browser browser;
@@ -86,6 +97,9 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 	public static String attachedHeadContent = null;
 
 	public String attachedImmediately = null;
+	private ComposedAdapterFactory adapterFactory;
+	private AdapterFactoryEditingDomain editingDomain;
+	private ExtendedPropertySheetPage propertySheetPage;
 
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		listeners.add(listener);
@@ -125,6 +139,9 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 		menuMgr = (MenuManager) actionBars.getMenuManager();
 		menuMgr.setRemoveAllWhenShown(true);
 		getSite().registerContextMenu(menuMgr, this);
+		adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
+		adapterFactory.addAdapterFactory(new ReflectiveItemProviderAdapterFactory());
+		editingDomain = new AdapterFactoryEditingDomain(adapterFactory, new BasicCommandStack(), new HashMap<Resource, Boolean>());
 	}
 
 	public void setFocus() {
@@ -1048,5 +1065,34 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 	@Override
 	public void setPartName(String partName) {
 		super.setPartName(partName);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Object getAdapter(final Class adapter) {
+		Object result = super.getAdapter(adapter);
+		if (adapter == IPropertySheetPage.class) {
+			if (propertySheetPage == null) {
+				propertySheetPage = getPropertySheetPage();
+			}
+			result = propertySheetPage;
+		}
+		return result;
+	}
+
+	/**
+	 * Copied from FilesView
+	 */
+	public ExtendedPropertySheetPage getPropertySheetPage() {
+		if (propertySheetPage == null) {
+			propertySheetPage = new ExtendedPropertySheetPage((AdapterFactoryEditingDomain) getEditingDomain());
+			propertySheetPage.setPropertySourceProvider(new AdapterFactoryContentProvider(adapterFactory));
+		}
+
+		return propertySheetPage;
+	}
+
+	@Override
+	public EditingDomain getEditingDomain() {
+		return editingDomain;
 	}
 }
