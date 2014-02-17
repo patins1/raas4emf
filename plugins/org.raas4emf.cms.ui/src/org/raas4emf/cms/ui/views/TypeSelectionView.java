@@ -14,6 +14,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.FilteredTree;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.actions.IsolateAction;
@@ -57,7 +58,10 @@ public class TypeSelectionView extends PreviewView {
 			}
 			for (IViewPart viewVisibleOrNotVisible : result) {
 				FilesView view = (FilesView) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(viewVisibleOrNotVisible.getClass().getName(), null, IWorkbenchPage.VIEW_ACTIVATE);
-				view.tree.getFilterControl().setText(type);
+				if (view.tree instanceof FilteredTree) {
+					FilteredTree filteredTree = (FilteredTree) view.tree;
+					filteredTree.getFilterControl().setText(type);
+				}
 			}
 		} catch (PartInitException e) {
 			CMSActivator.err(e);

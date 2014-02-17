@@ -102,7 +102,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 	private MenuManager menuMgr;
 	private AdapterFactoryEditingDomain editingDomain;
 	public PatternFilter patternFilter;
-	protected FilteredTreeWithoutExpansion tree;
+	protected Composite tree;
 
 	public void createPartControl(final Composite parent) {
 		patternFilter = new PatternFilter() {
@@ -138,9 +138,13 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 		};
 
 		patternFilter.setIncludeLeadingWildcard(true);
-		tree = new FilteredTreeWithoutExpansion(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL, patternFilter, true);
-		tree.setLayoutData(null); // otherwise strange ClassCastException at RAP
-		viewer = tree.getViewer();
+		if (Boolean.valueOf(CMSActivator.getSessionInstance().getParameter("notreefilter"))) {
+			viewer = new TreeViewer(parent);
+			tree = viewer.getTree();
+		} else {
+			tree = new FilteredTreeWithoutExpansion(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL, patternFilter, true);
+			viewer = ((FilteredTreeWithoutExpansion) tree).getViewer();
+		}
 		adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
 		adapterFactory.addAdapterFactory(new ReflectiveItemProviderAdapterFactory());
 		editingDomain = new AdapterFactoryEditingDomain(adapterFactory, new BasicCommandStack(), new HashMap<Resource, Boolean>()) {
