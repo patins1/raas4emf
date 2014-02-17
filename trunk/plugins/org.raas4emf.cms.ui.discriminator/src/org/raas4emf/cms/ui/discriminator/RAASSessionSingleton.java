@@ -43,6 +43,10 @@ abstract public class RAASSessionSingleton {
 		this.password = password;
 	}
 
+	public void resetDBErrors() {
+		storedDBException = null;
+	}
+
 	public void resetDBConnection() {
 		cacheModelTrees.clear();
 		storedDBException = null;
@@ -74,7 +78,9 @@ abstract public class RAASSessionSingleton {
 				session = RAASUtils.getCDOSession(userID, password);
 			}
 		} catch (Exception e) {
-			storedDBException = e;
+			if (!"false".equals(getParameter("storedbexception"))) {
+				storedDBException = e;
+			}
 			if (e instanceof RuntimeException)
 				throw (RuntimeException) e;
 			throw new RuntimeException("Database connection error!", storedDBException);
