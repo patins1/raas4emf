@@ -102,7 +102,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 	private MenuManager menuMgr;
 	private AdapterFactoryEditingDomain editingDomain;
 	public PatternFilter patternFilter;
-	protected Composite tree;
+	private Composite tree;
 
 	public void createPartControl(final Composite parent) {
 		patternFilter = new PatternFilter() {
@@ -606,4 +606,9 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 			}
 		}
 	}
+
+	public Composite getTree() {
+		return tree;
+	}
+
 }

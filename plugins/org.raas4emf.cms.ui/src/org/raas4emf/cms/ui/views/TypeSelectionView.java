@@ -58,8 +58,8 @@ public class TypeSelectionView extends PreviewView {
 			}
 			for (IViewPart viewVisibleOrNotVisible : result) {
 				FilesView view = (FilesView) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(viewVisibleOrNotVisible.getClass().getName(), null, IWorkbenchPage.VIEW_ACTIVATE);
-				if (view.tree instanceof FilteredTree) {
-					FilteredTree filteredTree = (FilteredTree) view.tree;
+				if (view.getTree() instanceof FilteredTree) {
+					FilteredTree filteredTree = (FilteredTree) view.getTree();
 					filteredTree.getFilterControl().setText(type);
 				}
 			}
