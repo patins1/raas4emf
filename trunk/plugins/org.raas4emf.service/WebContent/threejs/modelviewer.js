@@ -1093,7 +1093,7 @@ dat.gui.GUI.prototype.removeFolder =
 
 function reduceGui(gui) {
 	
-	  if (!overrideSettings.opencontrols.length || overrideSettings.opencontrols.split(",").indexOf(gui.name)!=-1) return false;
+	  if (!overrideSettings.opencontrols || !overrideSettings.opencontrols.length || overrideSettings.opencontrols.split(",").indexOf(gui.name)!=-1) return false;
 
 	  var allControlsReduced=true;
 	  for (var i in gui.__controllers) {
