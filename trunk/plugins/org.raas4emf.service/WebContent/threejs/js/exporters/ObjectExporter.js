@@ -24,6 +24,7 @@ THREE.ObjectExporter.prototype = {
 
 		var geometries = {};
 		var geometryExporter = new THREE.GeometryExporter();
+		var geometry2Exporter = new THREE.Geometry2Exporter();
 		var bufferGeometryExporter = new THREE.BufferGeometryExporter();
 
 		var parseGeometry = function ( geometry ) {
@@ -50,9 +51,9 @@ THREE.ObjectExporter.prototype = {
 					data.widthSegments = geometry.widthSegments;
 					data.heightSegments = geometry.heightSegments;
 
-				} else if ( geometry instanceof THREE.CubeGeometry ) {
+				} else if ( geometry instanceof THREE.BoxGeometry ) {
 
-					data.type = 'CubeGeometry';
+					data.type = 'BoxGeometry';
 					data.width = geometry.width;
 					data.height = geometry.height;
 					data.depth = geometry.depth;
@@ -60,15 +61,21 @@ THREE.ObjectExporter.prototype = {
 					data.heightSegments = geometry.heightSegments;
 					data.depthSegments = geometry.depthSegments;
 
+				} else if ( geometry instanceof THREE.CircleGeometry ) {
+
+					data.type = 'CircleGeometry';
+					data.radius = geometry.radius;
+					data.segments = geometry.segments;
+
 				} else if ( geometry instanceof THREE.CylinderGeometry ) {
 
 					data.type = 'CylinderGeometry';
 					data.radiusTop = geometry.radiusTop;
 					data.radiusBottom = geometry.radiusBottom;
 					data.height = geometry.height;
-					data.radiusSegments = geometry.radiusSegments;
+					data.radialSegments = geometry.radialSegments;
 					data.heightSegments = geometry.heightSegments;
-					data.openEnded = data.openEnded;
+					data.openEnded = geometry.openEnded;
 
 				} else if ( geometry instanceof THREE.SphereGeometry ) {
 
@@ -111,6 +118,13 @@ THREE.ObjectExporter.prototype = {
 
 					data.type = 'BufferGeometry';
 					data.data = bufferGeometryExporter.parse( geometry );
+
+					delete data.data.metadata;
+
+				} else if ( geometry instanceof THREE.Geometry2 ) {
+
+					data.type = 'Geometry2';
+					data.data = geometry2Exporter.parse( geometry );
 
 					delete data.data.metadata;
 
@@ -233,6 +247,11 @@ THREE.ObjectExporter.prototype = {
 
 				data.type = 'Mesh';
 				data.geometry = parseGeometry( object.geometry );
+				data.material = parseMaterial( object.material );
+
+			} else if ( object instanceof THREE.Sprite ) {
+
+				data.type = 'Sprite';
 				data.material = parseMaterial( object.material );
 
 			} else {

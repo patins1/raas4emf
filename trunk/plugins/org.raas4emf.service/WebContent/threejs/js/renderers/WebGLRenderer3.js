@@ -4,7 +4,7 @@
  * parameters = {
  *   canvas: canvas,
  *   contextAttributes: {
- *     alpha: true,
+ *     alpha: false,
  *     depth: true,
  *     stencil: false,
  *     antialias: true,
@@ -27,8 +27,8 @@ THREE.WebGLRenderer3 = function ( parameters ) {
 
 	var devicePixelRatio = parameters.devicePixelRatio !== undefined
 				? parameters.devicePixelRatio
-				: window.devicePixelRatio !== undefined
-					? window.devicePixelRatio
+				: self.devicePixelRatio !== undefined
+					? self.devicePixelRatio
 					: 1;
 
 	var gl;
@@ -36,6 +36,8 @@ THREE.WebGLRenderer3 = function ( parameters ) {
 	try {
 
 		var attributes = parameters.contextAttributes || {};
+		
+		if ( attributes.alpha === undefined ) attributes.alpha = false;
 
 		gl = canvas.getContext( 'webgl', attributes ) || canvas.getContext( 'experimental-webgl', attributes );
 
@@ -438,7 +440,7 @@ THREE.WebGLRenderer3 = function ( parameters ) {
 
 			} else {
 
-				vector3.getPositionFromMatrix( object.matrixWorld );
+				vector3.setFromMatrixPosition( object.matrixWorld );
 				vector3.applyProjection( cameraViewProjectionMatrix );
 
 				object.z = vector3.z;

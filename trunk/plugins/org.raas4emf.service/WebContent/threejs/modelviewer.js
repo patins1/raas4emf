@@ -625,6 +625,9 @@ function createRenderer(container,ii) {
 	renderer.domElement.addEventListener( 'touchmove', touchHandler, false );
 	renderer.domElement.addEventListener( 'touchstart', touchHandler, false );
 	renderer.domElement.addEventListener( 'touchend', touchHandler, false );
+	var col = g_mapenabled ? { color: 0x000000, a: 0 }/* the default value */ : { r: 1, g: 1, b: 1, color: 0xFFFFFF, a: 1 }/* prevents dark ragged outline of selection in IE / WebGL mode */;
+	g_client.renderer.setClearColor( col.color, col.a  );
+	renderer.clear();	
     return g_client;
 }
 
@@ -1057,7 +1060,7 @@ function updateGuiControl(c) {
 		  if (c.property && c.object && c.setValue) {
 			  c.setValue(c.object[c.property]); //updateDisplay alone not works!
 		  }
-		   c.updateDisplay();
+		  if (c.updateDisplay) c.updateDisplay();
 
 }
 
@@ -1068,10 +1071,7 @@ function updateGui(gui) {
 	  // Iterate over all controllers
 	  for (var i in gui.__controllers) {
 		  var c = gui.__controllers[i];
-		  if (c.property && c.object && c.setValue) {
-			  c.setValue(c.object[c.property]); //updateDisplay alone not works!
-		  }
-		   c.updateDisplay();
+		  updateGuiControl(c);
 	  }
 
 	  for (var i in gui.__folders) {
@@ -2656,7 +2656,7 @@ function melt(g_client) {
 		var g = 0;
 		for (var tt=0; tt<geometries.length; tt++) {
 			var geometry = geometries[tt];
-			geometry = hasVertexNormals(geometry) ? THREE.BufferGeometryUtils.fromGeometry( geometry ) : THREE.BufferGeometryUtils.fromGeometryWithoutNormals( geometry );
+			geometry = THREE.BufferGeometryUtils.fromGeometry( geometry );
 			if (!geometry.attributes.normal) geometry.computeVertexNormals();
 			var position = geometry.attributes.position;
 			var positions2 = position.array;
@@ -3291,164 +3291,6 @@ function load(ii) {
 	
     }
     
-	THREE.BufferGeometryUtils.fromGeometryWithoutNormals = function ( geometry, settings ) {
-
-			if ( geometry instanceof THREE.BufferGeometry ) {
-
-				return geometry;
-
-			}
-
-			settings = settings || { 'vertexColors': THREE.NoColors };
-
-			var vertices = geometry.vertices;
-			var faces = geometry.faces;
-			var faceVertexUvs = geometry.faceVertexUvs;
-			var vertexColors = settings.vertexColors;
-			var hasFaceVertexUv = faceVertexUvs[ 0 ].length > 0;
-
-			var bufferGeometry = new THREE.BufferGeometry();
-
-			bufferGeometry.attributes = {
-
-				position: {
-					itemSize: 3,
-					array: new Float32Array( faces.length * 3 * 3 )
-				},
-//				normal: {
-//					itemSize: 3,
-//					array: new Float32Array( faces.length * 3 * 3 )
-//				}
-
-			}
-
-			var positions = bufferGeometry.attributes.position.array;
-//			var normals = bufferGeometry.attributes.normal.array;
-
-			if ( vertexColors !== THREE.NoColors ) {
-
-				bufferGeometry.attributes.color = {
-					itemSize: 3,
-					array: new Float32Array( faces.length * 3 * 3 )
-				};
-
-				var colors = bufferGeometry.attributes.color.array;
-
-			}
-
-			if ( hasFaceVertexUv === true ) {
-
-				bufferGeometry.attributes.uv = {
-					itemSize: 2,
-					array: new Float32Array( faces.length * 3 * 2 )
-				};
-
-				var uvs = bufferGeometry.attributes.uv.array;
-
-			}
-
-			var i2 = 0, i3 = 0;
-
-			for ( var i = 0; i < faces.length; i ++ ) {
-
-				var face = faces[ i ];
-
-				var a = vertices[ face.a ];
-				var b = vertices[ face.b ];
-				var c = vertices[ face.c ];
-
-				positions[ i3     ] = a.x;
-				positions[ i3 + 1 ] = a.y;
-				positions[ i3 + 2 ] = a.z;
-				
-				positions[ i3 + 3 ] = b.x;
-				positions[ i3 + 4 ] = b.y;
-				positions[ i3 + 5 ] = b.z;
-				
-				positions[ i3 + 6 ] = c.x;
-				positions[ i3 + 7 ] = c.y;
-				positions[ i3 + 8 ] = c.z;
-
-//				var na = face.vertexNormals[ 0 ];
-//				var nb = face.vertexNormals[ 1 ];
-//				var nc = face.vertexNormals[ 2 ];
-	//
-//				normals[ i3     ] = na.x;
-//				normals[ i3 + 1 ] = na.y;
-//				normals[ i3 + 2 ] = na.z;
-	//
-//				normals[ i3 + 3 ] = nb.x;
-//				normals[ i3 + 4 ] = nb.y;
-//				normals[ i3 + 5 ] = nb.z;
-	//
-//				normals[ i3 + 6 ] = nc.x;
-//				normals[ i3 + 7 ] = nc.y;
-//				normals[ i3 + 8 ] = nc.z;
-
-				if ( vertexColors === THREE.FaceColors ) {
-
-					var fc = face.color;
-
-					colors[ i3     ] = fc.r;
-					colors[ i3 + 1 ] = fc.g;
-					colors[ i3 + 2 ] = fc.b;
-
-					colors[ i3 + 3 ] = fc.r;
-					colors[ i3 + 4 ] = fc.g;
-					colors[ i3 + 5 ] = fc.b;
-
-					colors[ i3 + 6 ] = fc.r;
-					colors[ i3 + 7 ] = fc.g;
-					colors[ i3 + 8 ] = fc.b;
-
-				} else if ( vertexColors === THREE.VertexColors ) {
-
-					var vca = face.vertexColors[ 0 ];
-					var vcb = face.vertexColors[ 1 ];
-					var vcc = face.vertexColors[ 2 ];
-
-					colors[ i3     ] = vca.r;
-					colors[ i3 + 1 ] = vca.g;
-					colors[ i3 + 2 ] = vca.b;
-
-					colors[ i3 + 3 ] = vcb.r;
-					colors[ i3 + 4 ] = vcb.g;
-					colors[ i3 + 5 ] = vcb.b;
-
-					colors[ i3 + 6 ] = vcc.r;
-					colors[ i3 + 7 ] = vcc.g;
-					colors[ i3 + 8 ] = vcc.b;
-
-				}
-
-				if ( hasFaceVertexUv === true ) {
-
-					var uva = faceVertexUvs[ 0 ][ i ][ 0 ];
-					var uvb = faceVertexUvs[ 0 ][ i ][ 1 ];
-					var uvc = faceVertexUvs[ 0 ][ i ][ 2 ];
-
-					uvs[ i2     ] = uva.x;
-					uvs[ i2 + 1 ] = uva.y;
-				
-					uvs[ i2 + 2 ] = uvb.x;
-					uvs[ i2 + 3 ] = uvb.y;
-				
-					uvs[ i2 + 4 ] = uvc.x;
-					uvs[ i2 + 5 ] = uvc.y;
-
-				}
-
-				i3 += 9;
-				i2 += 6;
-
-			}
-
-//			bufferGeometry.computeBoundingSphere();
-
-			return bufferGeometry;
-
-	};
-
 	THREE.BufferGeometryUtils.assureMeshWithNoBufferGeometry = function ( mesh ) {
 
 		if ( mesh.geometry instanceof THREE.Geometry ) {
@@ -3500,56 +3342,6 @@ function load(ii) {
 		
 	};
 
-
-	THREE.BufferGeometry.prototype.computeBoundingSphere = function () {
-		
-		var box = new THREE.Box3();
-		var vector = new THREE.Vector3();
-
-		return function () {
-
-			if ( this.boundingSphere === null ) {
-
-				this.boundingSphere = new THREE.Sphere();
-
-			}
-
-			var positions = this.attributes[ "position" ].array;
-
-			if ( positions ) {
-
-				var center = this.boundingSphere.center;
-
-				box.min.set( Infinity, Infinity, Infinity ); //!! BUG FIX
-				box.max.set( -Infinity, -Infinity, -Infinity ); //!! BUG FIX
-
-
-				for ( var i = 0, il = positions.length; i < il; i += 3 ) {
-
-					vector.set( positions[ i ], positions[ i + 1 ], positions[ i + 2 ] );
-					box.addPoint( vector );
-
-				}
-
-				box.center( center );
-
-				var maxRadiusSq = 0;
-
-				for ( var i = 0, il = positions.length; i < il; i += 3 ) {
-
-					vector.set( positions[ i ], positions[ i + 1 ], positions[ i + 2 ] );
-					maxRadiusSq = Math.max( maxRadiusSq, center.distanceToSquared( vector ) );
-
-				}
-
-				this.boundingSphere.radius = Math.sqrt( maxRadiusSq );
-
-			}
-
-		};
-
-	}();
-
 	
     THREE.SceneLoader.prototype.load2 = function ( url, onLoad, onProgress, onError ) {
 
@@ -3589,7 +3381,7 @@ function load(ii) {
         	if (effectController.vertexnormals)
         		result.geometry.computeVertexNormals(true);
         	if (USE_BUFFERGEOMETRY && g_renderer == "webgl") {
-	        	var bufferGeometry = hasVertexNormals(result.geometry) ? THREE.BufferGeometryUtils.fromGeometry( result.geometry ) : THREE.BufferGeometryUtils.fromGeometryWithoutNormals( result.geometry );
+	        	var bufferGeometry = THREE.BufferGeometryUtils.fromGeometry( result.geometry );
 	        	if (effectController.vertexnormals && !hasVertexNormals(result.geometry)) bufferGeometry.computeVertexNormals();
 	        	result.geometry = bufferGeometry;
         	}
@@ -3858,7 +3650,7 @@ function init(root,g_client) {
 	try{
     
 	if (!g_client.controls) {
-    g_client.controls = new THREE.OrbitControls( null, g_client );
+    g_client.controls = new THREE.OrbitControls( new THREE.PerspectiveCamera( 90, 1, 0.01, 2000000 ), g_client );
     g_client.controls.oriUpdate = g_client.controls.update;
     g_client.controls.update = function () {if (this.active) this.oriUpdate(); };
     g_client.controls.noPan = true;
@@ -4144,10 +3936,11 @@ function render(g_client) {
 		enableOrbit(false,g_client);
 	}
 	updateProjection(g_client);
-	var col = g_mapenabled ? { color: 0x000000, a: 0 }/* the default value */ : { r: 1, g: 1, b: 1, color: 0xFFFFFF, a: 1 }/* prevents dark ragged outline of selection in IE / WebGL mode */;
-	g_client.renderer.setClearColor( col.color, col.a  );
+	if (g_client.scene2 || sceneCube) {
+		g_client.renderer.autoClear = false;	
+		g_client.renderer.clear();	
+	}
 	if (sceneCube) {
-		g_client.renderer.autoClear = false;		
 		var aspect = g_client.parentNode.offsetWidth / g_client.parentNode.offsetHeight;
 		var cameraCube = new THREE.PerspectiveCamera( g_angle, aspect, 1, 100000 );
 		cameraCube.rotation.copy( g_client.g_camera.rotation );
@@ -4172,6 +3965,11 @@ function render(g_client) {
 		g_client.directionalLight.updateMatrixWorld();	
 	}
 	g_client.renderer.render( g_client.scene, camera );
+	
+	if (g_client.scene2!=null) {
+		g_client.renderer.clearDepth();
+		g_client.renderer.render( g_client.scene2, camera );
+	}
 	
 	if (g_client.additionalCamera) {
 //		g_client.renderer.autoClear = false;
