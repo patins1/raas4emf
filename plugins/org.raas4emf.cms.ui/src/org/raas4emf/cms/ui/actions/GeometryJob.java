@@ -5,6 +5,7 @@ import java.io.InputStream;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.net4j.util.HexUtil;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.views.PreviewView;
 
@@ -17,6 +18,8 @@ public class GeometryJob extends RAASJob {
 	public GeometryJob(Artifact artifact) {
 		super("Generate WebGL for " + artifact.getName(), artifact);
 		sceneName = PreviewView.getScene3dName();
+		String url = CMSActivator.getSessionInstance().createFullDownloadUrl(artifact);
+		System.setProperty(HexUtil.bytesToHex(artifact.getFileContent().getID()) + ".ifc", url);
 	}
 
 	protected IStatus run(IProgressMonitor monitor) {
