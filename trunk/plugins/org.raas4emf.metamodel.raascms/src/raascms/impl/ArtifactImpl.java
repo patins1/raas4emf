@@ -36,6 +36,7 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.emf.internal.cdo.CDOObjectImpl;
 import org.eclipse.net4j.util.HexUtil;
+import org.raas4emf.cms.transformation.IArtifactTransformator;
 import org.raas4emf.cms.transformation.IModelTransformator;
 import org.raas4emf.cms.transformation.ITranformator;
 import org.raas4emf.cms.transformation.TransformationUtils;
@@ -294,6 +295,9 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 								if (transformator instanceof IModelTransformator && !this.getContents().isEmpty()) {
 									IModelTransformator iModelTransformator = (IModelTransformator) transformator;
 									file = iModelTransformator.transform(this.getContents(), dir, pureFilename, monitor);
+								} else if (transformator instanceof IArtifactTransformator && !this.getContents().isEmpty()) {
+									IArtifactTransformator iArtifactTransformator = (IArtifactTransformator) transformator;
+									file = iArtifactTransformator.transform(this, dir, pureFilename, monitor);
 								} else {
 									file = transformator.transform(this.getFileContent().getContents(), dir, pureFilename, monitor);
 								}
