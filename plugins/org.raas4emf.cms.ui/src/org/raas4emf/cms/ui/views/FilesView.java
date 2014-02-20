@@ -140,6 +140,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 		patternFilter.setIncludeLeadingWildcard(true);
 		if (Boolean.valueOf(CMSActivator.getSessionInstance().getParameter("notreefilter"))) {
 			viewer = new TreeViewer(parent);
+			viewer.setAutoExpandLevel(5);
 			tree = viewer.getTree();
 		} else {
 			tree = new FilteredTreeWithoutExpansion(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL, patternFilter, true);

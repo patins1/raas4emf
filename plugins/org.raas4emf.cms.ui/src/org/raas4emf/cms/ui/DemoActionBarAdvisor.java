@@ -69,6 +69,7 @@ import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.transformation.StreamGobbler;
 import org.raas4emf.cms.transformation.TransformationUtils;
 import org.raas4emf.cms.ui.actions.AddArtifactAction;
+import org.raas4emf.cms.ui.actions.AddArtifactFromURLAction;
 import org.raas4emf.cms.ui.actions.ComboInputDialog;
 import org.raas4emf.cms.ui.actions.EditAction;
 import org.raas4emf.cms.ui.actions.IsolateAction;
@@ -105,6 +106,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 	private List<Action> configActions = new ArrayList<Action>();
 	private IToolBarManager mainToolBar;
 	private Action loadBackup;
+	private Action loadBackupFromURL;
 	private Action saveBackup;
 	private Action changeRendererAction, change3dFormatAction;
 	private Action shutdownServerAction;
@@ -398,7 +400,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 							continue;
 						}
 
-						Process process = Runtime.getRuntime().exec(cmd, new String[] { "LD_LIBRARY_PATH=" + System.getProperty("LD_LIBRARY_PATH") });
+						Process process = Runtime.getRuntime().exec(cmd, null);
 						StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT") {
 
 							@Override
@@ -477,6 +479,35 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		loadBackup.setToolTipText("Performs file download to the root folder");
 		loadBackup.setId("org.raas4emf.cms.ui.LoadBackupAction");
 		register(loadBackup);
+
+		loadBackupFromURL = new Action() {
+			public void run() {
+				try {
+					Folder repoRoot = (Folder) RAASUIUtils.findByPath("RepositoryRoot");
+					if (repoRoot == null)
+						MessageDialog.openError(window.getShell(), "Error", "Cannot find root folder \"RepositoryRoot\". Your database may be corrupt.");
+					new AddArtifactFromURLAction().execute(window, repoRoot, window.getShell(), true, new Runnable() {
+
+						@Override
+						public void run() {
+							window.getShell().getDisplay().asyncExec(new Runnable() {
+								public void run() {
+									originalConfigAction.run();
+								}
+							});
+
+						}
+					});
+				} catch (Exception e) {
+					MessageDialog.openError(window.getShell(), "Error", e.getMessage());
+					CMSActivator.err(e);
+				}
+			}
+		};
+		loadBackupFromURL.setText("Load database from URL");
+		loadBackupFromURL.setToolTipText("Performs file download to the root folder");
+		loadBackupFromURL.setId("org.raas4emf.cms.ui.LoadBackupFromURLAction");
+		register(loadBackupFromURL);
 
 		saveBackup = new Action() {
 			public void run() {
@@ -720,6 +751,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		adminMenu.add(showEclipseLogAction);
 		adminMenu.add(promptAction);
 		adminMenu.add(loadBackup);
+		adminMenu.add(loadBackupFromURL);
 		adminMenu.add(saveBackup);
 		for (Action action : configActions)
 			adminMenu.add(action);
