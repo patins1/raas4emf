@@ -29,11 +29,7 @@ public class GeometricIDBuilderAdapterFactory extends AdapterFactoryTyped<IfcRoo
 					}
 					p = p.eContainer();
 				}
-				int index = getPart21Index(ifcRoot);
-				if (index != -1) {
-					return "_" + index;
-				}
-				return null;
+				return ifcRoot.getGlobalId();
 			}
 
 		};

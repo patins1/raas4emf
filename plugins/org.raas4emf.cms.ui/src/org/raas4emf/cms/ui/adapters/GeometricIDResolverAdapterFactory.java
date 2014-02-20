@@ -8,11 +8,7 @@ import java.util.List;
 
 import org.eclipse.emf.cdo.common.id.CDOIDUtil;
 import org.eclipse.emf.cdo.common.revision.CDORevision;
-import org.eclipse.emf.cdo.session.CDOCollectionLoadingPolicy;
-import org.eclipse.emf.cdo.util.CDOUtil;
-import org.eclipse.emf.cdo.view.CDOView;
 import org.eclipse.emf.ecore.EObject;
-import org.ifc4emf.metamodel.ifcheader.GuidToPart21Container;
 import org.ifc4emf.metamodel.ifcheader.Model;
 import org.ifc4emf.part21.loader.ContainmentTreeOrderedByNumberHelper;
 import org.raas4emf.cms.core.IGeometricIDResolver;
@@ -27,6 +23,8 @@ import IFC2X3.IfcRoot;
 
 public class GeometricIDResolverAdapterFactory extends AdapterFactoryTyped<String, IGeometricIDResolver> {
 
+	protected static String KEY0 = "KEY";
+	private static String VALUE0 = "VALUE";
 	private static String oldSql;
 
 	@Override
@@ -72,34 +70,7 @@ public class GeometricIDResolverAdapterFactory extends AdapterFactoryTyped<Strin
 			}
 
 			private Integer getIndexForGUID(Model model, String guid) {
-				CDORevision revision = model.getGuidToPart21().cdoRevision();
-				int branch = revision.getBranch().getID();
-				long id = CDOIDUtil.getLong(revision.getID());
-				String sql = "SELECT map.VALUE0 FROM IFCHEADER_GUIDTOPART21MAP map, IFCHEADER_GUIDTOPART21CONTAINER_GUIDTOPART21_LIST list";
-				// String sql = "SELECT map.VALUE0 FROM IFCHEADER_GUIDTOPART21MAP map, IFCHEADER_MODEL_GUIDTOPART21_LIST list";
-				sql += " WHERE map.CDO_ID=list.CDO_VALUE AND map.CDO_BRANCH=" + branch + " AND (map.CDO_REVISED=0) ";
-				sql += " AND list.CDO_SOURCE=" + id + " AND list.CDO_BRANCH=" + branch + " AND list.CDO_VERSION=" + revision.getVersion();
-				// sql += " AND model.CDO_ID=" + id + " AND model.CDO_BRANCH=" + branch + " AND (model.CDO_REVISED=0)";
-				sql += " AND map.KEY0='" + guid + "'";
-
-				// sql = "CREATE INDEX GUID_INDEX ON IFCHEADER_GUIDTOPART21MAP (KEY0)";
-
-				// sql = "EXPLAIN SELECT map.VALUE0 FROM IFCHEADER_GUIDTOPART21MAP map ";
-				// sql += " WHERE map.KEY0='" + guid + "'";
-
-				// sql = "SELECT * FROM information_schema.indexes WHERE table_schema = 'PUBLIC' AND table_name='IFCHEADER_GUIDTOPART21MAP';";
-				// sql = "CREATE INDEX GUID4_INDEX ON IFCHEADER_GUIDTOPART21MAP(CDO_ID, CDO_BRANCH, KEY0)";
-
-				// sql = "DROP INDEX GUID_INDEX";
-
-				List<Object> result = QueryAction.execSql(sql, model.cdoResource().cdoView());
-				if (result.size() == 1 && result.get(0) instanceof String) {
-					CMSActivator.log((String) result.get(0));
-				}
-				if (result.size() == 1 && result.get(0) instanceof Integer) {
-					return (Integer) result.get(0);
-				}
-				return null;
+				return getIndexForGUIDStatic(model, guid);
 			}
 
 			private EObject getFromIndex(int integer, Artifact artifact) {
@@ -134,57 +105,67 @@ public class GeometricIDResolverAdapterFactory extends AdapterFactoryTyped<Strin
 		};
 	}
 
-	public static Integer getIndexForGUID(Model model, String guid) {
-		long id;
-		// Object obj = ((CDORevisionImpl) model.cdoRevision()).get(Part21Package.eINSTANCE.getModel_GuidToPart21(), -1);
-		// if (obj instanceof CDOID) {
-		// CDOID cdoid = (CDOID) obj;
-		// id = CDOIDUtil.getLong(cdoid);
-		// } else {
-
-		CDOView view = model.cdoResource().cdoView();
-		GuidToPart21Container guidToPart21;
-		CDOCollectionLoadingPolicy or = view.getSession().options().getCollectionLoadingPolicy();
-		view.getSession().options().setCollectionLoadingPolicy(CDOUtil.createCollectionLoadingPolicy(0, 10));
+	public static Integer getIndexForGUIDStatic(Model model, String guid) {
 		try {
-			// CDORevisionPrefetchingPolicy ori = view.options().getRevisionPrefetchingPolicy();
-			// view.options().setRevisionPrefetchingPolicy(CDOUtil.createRevisionPrefetchingPolicy(10));
+			// long id;
+			// // Object obj = ((CDORevisionImpl) model.cdoRevision()).get(Part21Package.eINSTANCE.getModel_GuidToPart21(), -1);
+			// // if (obj instanceof CDOID) {
+			// // CDOID cdoid = (CDOID) obj;
+			// // id = CDOIDUtil.getLong(cdoid);
+			// // } else {
+			//
+			// CDOView view = model.cdoResource().cdoView();
+			// GuidToPart21Container guidToPart21;
+			// CDOCollectionLoadingPolicy or = view.getSession().options().getCollectionLoadingPolicy();
+			// view.getSession().options().setCollectionLoadingPolicy(CDOUtil.createCollectionLoadingPolicy(0, 10));
+			// try {
+			// // CDORevisionPrefetchingPolicy ori = view.options().getRevisionPrefetchingPolicy();
+			// // view.options().setRevisionPrefetchingPolicy(CDOUtil.createRevisionPrefetchingPolicy(10));
+			//
+			// guidToPart21 = model.getGuidToPart21();
+			// view.getSession().options().setCollectionLoadingPolicy(CDOUtil.createCollectionLoadingPolicy(or.getInitialChunkSize(), or.getResolveChunkSize()));
+			// } finally {
+			// }
 
-			guidToPart21 = model.getGuidToPart21();
-			view.getSession().options().setCollectionLoadingPolicy(CDOUtil.createCollectionLoadingPolicy(or.getInitialChunkSize(), or.getResolveChunkSize()));
-		} finally {
-		}
+			CDORevision revision = model.getGuidToPart21().cdoRevision();
+			int branch = revision.getBranch().getID();
+			// int branch = model.cdoRevision().getBranch().getID();
+			long id = CDOIDUtil.getLong(revision.getID());
 
-		CDORevision revision = guidToPart21.cdoRevision();
-		id = CDOIDUtil.getLong(revision.getID());
-		// }
-		int branch = model.cdoRevision().getBranch().getID();
-		String sql = "SELECT map.VALUE0 FROM IFCHEADER_GUIDTOPART21MAP map, IFCHEADER_GUIDTOPART21CONTAINER_GUIDTOPART21_LIST list";
-		// String sql = "SELECT map.VALUE0 FROM IFCHEADER_GUIDTOPART21MAP map, IFCHEADER_MODEL_GUIDTOPART21_LIST list";
-		sql += " WHERE map.CDO_ID=list.CDO_VALUE AND map.CDO_BRANCH=" + branch + " AND (map.CDO_REVISED=0) ";
-		sql += " AND list.CDO_SOURCE=" + id + " AND list.CDO_BRANCH=" + branch + " AND list.CDO_VERSION=" + revision.getVersion();
-		// sql += " AND model.CDO_ID=" + id + " AND model.CDO_BRANCH=" + branch + " AND (model.CDO_REVISED=0)";
-		sql += " AND map.KEY0='" + guid + "'";
+			String sql = "SELECT map." + VALUE0 + " FROM IFCHEADER_GUIDTOPART21MAP map, IFCHEADER_GUIDTOPART21CONTAINER_GUIDTOPART21_LIST list";
+			// String sql = "SELECT map."+VALUE+" FROM IFCHEADER_GUIDTOPART21MAP map, IFCHEADER_MODEL_GUIDTOPART21_LIST list";
+			sql += " WHERE map.CDO_ID=list.CDO_VALUE AND map.CDO_BRANCH=" + branch + " AND (map.CDO_REVISED=0) ";
+			sql += " AND list.CDO_SOURCE=" + id + " AND list.CDO_BRANCH=" + branch + " AND list.CDO_VERSION=" + revision.getVersion();
+			// sql += " AND model.CDO_ID=" + id + " AND model.CDO_BRANCH=" + branch + " AND (model.CDO_REVISED=0)";
+			sql += " AND map." + KEY0 + "='" + guid + "'";
 
-		// sql = "CREATE INDEX GUID_INDEX ON IFCHEADER_GUIDTOPART21MAP (KEY0)";
+			// sql = "CREATE INDEX GUID_INDEX ON IFCHEADER_GUIDTOPART21MAP ("+KEY0+")";
 
-		// sql = "EXPLAIN SELECT map.VALUE0 FROM IFCHEADER_GUIDTOPART21MAP map ";
-		// sql += " WHERE map.KEY0='" + guid + "'";
+			// sql = "EXPLAIN SELECT map."+VALUE+" FROM IFCHEADER_GUIDTOPART21MAP map ";
+			// sql += " WHERE map."+KEY0+"='" + guid + "'";
 
-		// sql = "SELECT * FROM information_schema.indexes WHERE table_schema = 'PUBLIC' AND table_name='IFCHEADER_GUIDTOPART21MAP';";
-		// sql = "CREATE INDEX GUID4_INDEX ON IFCHEADER_GUIDTOPART21MAP(CDO_ID, CDO_BRANCH, KEY0)";
+			// sql = "SELECT * FROM information_schema.indexes WHERE table_schema = 'PUBLIC' AND table_name='IFCHEADER_GUIDTOPART21MAP';";
+			// sql = "CREATE INDEX GUID4_INDEX ON IFCHEADER_GUIDTOPART21MAP(CDO_ID, CDO_BRANCH, "+KEY0+")";
 
-		// sql = "DROP INDEX GUID_INDEX";
+			// sql = "DROP INDEX GUID_INDEX";
 
-		QueryAction.otherSearchStrings.remove(oldSql);
-		QueryAction.otherSearchStrings.add(oldSql = sql);
+			QueryAction.otherSearchStrings.remove(oldSql);
+			QueryAction.otherSearchStrings.add(oldSql = sql);
 
-		List<Object> result = QueryAction.execSql(sql, model.cdoResource().cdoView());
-		if (result.size() == 1 && result.get(0) instanceof String) {
-			CMSActivator.log((String) result.get(0));
-		}
-		if (result.size() == 1 && result.get(0) instanceof Integer) {
-			return (Integer) result.get(0);
+			List<Object> result = QueryAction.execSql(sql, model.cdoResource().cdoView());
+			if (result.size() == 1 && result.get(0) instanceof String) {
+				CMSActivator.log((String) result.get(0));
+			}
+			if (result.size() == 1 && result.get(0) instanceof Integer) {
+				return (Integer) result.get(0);
+			}
+
+		} catch (Exception e) {
+			if (e.getMessage().contains("Column \"MAP.VALUE\" not found")) {
+				VALUE0 = "VALUE0";
+				KEY0 = "KEY0";
+				return getIndexForGUIDStatic(model, guid);
+			}
 		}
 		return null;
 	}
