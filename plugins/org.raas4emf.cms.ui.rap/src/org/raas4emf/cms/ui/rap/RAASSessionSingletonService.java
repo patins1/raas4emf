@@ -46,16 +46,18 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 
 		@Override
 		public String get3dRendererUrl() {
-			return createDownloadUrl("WebContent/") + (PreviewView.isThreeJS() ? "threejs/" : "o3d/");
+			String result = createDownloadUrl("WebContent/") + (PreviewView.isThreeJS() ? "threejs/" : "o3d/");
+			return result;
+			// return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
 		}
 
 		@Override
 		public String createFullDownloadUrl(Artifact artifact) {
 			StringBuilder url = new StringBuilder();
 			url.append("http://");
-			url.append(RWT.getRequest().getLocalAddr());
+			url.append(RWT.getRequest().getServerName());
 			url.append(":");
-			url.append(RWT.getRequest().getLocalPort());
+			url.append(RWT.getRequest().getServerPort());
 			url.append(RWT.getServiceManager().getServiceHandlerUrl("downloadServiceHandler"));
 			url.append("&artifact=");
 			url.append(artifact.cdoID().toURIFragment());
