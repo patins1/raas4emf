@@ -9,19 +9,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
+import java.net.URL;
 import java.util.Date;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.net4j.util.HexUtil;
 import org.raas4emf.cms.core.Activator;
 import org.raas4emf.cms.core.FileUtil;
 import org.raas4emf.cms.core.RAASUtils;
+import org.raas4emf.cms.transformation.IArtifactTransformator;
 import org.raas4emf.cms.transformation.ITranformator;
 import org.raas4emf.cms.transformation.StreamGobbler;
 import org.raas4emf.cms.transformation.TransformationUtils;
 
-public class IfcToThreejsTranformator implements ITranformator {
+import raascms.Artifact;
 
-	public static final boolean USE_GUIDS = true;
+public class IfcToThreejsTranformator implements IArtifactTransformator, ITranformator {
+
 	static File DEFAULT_BLENDER_LOCATION = null;
 	private int worked;
 	private String errorMessages = "";
@@ -30,42 +35,89 @@ public class IfcToThreejsTranformator implements ITranformator {
 		// nothing to do
 	}
 
-	public File transform(InputStream ifcStream, File dir, String pureFilename, final IProgressMonitor monitor) throws IOException {
+	public File transform(Object oArtifact, File dir, String pureFilename, final IProgressMonitor monitor) throws IOException {
+		Artifact artifact = (Artifact) oArtifact;
 		Activator.log("Start transforming " + pureFilename);
 		worked = 0;
 		Date started = new Date();
 		monitor.subTask("Prepare IFC file");
-		File ifcFile = new File(dir, pureFilename + ".ifc");
-		File blendFile = new File(dir, pureFilename + ".blend");
 		File targetFile = new File(dir, pureFilename + getExportExt());
 		File errorFile = new File(dir, pureFilename + getExportExt() + ".error");
 		try {
-			FileOutputStream y = new FileOutputStream(ifcFile);
-			if (USE_GUIDS)
+
+			if (errorFile.exists())
+				errorFile.delete();
+			String cmd = null;
+			File blendFile = null;
+
+			String REMOTE_BLENDER_URL = RAASUtils.getRAASProp("REMOTE_BLENDER_URL");
+			String catchResult = null;
+			boolean useRemoteConversion = REMOTE_BLENDER_URL != null;
+			if (!useRemoteConversion) {
+				File ifcFile = new File(dir, pureFilename + ".ifc");
+				blendFile = new File(dir, pureFilename + ".blend");
+				FileOutputStream y = new FileOutputStream(ifcFile);
+				InputStream ifcStream = artifact.getFileContent().getContents();
 				FileUtil.inputstreamToOutputstream(ifcStream, y);
-			else
-				new IFCGuidByIndexPatch(ifcStream, y).trigger();
-			y.flush();
-			y.close();
-			ifcStream.close();
+				ifcStream.close();
+
+				if (DEFAULT_BLENDER_LOCATION == null)
+					DEFAULT_BLENDER_LOCATION = new File(RAASUtils.getRAASProp("BLENDER"));
+				try {
+					DEFAULT_BLENDER_LOCATION.setExecutable(true);
+				} catch (Exception e) {
+					Activator.err("Cannot set blender to be executable!", e);
+				}
+
+				File untitledBlenderFile = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "untitled.blend");
+				// TODO Toowoomba-2012-05-17_optimized.ifc and Door Sliding have problem with splitting, so disable for now
+				File script = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "IfcImportExport.py");
+
+				cmd = TransformationUtils.quote(DEFAULT_BLENDER_LOCATION) + " -nojoystick -noaudio -b " + TransformationUtils.quote(untitledBlenderFile) + " -P " + TransformationUtils.quote(script) + " -- " + TransformationUtils.quote(ifcFile) + " " + TransformationUtils.quote(targetFile);
+
+			} else {
+				boolean isWindows = System.getProperty("os.name").contains("Windows");
+
+				String key = FileLocator.resolve(new URL("platform:/plugin/org.raas4emf.cms.core/scripting/ssh20140211." + (isWindows ? "ppk" : "pem"))).getFile();
+
+				File commandsTemplate = new File(FileLocator.resolve(new URL("platform:/plugin/org.raas4emf.cms.core/scripting/commands_template.sh")).getFile());
+
+				String commands = "bin/ifcurl2js.sh \"%IFCURL%\" \"%JSURL%\""; // TransformationUtils.stringFromFile(commandsTemplate);
+				String ifcUrl = RAASUtils.getRAASProp("REMOTE_JS_FOLDER");
+				String jsFile = HexUtil.bytesToHex(artifact.getFileContent().getID()) + ".js";
+				String jsUrl = "s3://ifc-translation/" + jsFile;
+				commands = commands.replace("%IFCURL%", ifcUrl);
+				commands = commands.replace("%JSURL%", jsUrl);
+				TransformationUtils.stringToFile(commandsTemplate, commands);
+				String sshCommand;
+				if (isWindows)
+					sshCommand = "putty.exe -i \"%SSHKEYFILE%\" -ssh \"%REMOTE_BLENDER_URL%\" 22 -m \"%EXTERNALCOMMANDFILE%\"";
+				else
+					sshCommand = "ssh -i \"%SSHKEYFILE%\" \"%REMOTE_BLENDER_URL%\" bin//ifcurl2js.sh \"%IFCURL%\" \"%JSURL%\"";
+
+				if (RAASUtils.getRAASProp("BLENDER_SSH_COMMAND") != null)
+					sshCommand = RAASUtils.getRAASProp("BLENDER_SSH_COMMAND");
+
+				if (RAASUtils.getRAASProp("SSHKEYFILE") != null)
+					key = RAASUtils.getRAASProp("SSHKEYFILE");
+
+				sshCommand = sshCommand.replace("%SSHKEYFILE%", key);
+				sshCommand = sshCommand.replace("%REMOTE_BLENDER_URL%", REMOTE_BLENDER_URL);
+				sshCommand = sshCommand.replace("%EXTERNALCOMMANDFILE%", commandsTemplate.toString());
+				sshCommand = sshCommand.replace("%IFCURL%", ifcUrl);
+				sshCommand = sshCommand.replace("%JSURL%", jsUrl);
+
+				cmd = sshCommand;
+				catchResult = RAASUtils.getRAASProp("REMOTE_JS_FOLDER") + jsFile;
+				// cmd = "putty.exe -i " + TransformationUtils.quote(key) + " -ssh " + REMOTE_BLENDER_URL + " 22 -m " + TransformationUtils.quote(commands);
+
+			}
+
 			monitor.worked(1);
 			if (monitor.isCanceled())
 				return null;
 			monitor.subTask("Creating geometry");
-			if (errorFile.exists())
-				errorFile.delete();
-			File untitledBlenderFile = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "untitled.blend");
-			// TODO Toowoomba-2012-05-17_optimized.ifc and Door Sliding have problem with splitting, so disable for now
-			File script = TransformationUtils.getResourceAsTempFile(IfcToThreejsTranformator.class, "IfcImportExport.py");
-			if (DEFAULT_BLENDER_LOCATION == null)
-				DEFAULT_BLENDER_LOCATION = new File(RAASUtils.getRAASProp("BLENDER"));
-			try {
-				DEFAULT_BLENDER_LOCATION.setExecutable(true);
-			} catch (Exception e) {
-				Activator.err("Cannot set blender to be executable!", e);
-			}
 
-			String cmd = TransformationUtils.quote(DEFAULT_BLENDER_LOCATION) + " -nojoystick -noaudio -b " + TransformationUtils.quote(untitledBlenderFile) + " -P " + TransformationUtils.quote(script) + " -- " + TransformationUtils.quote(ifcFile) + " " + TransformationUtils.quote(targetFile);
 			Activator.log("Executing " + cmd);
 			String[] envp = null;
 			if (System.getProperty("LD_LIBRARY_PATH") != null)
@@ -134,13 +186,17 @@ public class IfcToThreejsTranformator implements ITranformator {
 			Activator.log("Written to " + targetFile);
 			Date ended = new Date();
 			Activator.log("Seconds elapsed =  " + (ended.getTime() - started.getTime()) / 1000);
+			if (catchResult != null)
+				FileUtil.inputstreamToOutputstream(new URL(catchResult).openStream(), new FileOutputStream(targetFile));
 			// ifcFile.delete();
-			if (!blendFileRequired())
+			if (blendFile != null && !blendFileRequired())
 				blendFile.delete();
+
 			monitor.worked(1);
 		} catch (Exception e) {
-			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(e.getMessage()), new FileOutputStream(errorFile));
-			Activator.err("Stopped conversion with message: " + e.getMessage(), e);
+			String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message), new FileOutputStream(errorFile));
+			Activator.err("Stopped conversion with message: " + message, e);
 		}
 		return targetFile;
 	}
@@ -172,6 +228,11 @@ public class IfcToThreejsTranformator implements ITranformator {
 
 	public String getExportExt() {
 		return ".js";
+	}
+
+	@Override
+	public File transform(InputStream inputStream, File desiredOutputDirectory, String desiredPureFilename, IProgressMonitor monitor) throws IOException {
+		throw new IOException("Not implemented");
 	}
 
 }

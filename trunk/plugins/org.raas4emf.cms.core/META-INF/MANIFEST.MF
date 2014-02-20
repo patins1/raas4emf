@@ -17,3 +17,4 @@ Require-Bundle: org.raas4emf.metamodel.raascms,
  org.ifc4emf.metamodel.ifc,
  org.ifc4emf.part21
 Bundle-Activator: org.raas4emf.cms.core.Activator
+Eclipse-BundleShape: dir
