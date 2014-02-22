@@ -462,6 +462,10 @@
          </enabledWhen>
       </handler>
       <handler
+            class="org.raas4emf.cms.ui.actions.CollapseAllAction"
+            commandId="org.raas4emf.cms.ui.actions.CollapseAllCommand">
+      </handler>
+      <handler
             class="org.raas4emf.cms.ui.actions.ExpandAllAction"
             commandId="org.raas4emf.cms.ui.actions.ExpandAllCommand">
       </handler>
