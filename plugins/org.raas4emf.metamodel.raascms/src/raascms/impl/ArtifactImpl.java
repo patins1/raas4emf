@@ -295,7 +295,7 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 								if (transformator instanceof IModelTransformator && !this.getContents().isEmpty()) {
 									IModelTransformator iModelTransformator = (IModelTransformator) transformator;
 									file = iModelTransformator.transform(this.getContents(), dir, pureFilename, monitor);
-								} else if (transformator instanceof IArtifactTransformator && !this.getContents().isEmpty()) {
+								} else if (transformator instanceof IArtifactTransformator) {
 									IArtifactTransformator iArtifactTransformator = (IArtifactTransformator) transformator;
 									file = iArtifactTransformator.transform(this, dir, pureFilename, monitor);
 								} else {
