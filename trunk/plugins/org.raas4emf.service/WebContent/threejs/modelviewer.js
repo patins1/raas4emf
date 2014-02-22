@@ -588,8 +588,8 @@ function buildTable() {
 function createRenderer(container,ii) {
 	var renderer;
     if (g_renderer == "webgl") {
-	    var g_client = WebGLHelper.CreateGLCanvas(container, 'threejs' + g_ids[ii], false, OnGLCanvasCreated, OnGLCanvasFailed);
-		renderer = new THREE.WebGLRenderer({ 'canvas': g_client, 'antialias': effectController.antialias});
+    	renderer = new THREE.WebGLRenderer({ 'antialias': effectController.antialias});
+		container.appendChild( renderer.domElement );
    } else if (g_renderer == "canvas") {
 	   	renderer = new THREE.CanvasRenderer();
 		container.appendChild( renderer.domElement );
@@ -3137,10 +3137,8 @@ function start() {
 	
 	container = document.getElementById('clients');
 	
-    if (g_renderer == "webgl") {
-	    WebGLHelper.CreateGLCanvas(container, 'threejsTest', false, OnGLCanvasCreated, OnGLCanvasFailed);
-		container.innerHTML = '';
-    }
+	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); return; }
+
 	    
 //    require([g_dir+"build/three.js",g_dir+"js/libs/dat.gui.min.js"], function () {
 
@@ -3398,7 +3396,7 @@ function load2(ii) {
 	g_pickInfoElem = document.getElementById('pickInfo');
 	g_loadingElement = document.getElementById('loading');
     g_loadingElement.style.display = "block";
-    g_loadingElement.innerHTML = "Loading: " + g_paths[ii];
+    console.log("Loading: " + g_paths[ii]);
     try {
     startTime = new Date().getTime(); 
     if (doJsonLoader) {
