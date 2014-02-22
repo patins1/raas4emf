@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
@@ -76,6 +77,13 @@ public class DownloadServiceHandler implements ServiceHandler {
 				Activator.err(e);
 				throw new IOException(e);
 			}
+			return;
+		}
+		if ("iframe_contents".equals(artifactId)) {
+			// Send the file in the response
+			response.setContentType("text/html");
+			String iframe_contents = CMSActivator.getSessionInstance().getParameter("iframe_contents");
+			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(iframe_contents), response.getOutputStream());
 			return;
 		}
 		if ("current".equals(artifactId)) {
