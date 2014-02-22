@@ -40,7 +40,7 @@ public final class ReplacingFilter implements Filter {
 		((HttpServletResponse) response).addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
 		HttpServletRequest hr = (HttpServletRequest) request;
-		if (!"startup=raas".equals(hr.getQueryString())) {
+		if (true || !"GET".equals(hr.getMethod()) || hr.getParameterMap().containsKey("servicehandler") || hr.getPathInfo() != null) {
 			chain.doFilter(request, response);
 			return;
 		}
@@ -49,10 +49,14 @@ public final class ReplacingFilter implements Filter {
 		CharResponseWrapper wrapper = new CharResponseWrapper((HttpServletResponse) response);
 		chain.doFilter(request, wrapper);
 		String content = wrapper.toString();
+		to = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\">";
+		to = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">";
 		if (content.contains(from))
 			content = content.replace(from, to);
 		else
 			Activator.err("Could not repalce doctype!");
+
+		// content = content.replace("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=5,9,10;\" >", "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=11;\" >");
 		// content = content.replace("</title>", "</title><meta http-equiv=\"X-UA-Compatible\" content=\"IE=IE8\" >");
 
 		response.setContentLength(content.length());
