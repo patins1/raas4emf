@@ -474,10 +474,10 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			text += "<script type=\"text/javascript\">var g_ortho=" + CMSActivator.getSessionInstance().getOrtho() + ";</script>\n";
 			text += "<script type=\"text/javascript\">var g_fillmode=\"" + CMSActivator.getSessionInstance().getFillMode() + "\";</script>\n";
 			text += "		<script type=\"text/javascript\">var g_dir=\"" + dir + "\";</script>\n";
-			text += "		<script src=\"" + dir + "webglhelper.js\" type=\"text/javascript\"></script>";
 			if (doThreejs) {
-				text += "		<script src=\"" + dir + "js/libs/stats.min.js\"></script>";
 				text += "		<script src=\"" + dir + "build/three.js\"></script>";
+				text += "		<script src=\"" + dir + "js/Detector.js\" type=\"text/javascript\"></script>";
+				text += "		<script src=\"" + dir + "js/libs/stats.min.js\"></script>";
 				text += "		<script src=\"" + dir + "js/libs/dat.gui.min.js\"></script>";
 				// text += "		<script src=\"" + dir + "touchgen.js\"></script>";
 				text += "		<script src=\"" + dir + "modelviewer.js\"></script>";
@@ -530,7 +530,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				text += "<script type=\"text/javascript\">var g_customInit=function() {" + attachedOnLoad + "};</script>\n";
 			attachedOnLoad = null;
 			text += "</head>\n";
-			text += "<body style=\"overflow:hidden; \" onload=\"try{start();}catch(e2){var t=document.getElementById('clients'); var s='The RaaS server does not respond. ('+e2+')'; t.innerHTML=s;}\" onunload=\"try{uninit();}catch(e2){}\" oncontextmenu=\"return false;\">\n";
+			text += "<body style=\"overflow:hidden; \" onload=\"try{start();}catch(e2){var t=document.getElementById('clients'); var s='The RaaS server does not respond. ('+e2+')'; t.innerHTML=s;}\" onunload=\"try{uninit();}catch(e2){}\" oncontextmenu=\"return !false;\">\n";
 			text += "<div style=\"color: gray;\" id=\"loading\"></div>\n";
 			if (artifacts.size() != 1)
 				text += "<div style=\"overflow:auto; width:100%; height:100%; position:absolute; top:0; left:0; \"><table style=\"width: 100%;" + (artifacts.size() == 1 ? "height: 100%; " : "") + " \"><tbody id=\"clients\"></tbody></table></div>\n";
@@ -540,7 +540,10 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			text += "<div style=\"font-family: sans-serif; font-size: large; position:absolute; left:0; top:0; z-index:3;\" id=\"pickInfo\"></div>\n";
 			text += "<div id=\"map_canvas\" style=\"position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:1;\"></div>";
 			text += "</body>\n" + "</html>";
-			final String ftext = text;
+			boolean useObjectTag = false; // turn on to use <object> instead of <iframe>
+			final String ftext = useObjectTag ? "<!DOCTYPE html><body><object type=\"text/html\" data=\"" + CMSActivator.getSessionInstance().createDownloadUrl("iframe_contents") + "&filename=iframe_contents.html" + "\" style=\"width: 500px; height: 500px;\"></object></body>" : text;
+			if (useObjectTag)
+				CMSActivator.getSessionInstance().setParameter("iframe_contents", text);
 
 			artifactsToProcess = artifacts.size();
 			for (final Artifact artifact : artifacts) {
