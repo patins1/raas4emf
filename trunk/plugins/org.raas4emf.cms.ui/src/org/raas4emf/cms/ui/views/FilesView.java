@@ -297,7 +297,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 		viewer.addDoubleClickListener(this);
 		getSite().setSelectionProvider(viewer);
 
-		if (allowWriteAccess() || true) {
+		if ((allowWriteAccess() || true) && !Boolean.valueOf(CMSActivator.getSessionInstance().getParameter("nocontextmenu"))) {
 			IActionBars actionBars = ((IViewSite) getSite()).getActionBars();
 			menuMgr = (MenuManager) actionBars.getMenuManager();
 			menuMgr.setRemoveAllWhenShown(true);

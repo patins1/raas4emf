@@ -135,10 +135,12 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 		getSite().getPage().addSelectionListener(this);
 		getSite().setSelectionProvider(this);
 
-		IActionBars actionBars = ((IViewSite) getSite()).getActionBars();
-		menuMgr = (MenuManager) actionBars.getMenuManager();
-		menuMgr.setRemoveAllWhenShown(true);
-		getSite().registerContextMenu(menuMgr, this);
+		if (!Boolean.valueOf(CMSActivator.getSessionInstance().getParameter("nocontextmenu"))) {
+			IActionBars actionBars = ((IViewSite) getSite()).getActionBars();
+			menuMgr = (MenuManager) actionBars.getMenuManager();
+			menuMgr.setRemoveAllWhenShown(true);
+			getSite().registerContextMenu(menuMgr, this);
+		}
 		adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
 		adapterFactory.addAdapterFactory(new ReflectiveItemProviderAdapterFactory());
 		editingDomain = new AdapterFactoryEditingDomain(adapterFactory, new BasicCommandStack(), new HashMap<Resource, Boolean>());
@@ -530,7 +532,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				text += "<script type=\"text/javascript\">var g_customInit=function() {" + attachedOnLoad + "};</script>\n";
 			attachedOnLoad = null;
 			text += "</head>\n";
-			text += "<body style=\"overflow:hidden; \" onload=\"try{start();}catch(e2){var t=document.getElementById('clients'); var s='The RaaS server does not respond. ('+e2+')'; t.innerHTML=s;}\" onunload=\"try{uninit();}catch(e2){}\" oncontextmenu=\"return !false;\">\n";
+			text += "<body style=\"overflow:hidden; \" onload=\"try{start();}catch(e2){var t=document.getElementById('clients'); var s='The RaaS server does not respond. ('+e2+')'; t.innerHTML=s;}\" onunload=\"try{uninit();}catch(e2){}\" oncontextmenu=\"return false;\">\n";
 			text += "<div style=\"color: gray;\" id=\"loading\"></div>\n";
 			if (artifacts.size() != 1)
 				text += "<div style=\"overflow:auto; width:100%; height:100%; position:absolute; top:0; left:0; \"><table style=\"width: 100%;" + (artifacts.size() == 1 ? "height: 100%; " : "") + " \"><tbody id=\"clients\"></tbody></table></div>\n";
@@ -746,7 +748,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 		}
 		if (!newSel.isEmpty())
 			select(newSel);
-		if (arguments[6].equals("click") && getIntFromJSArgument(arguments[5]) == 3 && !newSel.isEmpty()) {
+		if (arguments[6].equals("click") && getIntFromJSArgument(arguments[5]) == 3 && !newSel.isEmpty() && menuMgr != null) {
 			int x = getIntFromJSArgument(arguments[3]);
 			int y = getIntFromJSArgument(arguments[4]);
 			Control c = browser;
