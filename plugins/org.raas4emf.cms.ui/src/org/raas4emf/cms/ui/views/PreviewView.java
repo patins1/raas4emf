@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -533,14 +534,20 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			attachedOnLoad = null;
 			text += "</head>\n";
 			text += "<body style=\"overflow:hidden; \" onload=\"try{start();}catch(e2){var t=document.getElementById('clients'); var s='The RaaS server does not respond. ('+e2+')'; t.innerHTML=s;}\" onunload=\"try{uninit();}catch(e2){}\" oncontextmenu=\"return false;\">\n";
-			text += "<div style=\"color: gray;\" id=\"loading\"></div>\n";
+			text += "<div id ='part_body'>";
+			text += "<div id ='part_menu'></div>";
+			text += "<div id ='part_panes'>";
+			text += "<div id ='part_leftpane' class='part_leftpane'></div>";
 			if (artifacts.size() != 1)
 				text += "<div style=\"overflow:auto; width:100%; height:100%; position:absolute; top:0; left:0; \"><table style=\"width: 100%;" + (artifacts.size() == 1 ? "height: 100%; " : "") + " \"><tbody id=\"clients\"></tbody></table></div>\n";
 			else
-				text += "<div id=\"clients\" style=\"position:absolute; left:0px; top:0px; right:0px; bottom:0px; z-index:2; \"></div>\n";
+				text += "<div id=\"clients\"></div>\n";
 			text += "<div id=\"ellipsis_menu\" tabindex=\"1\" style=\"display:none; background-color:white; position: absolute; z-index: 1000000; outline: none; background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(244, 244, 244)), to(rgb(255, 255, 255))); overflow: hidden; -webkit-box-shadow: rgb(171, 171, 171) 0px 0px 4px; border: 1px solid rgb(160, 179, 202); border-top-left-radius: 2px; border-top-right-radius: 2px; border-bottom-right-radius: 2px; border-bottom-left-radius: 2px; width: 164px; height: 27px; left: 100px; top: 337px; background-position: initial initial; background-repeat: initial initial;\"><div style=\"position: absolute; outline: none; width: 162px; height: 25px; left: 0px; right: 0px; top: 0px; bottom: 0px;\"><div tabindex=\"1\" style=\"position: absolute; overflow: hidden; -webkit-user-select: none; cursor: default; color: rgb(189, 189, 189); text-align: left; outline: none; width: 162px; height: 25px; left: 0px; top: 0px;\"><div style=\"position: absolute; border: 0px none; overflow: hidden; font-family: verdana, 'lucida sans', arial, helvetica, sans-serif; font-size: 14px; font-weight: normal; font-style: normal; left: 25px; width: 112px; top: 4px; height: 17px;\">...</div></div></div></div>";
 			text += "<div style=\"font-family: sans-serif; font-size: large; position:absolute; left:0; top:0; z-index:3;\" id=\"pickInfo\"></div>\n";
-			text += "<div id=\"map_canvas\" style=\"position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:1;\"></div>";
+			// text += "<div id=\"map_canvas\" style=\"position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:1;\"></div>";
+			text += "</div>";
+			text += "</div>";
+			text += "</div>";
 			text += "</body>\n" + "</html>";
 			boolean useObjectTag = false; // turn on to use <object> instead of <iframe>
 			final String ftext = useObjectTag ? "<!DOCTYPE html><body><object type=\"text/html\" data=\"" + CMSActivator.getSessionInstance().createDownloadUrl("iframe_contents") + "&filename=iframe_contents.html" + "\" style=\"width: 500px; height: 500px;\"></object></body>" : text;
@@ -685,6 +692,23 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 	public Object browserHookFunction(Object[] arguments) {
 
 		Object returnValue = new Object[] {};
+		if ("navigate".equals(arguments[0])) {
+			try {
+				IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				IViewPart part = page.findView(DirectoryView.ID);
+				if (part == null) {
+					page.showView(DirectoryView.ID, null, IWorkbenchPage.VIEW_CREATE);
+					page.showView("org.eclipse.ui.views.PropertySheet", null, IWorkbenchPage.VIEW_CREATE);
+				} else {
+					page.hideView(part);
+					page.hideView(page.findView("org.eclipse.ui.views.PropertySheet"));
+
+				}
+			} catch (PartInitException e) {
+				e.printStackTrace();
+			}
+			return returnValue;
+		}
 		List<String> guids = new ArrayList<String>();
 		for (String guid : ((String) arguments[0]).split(" ")) {
 			if (guid.length() > 1) {
