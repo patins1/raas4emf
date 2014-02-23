@@ -1,4 +1,3 @@
-var g_loadingElement;
 var g_path;
 var g_ids = [];
 var zoomId;
@@ -1571,12 +1570,16 @@ function expect(controller, value) {
 	}	
 }
 
-function generateGui() {	
+function generateGui(force) {	
 
-	if (gui!=null || !effectController.opencontrols) return;
+	if (gui!=null || !effectController.showopencontrols && !force) return;
 	
-	gui = new dat.GUI({width: 275});
-	gui.close();
+	gui = new dat.GUI({width: 275,  autoPlace: false});
+
+	var customContainer = document.getElementById('part_panes');
+	customContainer.appendChild(gui.domElement);
+	
+	if (!force) gui.close();
 	gui.domElement.parentNode.style.zIndex = 5;
 	var h;		
 	var settingsChanged = function() {
@@ -2012,6 +2015,8 @@ function generateGui() {
 
 	var vis = gui.addFolder( "Material visibility" );
 
+	
+//	if (effectController.flatten_materialvisibility) vis = gui;
 
     var g_visibility_sorted = [];
     for(var key in g_visibility)
@@ -3086,7 +3091,7 @@ function start() {
 	initializeMap();
 	
 	document.onkeydown = function(e) {
-		if (e.target && e.target.tagName == "INPUT") return;
+		if (e.target && e.target.tagName == "TEXTAREA") return;
 		  var keyChar = e.keyCode;
 		  if (!keyIsDown[keyChar]) {
 			  keyIsDown[keyChar] = true;
@@ -3394,8 +3399,6 @@ function load(ii) {
 }
 function load2(ii) {
 	g_pickInfoElem = document.getElementById('pickInfo');
-	g_loadingElement = document.getElementById('loading');
-    g_loadingElement.style.display = "block";
     console.log("Loading: " + g_paths[ii]);
     try {
     startTime = new Date().getTime(); 
@@ -3440,7 +3443,7 @@ function load2(ii) {
     	} );
 	}
     } catch (e) {
-        g_loadingElement.innerHTML = "loading failed : " + e;
+        console.log("loading failed : " + e);
     }
 }
 
@@ -3765,15 +3768,13 @@ function init(root,g_client) {
 	//scene.add( plane );
 	
 	if (!hasSomething)
-		 g_loadingElement.innerHTML = "Found no solid geometry"; else
-    g_loadingElement.style.display = "none";
+		 console.log("Found no solid geometry");
 
     loadingComplete = true;
     //} catch (e) {
 	} finally {
 		if (!loadingComplete) myLog("loading failed after retrieving model successful");
 		myLog("Model setup time="+(new Date().getTime() - startTime));
-//        g_loadingElement.innerHTML = "loading failed after retrieving model successful: " + e;
     //    throw e;
     }
 }
