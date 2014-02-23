@@ -400,7 +400,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 							continue;
 						}
 
-						Process process = Runtime.getRuntime().exec(cmd, null);
+						Process process = Runtime.getRuntime().exec(cmd);
 						StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT") {
 
 							@Override
@@ -423,8 +423,8 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 
 						outputGobbler.start();
 						errorGobbler.start();
-						process.waitFor();
-						int exitValue = process.exitValue();
+						int exitValue = process.waitFor();
+						Thread.sleep(2000);
 						MemoDialog.openInformation(window.getShell(), "Prompt result", "Exit code=" + exitValue + "\n" + sb.toString());
 
 					} catch (Exception e) {
