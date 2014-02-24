@@ -19,6 +19,7 @@ import raascms.Artifact;
 
 abstract public class RAASSessionSingleton {
 
+	private static final boolean USE_SINGLE_CDOCLIENT = Boolean.valueOf(System.getProperty("USE_SINGLE_CDOCLIENT"));
 	private String userID = "Architect";
 	private String password = "a";
 	private CDONet4jSession session;
@@ -33,8 +34,11 @@ abstract public class RAASSessionSingleton {
 	private Exception storedDBException;
 	private Map<String, Object> userObject = new HashMap<String, Object>();
 	private Map<String, String> parameters = new HashMap<String, String>();
+	private static RAASSessionSingleton SINGLETON;
 
 	public RAASSessionSingleton() {
+		if (SINGLETON == null)
+			SINGLETON = this;
 		// prevent instantiation from outside
 	}
 
@@ -44,10 +48,18 @@ abstract public class RAASSessionSingleton {
 	}
 
 	public void resetDBErrors() {
+		if (USE_SINGLE_CDOCLIENT && SINGLETON != this) {
+			SINGLETON.resetDBErrors();
+			return;
+		}
 		storedDBException = null;
 	}
 
 	public void resetDBConnection() {
+		if (USE_SINGLE_CDOCLIENT && SINGLETON != this) {
+			SINGLETON.resetDBConnection();
+			return;
+		}
 		cacheModelTrees.clear();
 		storedDBException = null;
 		if (transaction != null) {
@@ -61,6 +73,8 @@ abstract public class RAASSessionSingleton {
 	}
 
 	public CDOView openTransaction() {
+		if (USE_SINGLE_CDOCLIENT && SINGLETON != this)
+			return SINGLETON.openTransaction();
 		CDONet4jSession session = getSession();
 		if (transaction == null)
 			if (isLibarian())
@@ -71,6 +85,8 @@ abstract public class RAASSessionSingleton {
 	}
 
 	public CDONet4jSession getSession() {
+		if (USE_SINGLE_CDOCLIENT && SINGLETON != this)
+			return SINGLETON.getSession();
 		if (storedDBException != null)
 			throw new RuntimeException("Database connection error!", storedDBException);
 		try {
@@ -153,6 +169,8 @@ abstract public class RAASSessionSingleton {
 	}
 
 	public Artifact getArtifactWithModelTree(Artifact artifact) {
+		if (USE_SINGLE_CDOCLIENT && SINGLETON != this)
+			return SINGLETON.getArtifactWithModelTree(artifact);
 		if (!cacheModelTrees.containsKey(artifact)) {
 			try {
 				cacheModelTrees.put(artifact, RAASUtils.assureModelTree(artifact));
