@@ -1079,17 +1079,6 @@ function updateGui(gui) {
 
 }
 
-dat.gui.GUI.prototype.removeFolder =
-	function(name) {
-		var folder =this.__folders[name];
-		if (!folder) return;
-		folder.close();
-		folder.__ul.parentNode.removeChild(folder.__ul);
-//		dom.removeClass(this.__folders[name].li, 'folder');
-		this.__folders[name] = undefined;
-//		this.onResize();
-	};
-
 function reduceGui(gui) {
 	
 	  if (!overrideSettings.opencontrols || !overrideSettings.opencontrols.length || overrideSettings.opencontrols.split(",").indexOf(gui.name)!=-1) return false;
@@ -2407,6 +2396,19 @@ function generateGui(force) {
 	};
 	thirdParty.add( effectController, "threex.rendererstats" );
 
+
+	dat.gui.GUI.prototype.removeFolder =
+		function(name) {
+			var folder =this.__folders[name];
+			if (!folder) return;
+			folder.close();
+			folder.__ul.parentNode.removeChild(folder.__ul);
+//			dom.removeClass(this.__folders[name].li, 'folder');
+			this.__folders[name] = undefined;
+//			this.onResize();
+		};
+
+		
 	reduceGui(gui);
 	
 }
