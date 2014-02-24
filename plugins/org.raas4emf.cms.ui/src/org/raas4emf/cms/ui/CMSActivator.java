@@ -125,7 +125,7 @@ public class CMSActivator extends Plugin {
 		String contents = FileUtil.inputstreamToString(new FileInputStream(file));
 
 		String jdbc = System.getProperty("JDBC_CONNECTION_STRING");
-		if (jdbc == null) {
+		if (jdbc == null || "".equals(jdbc)) {
 			String dbName = System.getProperty("RDS_DB_NAME");
 			String userName = System.getProperty("RDS_USERNAME");
 			String password = System.getProperty("RDS_PASSWORD");
