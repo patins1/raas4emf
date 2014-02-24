@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
@@ -21,6 +22,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.net4j.util.io.ExpectedFileInputStream;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.service.ServiceHandler;
 import org.raas4emf.cms.core.FileUtil;
@@ -156,8 +158,21 @@ public class DownloadServiceHandler implements ServiceHandler {
 				if (!isModified(response, file, file))
 					return;
 				inputStream = new FileInputStream(file);
-			} else
+			} else {
 				inputStream = (InputStream) fileObject;
+				if (fileObject instanceof ExpectedFileInputStream) {
+					ExpectedFileInputStream expectedFileInputStream = (ExpectedFileInputStream) fileObject;
+					try {
+						Field f = expectedFileInputStream.getClass().getDeclaredField("file");
+						f.setAccessible(true);
+						File file = (File) f.get(expectedFileInputStream);
+						if (!isModified(response, file, file))
+							return;
+					} catch (Exception e) {
+						Activator.log(e.getMessage());
+					}
+				}
+			}
 
 			try {
 				TransformationUtils.inputstreamToOutputstream(inputStream, response.getOutputStream(), Integer.MAX_VALUE);
