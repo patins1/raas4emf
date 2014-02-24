@@ -4388,6 +4388,7 @@ function generateEvent(eventType,e,g_client) {
 		var milli = new Date();		
 		var ellipsis = document.getElementById('ellipsis_menu');
 		if (e.which==3 && eventType=="click") {
+			if (effectController.nocontextmenu)	return;
 			ellipsis.style.left = mousedownClientX+"px";
 			ellipsis.style.top = mousedownClientY+"px";
 			ellipsis.style.display = "block";
