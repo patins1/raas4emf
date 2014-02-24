@@ -71,7 +71,7 @@
             category="two"
             class="org.raas4emf.cms.ui.views.DirectoryView"
             id="org.raas4emf.cms.ui.views.DirectoryView"
-            name="Directory"/>
+            name="Tree Navigator"/>
       <view
             category="two"
             class="org.raas4emf.cms.ui.views.DetailsView"
