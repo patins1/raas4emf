@@ -355,10 +355,10 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 						if (cmd.equals("upload")) {
 
 							FileDialog fileDialog = new FileDialog(window.getShell(), SWT.TITLE | SWT.MULTI);
-							fileDialog.setFilterNames(new String[] { "All Files" });
-							fileDialog.setFilterExtensions(new String[] { "*.*" });
+							// fileDialog.setFilterNames(new String[] { "All Files" });
+							// fileDialog.setFilterExtensions(new String[] { "*.*" });
 							fileDialog.setText("Upload Files Into Workspace");
-							fileDialog.setFilterIndex(0);
+							// fileDialog.setFilterIndex(0);
 							if (fileDialog.open() == null)
 								return;
 							final String[] fileNames = fileDialog.getFileNames();

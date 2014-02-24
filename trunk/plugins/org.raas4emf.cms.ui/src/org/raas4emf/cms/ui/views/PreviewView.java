@@ -587,10 +587,10 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 											return;
 										browser.setText("Error when generating WebGL for " + artifact.getName() + ":" + status.getMessage());
 										FileDialog fileDialog = new FileDialog(getSite().getShell(), SWT.TITLE);
-										fileDialog.setFilterNames(new String[] { "JSON Geometry Files" });
-										fileDialog.setFilterExtensions(new String[] { "*.js" });
+										// fileDialog.setFilterNames(new String[] { "JSON Geometry Files" });
+										// fileDialog.setFilterExtensions(new String[] { "*.js" });
 										fileDialog.setText("Upload geometry file manually");
-										fileDialog.setFilterIndex(0);
+										// fileDialog.setFilterIndex(0);
 										if (fileDialog.open() == null)
 											return;
 										final String[] fileNames = fileDialog.getFileNames();

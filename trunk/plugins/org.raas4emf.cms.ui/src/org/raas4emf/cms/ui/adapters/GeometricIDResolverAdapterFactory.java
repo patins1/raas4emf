@@ -73,21 +73,6 @@ public class GeometricIDResolverAdapterFactory extends AdapterFactoryTyped<Strin
 				return getIndexForGUIDStatic(model, guid);
 			}
 
-			private EObject getFromIndex(int integer, Artifact artifact) {
-				for (EObject content : artifact.getContents()) {
-					if (content instanceof Model) {
-						Model model = (Model) content;
-						long start = System.currentTimeMillis();
-						ContainmentTreeOrderedByNumberHelper helper = new ContainmentTreeOrderedByNumberHelper(model);
-						EObject result = helper.get(integer);
-						long end = System.currentTimeMillis();
-						CMSActivator.log("Find EObject from index " + (end - start) + " milliseconds");
-						return result;
-					}
-				}
-				return null;
-			}
-
 			private EObject findByName(Collection<EObject> contents) {
 				for (EObject eObject : contents) {
 					if (eObject instanceof IfcRoot) {
@@ -165,6 +150,21 @@ public class GeometricIDResolverAdapterFactory extends AdapterFactoryTyped<Strin
 				VALUE0 = "VALUE0";
 				KEY0 = "KEY0";
 				return getIndexForGUIDStatic(model, guid);
+			}
+		}
+		return null;
+	}
+
+	public static EObject getFromIndex(int integer, Artifact artifact) {
+		for (EObject content : artifact.getContents()) {
+			if (content instanceof Model) {
+				Model model = (Model) content;
+				long start = System.currentTimeMillis();
+				ContainmentTreeOrderedByNumberHelper helper = new ContainmentTreeOrderedByNumberHelper(model);
+				EObject result = helper.get(integer);
+				long end = System.currentTimeMillis();
+				CMSActivator.log("Find EObject from index " + (end - start) + " milliseconds");
+				return result;
 			}
 		}
 		return null;

@@ -61,10 +61,10 @@ public class AddArtifactAction extends AbstractHandler {
 			return;
 		}
 		FileDialog fileDialog = new FileDialog(shell, SWT.TITLE | SWT.MULTI);
-		fileDialog.setFilterNames(new String[] { "All Files" });
-		fileDialog.setFilterExtensions(new String[] { "*.*" });
+		// fileDialog.setFilterNames(new String[] { "All Files" });
+		// fileDialog.setFilterExtensions(new String[] { "*.*" });
 		fileDialog.setText("Upload Files");
-		fileDialog.setFilterIndex(0);
+		// fileDialog.setFilterIndex(0);
 		if (fileDialog.open() == null)
 			return;
 		final String[] fileNames = fileDialog.getFileNames();
