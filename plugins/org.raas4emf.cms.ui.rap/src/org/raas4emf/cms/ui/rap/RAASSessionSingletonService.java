@@ -40,8 +40,8 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 			url.append(RWT.getServiceManager().getServiceHandlerUrl("downloadServiceHandler"));
 			url.append("&artifact=");
 			url.append(filename);
-			String encodedURL = RWT.getResponse().encodeURL(url.toString());
-			return encodedURL;
+			String result = RWT.getResponse().encodeURL(url.toString());
+			return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
 		}
 
 		@Override
