@@ -19,10 +19,13 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.net4j.util.HexUtil;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.ifc4emf.metamodel.ifcheader.Model;
 import org.raas4emf.cms.core.RAASUtils;
+import org.raas4emf.cms.ui.adapters.GeometricIDResolverAdapterFactory;
 
 import raascms.Artifact;
 import raascms.Folder;
+import IFC2X3.IfcRoot;
 
 public class RAASUIUtils {
 
@@ -108,6 +111,18 @@ public class RAASUIUtils {
 		byte[] id = digest.digest();
 		String fingerprint = HexUtil.bytesToHex(id);
 		return fingerprint;
+	}
+
+	public static IfcRoot getObjectForGUID(Model model, String guid) {
+		Integer index = GeometricIDResolverAdapterFactory.getIndexForGUIDStatic(model, guid);
+		if (index != null) {
+			EObject eObject = GeometricIDResolverAdapterFactory.getFromIndex(index, (Artifact) model.eContainer());
+			if (eObject instanceof IfcRoot) {
+				IfcRoot ifcRoot = (IfcRoot) eObject;
+				return ifcRoot;
+			}
+		}
+		return null;
 	}
 
 }
