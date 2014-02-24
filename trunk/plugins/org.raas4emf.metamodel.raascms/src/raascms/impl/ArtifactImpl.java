@@ -325,7 +325,7 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 		// return serializeModel(new ResourceSetImpl(), this, monitor);
 		if (isBlobUpToDate())
 			return this.getFileContent().getContents();
-		return new FileInputStream(serializeModel(this, filename, monitor));
+		return serializeModel(this, filename, monitor);
 	}
 
 	public File getTransformationsDirectory() {
@@ -349,17 +349,13 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 	}
 
 	public static File serializeModel(Artifact artifact, String filename, final IProgressMonitor monitor) throws IOException {
-		ResourceSet resourceSet = new ResourceSetImpl();
-		File artifactsDir = new File(CACHE_DIR, "serializations");
-		File dir = new File(artifactsDir, artifact.cdoID() != null ? artifact.cdoID().toURIFragment() : "temp");
-		dir.mkdirs();
-
-		File file = new File(dir, "scene" + getExtension(filename));
+		File file = getSerializationFile(artifact, filename);
 		if (file.exists() && file.length() >= 1 && artifact.cdoID() != null && !(artifact.getModelDate() != null && new Date(file.lastModified()).before(artifact.getModelDate()))) {
 			System.out.println("Reuse " + file);
 			return file;
 		}
 
+		ResourceSet resourceSet = new ResourceSetImpl();
 		resourceSet.getLoadOptions().put(XMLResource.OPTION_ROOT_OBJECTS, artifact.getContents());
 		resourceSet.getLoadOptions().put(OPTION_CONTENTSLIST, artifact.getContents());
 		resourceSet.getLoadOptions().put(OPTION_SAVE_PROGRESS_MONITOR, monitor);
@@ -385,6 +381,15 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 
 		return file;
 
+	}
+
+	private static File getSerializationFile(Artifact artifact, String filename) {
+		File artifactsDir = new File(CACHE_DIR, "serializations");
+		File dir = new File(artifactsDir, artifact.cdoID() != null ? artifact.cdoID().toURIFragment() : "temp");
+		dir.mkdirs();
+
+		File file = new File(dir, "scene" + getExtension(filename));
+		return file;
 	}
 
 	@Override
