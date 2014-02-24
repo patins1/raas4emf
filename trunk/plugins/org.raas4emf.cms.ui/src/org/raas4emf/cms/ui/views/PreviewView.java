@@ -441,12 +441,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			String g_path = CMSActivator.getSessionInstance().createDownloadUrl(fids) + "&filename=" + getScene3dName();
 			// scroll bar for safari & chrome
 			String scss = "";
-			scss += "::-webkit-scrollbar {width: 25px; height: 25px;}\n";
-			scss += "::-webkit-scrollbar-button:start:decrement, ::-webkit-scrollbar-button:end:increment {height: 1px; display: block; background-color: #EFF7FF;}\n";
-			scss += "::-webkit-scrollbar-button:horizontal:start:decrement, ::-webkit-scrollbar-button:horizontal:end:increment {height: 1px; display: block; background-color: #EFF7FF;}\n";
-			scss += "::-webkit-scrollbar-track-piece {background-color: #EFF7FF;}\n";
-			scss += "::-webkit-scrollbar-thumb:vertical, ::-webkit-scrollbar-thumb:horizontal, button {background-color: white; border: 1px solid #639ACE; -webkit-border-radius: 6px; }\n";
-			scss += "#progress { z-index:20; color:red; top:7em; width: 100%; font-size:3em; font-variant:small-caps; font-weight:bold; position:absolute; z-index:100; text-align: center; text-shadow: #000 0px 0px 10px; display:none; }";
+			scss += "#progress { z-index:20; top:7em; width: 100%; position:absolute; z-index:100; text-align: center; display:none; }";
 			scss += ".shadow {-moz-box-shadow: 0px 0px 5px #000; -webkit-box-shadow: 0px 0px 5px #000; box-shadow: 0px 0px 5px #000; }\n";
 			scss += "#progressbar { text-align: center; background: white; width: 250px; height: 10px; }\n";
 			scss += "#bar { background:#d00; width:0px; height:10px; }\n";
