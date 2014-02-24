@@ -3064,6 +3064,7 @@ function start() {
 			panning_mode: false,
 			log_on_screen: false,
 			select_by_dblclick: false,
+			select_by_mouseup: false,
 			double_side_material: false,
 			lazy_rendering: true,
 			quickmode: true,
@@ -4241,9 +4242,9 @@ function onDocumentMouseDown(e) {
 
 	var start = new Date().getTime();
 	
-	var calledFromDblClickEvent = (e.type == "dblclick");
+	var calledFromOtherMouseEvent = (e.type == "dblclick") || (e.type == "mouseup");
 	
-	if (!calledFromDblClickEvent) {
+	if (!calledFromOtherMouseEvent) {
 		myLog("onDocumentMouseDown #selection="+g_selectedInfo.length+" which="+e.which);
 		e.target.focus();
 	}
@@ -4267,7 +4268,7 @@ function onDocumentMouseDown(e) {
 		return;
 	}
 
-	var canChangeSelection = !effectController.select_by_dblclick || calledFromDblClickEvent;
+	var canChangeSelection = !effectController.select_by_dblclick && !effectController.select_by_mouseup || calledFromOtherMouseEvent;
 	
     g_oldWorldPosition = g_worldPosition;
     g_worldPosition = null;
@@ -4351,13 +4352,13 @@ function onDocumentMouseDown(e) {
 	
 	updateClient(g_client);
 	
-	if (e.which!=3) {
+	if (e.which!=3 && !calledFromOtherMouseEvent) {
 		g_lastPos = [e.x, e.y];
 		g_offs = null;
 		g_dragging = true;
 	}
 
-	if (!calledFromDblClickEvent) {
+	if (!calledFromOtherMouseEvent) {
 		var end = new Date().getTime();
 		myLog("onDocumentMouseDown #selection="+g_selectedInfo.length+" which="+e.which+" finished in "+(end-start)+"ms");
 	}
@@ -4441,13 +4442,16 @@ function onDocumentMouseUp(e) {
 		var y = vector3ToArray(g_offs)[1];
 		setTimeout(function(){try { theJavaFunction(g_selectedIDs,"",g_client.id,x,y,e.which,"drop");  } catch (e2) {}},100);
 		myLog("dropped");
-	} else
-	if (g_selectedInfo.length > 0) {
-		var dist = 20;
+	} else {
+		var dist = 5;
 		if (e.which == 3 || e.clientX>=mousedownClientX-dist && e.clientX<=mousedownClientX+dist &&
 		    e.clientY>=mousedownClientY-dist && e.clientY<=mousedownClientY+dist) {
 			if (!effectController.select_by_dblclick || e.which==3)
-				generateEvent("click",e,g_client);
+				if (effectController.select_by_mouseup) {
+					onDocumentMouseDown(e);
+				} else if (g_selectedInfo.length > 0) {
+					generateEvent("click",e,g_client);
+				}
 		}
 	}
 	updateClient(g_client);
