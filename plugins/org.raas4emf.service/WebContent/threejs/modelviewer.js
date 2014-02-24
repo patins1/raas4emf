@@ -4326,8 +4326,9 @@ function onDocumentMouseDown(e) {
 	    	}
 	    }
 	    
-		if (e.ctrlKey || e.which==3 && oldSelection.indexOf(SELECTED) != -1) {
-		  if (e.ctrlKey)
+	    if (canChangeSelection)
+		if (e.ctrlKey || (e.which==3 || effectController.invert_selection) && oldSelection.indexOf(SELECTED) != -1) {
+		  if (e.ctrlKey || effectController.invert_selection)
 		  if (oldSelection.indexOf(SELECTED) == -1)
 			  oldSelection.push(SELECTED); else
 		      removeFromArray(oldSelection,SELECTED);
