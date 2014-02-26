@@ -726,8 +726,8 @@ function touchHandler(event) {
 }
 
 function setClientSize(g_client) {
-	var newWidth  = g_client.parentNode.offsetWidth;
-	var newHeight = g_client.parentNode.offsetHeight;
+	var newWidth  = g_client.offsetWidth;
+	var newHeight = g_client.offsetHeight;
 	g_client.renderer.setSize( newWidth, newHeight );
 	if (!g_mapenabled)
 	updateProjection(g_client);
