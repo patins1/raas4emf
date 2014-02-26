@@ -96,6 +96,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 	public String attachedOnLoad = null;
 	public static String attachedOnLoadAdditional = null;
 	public static String attachedHeadContent = null;
+	public static String CANVAS_CONTAINER = null;
 
 	public String attachedImmediately = null;
 	private ComposedAdapterFactory adapterFactory;
@@ -441,7 +442,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			String g_path = CMSActivator.getSessionInstance().createDownloadUrl(fids) + "&filename=" + getScene3dName();
 			// scroll bar for safari & chrome
 			String scss = "";
-			scss += "#progress { z-index:20; top:7em; width: 100%; position:absolute; z-index:100; text-align: center; display:none; }";
+			scss += "#progress { z-index:20; top:50%; width: 100%; position:absolute; z-index:100; text-align: center; display:none; }";
 			scss += ".shadow {-moz-box-shadow: 0px 0px 5px #000; -webkit-box-shadow: 0px 0px 5px #000; box-shadow: 0px 0px 5px #000; }\n";
 			scss += "#progressbar { text-align: center; background: white; width: 250px; height: 10px; }\n";
 			scss += "#bar { background:#d00; width:0px; height:10px; }\n";
@@ -491,7 +492,6 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				}
 				if (!"".equals(overrideSettings))
 					text += "	<script type=\"text/javascript\">var overrideSettings={" + overrideSettings.substring(0, overrideSettings.length() - 1) + "};</script>\n";
-				text += "<div id=\"progress\"><span id=\"message\">Loading ...</span><center><div id=\"progressbar\" class=\"shadow\"><div id=\"bar\" class=\"shadow\"></div></div></center></div>";
 			} else {
 				text += "<script type=\"text/javascript\" >\n";
 				text += "//emulate legacy getter/setter API using ES5 APIs\n";
@@ -529,24 +529,25 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			attachedOnLoad = null;
 			text += "</head>\n";
 			text += "<body style=\"overflow:hidden; \" onload=\"try{start();}catch(e2){var t=document.getElementById('clients'); var s='The RaaS server does not respond. ('+e2+')'; t.innerHTML=s;}\" onunload=\"try{uninit();}catch(e2){}\" oncontextmenu=\"return false;\">\n";
-			text += "<div id ='part_body'>";
-			text += "<div id ='part_menu'></div>";
-			text += "<div id ='part_panes'>";
-			text += "<div id ='part_leftpane' class='part_leftpane'></div>";
+
+			String canvasContainer;
 			if (artifacts.size() != 1)
-				text += "<div style=\"overflow:auto; width:100%; height:100%; position:absolute; top:0; left:0; \"><table style=\"width: 100%;" + (artifacts.size() == 1 ? "height: 100%; " : "") + " \"><tbody id=\"clients\"></tbody></table></div>\n";
+				canvasContainer = "<div style=\"overflow:auto; width:100%; height:100%; position:absolute; top:0; left:0; \"><table style=\"width: 100%;" + (artifacts.size() == 1 ? "height: 100%; " : "") + " \"><tbody id=\"clients\"></tbody></table></div>\n";
 			else
-				text += "<div id=\"clients\"></div>\n";
+				canvasContainer = "<div id=\"clients\" style=\"position:absolute; left:0px; top:0px; right:0px; bottom:0px; z-index:2; \"></div>\n";
+
+			if (CANVAS_CONTAINER != null)
+				canvasContainer = CANVAS_CONTAINER;
+			text += canvasContainer;
+
 			// text += "<div id=\"map_canvas\" style=\"position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:1;\"></div>";
-			text += "</div>";
-			text += "<div id ='part_footer' class='part_footer'></div>";
-			text += "</div>";
-			text += "</div>";
 
 			if (!Boolean.valueOf(CMSActivator.getSessionInstance().getParameter("nocontextmenu"))) {
 				text += "<div id=\"ellipsis_menu\" tabindex=\"1\" style=\"display:none; background-color:white; position: absolute; z-index: 1000000; outline: none; background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(244, 244, 244)), to(rgb(255, 255, 255))); overflow: hidden; -webkit-box-shadow: rgb(171, 171, 171) 0px 0px 4px; border: 1px solid rgb(160, 179, 202); border-top-left-radius: 2px; border-top-right-radius: 2px; border-bottom-right-radius: 2px; border-bottom-left-radius: 2px; width: 164px; height: 27px; left: 100px; top: 337px; background-position: initial initial; background-repeat: initial initial;\"><div style=\"position: absolute; outline: none; width: 162px; height: 25px; left: 0px; right: 0px; top: 0px; bottom: 0px;\"><div tabindex=\"1\" style=\"position: absolute; overflow: hidden; -webkit-user-select: none; cursor: default; color: rgb(189, 189, 189); text-align: left; outline: none; width: 162px; height: 25px; left: 0px; top: 0px;\"><div style=\"position: absolute; border: 0px none; overflow: hidden; font-family: verdana, 'lucida sans', arial, helvetica, sans-serif; font-size: 14px; font-weight: normal; font-style: normal; left: 25px; width: 112px; top: 4px; height: 17px;\">...</div></div></div></div>";
 			}
 			text += "<div style=\"font-family: sans-serif; font-size: large; position:absolute; left:0; top:0; z-index:3;\" id=\"pickInfo\"></div>\n";
+			text += "<div id=\"progress\"><span id=\"message\">Loading ...</span><center><div id=\"progressbar\" class=\"shadow\"><div id=\"bar\" class=\"shadow\"></div></div></center></div>";
+
 			text += "</body>\n" + "</html>";
 			boolean useObjectTag = false; // turn on to use <object> instead of <iframe>
 			final String ftext = useObjectTag ? "<!DOCTYPE html><body><object type=\"text/html\" data=\"" + CMSActivator.getSessionInstance().createDownloadUrl("iframe_contents") + "&filename=iframe_contents.html" + "\" style=\"width: 500px; height: 500px;\"></object></body>" : text;
