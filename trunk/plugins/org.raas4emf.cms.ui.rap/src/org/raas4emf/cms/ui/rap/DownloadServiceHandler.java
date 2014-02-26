@@ -71,7 +71,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 				} else {
 					fileForLastModified = new File(u.toURI());
 				}
-				if (!isModified(response, null, fileForLastModified)) {
+				if (fileForLastModified.exists() && !isModified(response, null, fileForLastModified)) {
 					return;
 				}
 				TransformationUtils.inputstreamToOutputstream(u.openStream(), response.getOutputStream(), Integer.MAX_VALUE);
