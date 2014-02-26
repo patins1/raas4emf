@@ -43,6 +43,10 @@ abstract public class RAASSessionSingleton {
 	}
 
 	public void setCredentials(String userID, String password) {
+		if (USE_SINGLE_CDOCLIENT && SINGLETON != this) {
+			SINGLETON.setCredentials(userID, password);
+			return;
+		}
 		this.userID = userID;
 		this.password = password;
 	}
@@ -109,10 +113,14 @@ abstract public class RAASSessionSingleton {
 	}
 
 	public boolean isLibarian() {
+		if (USE_SINGLE_CDOCLIENT && SINGLETON != this)
+			return SINGLETON.isLibarian();
 		return RAASUtils.isLibrarian(userID);
 	}
 
 	public boolean isOperator() {
+		if (USE_SINGLE_CDOCLIENT && SINGLETON != this)
+			return SINGLETON.isOperator();
 		return RAASUtils.isOperator(userID);
 	}
 
