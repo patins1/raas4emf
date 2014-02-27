@@ -254,7 +254,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 		return executeF("selectShape", roots, modelArtifact);
 	}
 
-	private static String executeFJavaScript(String f, Collection<? extends EObject> eObjects, Artifact artifact) {
+	public static String getObjectIDs(Collection<? extends EObject> eObjects) {
 		StringBuffer buf = new StringBuffer();
 		for (EObject eObject : eObjects) {
 			Object adapter = Platform.getAdapterManager().getAdapter(eObject, IGeometricIDBuilder.class);
@@ -265,10 +265,14 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 					buf.append("'" + id + "',");
 			}
 		}
+		return "[" + RAASUtils.pruneLastChar(buf.toString()) + "]";
+	}
+
+	private static String executeFJavaScript(String f, Collection<? extends EObject> eObjects, Artifact artifact) {
 		if (artifact == null)
 			artifact = getArtifact(eObjects);
 		if (artifact != null && artifact.cdoID() != null) {
-			return f + "([" + RAASUtils.pruneLastChar(buf.toString()) + "],'" + artifact.cdoID().toURIFragment() + "');";
+			return f + "(" + getObjectIDs(eObjects) + ",'" + artifact.cdoID().toURIFragment() + "');";
 		}
 		return null;
 	}
