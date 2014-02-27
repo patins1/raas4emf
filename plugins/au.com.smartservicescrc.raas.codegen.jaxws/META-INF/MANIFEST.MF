@@ -28,3 +28,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jem.util;bundle-version="2.1.2"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-BundleShape: dir
