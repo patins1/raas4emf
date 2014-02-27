@@ -734,12 +734,11 @@ function setClientSize(g_client) {
 }
 
 function onWindowResize() {
-	 for (var ii = 0; ii < g_num_clients; ++ii) {
-		 if (!g_clients[ii]) { myLog("g_clients["+ii+"] not defined!"); continue; }
-		 setClientSize(g_clients[ii]);
+	g_clients.forEach(function (g_client) {
+		 setClientSize(g_client);
 		 if (!g_mapenabled)
-		 updateClient(g_clients[ii]);
-	 }
+		 updateClient(g_client);
+	});
 }
 
 function getObjectsWithSplittings(name,g_client) {
@@ -1604,13 +1603,13 @@ function generateGui(force) {
 			
 			current_material = id;
 
-			for (var ii = 0; ii < g_num_clients; ++ii) {
-				g_clients[ii].root.traverse(function (effect) {
+			g_clients.forEach(function (g_client) {
+				g_client.root.traverse(function (effect) {
 					if (effect.material) {						
 						effect.material = mat.m || mat;	
 					}
 				});
-			}
+			});
 			
 			updateMaterials();
 
@@ -1624,9 +1623,9 @@ function generateGui(force) {
 		if (!current_material) return;		
 
 		var refractionCube  = envCube && effectController.refraction ? new THREE.Texture( envCube.image, new THREE.CubeRefractionMapping() ) : null;
-		
-		for (var ii = 0; ii < g_num_clients; ++ii) {
-			g_clients[ii].root.traverse(function (effect) {
+
+		g_clients.forEach(function (g_client) {
+			g_client.root.traverse(function (effect) {
 				
 				if (!effect.material) return;
 				
@@ -1715,8 +1714,8 @@ function generateGui(force) {
 				sceneCube = null;
 			}
 			
-			updateClient(g_clients[ii]);
-		}
+			updateClient(g_client);
+		});
 	};
 	
 
@@ -1732,11 +1731,10 @@ function generateGui(force) {
 
 	gui.add( effectController, 'panning_mode', false ).onChange( function() {
 		if (effectController.panning_mode)
-		for (var ii = 0; ii < g_num_clients; ++ii) {
-			var g_client = g_clients[ii];
+		g_clients.forEach(function (g_client) {
 			var camera = g_client.g_camera;
 			doSetCamera(new THREE.Vector3(camera.target.x-0.001,camera.target.y+camera.target.distanceTo(camera.eye),camera.target.z),camera.target,g_angle,null,10,g_client);
-		}
+		});
 		settingsChanged();
 	} );
 
@@ -1984,10 +1982,10 @@ function generateGui(force) {
 	// building material (color)
 	
 	var updateCol = function () {	
-		for (var ii = 0; ii < g_num_clients; ++ii) {
-			updateColors(g_clients[ii]);
-			updateClient(g_clients[ii]);
-		}
+		g_clients.forEach(function (g_client) {
+			updateColors(g_client);
+			updateClient(g_client);
+		});
 	};
 
 //	h = misc.addFolder( "Building material color" );
@@ -2332,9 +2330,9 @@ function generateGui(force) {
 	} ));
 	expect(debugGui.add( effectController, 'wireframe' ).onChange( function() {
 		g_fillmode = effectController.wireframe ? "Wireframe" : "Solid";
-		for (var ii = 0; ii < g_num_clients; ++ii) {
-			updateFillMode(g_clients[ii]);
-		}
+		g_clients.forEach(function (g_client) {
+			updateFillMode(g_client);
+		});
 		settingsChanged();
 	} ));
 	expect(debugGui.add( effectController, 'double_side_material' ).onChange( function() {
@@ -3905,9 +3903,9 @@ function getThreejsTypeName(obj) {
 }
 
 function updateClients() {
-	for (var ii = 0; ii < g_num_clients; ++ii) {
-		updateClient(g_clients[ii]);
-	}
+	g_clients.forEach(function (g_client) {
+		updateClient(g_client);
+	});
 }
 
 function updateClient(g_client, lazy) {
