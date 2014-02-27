@@ -4062,6 +4062,7 @@ function getScene(scene) {
 }
 
 function select(newSelection,g_client) {
+	newSelection = reviseSelection(newSelection);
 	unSelectAll(g_client);
 	g_selectedInfo = newSelection;
     for (var tt = 0; tt < g_selectedInfo.length; tt++) {
@@ -4350,7 +4351,7 @@ function onDocumentMouseDown(e) {
 	
 	enableOrbit(e.which!=3 && !isShift(e.shiftKey),g_client);
 	
-	if (canChangeSelection) select(reviseSelection(oldSelection),g_client);
+	if (canChangeSelection) select(oldSelection,g_client);
 
 	if (canChangeSelection) generateEvent(e.type,e,g_client);
 	
