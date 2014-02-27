@@ -46,6 +46,10 @@ public class RAASUIUtils {
 
 	public static List<? extends Object> getSelection(ExecutionEvent event) {
 		ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().getSelection();
+		return getSelection(selection);
+	}
+
+	public static List<? extends Object> getSelection(ISelection selection) {
 		if (selection != null & selection instanceof IStructuredSelection) {
 			IStructuredSelection sel = (IStructuredSelection) selection;
 			return Arrays.asList(sel.toList().toArray());
@@ -54,15 +58,20 @@ public class RAASUIUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Object> List<T> getSelection(ExecutionEvent event, Class<T> clazz) {
+	public static <T extends Object> List<T> getSelection(ISelection selection, Class<T> clazz) {
 		List<T> result = new ArrayList<T>();
-		for (Object object : getSelection(event)) {
+		for (Object object : getSelection(selection)) {
 			object = Platform.getAdapterManager().getAdapter(object, clazz);
 			if (clazz.isInstance(object)) {
 				result.add((T) object);
 			}
 		}
 		return result;
+	}
+
+	public static <T extends Object> List<T> getSelection(ExecutionEvent event, Class<T> clazz) {
+		ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().getSelection();
+		return getSelection(selection, clazz);
 	}
 
 	@SuppressWarnings("unchecked")
