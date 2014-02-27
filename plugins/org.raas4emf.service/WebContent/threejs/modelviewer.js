@@ -3024,6 +3024,13 @@ function paintBendPoints() {
 	
 }
 
+var regex = /[?&]([^=#]+)=([^&#]*)/g,
+match;
+while(match = regex.exec(document.URL)) {
+	var val = match[2];
+	overrideSettings[match[1]] = val;
+}
+
 function start() {
 	
 	if (getParameterByName(document.URL,"lat") && getParameterByName(document.URL,"lng") && getParameterByName(document.URL,"apikey")) {
@@ -3066,7 +3073,7 @@ function start() {
 			panning_mode: false,
 			log_on_screen: false,
 			select_by_dblclick: false,
-			select_by_mouseup: false,
+			select_by_mouseup: true,
 			double_side_material: false,
 			lazy_rendering: true,
 			quickmode: true,
@@ -3077,13 +3084,6 @@ function start() {
 
 		};
 
-	var regex = /[?&]([^=#]+)=([^&#]*)/g,
-    url = document.URL,
-    match;
-	while(match = regex.exec(url)) {
-		var val = match[2];
-		overrideSettings[match[1]] = val;
-	}
 	for (var m in overrideSettings) {
 		var val = overrideSettings[m];
 		if (val=="true") val = true;
