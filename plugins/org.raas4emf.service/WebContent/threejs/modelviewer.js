@@ -4372,8 +4372,13 @@ function onDocumentMouseDown(e) {
 
 var waitingCount = 0;
 
+function getSelectedObjectIDs(objects) {
+	return objects.map(function(object) {
+		return object.name;
+	});
+}
+
 function generateEvent(eventType,e,g_client) {
-	if (typeof(theJavaFunction) != "function") return;
 
     var type="";
     g_selectedIDs = "";
@@ -4402,8 +4407,11 @@ function generateEvent(eventType,e,g_client) {
 			waitingCount++;
 		}
 		setTimeout(function(){
+			var rap_frame = document.getElementById('rap_frame');
+			if (rap_frame)
+				rap_frame.contentWindow.postMessage({'select3d': getSelectedObjectIDs(g_selectedInfo)}, '*');
 			try {
-				theJavaFunction.apply(undefined,mainParams);
+				if (typeof(theJavaFunction) == "function") theJavaFunction.apply(undefined,mainParams);
 			} catch (e2) {	
 				myLog("Exception in generateEvent: "+e2.message);
 			}
