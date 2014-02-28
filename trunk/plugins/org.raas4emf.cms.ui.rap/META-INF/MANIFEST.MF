@@ -23,7 +23,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.rap.edit.ui,
  org.raas4emf.cms.ui.discriminator,
  org.eclipse.rap.ui.forms,
- org.raas4emf.server
+ org.raas4emf.server,
+ org.apache.commons.fileupload,
+ org.eclipse.jqvt.runtime
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Service-Component: OSGI-INF/component.xml

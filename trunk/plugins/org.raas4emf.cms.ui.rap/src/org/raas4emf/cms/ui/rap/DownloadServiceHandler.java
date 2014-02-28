@@ -182,7 +182,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 		} else {
 			HttpClient httpclient = new HttpClient();
 
-			String restUri = RAASUtils.getRAASProp("RAASSERVICEURL") + "services/Artifact/GetArtifact/" + artifactId + "/scene.o3djson";
+			String restUri = RAASUtils.getRAASProp("RAASSERVICEURL") + "services/Artifact/GetArtifact/" + artifactId + "/scene.js";
 			// Get the file content
 			GetMethod method = new GetMethod();
 			method.setURI(new org.apache.commons.httpclient.URI(restUri.toString(), true));

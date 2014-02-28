@@ -500,9 +500,6 @@ function calcPaths() {
 	  	NUM_DOWN = g_num_clients / NUM_ACROSS;
 	    for (var ii = 0; ii < g_num_clients; ii++) 
 	        g_paths[ii] = g_path.substring(0, index)+'/services/Artifact/GetArtifact/'+g_ids[ii]+'/'+filename;
-	    //if (index2==-1)
-	  	//path = path.substring(0, index)+'/o3d/scene.json'; else
-	   	//path = path.substring(0, index)+'/services/Artifact/GetArtifact/'+path.substring(index2+9)+'/scene.o3djson';
 	} else {
 	    var index2 = g_path.lastIndexOf('artifact=');
 	    g_ids = getParameterByName(g_path,'artifact').split(","); 
@@ -4086,7 +4083,7 @@ function select(newSelection,g_client) {
 	    if (g_selectedInfo[0].costInfo!=null)
 	    	g_pickInfoElem.innerHTML = g_selectedInfo[0].costInfo;
 	} else {
-	    g_pickInfoElem.innerHTML = '';
+	    if (g_pickInfoElem) g_pickInfoElem.innerHTML = '';
 	}
 }
 
@@ -4851,18 +4848,7 @@ function printIncidents(lines, artifactId) {
 	myLog("called printIncidents");
     		  
     for (var tt = 0; tt < lines.length; ) {
-	    	var lastPoint = asVector3([lines[tt+0],lines[tt+1],lines[tt+2]]);
-	    	
-//			var vector = o3djs.math.subVector(nextPoint, lastPoint);
-//			var narrowingOffs = o3djs.math.mulScalarVector(0.5, vector);
-//			var _lastPointNarrowing = o3djs.math.addVector(lastPoint, narrowingOffs);
-//			var start = addShape(pack,g_client,lastPoint,_lastPointNarrowing,startCone,g_incidentTransforms);
-//			var torus = addShape(pack,g_client,[lastPoint[0],lastPoint[1],lastPoint[2]-0.5],[lastPoint[0],lastPoint[1],lastPoint[2]+0.5],sphere,g_incidentTransforms);
-//			torus.draggable = true;
-//			start.pred = torus;
-//			start.name=torus.name=lines[tt+3];
-	    	
-	    	
+	    	var lastPoint = asVector3([lines[tt+0],lines[tt+1],lines[tt+2]]);    	
 	    	var material=null;
 	    	var geometry=null;
 	    	var desc = lines[tt+3].toLowerCase();

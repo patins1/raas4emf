@@ -154,8 +154,7 @@ public class LinksView extends ViewPart implements ISelectionListener {
 		try {
 			if (PreviewView.isWebGL(Arrays.asList(artifact)) || PreviewView.isCollada(Arrays.asList(artifact)) || PreviewView.isGeometryModel(Arrays.asList(artifact))) {
 				String renderer = CMSActivator.getSessionInstance().getRenderer().toLowerCase();
-				final boolean doThreejs = !renderer.contains("o3d");
-				String webglUri = RAASUtils.getRAASProp("RAASSERVICEURL") + (doThreejs ? "threejs/" : "o3d/") + "modelviewer.html?artifact=" + artifact.cdoID().toURIFragment();
+				String webglUri = RAASUtils.getRAASProp("RAASSERVICEURL") + "threejs/modelviewer.html?artifact=" + artifact.cdoID().toURIFragment();
 				if (renderer.contains("canvas"))
 					webglUri += "&renderer=canvas";
 				if (renderer.contains("svg"))

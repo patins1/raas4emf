@@ -282,7 +282,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 
 		changeRendererAction = new Action() {
 			public void run() {
-				ComboInputDialog inputdialog = new ComboInputDialog(new String[] { "O3D - WebGL", "three.js - WebGL", "three.js - Canvas" }, window.getShell(), "Change WebGL Renderer", "Select renderer:", CMSActivator.getSessionInstance().getRenderer(), null);
+				ComboInputDialog inputdialog = new ComboInputDialog(new String[] { "three.js - WebGL", "three.js - Canvas" }, window.getShell(), "Change WebGL Renderer", "Select renderer:", CMSActivator.getSessionInstance().getRenderer(), null);
 				if (inputdialog.open() == Window.OK) {
 					String renderer = inputdialog.getValue();
 					CMSActivator.getSessionInstance().setRenderer(renderer);
