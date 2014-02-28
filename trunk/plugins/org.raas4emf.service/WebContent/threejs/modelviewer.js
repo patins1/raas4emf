@@ -1568,7 +1568,10 @@ function generateGui(force) {
 	
 	gui = new dat.GUI({width: 275,  autoPlace: false});
 
-	var customContainer = document.getElementById('part_panes');
+	var customContainer = document.getElementById('clients');
+	gui.domElement.style.position = "absolute";
+	gui.domElement.style.right = "0px";
+	gui.domElement.style.top = customContainer.offsetTop+"px";
 	customContainer.appendChild(gui.domElement);
 	
 	if (!force) gui.close();
