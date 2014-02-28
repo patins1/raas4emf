@@ -4281,6 +4281,29 @@ function onDocumentMouseDown(e) {
     var raycaster = getRaycaster(mouse,g_client);
 
 	var intersects = raycaster.intersectObjects( g_client.objects );
+	
+	if (g_client.scene2) {
+	    	var threshold=1;
+			var ray = raycaster.ray;
+		    var distance=99999999;
+		    g_client.scene2.children.forEach( function (particleSystem) {
+	            for(var j=0;j<particleSystem.geometry.vertices.length;j++){
+	                var point = particleSystem.geometry.vertices[j]	;
+	                var scalar = (point.x - ray.origin.x) / ray.direction.x;
+	                if(scalar<0) continue;
+	                var testy = (point.y - ray.origin.y) / ray.direction.y;
+	                if(Math.abs(testy - scalar) > threshold) continue;
+	                var testz = (point.z - ray.origin.z) / ray.direction.z;
+	                if(Math.abs(testz - scalar) > threshold) continue;
+	                if(distance>scalar){
+	                    distance=scalar;
+	                    particleSystem.hitVertexIndex = j;
+	                    intersects = [{"object": particleSystem, "point": point}];
+	                }
+	            }
+	        });
+	}
+	
 
 	var oldSelection = g_selectedInfo;
 	if (canChangeSelection) unSelectAll(g_client);
