@@ -23,7 +23,6 @@ import org.eclipse.rap.rwt.SingletonUtil;
 import org.eclipse.swt.SWT;
 import org.raas4emf.cms.ui.discriminator.IRAASSessionSingletonService;
 import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
-import org.raas4emf.cms.ui.views.PreviewView;
 
 import raascms.Artifact;
 
@@ -46,7 +45,7 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 
 		@Override
 		public String get3dRendererUrl() {
-			String result = createDownloadUrl("WebContent/") + (PreviewView.isThreeJS() ? "threejs/" : "o3d/");
+			String result = createDownloadUrl("WebContent/threejs/");
 			return result;
 			// return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
 		}

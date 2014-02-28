@@ -435,7 +435,6 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 	private boolean processWebGL(final List<Artifact> artifacts) {
 		if ((isWebGL(artifacts) || isCollada(artifacts) || isGeometryModel(artifacts)) && !alreadyDisplayed(true, artifacts)) {
 			currentlyDisplayedArtifact = artifacts;
-			final boolean doThreejs = isThreeJS();
 			String renderer = CMSActivator.getSessionInstance().getRenderer().toLowerCase();
 			String dir = CMSActivator.getSessionInstance().get3dRendererUrl();
 			String ids = "";
@@ -473,55 +472,29 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			if (colors != null)
 				attachedOnLoad += "g_colors=" + colors + ";\n";
 			text += "		<script src=\"" + dir + "../requirejs-plugins/lib/require.js\"></script> <!-- include require.js library -->";
-			text += "		<script type=\"text/javascript\" id=\"o3dscript\">var g_path=\"" + g_path + "\";</script>\n";
+			text += "		<script type=\"text/javascript\">var g_path=\"" + g_path + "\";</script>\n";
 			text += "<script type=\"text/javascript\">var g_ortho=" + CMSActivator.getSessionInstance().getOrtho() + ";</script>\n";
 			text += "<script type=\"text/javascript\">var g_fillmode=\"" + CMSActivator.getSessionInstance().getFillMode() + "\";</script>\n";
 			text += "		<script type=\"text/javascript\">var g_dir=\"" + dir + "\";</script>\n";
-			if (doThreejs) {
-				text += "		<script src=\"" + dir + "build/three.js\"></script>";
-				text += "		<script src=\"" + dir + "js/Detector.js\" type=\"text/javascript\"></script>";
-				text += "		<script src=\"" + dir + "js/libs/stats.min.js\"></script>";
-				text += "		<script src=\"" + dir + "js/libs/dat.gui.min.js\"></script>";
-				// text += "		<script src=\"" + dir + "touchgen.js\"></script>";
-				text += "		<script src=\"" + dir + "modelviewer.js\"></script>";
-				if (renderer.contains("canvas"))
-					text += "	<script type=\"text/javascript\">var g_renderer=\"canvas\";</script>\n";
-				if (renderer.contains("svg"))
-					text += "	<script type=\"text/javascript\">var g_renderer=\"svg\";</script>\n";
-				if (renderer.contains("software"))
-					text += "	<script type=\"text/javascript\">var g_renderer=\"software\";</script>\n";
-				String overrideSettings = "";
-				for (Map.Entry<String, String> entry : CMSActivator.getSessionInstance().getParameters().entrySet()) {
-					overrideSettings += "\"" + entry.getKey() + "\"" + ":" + "\"" + entry.getValue() + "\"" + ",";
-				}
-				if (!"".equals(overrideSettings))
-					text += "	<script type=\"text/javascript\">var overrideSettings={" + overrideSettings.substring(0, overrideSettings.length() - 1) + "};</script>\n";
-			} else {
-				text += "<script type=\"text/javascript\" >\n";
-				text += "//emulate legacy getter/setter API using ES5 APIs\n";
-				text += "try {\n";
-				text += "   if (!Object.prototype.__defineGetter__ &&\n";
-				text += "        Object.defineProperty({},\"x\",{get: function(){return true}}).x) {\n";
-				text += "      Object.defineProperty(Object.prototype, \"__defineGetter__\",\n";
-				text += "         {enumerable: false, configurable: true,\n";
-				text += "          value: function(name,func)\n";
-				text += "             {Object.defineProperty(this,name,\n";
-				text += "                 {get:func,enumerable: true,configurable: true});\n";
-				text += "      }});\n";
-				text += "      Object.defineProperty(Object.prototype, \"__defineSetter__\",\n";
-				text += "         {enumerable: false, configurable: true,\n";
-				text += "          value: function(name,func)\n";
-				text += "             {Object.defineProperty(this,name,\n";
-				text += "                 {set:func,enumerable: true,configurable: true});\n";
-				text += "      }});\n";
-				text += "   }\n";
-				text += "} catch(defPropException) {/*Do nothing if an exception occurs*/};\n";
-				text += "</script>\n";
-				text += "<script type=\"text/javascript\" src=\"" + dir + "o3d-webgl/base.js\"></script>\n";
-				text += "<script type=\"text/javascript\" src=\"" + dir + "o3djs/base.js\"></script>\n";
-				text += "<script type=\"text/javascript\" src=\"" + dir + "modelviewer.js\"></script>\n";
-
+			text += "		<script src=\"" + dir + "build/three.js\"></script>";
+			text += "		<script src=\"" + dir + "js/Detector.js\" type=\"text/javascript\"></script>";
+			text += "		<script src=\"" + dir + "js/libs/stats.min.js\"></script>";
+			text += "		<script src=\"" + dir + "js/libs/dat.gui.min.js\"></script>";
+			// text += "		<script src=\"" + dir + "touchgen.js\"></script>";
+			text += "		<script src=\"" + dir + "modelviewer.js\"></script>";
+			if (renderer.contains("canvas"))
+				text += "	<script type=\"text/javascript\">var g_renderer=\"canvas\";</script>\n";
+			if (renderer.contains("svg"))
+				text += "	<script type=\"text/javascript\">var g_renderer=\"svg\";</script>\n";
+			if (renderer.contains("software"))
+				text += "	<script type=\"text/javascript\">var g_renderer=\"software\";</script>\n";
+			String overrideSettings = "";
+			for (Map.Entry<String, String> entry : CMSActivator.getSessionInstance().getParameters().entrySet()) {
+				overrideSettings += "\"" + entry.getKey() + "\"" + ":" + "\"" + entry.getValue() + "\"" + ",";
 			}
+			if (!"".equals(overrideSettings))
+				text += "	<script type=\"text/javascript\">var overrideSettings={" + overrideSettings.substring(0, overrideSettings.length() - 1) + "};</script>\n";
+
 			if (attachedImmediately != null)
 				text += "<script type=\"text/javascript\">" + attachedImmediately + "</script>\n";
 			if (attachedHeadContent != null)
@@ -575,7 +548,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 										if (!alreadyDisplayed(false, artifacts))
 											return;
 										if (CMSActivator.getSessionInstance().loadWebGLFromRaaSServer())
-											browser.setUrl(RAASUtils.getRAASProp("RAASSERVICEURL") + "o3d/modelviewer.html?artifact=" + fids);
+											browser.setUrl(RAASUtils.getRAASProp("RAASSERVICEURL") + "threejs/modelviewer.html?artifact=" + fids);
 										else
 											browser.setText(ftext);
 										new CustomFunction(browser, "theJavaFunction");
@@ -638,14 +611,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 	}
 
 	public static String getScene3dName() {
-		final boolean doThreejs = isThreeJS();
-		return "scene" + (doThreejs ? CMSActivator.getSessionInstance().get3dFormat().substring(0, CMSActivator.getSessionInstance().get3dFormat().indexOf(" ")) : "o3djson");
-	}
-
-	public static boolean isThreeJS() {
-		String renderer = CMSActivator.getSessionInstance().getRenderer().toLowerCase();
-		final boolean doThreejs = !renderer.contains("o3d");
-		return doThreejs;
+		return "scene" + CMSActivator.getSessionInstance().get3dFormat().substring(0, CMSActivator.getSessionInstance().get3dFormat().indexOf(" "));
 	}
 
 	private boolean alreadyDisplayed(boolean makeVisible, List<Artifact> artifacts) {
@@ -654,7 +620,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 
 	static boolean isWebGL(List<Artifact> artifacts) {
 		for (Artifact artifact : artifacts)
-			if (RAASUtils.hasExtension(artifact, ".json") || RAASUtils.hasExtension(artifact, ".o3djson"))
+			if (RAASUtils.hasExtension(artifact, ".json"))
 				return true;
 		return false;
 	}
@@ -722,8 +688,6 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			}
 		}
 		String artifactId = "" + arguments[2];
-		if (artifactId.startsWith("o3d"))
-			artifactId = artifactId.substring("o3d".length());
 		if (artifactId.startsWith("threejs"))
 			artifactId = artifactId.substring("threejs".length());
 		Artifact artifact = null;
