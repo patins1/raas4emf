@@ -3,7 +3,6 @@ var g_ids = [];
 var zoomId;
 var countProgress;
 var g_colors;
-var modelviewerSelectionChanged = function () {};
 var reviseSelection = function (s) { return s; };
 if (g_colors == null) g_colors= {};
 var basicColors =
@@ -133,24 +132,31 @@ var occurences = 0;
 var overrideSettings;
 if (overrideSettings == null) overrideSettings = {}; 
 var USE_BUFFERGEOMETRY = true;
+var inProcessMessage;
 
 
 function processMessage(event) {
-	if (event.data.selectShape) {
-		selectShape(event.data.selectShape,g_clients[0].id.substring("threejs".length));
-		return;
-	}
-	if (event.data.locateShape) {
-		locateShape(event.data.locateShape,g_clients[0].id.substring("threejs".length));
-		return;
-	}
-	if (!event.data.g_path) { alert("Unknown message received! "+event.data); return; }
-	g_path = event.data.g_path;
-	if (g_clients.length>0) {
-		calcPaths();
-		load2(0);
-	} else {
-		start();
+	inProcessMessage = true;
+	try {
+		if (event.data.selectShape) {
+			selectShape(event.data.selectShape,g_clients[0].id.substring("threejs".length));
+			return;
+		}
+		if (event.data.locateShape) {
+			locateShape(event.data.locateShape,g_clients[0].id.substring("threejs".length));
+			return;
+		}
+		if (!event.data.g_path) { alert("Unknown message received! "+event.data); return; }
+		g_path = event.data.g_path;
+		if (g_clients.length>0) {
+			calcPaths();
+			load2(0);
+		} else {
+			start();
+		}
+	} 
+	finally {
+		inProcessMessage = false;
 	}
 }
 
@@ -407,8 +413,8 @@ function doSetCamera(eye,target,angle,ortho,steps,g_client) {
 	}
 	var oldEye = g_camera.eye.clone();
 	var oldTarget = g_camera.target.clone();
-	var oldUp = new THREE.Vector3().getColumnFromMatrix(1,new THREE.Matrix4().getInverse(new THREE.Matrix4().lookAt(g_camera.eye, g_camera.target, up)).transpose());
-	var newUp = new THREE.Vector3().getColumnFromMatrix(1,new THREE.Matrix4().getInverse(new THREE.Matrix4().lookAt(eye, target, up)).transpose());
+	var oldUp = new THREE.Vector3().setFromMatrixColumn(1,new THREE.Matrix4().getInverse(new THREE.Matrix4().lookAt(g_camera.eye, g_camera.target, up)).transpose());
+	var newUp = new THREE.Vector3().setFromMatrixColumn(1,new THREE.Matrix4().getInverse(new THREE.Matrix4().lookAt(eye, target, up)).transpose());
 	var oriUp = up.clone();
 	var oldAngle = g_angle;
 	g_cameraHistory.push([oldEye,oldTarget,g_angle,oldOrtho,steps,g_client]);
@@ -4074,6 +4080,9 @@ function select(newSelection,g_client) {
 	newSelection = reviseSelection(newSelection);
 	unSelectAll(g_client);
 	g_selectedInfo = newSelection;
+	var rap_frame = document.getElementById('rap_frame');
+	if (rap_frame && !inProcessMessage)
+		rap_frame.contentWindow.postMessage({'select3d': getSelectedObjectIDs(g_selectedInfo)}, '*');
     for (var tt = 0; tt < g_selectedInfo.length; tt++) {
     	if (!getScene(g_selectedInfo[tt])) {
     		g_selectedInfo[tt].originalParent = g_selectedInfo[tt].parent;
@@ -4412,13 +4421,13 @@ function getSelectedObjectIDs(objects) {
 }
 
 function generateEvent(eventType,e,g_client) {
-
+	if (typeof(theJavaFunction) != "function") return;
+	
     var type="";
     g_selectedIDs = "";
     for (var ee = 0; ee < g_selectedInfo.length; ee++) {
     	g_selectedIDs += g_selectedInfo[ee].name + " ";
     }
-    modelviewerSelectionChanged();
 	if (effectController.treeview==false && effectController.properties==false && e.which!=3) return;
     var mainParams = [g_selectedIDs,type,g_client.id,e.clientX,e.clientY,e.which,eventType];
 	if ( g_selectedInfo.length != 0 ) {
@@ -4440,11 +4449,8 @@ function generateEvent(eventType,e,g_client) {
 			waitingCount++;
 		}
 		setTimeout(function(){
-			var rap_frame = document.getElementById('rap_frame');
-			if (rap_frame)
-				rap_frame.contentWindow.postMessage({'select3d': getSelectedObjectIDs(g_selectedInfo)}, '*');
 			try {
-				if (typeof(theJavaFunction) == "function") theJavaFunction.apply(undefined,mainParams);
+				theJavaFunction.apply(undefined,mainParams);
 			} catch (e2) {	
 				myLog("Exception in generateEvent: "+e2.message);
 			}

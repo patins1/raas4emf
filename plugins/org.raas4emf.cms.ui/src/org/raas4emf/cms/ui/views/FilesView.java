@@ -68,7 +68,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -111,6 +110,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 	private AdapterFactoryEditingDomain editingDomain;
 	public PatternFilter patternFilter;
 	private Composite tree;
+	private boolean causedSelection = false;
 
 	public void createPartControl(final Composite parent) {
 		patternFilter = new PatternFilter() {
@@ -340,7 +340,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 		getSite().getPage().addSelectionListener(this);
 
 		Browser browser = new Browser(parent, CMSActivator.getSessionInstance().getBrowserType());
-		browser.setText("<script type=\"text/javascript\">window.addEventListener('message', function (event) { if (event.data.select3d) syncSelection(event.data.select3d); } );</script>");
+		browser.setText("<script type=\"text/javascript\">var inSyncSelection; window.addEventListener('message', function (event) { if (event.data.select3d && !inSyncSelection) { inSyncSelection=true; syncSelection(event.data.select3d); setTimeout(function(){ inSyncSelection = false; },100); } } );</script>");
 		browser.setVisible(false);
 		new BrowserFunction(browser, "syncSelection") {
 
@@ -354,7 +354,12 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 						newSel.add(eObject);
 					}
 				}
-				FilesView.this.selectionChanged(null, new StructuredSelection(newSel));
+				causedSelection = true;
+				try {
+					FilesView.this.selectionChanged(null, new StructuredSelection(newSel));
+				} finally {
+					causedSelection = false;
+				}
 				return true;
 			}
 
@@ -571,7 +576,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		if (part != null) {
+		if (!causedSelection) {
 			CMSActivator.getSessionInstance().propagateTreeSelection(selection, false);
 		}
 		if (selection != null && !selection.equals(viewer.getSelection()) && !selection.isEmpty()) {
