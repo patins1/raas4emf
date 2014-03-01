@@ -119,6 +119,8 @@ public class DownloadServiceHandler implements ServiceHandler {
 
 		if (OWN_PROVISION) {
 
+			response.setHeader("Expires", "-1");
+			response.setHeader("Cache-Control", "must-revalidate, private");
 			response.addHeader("Access-Control-Allow-Origin", "*");
 			response.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 			// Send the file in the response
