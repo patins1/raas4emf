@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.cdo.eresource.CDOResource;
 import org.eclipse.emf.cdo.transaction.CDOTransaction;
 import org.eclipse.emf.cdo.view.CDOView;
@@ -56,14 +57,20 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
@@ -75,6 +82,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.raas4emf.cms.core.IGeometricIDResolver;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.DemoActionBarAdvisor;
@@ -91,7 +99,7 @@ import raascms.Folder;
 import raascms.RaascmsFactory;
 
 public class FilesView extends ViewPart implements IDoubleClickListener, ISelectionListener, IViewerProvider, IEditingDomainProvider, IMenuListener, IInputChanged {
-	static public IDoubleClickListener FALLBACK_DBLCLICKLISTENER = null;
+
 	public static final String RECYCLE_BIN = "Recycle Bin";
 	private boolean ENABLE_FULL_MENU = true;
 	private TreeViewer viewer;
@@ -330,6 +338,33 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 
 		selectionChanged(null, getSite().getPage().getSelection());
 		getSite().getPage().addSelectionListener(this);
+
+		Browser browser = new Browser(parent, CMSActivator.getSessionInstance().getBrowserType());
+		browser.setText("<script type=\"text/javascript\">window.addEventListener('message', function (event) { if (event.data.select3d) syncSelection(event.data.select3d); } );</script>");
+		browser.setVisible(false);
+		new BrowserFunction(browser, "syncSelection") {
+
+			public Object function(Object[] arguments) {
+				List<Object> newSel = new ArrayList<Object>();
+				for (Object guid : (Object[]) arguments[0]) {
+					Object adapter = Platform.getAdapterManager().getAdapter(guid, IGeometricIDResolver.class);
+					if (adapter instanceof IGeometricIDResolver) {
+						IGeometricIDResolver iGeometricIDResolver = (IGeometricIDResolver) adapter;
+						Object eObject = iGeometricIDResolver.resolve((Artifact) viewer.getInput());
+						newSel.add(eObject);
+					}
+				}
+				FilesView.this.selectionChanged(null, new StructuredSelection(newSel));
+				return true;
+			}
+
+		};
+		GridLayout grid = new GridLayout(1, false);
+		grid.marginBottom = grid.marginHeight = grid.marginLeft = grid.marginRight = grid.marginTop = grid.marginWidth = grid.verticalSpacing = grid.horizontalSpacing = 0;
+		parent.setLayout(grid);
+		browser.setLayoutData(new GridData(0, 0));
+		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
 	}
 
 	public void clearInput() {
@@ -463,10 +498,8 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 					if (preview.locate(Arrays.asList(eObject)))
 						return;
 				}
-				if (FALLBACK_DBLCLICKLISTENER != null) {
-					FALLBACK_DBLCLICKLISTENER.doubleClick(event);
+				if (CMSActivator.getSessionInstance().propagateTreeSelection(event.getSelection(), true))
 					return;
-				}
 			}
 		}
 		EditAction.openEditor(event.getSelection());
@@ -538,6 +571,9 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		if (part != null) {
+			CMSActivator.getSessionInstance().propagateTreeSelection(selection, false);
+		}
 		if (selection != null && !selection.equals(viewer.getSelection()) && !selection.isEmpty()) {
 			viewer.setSelection(selection, true);
 		}

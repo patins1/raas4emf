@@ -7,7 +7,9 @@ Bundle-Activator: org.raas4emf.cms.ui.discriminator.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.cdo.net4j,
  org.raas4emf.cms.core,
- org.raas4emf.metamodel.raascms
+ org.raas4emf.metamodel.raascms,
+ org.eclipse.rap.jface;resolution:=optional,
+ org.eclipse.jface;resolution:=optional
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.raas4emf.cms.ui.discriminator
