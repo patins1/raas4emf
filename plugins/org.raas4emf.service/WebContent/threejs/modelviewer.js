@@ -109,7 +109,7 @@ var container, stats, rendererStats;
 var projector;
 var mouse;
 
-var gui, misc, selectionInfoGui, extrusionLengthGui, closingAngleGui, lazyRenderingGui;
+var gui, misc, selectionInfoGui, extrusionLengthGui, closingAngleGui, lazyRenderingGui, materialVisibilityGui;
 var effectController;
 var geoHandle;
 var materials, current_material;
@@ -1559,7 +1559,7 @@ function expect(controller, value) {
 	}	
 }
 
-function generateGui(force) {	
+function generateGui() {	
 
 	if (gui!=null) return;
 	
@@ -1572,7 +1572,7 @@ function generateGui(force) {
 	gui.domElement.className += " opencontrols_hide";
 	customContainer.appendChild(gui.domElement);
 	
-	if (!force) gui.close();
+	gui.close();
 	gui.domElement.parentNode.style.zIndex = 5;
 	var h;		
 	var settingsChanged = function() {
@@ -2005,7 +2005,7 @@ function generateGui(force) {
 	
 	// building material (color enablement)
 
-	var vis = gui.addFolder( "Material visibility" );
+	materialVisibilityGui = gui.addFolder( "Material visibility" );
 
 	
 //	if (effectController.flatten_materialvisibility) vis = gui;
@@ -2016,14 +2016,14 @@ function generateGui(force) {
     g_visibility_sorted.sort();
     for (var tt = 0; tt < g_visibility_sorted.length; tt++) {
     	var m = g_visibility_sorted[tt];
-		vis.add( g_visibility, m,  g_visibility[m]).onChange(updateCol);
+		materialVisibilityGui.add( g_visibility, m,  g_visibility[m]).onChange(updateCol);
 	}
 
-	effectController[ "Select All" ] = function () {for (var m in g_visibility) { g_visibility[m] = true; } updateGui(vis); updateCol(); };
-	vis.add( effectController, "Select All" );
+	effectController[ "Select All" ] = function () {for (var m in g_visibility) { g_visibility[m] = true; } updateGui(materialVisibilityGui); updateCol(); };
+	materialVisibilityGui.add( effectController, "Select All" );
 	
-	effectController[ "Select None" ] = function () {for (var m in g_visibility) { g_visibility[m] = false; } updateGui(vis); updateCol(); };
-	vis.add( effectController, "Select None" );
+	effectController[ "Select None" ] = function () {for (var m in g_visibility) { g_visibility[m] = false; } updateGui(materialVisibilityGui); updateCol(); };
+	materialVisibilityGui.add( effectController, "Select None" );
 
 	// selection info
 
@@ -3404,6 +3404,7 @@ function load(ii) {
 	load2(ii);
 }
 function load2(ii) {
+	g_clients[ii].invalidated = true;
 	g_pickInfoElem = document.getElementById('pickInfo');
     console.log("Loading: " + g_paths[ii]);
     try {
@@ -3417,11 +3418,15 @@ function load2(ii) {
     		drawBar(0,"Customizing Scene ...");	
     		setTimeout(function(){
     		init(result.scene,g_clients[ii]);
+    		drawBar(0,"Preparing Geometry ...");	
+    		setTimeout(function(){
+    		generateGui();
     		drawBar(0,"Rendering WebGL ...");	
     		setTimeout(function(){
     		animate(g_clients[ii]);		
     		document.getElementById('progress').style.display = "none";
     		drawBar(0,"Finished!");	
+    		},waitForBar);
     		},waitForBar);
     		},waitForBar);
     	}, function ( event ) {
@@ -3765,7 +3770,6 @@ function init(root,g_client) {
     updateColors(g_client);
     optimizeMem(g_client);
     initializeMap();
-	generateGui();
 
 	var plane = g_client.plane = new THREE.Mesh( new THREE.PlaneGeometry( 1000000, 1000000, 1, 1 ), new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.25, transparent: true, side: THREE.DoubleSide} ) );
 	plane.name = "intersection plane";
@@ -3918,7 +3922,7 @@ function updateClient(g_client, lazy) {
 		g_client.renderer.sortObjects=  true;
 		g_client.renderer.autoUpdateObjects=  true;
 	}
-	if (g_client.invalidated || !g_client.scene) return;
+	if (g_client.invalidated) return;
 	g_client.invalidated = true;
 	if (lazy) {
 //		g_client.renderer.sortObjects=  false;
