@@ -1561,7 +1561,7 @@ function expect(controller, value) {
 
 function generateGui(force) {	
 
-	if (gui!=null || !effectController.showopencontrols && !force) return;
+	if (gui!=null) return;
 	
 	gui = new dat.GUI({width: 275,  autoPlace: false});
 
@@ -1569,6 +1569,7 @@ function generateGui(force) {
 	gui.domElement.style.position = "absolute";
 	gui.domElement.style.right = "0px";
 	gui.domElement.style.top = customContainer.offsetTop+"px";
+	gui.domElement.className += " opencontrols_hide";
 	customContainer.appendChild(gui.domElement);
 	
 	if (!force) gui.close();
@@ -3917,7 +3918,7 @@ function updateClient(g_client, lazy) {
 		g_client.renderer.sortObjects=  true;
 		g_client.renderer.autoUpdateObjects=  true;
 	}
-	if (g_client.invalidated) return;
+	if (g_client.invalidated || !g_client.scene) return;
 	g_client.invalidated = true;
 	if (lazy) {
 //		g_client.renderer.sortObjects=  false;
