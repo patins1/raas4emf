@@ -91,7 +91,7 @@ import raascms.Folder;
 import raascms.RaascmsFactory;
 
 public class FilesView extends ViewPart implements IDoubleClickListener, ISelectionListener, IViewerProvider, IEditingDomainProvider, IMenuListener, IInputChanged {
-
+	static public IDoubleClickListener FALLBACK_DBLCLICKLISTENER = null;
 	public static final String RECYCLE_BIN = "Recycle Bin";
 	private boolean ENABLE_FULL_MENU = true;
 	private TreeViewer viewer;
@@ -462,6 +462,10 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 				for (PreviewView preview : PreviewView.findView()) {
 					if (preview.locate(Arrays.asList(eObject)))
 						return;
+				}
+				if (FALLBACK_DBLCLICKLISTENER != null) {
+					FALLBACK_DBLCLICKLISTENER.doubleClick(event);
+					return;
 				}
 			}
 		}

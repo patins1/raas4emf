@@ -140,6 +140,10 @@ function processMessage(event) {
 		selectShape(event.data.selectShape,g_clients[0].id.substring("threejs".length));
 		return;
 	}
+	if (event.data.locateShape) {
+		locateShape(event.data.locateShape,g_clients[0].id.substring("threejs".length));
+		return;
+	}
 	if (!event.data.g_path) { alert("Unknown message received! "+event.data); return; }
 	g_path = event.data.g_path;
 	if (g_clients.length>0) {
