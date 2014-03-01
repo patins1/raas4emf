@@ -56,7 +56,9 @@ public class DemoWorkbench implements EntryPoint {
 		// JSExecutor.executeJS(" window.parent.postMessage({'raasSessionId':rwt.remote.Server.getInstance().getConnectionId()},'*'); ");
 		String g_path = CMSActivator.getSessionInstance().createDownloadUrl("REPLACEHERE") + "&filename=" + PreviewView.getScene3dName();
 		g_path = "'" + g_path.replace("REPLACEHERE", "'+event.data.loadPath+'") + "'";
-		JSExecutor.executeJS("window.addEventListener('message', function (event) { if (event.data.select3d) console.log('select3d='+event.data.select3d); else if (event.data.loadPath) document.getElementsByTagName('iframe')[0].contentWindow.postMessage({'g_path':" + g_path + "}, '*'); }, false); ");
+		JSExecutor
+				.executeJS("window.addEventListener('message', function (event) { if (event.data.select3d) Array.prototype.slice.call(document.getElementsByTagName('iframe')).forEach(function(iframe) { iframe.contentWindow.postMessage(event.data, '*');   console.log('select3d='+event.data.select3d); }); else if (event.data.loadPath) document.getElementsByTagName('iframe')[0].contentWindow.postMessage({'g_path':"
+						+ g_path + "}, '*'); }, false); ");
 
 		// String dir = RAASUtils.getRAASProp("RAASSERVICEURL") + "threejs/";
 		// JavaScriptLoader loader = RWT.getClient().getService(JavaScriptLoader.class);

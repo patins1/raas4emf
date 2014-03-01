@@ -18,11 +18,15 @@ import javax.ws.rs.core.MediaType;
 import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.apache.cxf.jaxrs.provider.JSONProvider;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.SingletonUtil;
 import org.eclipse.swt.SWT;
+import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.discriminator.IRAASSessionSingletonService;
 import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
+import org.raas4emf.cms.ui.views.PreviewView;
 
 import raascms.Artifact;
 
@@ -196,6 +200,15 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 			JSExecutor.executeJS("window.external." + methodName + "('" + stringArg.replace("\'", "\\\'").replace("\"", "\\\"") + "');");
 		}
 
+		@Override
+		public boolean propagateTreeSelection(ISelection selection, boolean isDblClick) {
+			String objectIDs = PreviewView.getObjectIDs(RAASUIUtils.getSelection(selection, EObject.class));
+			if (!"[]".equals(objectIDs)) {
+				JSExecutor.executeJS(" window.parent.postMessage({'" + (isDblClick ? "locateShape" : "selectShape") + "':" + objectIDs + "},'*'); ");
+				return true;
+			}
+			return false;
+		}
 	};
 
 	@Override
