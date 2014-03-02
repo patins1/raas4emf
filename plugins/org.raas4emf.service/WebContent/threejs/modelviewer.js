@@ -4264,6 +4264,57 @@ var g_line;
 var mousedownClientX = 0;
 var mousedownClientY = 0;
 
+function intersectParticleSystems(raycaster,g_client) {
+	var intersects = null;
+	var aspect = g_client.parentNode.offsetWidth / g_client.parentNode.offsetHeight;
+	if (g_client.scene2) {
+		    var minDistance=99999999;
+		    g_client.scene2.children.forEach( function (object) {		   
+		    		//see https://github.com/mrdoob/three.js/issues/3492
+		    	
+		    	 	var vertices = object.geometry.vertices;
+		            var point, distance, intersect, threshold = 1;
+		            var localMatrix = new THREE.Matrix4();
+		            var localtempRay = raycaster.ray.clone();
+		            var localOrigin = localtempRay.origin;
+		            var localDirection = localtempRay.direction;
+
+		            localMatrix.getInverse(object.matrixWorld);
+		            //localMatrix.multiplyVector3(localOrigin);
+		            localOrigin.applyMatrix4(localMatrix);
+		            //localMatrix.rotateAxis(localDirection).normalize();
+		            localDirection.transformDirection(localMatrix);
+
+		            for ( var i = 0; i < vertices.length; i ++ ) {
+		                point = vertices[ i ];
+		                //distance = this.distanceFromIntersection( localOrigin, localDirection, point );
+		                distance = localtempRay.distanceToPoint(point);
+		                if (!object.sizeAttenuation) threshold = localtempRay.origin.distanceTo(point)*2/5*aspect*object.material.size/g_client.parentNode.offsetWidth;
+//		                console.log("distance="+distance+" threshold="+threshold+" aspect="+aspect+" screenx="+g_client.parentNode.offsetWidth+" screeny="+g_client.parentNode.offsetHeight);
+		                if ( distance > threshold ) {
+		                    continue;
+		                }
+		                intersect = {
+		                    distance: distance,
+		                    point: point.clone(),
+		                    face: null,
+		                    object: object,
+		                    vertex: i
+		                };
+//		                intersects.push(intersect);
+		                
+		                if (distance<minDistance) {
+		                	minDistance = distance;
+		                	intersects = [intersect];
+		                    object.hitVertexIndex = i;
+		                }
+		            }
+		    	
+	        });
+	}	
+	return intersects;	
+}
+
 function onDocumentMouseDown(e) {
 
 	var start = new Date().getTime();
@@ -4303,27 +4354,7 @@ function onDocumentMouseDown(e) {
 
 	var intersects = raycaster.intersectObjects( g_client.objects );
 	
-	if (g_client.scene2) {
-	    	var threshold=1;
-			var ray = raycaster.ray;
-		    var distance=99999999;
-		    g_client.scene2.children.forEach( function (particleSystem) {
-	            for(var j=0;j<particleSystem.geometry.vertices.length;j++){
-	                var point = particleSystem.geometry.vertices[j]	;
-	                var scalar = (point.x - ray.origin.x) / ray.direction.x;
-	                if(scalar<0) continue;
-	                var testy = (point.y - ray.origin.y) / ray.direction.y;
-	                if(Math.abs(testy - scalar) > threshold) continue;
-	                var testz = (point.z - ray.origin.z) / ray.direction.z;
-	                if(Math.abs(testz - scalar) > threshold) continue;
-	                if(distance>scalar){
-	                    distance=scalar;
-	                    particleSystem.hitVertexIndex = j;
-	                    intersects = [{"object": particleSystem, "point": point}];
-	                }
-	            }
-	        });
-	}
+	intersects = intersectParticleSystems(raycaster,g_client) || intersects;
 	
 
 	var oldSelection = g_selectedInfo;
