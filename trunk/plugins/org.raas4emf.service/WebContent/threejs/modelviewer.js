@@ -397,6 +397,7 @@ function vector3ToArrayMM(v) {
 }
 
 function doSetCamera(eye,target,angle,ortho,steps,g_client) {
+	g_client = g_client || g_clients[0];
 	if (target.length == 3) {
 		target = asVector3(target);
 	}
@@ -753,6 +754,7 @@ function onWindowResize() {
 }
 
 function getObjectsWithSplittings(name,g_client) {
+	g_client = g_client || g_clients[0];
 	name = asArray(name);
 	var found = [];
 	for (var j = 0; j < name.length; ++j) {
@@ -4077,6 +4079,7 @@ function getScene(scene) {
 }
 
 function select(newSelection,g_client) {
+	g_client = g_client || g_clients[0];
 	newSelection = reviseSelection(newSelection);
 	unSelectAll(g_client);
 	g_selectedInfo = newSelection;
