@@ -4598,16 +4598,16 @@ function getOnlyUsedVertices(geometry) {
 function getBoundingBoxOfTree(object3Ds) {
     var box = new THREE.Box3();
     object3Ds = asArray(object3Ds);
+    var v = new THREE.Vector3();
     for (var tt = 0; tt < object3Ds.length; tt++) {
 	    var object3D = object3Ds[tt];
 	    object3D.traverse(function (obj3D) {
-	        if (obj3D.geometry === undefined) return;        
+	        if (!obj3D.geometry) return;        
 	        var vertices = getOnlyUsedVertices(obj3D.geometry);
 	        var matrix = obj3D.matrixWorld;
-			for ( var i = 0, il = vertices.length; i < il; i ++ ) {
-				var vertex = vertices[ i ];
-				box.addPoint( vertex.clone().applyMatrix4( matrix ) );
-			}
+			vertices.forEach(function (vertex) {
+				box.addPoint( v.copy(vertex).applyMatrix4( matrix ) );
+			});
 	    });
     }
     if (box.empty()) return null;
