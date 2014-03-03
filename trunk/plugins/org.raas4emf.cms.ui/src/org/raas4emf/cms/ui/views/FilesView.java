@@ -43,6 +43,8 @@ import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.emf.edit.ui.view.ExtendedPropertySheetPage;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -155,11 +157,14 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 			viewer = ((FilteredTreeWithoutExpansion) tree).getViewer();
 		}
 		adapterFactory = new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE);
-		adapterFactory.addAdapterFactory(new ReflectiveItemProviderAdapterFactory());
+		adapterFactory.addAdapterFactory(allowWriteAccess() ? new ReflectiveItemProviderAdapterFactory() : new ReadonlyReflectiveItemProviderAdapterFactory());
 		editingDomain = new AdapterFactoryEditingDomain(adapterFactory, new BasicCommandStack(), new HashMap<Resource, Boolean>()) {
 
 			@Override
 			public Command createCommand(Class<? extends Command> commandClass, final CommandParameter commandParameter) {
+				if (!allowWriteAccess()) {
+					return UnexecutableCommand.INSTANCE;
+				}
 				final Object parent = commandParameter.getOwner();
 				Command result = null;
 				if (commandClass == PasteFromClipboardCommand.class) {
@@ -389,7 +394,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 	}
 
 	protected boolean allowWriteAccess() {
-		return CMSActivator.getSessionInstance().isLibarian();
+		return CMSActivator.getSessionInstance().isLibarian() && !Boolean.valueOf(CMSActivator.getSessionInstance().getParameter("readonly"));
 	}
 
 	protected Object getInitialInput(CDOView trans) {
@@ -615,6 +620,12 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 					super.setActionBars(actionBars);
 					// getActionBarContributor().shareGlobalActions(this, actionBars);
 				}
+
+				@Override
+				public void makeContributions(IMenuManager menuManager, IToolBarManager toolBarManager, IStatusLineManager statusLineManager) {
+					// do nothing
+				}
+
 			};
 			propertySheetPage.setPropertySourceProvider(new AdapterFactoryContentProvider(adapterFactory));
 		}
