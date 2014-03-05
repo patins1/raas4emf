@@ -29,7 +29,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.cdo.server,
  org.ifc4emf.metamodel.ifc,
  org.ifc4emf.metamodel.ifcheader,
- org.ifc4emf.part21
+ org.ifc4emf.part21,
+ org.raas4emf.service
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.raas4emf.cms.ui,
