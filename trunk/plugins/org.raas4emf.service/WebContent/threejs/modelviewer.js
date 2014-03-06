@@ -3840,11 +3840,12 @@ function init(root,g_client) {
     	if (comps.length==3) {
     		child.name = comps[0];
     		child.text = comps[1]!="" ? comps[2]+" "+comps[1]: comps[2];
-    	}
+    	} else
     	if (comps.length==2) {
     		child.name = comps[0];
     		child.text = child.material && child.material.name ?  child.material.name+" "+comps[1] : comps[1];
-    	}
+    	} else 
+    		child.text = child.name;
     });
     if (g_customInit) g_customInit();
     setupColors(g_client);
