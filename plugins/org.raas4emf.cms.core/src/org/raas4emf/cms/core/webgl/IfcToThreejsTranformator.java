@@ -196,12 +196,12 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 			errorGobbler.start();
 			outputGobbler.start();
 			int exitValue = process.waitFor();
-			if (exitValue != 0) {
+			Activator.log("Exit value=" + exitValue);
+			Activator.log("Written to " + targetFile);
+			if (exitValue != 0 || catchResult == null && !targetFile.exists()) {
 				Activator.err("IFC transformation error:\n" + errorMessages);
 				FileUtil.inputstreamToOutputstream(new StringBufferInputStream("Blender exit value = " + exitValue + "\n" + errorMessages), new FileOutputStream(errorFile));
 			}
-			Activator.log("Exit value=" + exitValue);
-			Activator.log("Written to " + targetFile);
 			Date ended = new Date();
 			Activator.log("Seconds elapsed =  " + (ended.getTime() - started.getTime()) / 1000);
 			if (catchResult != null)
@@ -213,7 +213,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 			monitor.worked(1);
 		} catch (Exception e) {
 			String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message), new FileOutputStream(errorFile));
+			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message + "\n" + errorMessages), new FileOutputStream(errorFile));
 			Activator.err("Stopped conversion with message: " + message, e);
 		}
 		return targetFile;
