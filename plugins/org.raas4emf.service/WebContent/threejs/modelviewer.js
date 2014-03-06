@@ -108,7 +108,7 @@ var container, stats, rendererStats;
 var projector;
 var mouse;
 
-var gui, misc, selectionInfoGui, extrusionLengthGui, closingAngleGui, lazyRenderingGui, materialVisibilityGui;
+var gui, jstree, misc, selectionInfoGui, extrusionLengthGui, closingAngleGui, lazyRenderingGui, materialVisibilityGui;
 var effectController;
 var geoHandle;
 var materials, current_material;
@@ -767,6 +767,23 @@ function getObjectsWithSplittings(name,g_client) {
 		};
 		g_client.scene.traverse(f);
 		if (g_client.originalRoot) g_client.originalRoot.traverse(f);		
+	}
+	return found;
+}
+
+function getObjectsWithIDs(name,g_client) {
+	g_client = g_client || g_clients[0];
+	name = asArray(name);
+	var found = [];
+	for (var j = 0; j < name.length; ++j) {
+		var n = name[j];
+		var f = function ( tree ) {	
+			if (tree.id == n) found.push(tree);		
+			var object = tree.getObjectById( n, true);
+			if (object) found.push(object);		
+		};
+		f(g_client.scene);
+		if (g_client.originalRoot) f(g_client.originalRoot);	
 	}
 	return found;
 }
@@ -1569,6 +1586,53 @@ function expect(controller, value) {
 	if (controller.initialValue!=value) {
 		controller.__onChange();
 	}	
+}
+
+function getObjectsFromTreeIDs(selected) {
+	return getObjectsWithIDs(selected.map(function (ti) { return parseInt(ti.substring(2)); }));
+}
+
+function getTreeID(object) {
+	return "ti"+object.id;
+}
+
+function getTreeNodeForThreejsNode(node) {
+	return {"id": getTreeID(node),  "text": node.text, state : { loaded : node.children.length==0 }};
+}
+
+function openParentNodes(object) {
+	if (object.parent) openParentNodes(object.parent);
+	jstree.jstree("open_node",'#'+ getTreeID(object), null ,false);
+}
+
+function generateTree() {
+
+	if (jstree!=null) return;
+
+	jstree = $('#jstree').jstree({
+	    'core' : {
+	        'data' : function (obj, cb) {
+	        	if (obj.id=="#") {
+	        		var g_client = g_clients[0];
+		            cb.call(this, [getTreeNodeForThreejsNode(effectController.quickmode ? g_client.originalRoot : g_client.root)]);		        		
+	        	} else {
+		            cb.call(this, getObjectsFromTreeIDs([obj.id])[0].children.map(getTreeNodeForThreejsNode));
+	        	}
+	        }
+	    }
+	});
+	
+	jstree.on("changed.jstree", function (e, data) {
+		jstree = null;
+		select(getObjectsFromTreeIDs(data.selected));
+		jstree = $('#jstree');
+	});
+	
+	jstree.on("dblclick.jstree", function (event) {
+		   var node = $(event.target).closest("li");
+		   locate(getObjectsFromTreeIDs([node[0].id]), g_clients[0], 20);
+	});
+	
 }
 
 function generateGui() {	
@@ -3162,36 +3226,33 @@ function start() {
 	
 	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); return; }
 
-	    
-//    require([g_dir+"build/three.js",g_dir+"js/libs/dat.gui.min.js"], function () {
-
     	projector = new THREE.Projector();    	
     	window.addEventListener( 'resize', onWindowResize, false );
     	mouse = new THREE.Vector2();
     	up = new THREE.Vector3( 0, 1, 0 );
 		
-    	var requiredThreeJS = doJsonLoader ? [] : [doCollada ? g_dir+"js/loaders/ColladaLoader.js" : g_dir+"js/loaders/OBJLoader.js"];
-    	requiredThreeJS.push(g_dir+"js/controls/OrbitControls.js");
-    	requiredThreeJS.push(g_dir+"js/curves/NURBSUtils.js");
-    	requiredThreeJS.push(g_dir+"js/curves/NURBSCurve.js");
-    	requiredThreeJS.push(g_dir+"js/BufferGeometryUtils.js");
-    	if (g_renderer == "software") {
-        	requiredThreeJS.push(g_dir+"js/renderers/SoftwareRenderer.js");
-    	} else if (g_renderer == "svg") {
-        	requiredThreeJS.push(g_dir+"js/renderers/SVGRenderer.js");
-    	} else if (g_renderer == "css") {
-        	requiredThreeJS.push(g_dir+"js/renderers/CSS3DRenderer.js");
-    	} else if (g_renderer == "webgldeferred") {
-        	requiredThreeJS.push(g_dir+"js/renderers/WebGLDeferredRenderer.js");
-    	}
-    	
-        require(requiredThreeJS, function () {
+//    	var requiredThreeJS = doJsonLoader ? [] : [doCollada ? g_dir+"js/loaders/ColladaLoader.js" : g_dir+"js/loaders/OBJLoader.js"];
+//    	requiredThreeJS.push(g_dir+"js/controls/OrbitControls.js");
+//    	requiredThreeJS.push(g_dir+"js/curves/NURBSUtils.js");
+//    	requiredThreeJS.push(g_dir+"js/curves/NURBSCurve.js");
+//    	requiredThreeJS.push(g_dir+"js/BufferGeometryUtils.js");
+//    	if (g_renderer == "software") {
+//        	requiredThreeJS.push(g_dir+"js/renderers/SoftwareRenderer.js");
+//    	} else if (g_renderer == "svg") {
+//        	requiredThreeJS.push(g_dir+"js/renderers/SVGRenderer.js");
+//    	} else if (g_renderer == "css") {
+//        	requiredThreeJS.push(g_dir+"js/renderers/CSS3DRenderer.js");
+//    	} else if (g_renderer == "webgldeferred") {
+//        	requiredThreeJS.push(g_dir+"js/renderers/WebGLDeferredRenderer.js");
+//    	}
+//    	
+//        require(requiredThreeJS, function () {
             buildTable();       	 	
             for (var ii = 0; ii < g_num_clients; ++ii) {
             	load(ii);
             }
-        });
-//    });
+//        });
+
 }
 
 var barLog="";
@@ -3774,6 +3835,17 @@ function init(root,g_client) {
 	setClientSize(g_client);
 
     g_finished = true;  // for selenium
+	g_client.root.traverse(function (child) { 
+    	var comps = child.name.split(",");
+    	if (comps.length==3) {
+    		child.name = comps[0];
+    		child.text = comps[1]!="" ? comps[2]+" "+comps[1]: comps[2];
+    	}
+    	if (comps.length==2) {
+    		child.name = comps[0];
+    		child.text = child.material && child.material.name ?  child.material.name+" "+comps[1] : comps[1];
+    	}
+    });
     if (g_customInit) g_customInit();
     setupColors(g_client);
 	g_client.root.traverse(function (child) { 
@@ -4083,9 +4155,14 @@ function select(newSelection,g_client) {
 	newSelection = reviseSelection(newSelection);
 	unSelectAll(g_client);
 	g_selectedInfo = newSelection;
-	var rap_frame = document.getElementById('rap_frame');
-	if (rap_frame && !inProcessMessage)
-		rap_frame.contentWindow.postMessage({'select3d': getSelectedObjectIDs(g_selectedInfo)}, '*');
+	if (jstree) {
+		jstree.jstree("deselect_all",true);
+		g_selectedInfo.forEach(function (object) {
+			if (object.parent) openParentNodes(object.parent,object);
+			jstree.jstree("select_node", '#'+getTreeID(object),true,false);
+			$('#'+getTreeID(object))[0].scrollIntoView();
+		});
+	}
     for (var tt = 0; tt < g_selectedInfo.length; tt++) {
     	if (!getScene(g_selectedInfo[tt])) {
     		g_selectedInfo[tt].originalParent = g_selectedInfo[tt].parent;
