@@ -99,7 +99,7 @@ abstract public class RAASSessionSingleton {
 				session = RAASUtils.getCDOSession(userID, password);
 			}
 		} catch (Exception e) {
-			if (!"false".equals(getParameter("storedbexception"))) {
+			if (!USE_SINGLE_CDOCLIENT) {
 				storedDBException = e;
 			}
 			if (e instanceof RuntimeException)
