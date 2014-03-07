@@ -1115,7 +1115,7 @@ function reduceGui(gui) {
 	  var allControlsReduced=true;
 	  for (var i in gui.__controllers) {
 		  var c = gui.__controllers[i];
-		  if (overrideSettings.opencontrols.split(",").indexOf(c.property)==-1) {
+		  if (overrideSettings.opencontrols.split(",").indexOf(c.property)==-1 && !c.neverRemove) {
 			  try {
 				  c.remove(c); 
 			  } catch (e) {
@@ -2084,7 +2084,7 @@ function generateGui() {
 	materialVisibilityGui = gui.addFolder( "Material visibility" );
 
 	
-//	if (effectController.flatten_materialvisibility) vis = gui;
+	if (effectController.flatten_materialvisibility) materialVisibilityGui = gui;
 
     var g_visibility_sorted = [];
     for(var key in g_visibility)
@@ -2092,14 +2092,14 @@ function generateGui() {
     g_visibility_sorted.sort();
     for (var tt = 0; tt < g_visibility_sorted.length; tt++) {
     	var m = g_visibility_sorted[tt];
-		materialVisibilityGui.add( g_visibility, m,  g_visibility[m]).onChange(updateCol);
+		materialVisibilityGui.add( g_visibility, m,  g_visibility[m]).onChange(updateCol).neverRemove = effectController.flatten_materialvisibility;
 	}
 
 	effectController[ "Select All" ] = function () {for (var m in g_visibility) { g_visibility[m] = true; } updateGui(materialVisibilityGui); updateCol(); };
-	materialVisibilityGui.add( effectController, "Select All" );
+	materialVisibilityGui.add( effectController, "Select All" ).neverRemove = effectController.flatten_materialvisibility;
 	
 	effectController[ "Select None" ] = function () {for (var m in g_visibility) { g_visibility[m] = false; } updateGui(materialVisibilityGui); updateCol(); };
-	materialVisibilityGui.add( effectController, "Select None" );
+	materialVisibilityGui.add( effectController, "Select None" ).neverRemove = effectController.flatten_materialvisibility;
 
 	// selection info
 
