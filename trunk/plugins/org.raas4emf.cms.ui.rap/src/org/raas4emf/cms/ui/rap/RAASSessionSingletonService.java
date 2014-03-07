@@ -44,14 +44,14 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 			url.append("&artifact=");
 			url.append(filename);
 			String result = RWT.getResponse().encodeURL(url.toString());
+			if ("zipped".equals(filename) || "current".equals(filename))
+				return result;
 			return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
 		}
 
 		@Override
 		public String get3dRendererUrl() {
-			String result = createDownloadUrl("WebContent/threejs/");
-			return result;
-			// return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
+			return createDownloadUrl("WebContent/threejs/");
 		}
 
 		@Override
