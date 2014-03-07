@@ -35,8 +35,6 @@ import raascms.Folder;
 public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 
 	public void service(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-		DemoWorkbench.fixBug347967();
-		CMSActivator.getSessionInstance().resetDBErrors();
 
 		response.setContentType("application/octet-stream");
 		response.setHeader("Cache-Control", "no-store");
