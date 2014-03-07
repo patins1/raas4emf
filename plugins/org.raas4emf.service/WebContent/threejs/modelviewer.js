@@ -3605,7 +3605,7 @@ function updateSelectableObjects (g_client) {
 
 function addSelectableObjects (g_client,parent) {
 	parent.traverse(function (child) {    			    
-		if ( child.visible) {   
+		if ( child.visible && !(overrideSettings.inactive_spaces && child.material && child.material.name == "Space")) {   
 			g_client.objects.push( child );
 		}
     });
