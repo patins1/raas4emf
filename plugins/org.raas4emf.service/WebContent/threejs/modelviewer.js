@@ -5,35 +5,6 @@ var countProgress;
 var g_colors;
 var reviseSelection = function (s) { return s; };
 if (g_colors == null) g_colors= {};
-var basicColors =
-{
-		"Beam": [0,1,0,0.85],
-		"Building": [0,0,1,0.5],
-		"BuildingElementPro": [0.8,0.8,0.8,1],  //truncate xy
-		"BuildingStorey": [0,0,1,0.75],
-		"Column": [1,1,0,0.7],
-		"Covering": [1,0,0.5019608,1],
-		"CurtainWall": [0,0,1,0.35],
-		"Door": [0.5019608,0.2509804,0,0.8],
-		"Footing": [0,0.2509804,0.2509804,1],
-		"FurnishingElement": [0,0,0.2509804,0.2],
-		"OpeningElement": [0,0,1,0],
-		"Member": [0.5019608,0,0.5019608,0.9],
-		"Pile": [0.5019608,0.5019608,0,1],
-		"Plate": [0.5019608,0.5019608,0,1],
-		"Project": [0,0,1,0.25],
-		"Proxy": [0.8,0.8,0.8,1],
-		"Railing": [0.5019608,0,0.5019608,0.9],
-		"Roof": [1,0,0,1],
-		"Site": [0,0,1,0.3],
-		"Slab": [0.7529412,0.7529412,0.7529412,0.5],
-		"Space": [0,0.5019608,0.2509804,0.3],
-		"Stair": [0.5019608,0,0.5019608,0.9],
-		"StairFlight": [0.5019608,0,0.5019608,0.9],
-		"Wall": [0,0,1,0.35],
-		"WallStandardCase": [0,0,1,0.35],
-		"Window": [0,1,1,0.4]
-};
 var g_visibility = [];
 
 var g_ortho;
@@ -67,7 +38,6 @@ var g_mapcenter;
 var g_mapapikey;  
 var g_mapsteps = 20;
 var g_mapenabled = false;  
-var g_selectionMaterial;
 
 var key = {};
 key.LEFT = 37;
@@ -3605,7 +3575,7 @@ function updateSelectableObjects (g_client) {
 
 function addSelectableObjects (g_client,parent) {
 	parent.traverse(function (child) {    			    
-		if ( child.visible && !(overrideSettings.inactive_spaces && child.material && child.material.name == "Space")) {   
+		if ( child.visible && !(effectController.inactive_spaces && child.material && child.material.name == "Space")) {   
 			g_client.objects.push( child );
 		}
     });
@@ -3823,14 +3793,6 @@ function init(root,g_client) {
 		g_client.scene.add( pointLight );
 		pointLight.updateMatrixWorld();
 	}
-
-	
-	g_selectionMaterial = new THREE.MeshPhongMaterial({	
-		name : "selection material",
-		color:new THREE.Color().setRGB(1,0,0), 
-		opacity : 1,
-		transparent : false
-	});
 	
 	setClientSize(g_client);
 
@@ -3898,9 +3860,6 @@ function setupUVs(mesh) {
 
 function setupColors(g_client) {
 
-    for (var m in basicColors) {
-    	if (!g_colors[m]) g_colors[m] = basicColors[m];
-    }
 	for (var m in g_colors) {
 //			var color = g_colors[m];
 //			if (color.length == 4) {
@@ -3910,7 +3869,7 @@ function setupColors(g_client) {
 //			}
 
 		var materialColor = g_colors[m];
-		if (!(materialColor instanceof THREE.MeshPhongMaterial))
+		if (!materialColor.uuid)
 		if (materialColor instanceof Array) {
 			materialColor = g_colors[m] = new THREE.MeshPhongMaterial({	
 				color:new THREE.Color().setRGB(materialColor[0],materialColor[1],materialColor[2]), 
@@ -3936,7 +3895,7 @@ function setupColors(g_client) {
 		var material = child.material;
 	    if (material) {
 	    	if (material.name) {
-				var materialName = material.name;
+				var materialName = child.customMaterialName || material.name;
 				if (materialName && materialName.lastIndexOf("-material")!=-1)
 					materialName = materialName.substring(0,materialName.lastIndexOf("-material"));
 				material = g_colors[materialName];
@@ -3968,18 +3927,6 @@ function setupColors(g_client) {
 		
 		
 	});
-
-	for (var m in g_colors) {
-		var material = g_colors[m];
-		if (material.name.indexOf("Wall")>=0) {
-			material.polygonOffset= true;
-			material.polygonOffsetFactor= 1;
-			material.polygonOffsetUnits= 1;
-		}
-		if (material.name.indexOf("FlowFitting")>=0) {
-			material.side= THREE.DoubleSide;
-		}
-	}
 	
 }
 
@@ -4112,8 +4059,10 @@ function unSelectAll(g_client) {
     for (var tt = 0; tt < g_selectedInfo.length; tt++) {
     	unSelectRecursive(g_selectedInfo[tt]);
     	if (g_selectedInfo[tt].originalParent) {
-			g_selectedInfo[tt].originalParent.add(g_selectedInfo[tt]);
-			g_selectedInfo[tt].originalParent = null;
+    		if (!g_selectedInfo[tt].stayInScene) {
+				g_selectedInfo[tt].originalParent.add(g_selectedInfo[tt]);
+				g_selectedInfo[tt].originalParent = null;
+    		}
     	} else
     	if (!(g_selectedInfo[tt] instanceof THREE.Sprite)){
     		g_client.scene.remove(g_selectedInfo[tt]);
@@ -4200,10 +4149,8 @@ function selectRecursive(transform) {
     }
     if (transform.material && !(transform instanceof THREE.Sprite)) {
 	    transform.originalMaterial = transform.material;
+	    var g_selectionMaterial = g_colors["Selection"];
 	    g_selectionMaterial.side = transform.material.side;
-	    g_selectionMaterial.polygonOffset= true;
-	    g_selectionMaterial.polygonOffsetFactor= -1;
-	    g_selectionMaterial.polygonOffsetUnits= -1;
 	    transform.material = g_selectionMaterial;
     }
 	var geometry = transform.geometry;
