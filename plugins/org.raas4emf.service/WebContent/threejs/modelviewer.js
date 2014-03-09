@@ -2062,6 +2062,7 @@ function generateGui() {
     g_visibility_sorted.sort();
     for (var tt = 0; tt < g_visibility_sorted.length; tt++) {
     	var m = g_visibility_sorted[tt];
+    	if (!g_colors[m].hideFromMaterialVisibility)
 		materialVisibilityGui.add( g_visibility, m,  g_visibility[m]).onChange(updateCol).neverRemove = effectController.flatten_materialvisibility;
 	}
 
