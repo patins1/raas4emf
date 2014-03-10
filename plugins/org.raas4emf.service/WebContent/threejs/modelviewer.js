@@ -6,6 +6,7 @@ var g_colors;
 var reviseSelection = function (s) { return s; };
 if (g_colors == null) g_colors= {};
 var g_visibility = [];
+var useOctree = false, octree;
 
 var g_ortho;
 if (g_ortho == null) g_ortho = false;
@@ -3572,11 +3573,31 @@ function updateSelectableObjects (g_client) {
     for (var tt = 0; tt < g_client.additionalObjectsToSelect.length; tt++) {
         g_client.objects.push(g_client.additionalObjectsToSelect[tt]);
     }
+    
+    if (!useOctree) return;
+
+	octree = new THREE.Octree( {
+		// uncomment below to see the octree (may kill the fps)
+		//scene: scene,
+		// when undeferred = true, objects are inserted immediately
+		// instead of being deferred until next octree.update() call
+		// this may decrease performance as it forces a matrix update
+		undeferred: false,
+		// set the max depth of tree
+		depthMax: Infinity,
+		// max number of objects before nodes split or merge
+		objectsThreshold: 8,
+		// percent between 0 and 1 that nodes will overlap each other
+		// helps insert objects that lie over more than one node
+		overlapPct: 0.15
+	} );
+	
+    g_client.objects.forEach( function (object) { octree.add(object, { useFaces: false }); } );
 }
 
 function addSelectableObjects (g_client,parent) {
 	parent.traverse(function (child) {    			    
-		if ( child.visible && !(effectController.inactive_spaces && child.material && child.material.name == "Space")) {   
+		if ( child.geometry && child.visible && !(effectController.inactive_spaces && child.material && child.material.name == "Space")) {   
 			g_client.objects.push( child );
 		}
     });
@@ -4047,6 +4068,7 @@ function render(g_client) {
 	if (!effectController.lazy_rendering) {
 		updateClient(g_client,true);
 	}
+	if (useOctree) octree.update();
 }
 
 function removeFromArray(array, object) {
@@ -4378,7 +4400,25 @@ function onDocumentMouseDown(e) {
 
     var raycaster = getRaycaster(mouse,g_client);
 
-	var intersects = raycaster.intersectObjects( g_client.objects );
+	var intersects;
+	
+	if (useOctree) {
+		
+		var octreeObjects = octree.search( raycaster.ray.origin, raycaster.ray.far, true, raycaster.ray.direction );
+		
+		intersects = raycaster.intersectOctreeObjects( octreeObjects );
+
+		var descSort = function ( a, b ) {
+
+			return a.distance - b.distance;
+
+		};
+
+		intersects.sort( descSort );
+		
+	} else {
+		intersects = raycaster.intersectObjects( g_client.objects );
+	}
 	
 	intersects = intersectParticleSystems(raycaster,g_client) || intersects;
 	
