@@ -724,6 +724,12 @@ function onWindowResize() {
 	});
 }
 
+function traverseAllObjects(f, g_client) {
+	g_client.scene.traverse(f);
+	if (g_client.originalRoot) g_client.originalRoot.traverse(f);	
+	
+}
+
 function getObjectsWithSplittings(name,g_client) {
 	g_client = g_client || g_clients[0];
 	name = asArray(name);
@@ -736,8 +742,7 @@ function getObjectsWithSplittings(name,g_client) {
 				found.push(object);
 			}
 		};
-		g_client.scene.traverse(f);
-		if (g_client.originalRoot) g_client.originalRoot.traverse(f);		
+		traverseAllObjects(f, g_client);
 	}
 	return found;
 }
@@ -3917,7 +3922,7 @@ function setupColors(g_client) {
 		var material = child.material;
 	    if (material) {
 	    	if (material.name) {
-				var materialName = child.customMaterialName || material.name;
+				var materialName = /*child.customMaterialName || */material.name;
 				if (materialName && materialName.lastIndexOf("-material")!=-1)
 					materialName = materialName.substring(0,materialName.lastIndexOf("-material"));
 				material = g_colors[materialName];
@@ -4081,15 +4086,7 @@ function removeFromArray(array, object) {
 function unSelectAll(g_client) {
     for (var tt = 0; tt < g_selectedInfo.length; tt++) {
     	unSelectRecursive(g_selectedInfo[tt]);
-    	if (g_selectedInfo[tt].originalParent) {
-    		if (!g_selectedInfo[tt].stayInScene) {
-				g_selectedInfo[tt].originalParent.add(g_selectedInfo[tt]);
-				g_selectedInfo[tt].originalParent = null;
-    		}
-    	} else
-    	if (!(g_selectedInfo[tt] instanceof THREE.Sprite)){
-    		g_client.scene.remove(g_selectedInfo[tt]);
-    	}
+    	removeFromScene(g_selectedInfo[tt], g_client);
     }
 	g_selectedInfo = [];
 }
@@ -4123,6 +4120,58 @@ function getScene(scene) {
 	
 }
 
+function switchCustomMaterialForObject(enableCustomMaterial, object, g_client) {
+	object.importedMaterial = object.importedMaterial || object.originalMaterial || object.material;
+	var material = enableCustomMaterial ? g_colors[object.customMaterialName] : object.importedMaterial;
+	if (object.material == g_colors["Selection"]) {
+		object.originalMaterial = material;
+	} else {
+		object.material = material;
+	}
+	if (enableCustomMaterial) {
+		bringIntoScene(object,g_client);
+	} else {
+		removeFromScene(object, g_client);
+	}
+}
+
+function switchCustomMaterial(enableCustomMaterial, g_client) {
+	var objects = [];
+	traverseAllObjects( function (object) {
+			if (object.customMaterialName) {
+				objects.push(object);
+			}
+	}, g_client);
+	objects.forEach(function (object) {
+		switchCustomMaterialForObject(enableCustomMaterial, object, g_client);
+	});
+	if (!enableCustomMaterial)
+    for (var tt = 0; tt < g_selectedInfo.length; tt++) {
+    	// if object.parent was removed from scene, bring object again into scene
+    	bringIntoScene(g_selectedInfo[tt],g_client);
+    }
+	updateClient(g_client, false);
+}
+
+function bringIntoScene(object, g_client) {
+	if (!getScene(object)) {
+		object.originalParent = object.parent;
+		g_client.scene.add(object);
+	}
+}
+
+function removeFromScene(object, g_client) {
+	if (object.originalParent) {
+		if (!(object.importedMaterial && object.material!=object.importedMaterial)) {
+			object.originalParent.add(object);
+			object.originalParent = null;
+		}
+	} else
+	if (!(object instanceof THREE.Sprite)){
+		g_client.scene.remove(object);
+	}
+}
+
 function select(newSelection,g_client) {
 	g_client = g_client || g_clients[0];
 	newSelection = reviseSelection(newSelection);
@@ -4137,10 +4186,7 @@ function select(newSelection,g_client) {
 		});
 	}
     for (var tt = 0; tt < g_selectedInfo.length; tt++) {
-    	if (!getScene(g_selectedInfo[tt])) {
-    		g_selectedInfo[tt].originalParent = g_selectedInfo[tt].parent;
-    		g_client.scene.add(g_selectedInfo[tt]);
-    	}
+    	bringIntoScene(g_selectedInfo[tt],g_client);
     	selectRecursive(g_selectedInfo[tt]);
     }
     if (g_selectedInfo.length>0) {
