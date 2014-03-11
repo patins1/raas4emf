@@ -1615,13 +1615,11 @@ function generateGui() {
 
 	if (gui!=null) return;
 	
-	gui = new dat.GUI({width: 275,  autoPlace: false});
+	gui = new dat.GUI({ autoPlace: false});
 
 	var customContainer = document.getElementById('clients');
-	gui.domElement.style.position = "absolute";
-	gui.domElement.style.right = "0px";
-	gui.domElement.style.top = customContainer.offsetTop+"px";
-	gui.domElement.className += " opencontrols_hide shadow";
+	gui.domElement.style.top = (customContainer.offsetTop+5)+"px";
+	$( gui.domElement ).prepend( "<div class='visibility_header'>Visibility</div>" );
 	customContainer.appendChild(gui.domElement);
 	
 	gui.close();
