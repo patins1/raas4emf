@@ -1616,7 +1616,7 @@ function generateGui() {
 	gui.domElement.style.position = "absolute";
 	gui.domElement.style.right = "0px";
 	gui.domElement.style.top = customContainer.offsetTop+"px";
-	gui.domElement.className += " opencontrols_hide";
+	gui.domElement.className += " opencontrols_hide shadow";
 	customContainer.appendChild(gui.domElement);
 	
 	gui.close();
