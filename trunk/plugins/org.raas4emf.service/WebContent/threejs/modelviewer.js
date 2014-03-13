@@ -1620,7 +1620,7 @@ function generateGui() {
 	var customContainer = document.getElementById('clients');
 	gui.domElement.style.top = (customContainer.offsetTop+5)+"px";
 	$( gui.domElement ).prepend( "<div class='visibility_header'>Visibility</div>" );
-	customContainer.appendChild(gui.domElement);
+	document.body.appendChild(gui.domElement);
 	
 	gui.close();
 	gui.domElement.parentNode.style.zIndex = 5;
