@@ -201,8 +201,8 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 		}
 
 		@Override
-		public boolean propagateTreeSelection(ISelection selection, boolean isDblClick) {
-			String objectIDs = PreviewView.getObjectIDs(RAASUIUtils.getSelection(selection, EObject.class));
+		public boolean propagateTreeSelection(Object selection, boolean isDblClick) {
+			String objectIDs = PreviewView.getObjectIDs(RAASUIUtils.getSelection((ISelection) selection, EObject.class));
 			if (!"[]".equals(objectIDs)) {
 				JSExecutor.executeJS(" window.parent.postMessage({'" + (isDblClick ? "locateShape" : "selectShape") + "':" + objectIDs + "},'*'); ");
 				return true;
