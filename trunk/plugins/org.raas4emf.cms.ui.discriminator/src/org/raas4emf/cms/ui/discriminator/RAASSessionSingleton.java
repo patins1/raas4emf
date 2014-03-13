@@ -13,7 +13,6 @@ import org.eclipse.emf.cdo.net4j.CDONet4jSession;
 import org.eclipse.emf.cdo.view.CDOView;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.jface.viewers.ISelection;
 import org.raas4emf.cms.core.RAASUtils;
 
 import raascms.Artifact;
@@ -260,7 +259,7 @@ abstract public class RAASSessionSingleton {
 	public void executeJSMethod(String methodName, String stringArg) {
 	}
 
-	public boolean propagateTreeSelection(ISelection selection, boolean isDblClick) {
+	public boolean propagateTreeSelection(Object selection, boolean isDblClick) {
 		return false;
 	}
 
