@@ -8,24 +8,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.List;
 
-import javax.ws.rs.core.MediaType;
-
-import org.apache.cxf.jaxrs.impl.MetadataMap;
-import org.apache.cxf.jaxrs.provider.JSONProvider;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.SingletonUtil;
 import org.eclipse.swt.SWT;
+import org.raas4emf.cms.core.IRAASSessionSingletonService;
+import org.raas4emf.cms.core.RAASSessionSingleton;
+import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.RAASUIUtils;
-import org.raas4emf.cms.ui.discriminator.IRAASSessionSingletonService;
-import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
 import org.raas4emf.cms.ui.views.PreviewView;
 
 import raascms.Artifact;
@@ -33,9 +27,6 @@ import raascms.Artifact;
 public class RAASSessionSingletonService implements IRAASSessionSingletonService {
 
 	public static class RAPRAASSessionSingleton extends RAASSessionSingleton {
-
-		public Artifact workingArtifact;
-		File zippedContents;
 
 		@Override
 		public String createDownloadUrl(String filename) {
@@ -150,25 +141,10 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 			}
 		}
 
-		public static void encodeJSON(Object arg, OutputStream outputStream, List<String> arrayKeys, boolean dropRootElement) {
-
-			JSONProvider writer = new JSONProvider();
-
-			writer.setDropRootElement(dropRootElement);
-			writer.setSerializeAsArray(true);
-			writer.setArrayKeys(arrayKeys);
-
-			try {
-				writer.writeTo(arg, arg.getClass(), arg.getClass(), new Annotation[] {}, MediaType.APPLICATION_JSON_TYPE, new MetadataMap<String, Object>(), outputStream);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
 		@Override
 		public byte[] encodeJSON(Object arg) {
 			ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
-			encodeJSON(arg, requestBody, Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents", "objects", "comments"), true);
+			RAASUtils.encodeJSON(arg, requestBody, Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents", "objects", "comments"), true);
 			return requestBody.toByteArray();
 		}
 
@@ -176,23 +152,7 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 		public Object decodeJSON(String arg, EClass eClass) {
 			arg = "{\"" + eClass.getName() + "Element\":" + arg + "}";
 			InputStream responseBody = new ByteArrayInputStream(arg.getBytes());
-			return decodeJSON(responseBody, eClass);
-		}
-
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		public static Object decodeJSON(InputStream inputStream, EClass eClass) {
-
-			JSONProvider reader = new JSONProvider();
-
-			// writer.setExtraClass(new Class[] { ProductLineResponseImpl.class, ObjectLibraryResponseImpl.class });
-			reader.setDropRootElement(true);
-
-			Class targetType = eClass.getInstanceClass();
-			try {
-				return reader.readFrom(targetType, targetType, new Annotation[] {}, MediaType.APPLICATION_JSON_TYPE, new MetadataMap<String, String>(), inputStream);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+			return RAASUtils.decodeJSON(responseBody, eClass);
 		}
 
 		@Override

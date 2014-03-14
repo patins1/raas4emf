@@ -6,7 +6,8 @@ package org.raas4emf.cms.ui.rap;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.BundleContext;
-import org.raas4emf.cms.ui.discriminator.IRAASSessionSingletonService;
+import org.raas4emf.cms.core.IRAASSessionSingletonService;
+import org.raas4emf.cms.core.RAASUtils;
 
 public class Activator extends Plugin {
 
@@ -33,6 +34,14 @@ public class Activator extends Plugin {
 		// Not required in this example
 		context.registerService(IRAASSessionSingletonService.class.getName(), service, null);
 		Activator.log("IRAASSessionSingletonService is registered");
+
+		RAASUtils.fixServiceHandlePreconditionsRunnable = new Runnable() {
+
+			@Override
+			public void run() {
+				DemoWorkbench.fixBug347967();
+			}
+		};
 	}
 
 	/*
