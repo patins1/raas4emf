@@ -7,8 +7,17 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringBufferInputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,22 +33,32 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.ws.rs.core.MediaType;
+
+import org.apache.cxf.jaxrs.impl.MetadataMap;
+import org.apache.cxf.jaxrs.provider.JSONProvider;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.cdo.CDOObject;
 import org.eclipse.emf.cdo.common.id.CDOID;
 import org.eclipse.emf.cdo.common.id.CDOIDUtil;
 import org.eclipse.emf.cdo.common.lob.CDOBlob;
+import org.eclipse.emf.cdo.common.revision.CDORevision;
 import org.eclipse.emf.cdo.eresource.CDOResource;
+import org.eclipse.emf.cdo.internal.server.bundle.CDOServerApplication;
 import org.eclipse.emf.cdo.net4j.CDONet4jSession;
 import org.eclipse.emf.cdo.net4j.CDONet4jSessionConfiguration;
 import org.eclipse.emf.cdo.net4j.CDONet4jUtil;
+import org.eclipse.emf.cdo.session.CDOSession;
 import org.eclipse.emf.cdo.transaction.CDOTransaction;
+import org.eclipse.emf.cdo.view.CDOQuery;
 import org.eclipse.emf.cdo.view.CDOView;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -50,6 +69,7 @@ import org.eclipse.emf.ecore.xmi.PackageNotFoundException;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.net4j.Net4jUtil;
 import org.eclipse.net4j.connector.IConnector;
+import org.eclipse.net4j.internal.util.bundle.AbstractPlatform;
 import org.eclipse.net4j.jvm.JVMUtil;
 import org.eclipse.net4j.tcp.TCPUtil;
 import org.eclipse.net4j.util.container.ContainerUtil;
@@ -57,6 +77,9 @@ import org.eclipse.net4j.util.container.IManagedContainer;
 import org.eclipse.net4j.util.om.monitor.MonitorCanceledException;
 import org.eclipse.net4j.util.security.IPasswordCredentials;
 import org.eclipse.net4j.util.security.IPasswordCredentialsProvider;
+import org.eclipse.osgi.framework.internal.core.FrameworkProperties;
+import org.ifc4emf.metamodel.ifcheader.Model;
+import org.ifc4emf.part21.loader.ContainmentTreeOrderedByNumberHelper;
 import org.ifc4emf.part21.loader.Part21ResourceImpl;
 
 import raascms.Artifact;
@@ -96,6 +119,30 @@ public class RAASUtils {
 	public static String ROOTPATH = "/bim/NOLServer";
 	public static final String repositoryName = "bim";
 	public static final String ROOT_RESOURCE_NAME = "bim";
+	public static Runnable fixServiceHandlePreconditionsRunnable = null;
+
+	public static String KEY0 = "KEY";
+	public static String VALUE0 = "VALUE";
+	public static String oldSql;
+
+	public static Collection<String> otherSearchStrings = new ArrayList<String>();
+
+	static public CDOServerApplication dbapp;
+
+	public static EObject findObjectById(String id) {
+		CDOView trans = Activator.getSessionInstance().openView();
+		Resource res = (Resource) trans.getRootResource().getContents().get(0);
+		return RAASUtils.findObjectById(id, res);
+	}
+
+	public static EObject findByPath(String... path) {
+		return findByPath(path, false);
+	}
+
+	public static EObject findByPath(String[] path, boolean force) {
+		CDOView trans = Activator.getSessionInstance().openView();
+		return RAASUtils.findByPath(trans, path, force);
+	}
 
 	public static Artifact generateModel(ResourceSetImpl resourceSet, URI uri, CDOObject root, IProgressMonitor progressMonitor) throws IOException {
 		Artifact artifact = null;
@@ -1145,5 +1192,270 @@ public class RAASUtils {
 				break;
 			}
 		}
+	}
+
+	public static boolean isModelComplete(Artifact artifact) {
+		for (EObject model : artifact.getContents()) {
+			Double ratio = getCompletionRatio(model);
+			if (ratio != null) {
+				return ratio == 1;
+			}
+		}
+		return !artifact.getContents().isEmpty();
+	}
+
+	public static void increaseSessionTimeout(final CDOObject root) {
+		CDOSession session = root.cdoView().getSession();
+		((CDONet4jSession.Options) session.options()).setCommitTimeout(10 * 60);
+	}
+
+	public static IfcRoot getObjectForGUID(Model model, String guid) {
+		Integer index = getIndexForGUIDStatic(model, guid);
+		if (index != null) {
+			EObject eObject = getFromIndex(index, (Artifact) model.eContainer());
+			if (eObject instanceof IfcRoot) {
+				IfcRoot ifcRoot = (IfcRoot) eObject;
+				return ifcRoot;
+			}
+		}
+		return null;
+	}
+
+	public static Integer getIndexForGUIDStatic(Model model, String guid) {
+		try {
+			// long id;
+			// // Object obj = ((CDORevisionImpl) model.cdoRevision()).get(Part21Package.eINSTANCE.getModel_GuidToPart21(), -1);
+			// // if (obj instanceof CDOID) {
+			// // CDOID cdoid = (CDOID) obj;
+			// // id = CDOIDUtil.getLong(cdoid);
+			// // } else {
+			//
+			// CDOView view = model.cdoResource().cdoView();
+			// GuidToPart21Container guidToPart21;
+			// CDOCollectionLoadingPolicy or = view.getSession().options().getCollectionLoadingPolicy();
+			// view.getSession().options().setCollectionLoadingPolicy(CDOUtil.createCollectionLoadingPolicy(0, 10));
+			// try {
+			// // CDORevisionPrefetchingPolicy ori = view.options().getRevisionPrefetchingPolicy();
+			// // view.options().setRevisionPrefetchingPolicy(CDOUtil.createRevisionPrefetchingPolicy(10));
+			//
+			// guidToPart21 = model.getGuidToPart21();
+			// view.getSession().options().setCollectionLoadingPolicy(CDOUtil.createCollectionLoadingPolicy(or.getInitialChunkSize(), or.getResolveChunkSize()));
+			// } finally {
+			// }
+
+			CDORevision revision = model.getGuidToPart21().cdoRevision();
+			int branch = revision.getBranch().getID();
+			// int branch = model.cdoRevision().getBranch().getID();
+			long id = CDOIDUtil.getLong(revision.getID());
+
+			String sql = "SELECT map." + VALUE0 + " FROM IFCHEADER_GUIDTOPART21MAP map, IFCHEADER_GUIDTOPART21CONTAINER_GUIDTOPART21_LIST list";
+			// String sql = "SELECT map."+VALUE+" FROM IFCHEADER_GUIDTOPART21MAP map, IFCHEADER_MODEL_GUIDTOPART21_LIST list";
+			sql += " WHERE map.CDO_ID=list.CDO_VALUE AND map.CDO_BRANCH=" + branch + " AND (map.CDO_REVISED=0) ";
+			sql += " AND list.CDO_SOURCE=" + id + " AND list.CDO_BRANCH=" + branch + " AND list.CDO_VERSION=" + revision.getVersion();
+			// sql += " AND model.CDO_ID=" + id + " AND model.CDO_BRANCH=" + branch + " AND (model.CDO_REVISED=0)";
+			sql += " AND map." + KEY0 + "='" + guid + "'";
+
+			// sql = "CREATE INDEX GUID_INDEX ON IFCHEADER_GUIDTOPART21MAP ("+KEY0+")";
+
+			// sql = "EXPLAIN SELECT map."+VALUE+" FROM IFCHEADER_GUIDTOPART21MAP map ";
+			// sql += " WHERE map."+KEY0+"='" + guid + "'";
+
+			// sql = "SELECT * FROM information_schema.indexes WHERE table_schema = 'PUBLIC' AND table_name='IFCHEADER_GUIDTOPART21MAP';";
+			// sql = "CREATE INDEX GUID4_INDEX ON IFCHEADER_GUIDTOPART21MAP(CDO_ID, CDO_BRANCH, "+KEY0+")";
+
+			// sql = "DROP INDEX GUID_INDEX";
+
+			otherSearchStrings.remove(oldSql);
+			otherSearchStrings.add(oldSql = sql);
+
+			List<Object> result = execSql(sql, model.cdoResource().cdoView());
+			if (result.size() == 1 && result.get(0) instanceof String) {
+				Activator.log((String) result.get(0));
+			}
+			if (result.size() == 1 && result.get(0) instanceof Integer) {
+				return (Integer) result.get(0);
+			}
+
+		} catch (Exception e) {
+			if (e.getMessage().contains("Column \"MAP.VALUE\" not found")) {
+				VALUE0 = "VALUE0";
+				KEY0 = "KEY0";
+				return getIndexForGUIDStatic(model, guid);
+			}
+		}
+		return null;
+	}
+
+	public static EObject getFromIndex(int integer, Artifact artifact) {
+		for (EObject content : artifact.getContents()) {
+			if (content instanceof Model) {
+				Model model = (Model) content;
+				long start = System.currentTimeMillis();
+				ContainmentTreeOrderedByNumberHelper helper = new ContainmentTreeOrderedByNumberHelper(model);
+				EObject result = helper.get(integer);
+				long end = System.currentTimeMillis();
+				Activator.log("Find EObject from index " + (end - start) + " milliseconds");
+				return result;
+			}
+		}
+		return null;
+	}
+
+	public static List<Object> execSql(String queryString, CDOView view) {
+		// Options options = view.options();
+		// CDORevisionPrefetchingPolicy pref = options.getRevisionPrefetchingPolicy();
+		// CDOSession session = view.getSession();
+		// org.eclipse.emf.cdo.session.CDOSession.Options options2 = session.options();
+		// CDOCollectionLoadingPolicy collLoad = options2.getCollectionLoadingPolicy();
+
+		// view.options().setRevisionPrefetchingPolicy(new CDORevisionPrefetchingPolicyImpl(1000000) {
+		// @Override
+		// public List<CDOID> loadAhead(CDORevisionManager revisionManager, CDOBranchPoint branchPoint, EObject eObject, EStructuralFeature feature, CDOList list, int accessIndex, CDOID accessID) {
+		// // if (oldList == list)
+		// // Activator.log("Should look ahead " + feature.getName() + "[" + accessIndex + "]");
+		// // oldList = list;
+		// return super.loadAhead(revisionManager, branchPoint, eObject, feature, list, accessIndex, accessID);
+		// }
+		// });
+		CDOQuery q = view.createQuery("sql", queryString);
+		if (!queryString.toLowerCase().startsWith("select") && !queryString.toLowerCase().startsWith("explain"))
+			q.setParameter("queryStatement", false);
+		q.setParameter("cdoObjectQuery", false);
+		List<Object> result = q.getResult();
+		return result;
+	}
+
+	public static void setupCDOServer() throws MalformedURLException, IOException, FileNotFoundException, URISyntaxException, UnsupportedEncodingException {
+		URL fileURL = new URL("platform:/plugin/org.raas4emf.server/config/cdo-server.template.xml");
+		URL u = FileLocator.resolve(fileURL);
+		String fileName = u.getFile();
+		File file = new File(fileName);
+		String contents = FileUtil.inputstreamToString(new FileInputStream(file));
+
+		String jdbc = System.getProperty("JDBC_CONNECTION_STRING");
+		if (jdbc == null || "".equals(jdbc)) {
+			String dbName = System.getProperty("RDS_DB_NAME");
+			String userName = System.getProperty("RDS_USERNAME");
+			String password = System.getProperty("RDS_PASSWORD");
+			String hostname = System.getProperty("RDS_HOSTNAME");
+			String port = System.getProperty("RDS_PORT");
+			if (hostname != null)
+				jdbc = "jdbc:postgresql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
+		}
+		if (jdbc == null)
+			jdbc = "jdbc:hsqldb:mem:repo1";
+		Activator.log("JDBC_CONNECTION_STRING=" + jdbc);
+
+		for (String db : new String[] { "h2", "hsqldb", "postgresql" }) {
+			if (jdbc.contains(db)) {
+				int fromIndex = contents.indexOf("<!--<dbAdapter name=\"" + db);
+				contents = contents.substring(0, fromIndex) + contents.substring(fromIndex + "<!--".length());
+				contents = replaceAttribute(contents, fromIndex, "url", jdbc);
+				contents = replaceAttribute(contents, fromIndex, "URL", jdbc);
+				java.net.URI jdbcurl = new java.net.URI(jdbc.substring("jdbc:".length()));
+				if (jdbcurl.getHost() != null)
+					contents = replaceAttribute(contents, fromIndex, "serverName", jdbcurl.getHost());
+				if (jdbcurl.getPath() != null)
+					contents = replaceAttribute(contents, fromIndex, "databaseName", jdbcurl.getPath().substring("/".length()));
+				if (jdbcurl.getPort() != -1)
+					contents = replaceAttribute(contents, fromIndex, "portNumber", "" + jdbcurl.getPort());
+				for (Map.Entry<String, List<String>> param : getUrlParameters(jdbc).entrySet())
+					contents = replaceAttribute(contents, fromIndex, param.getKey(), param.getValue().get(0));
+				FileUtil.inputstreamToOutputstream(new StringBufferInputStream(contents), new FileOutputStream(new File(file.getParentFile(), "cdo-server.xml")));
+				Activator.log("Created cdo-server.xml from template using " + jdbc);
+			}
+		}
+		Activator.log("Read config file from " + file.getParentFile().toString());
+		FrameworkProperties.setProperty(AbstractPlatform.SYSTEM_PROPERTY_NET4J_CONFIG, file.getParentFile().toString());
+
+		try {
+			RAASUtils.getRAASProp("RAASSERVER");
+		} catch (Exception e) {
+			// not defined, set default
+			System.setProperty("RAASSERVER", "localhost:2036");
+		}
+
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				try {
+					dbapp = new CDOServerApplication();
+					dbapp.start(null);
+				} catch (Exception e) {
+					Activator.err(e);
+				}
+			}
+
+		};
+		t.start();
+	}
+
+	private static String replaceAttribute(String contents, int fromIndex, String attribute, String value) {
+		int index = contents.indexOf(attribute + "=\"", fromIndex);
+		if (index >= 0 && index < contents.indexOf("-->", fromIndex)) {
+			index += (attribute + "=\"").length();
+			value = value.replace("&", "&amp;");
+			return contents.substring(0, index) + value + contents.substring(contents.indexOf('"', index));
+		}
+		return contents;
+	}
+
+	public static Map<String, List<String>> getUrlParameters(String url) throws UnsupportedEncodingException {
+		Map<String, List<String>> params = new HashMap<String, List<String>>();
+		String[] urlParts = url.split("\\?");
+		if (urlParts.length > 1) {
+			String query = urlParts[1];
+			for (String param : query.split("&")) {
+				String pair[] = param.split("=");
+				String key = URLDecoder.decode(pair[0], "UTF-8");
+				String value = "";
+				if (pair.length > 1) {
+					value = URLDecoder.decode(pair[1], "UTF-8");
+				}
+				List<String> values = params.get(key);
+				if (values == null) {
+					values = new ArrayList<String>();
+					params.put(key, values);
+				}
+				values.add(value);
+			}
+		}
+		return params;
+	}
+
+	public static void encodeJSON(Object arg, OutputStream outputStream, List<String> arrayKeys, boolean dropRootElement) {
+
+		JSONProvider writer = new JSONProvider();
+
+		writer.setDropRootElement(dropRootElement);
+		writer.setSerializeAsArray(true);
+		writer.setArrayKeys(arrayKeys);
+
+		try {
+			writer.writeTo(arg, arg.getClass(), arg.getClass(), new Annotation[] {}, MediaType.APPLICATION_JSON_TYPE, new MetadataMap<String, Object>(), outputStream);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Object decodeJSON(InputStream inputStream, EClass eClass) {
+
+		JSONProvider reader = new JSONProvider();
+
+		// writer.setExtraClass(new Class[] { ProductLineResponseImpl.class, ObjectLibraryResponseImpl.class });
+		reader.setDropRootElement(true);
+
+		Class targetType = eClass.getInstanceClass();
+		try {
+			return reader.readFrom(targetType, targetType, new Annotation[] {}, MediaType.APPLICATION_JSON_TYPE, new MetadataMap<String, String>(), inputStream);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static void fixServiceHandlePreconditions() {
+		if (fixServiceHandlePreconditionsRunnable != null)
+			fixServiceHandlePreconditionsRunnable.run();
 	}
 }
