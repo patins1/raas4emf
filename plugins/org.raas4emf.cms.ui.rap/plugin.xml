@@ -63,13 +63,6 @@
          </presentationFactory>
       </branding>
    </extension>
-   <extension
-         point="org.eclipse.rap.ui.serviceHandler">
-      <serviceHandler
-            class="org.raas4emf.cms.ui.rap.DownloadServiceHandler"
-            id="downloadServiceHandler">
-      </serviceHandler>
-   </extension>
   
    <extension
          point="org.eclipse.ui.presentationFactories">
