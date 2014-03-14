@@ -12,4 +12,13 @@
       </transformator>
    </extension>
    
+   
+   <extension
+         point="org.eclipse.rap.ui.serviceHandler">
+      <serviceHandler
+            class="org.raas4emf.cms.core.DownloadServiceHandler"
+            id="downloadServiceHandler">
+      </serviceHandler>
+   </extension>
+   
 </plugin>
