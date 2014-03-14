@@ -13,10 +13,11 @@ import org.eclipse.emf.cdo.net4j.CDONet4jSession;
 import org.eclipse.emf.cdo.view.CDOView;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.rap.rwt.RWT;
 
 import raascms.Artifact;
 
-abstract public class RAASSessionSingleton {
+public class RAASSessionSingleton {
 
 	public Artifact workingArtifact;
 	protected File zippedContents;
@@ -36,7 +37,7 @@ abstract public class RAASSessionSingleton {
 	private Exception storedDBException;
 	private Map<String, Object> userObject = new HashMap<String, Object>();
 	private Map<String, String> parameters = new HashMap<String, String>();
-	private static RAASSessionSingleton SINGLETON;
+	public static RAASSessionSingleton SINGLETON;
 
 	public RAASSessionSingleton() {
 		if (SINGLETON == null)
@@ -126,19 +127,51 @@ abstract public class RAASSessionSingleton {
 		return RAASUtils.isOperator(userID);
 	}
 
-	abstract public String createDownloadUrl(String ids);
+	public String createDownloadUrl(String filename) {
+		StringBuilder url = new StringBuilder();
+		url.append(RWT.getServiceManager().getServiceHandlerUrl("downloadServiceHandler"));
+		url.append("&artifact=");
+		url.append(filename);
+		String result = RWT.getResponse().encodeURL(url.toString());
+		if ("zipped".equals(filename) || "current".equals(filename))
+			return result;
+		return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
+	}
 
-	abstract public String get3dRendererUrl();
+	public String get3dRendererUrl() {
+		return createDownloadUrl("WebContent/threejs/");
+	}
 
-	abstract public String createFullDownloadUrl(Artifact artifact);
+	public String createFullDownloadUrl(Artifact artifact) {
+		StringBuilder url = new StringBuilder();
+		url.append("http://");
+		url.append(RWT.getRequest().getServerName());
+		url.append(":");
+		url.append(RWT.getRequest().getServerPort());
+		url.append(RWT.getServiceManager().getServiceHandlerUrl("downloadServiceHandler"));
+		url.append("&artifact=");
+		url.append(artifact.cdoID().toURIFragment());
+		url.append("&filename=");
+		url.append(artifact.getName());
+		String encodedURL = RWT.getResponse().encodeURL(url.toString());
+		return encodedURL;
+	}
 
-	abstract public int getBrowserType();
+	public int getBrowserType() {
+		return 0;
+	}
 
-	abstract public void exportPSets(Artifact workingArtifact);
+	public void exportPSets(Artifact workingArtifact) {
 
-	abstract public void exportFolderContents(File zippedContents);
+	}
 
-	abstract public String getUserAgent();
+	public void exportFolderContents(File zippedContents) {
+
+	}
+
+	public String getUserAgent() {
+		return "";
+	}
 
 	public Map<String, String> getParameters() {
 		return parameters;
@@ -152,7 +185,9 @@ abstract public class RAASSessionSingleton {
 		parameters.put(name, value);
 	}
 
-	abstract public boolean loadWebGLFromRaaSServer();
+	public boolean loadWebGLFromRaaSServer() {
+		return false;
+	}
 
 	public String getColors() {
 		return g_colors;
