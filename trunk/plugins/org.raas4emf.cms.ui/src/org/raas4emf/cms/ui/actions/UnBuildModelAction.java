@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.cdo.common.lob.CDOBlob;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.CMSActivator;
-import org.raas4emf.cms.ui.RAASUIUtils;
 
 import raascms.Artifact;
 
@@ -27,7 +26,7 @@ public class UnBuildModelAction extends BuildModelAction {
 	}
 
 	public IStatus buildArtifact(final IProgressMonitor monitor, Artifact artifact, Artifact target) {
-		if (RAASUIUtils.isModelComplete(artifact)) {
+		if (RAASUtils.isModelComplete(artifact)) {
 			try {
 				monitor.subTask("Unbuild " + artifact.getName());
 				InputStream is = artifact.asFile(artifact.getName());

@@ -18,6 +18,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.statushandlers.StatusManager;
+import org.raas4emf.cms.core.ParsingJob;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
 

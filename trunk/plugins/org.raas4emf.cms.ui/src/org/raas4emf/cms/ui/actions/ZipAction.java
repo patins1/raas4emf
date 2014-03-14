@@ -25,10 +25,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.statushandlers.StatusManager;
+import org.raas4emf.cms.core.RAASSchedulingRule;
+import org.raas4emf.cms.core.RAASSessionSingleton;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
-import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
 
 import raascms.Folder;
 
@@ -65,7 +66,7 @@ public class ZipAction extends AbstractHandler {
 					});
 				} else {
 					monitor.subTask("Add zip file to folder");
-					AddArtifactAction.increaseSessionTimeout(commonFolder);
+					RAASUtils.increaseSessionTimeout(commonFolder);
 					RAASUtils.addFile(commonFolder, null, name, new FileInputStream(file));
 					RAASUtils.doSaveAsSubTask(commonFolder, "Save zip to database", new SubProgressMonitor(monitor, 100));
 				}

@@ -17,10 +17,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.emf.cdo.CDOObject;
 import org.eclipse.emf.cdo.eresource.CDOResource;
-import org.eclipse.emf.cdo.net4j.CDONet4jSession;
-import org.eclipse.emf.cdo.session.CDOSession;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.URI;
@@ -99,7 +96,7 @@ public class AddArtifactAction extends AbstractHandler {
 					long ended = new Date().getTime();
 					CMSActivator.log("Took " + (ended - started) + "ms to add to model");
 					Resource resource = root.eResource();
-					increaseSessionTimeout(root);
+					RAASUtils.increaseSessionTimeout(root);
 					final Map<Object, Object> saveOptions = new HashMap<Object, Object>();
 					saveOptions.put(CDOResource.OPTION_SAVE_PROGRESS_MONITOR, new SubProgressMonitor(monitor, 100));
 					resource.save(saveOptions);
@@ -134,10 +131,5 @@ public class AddArtifactAction extends AbstractHandler {
 			});
 			eParent = eParent.eContainer();
 		}
-	}
-
-	public static void increaseSessionTimeout(final CDOObject root) {
-		CDOSession session = root.cdoView().getSession();
-		((CDONet4jSession.Options) session.options()).setCommitTimeout(10 * 60);
 	}
 }

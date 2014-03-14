@@ -441,7 +441,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		shutdownServerAction = new Action() {
 			public void run() {
 				if (MessageDialog.openQuestion(window.getShell(), "", "Do you really want to shutdown the server?")) {
-					CMSActivator.dbapp.stop();
+					RAASUtils.dbapp.stop();
 					window.close();
 				}
 			}
@@ -454,7 +454,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		loadBackup = new Action() {
 			public void run() {
 				try {
-					Folder repoRoot = (Folder) RAASUIUtils.findByPath("RepositoryRoot");
+					Folder repoRoot = (Folder) RAASUtils.findByPath("RepositoryRoot");
 					if (repoRoot == null)
 						MessageDialog.openError(window.getShell(), "Error", "Cannot find root folder \"RepositoryRoot\". Your database may be corrupt.");
 					new AddArtifactAction().execute(repoRoot, window.getShell(), true, new Runnable() {
@@ -483,7 +483,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		loadBackupFromURL = new Action() {
 			public void run() {
 				try {
-					Folder repoRoot = (Folder) RAASUIUtils.findByPath("RepositoryRoot");
+					Folder repoRoot = (Folder) RAASUtils.findByPath("RepositoryRoot");
 					if (repoRoot == null)
 						MessageDialog.openError(window.getShell(), "Error", "Cannot find root folder \"RepositoryRoot\". Your database may be corrupt.");
 					new AddArtifactFromURLAction().execute(window, repoRoot, window.getShell(), true, new Runnable() {
@@ -513,7 +513,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 			public void run() {
 				try {
 					List<EObject> selection = new ArrayList<EObject>();
-					Folder root = (Folder) RAASUIUtils.findByPath("RepositoryRoot");
+					Folder root = (Folder) RAASUtils.findByPath("RepositoryRoot");
 					selection.addAll(root.getArtifacts());
 					for (Folder folder : root.getFolders())
 						if (!FilesView.RECYCLE_BIN.equals(folder.getName()))
@@ -648,7 +648,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 
 	protected void loadMenuFromDatabase() {
 		try {
-			EObject userInterface = RAASUIUtils.findByPath("RepositoryRoot", "Experiments", USER_INTERFACE);
+			EObject userInterface = RAASUtils.findByPath("RepositoryRoot", "Experiments", USER_INTERFACE);
 			if (userInterface instanceof Folder) {
 				Folder folder = (Folder) userInterface;
 				List<Folder> sortedFolders = new ArrayList<Folder>(folder.getFolders());

@@ -24,6 +24,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.statushandlers.StatusManager;
+import org.raas4emf.cms.core.RAASSchedulingRule;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
@@ -45,7 +46,7 @@ public class UnzipAction extends AbstractHandler {
 			zip.unzip(is, folder);
 			stati.addAll(zip.getStati());
 			if (!monitor.isCanceled() && zip.getStati().isEmpty()) {
-				AddArtifactAction.increaseSessionTimeout(folder);
+				RAASUtils.increaseSessionTimeout(folder);
 				RAASUtils.doSaveAsSubTask(folder, "Save unzipped contents to database", new SubProgressMonitor(monitor, 100));
 			} else {
 				CDOTransaction transaction = (CDOTransaction) folder.cdoResource().cdoView();

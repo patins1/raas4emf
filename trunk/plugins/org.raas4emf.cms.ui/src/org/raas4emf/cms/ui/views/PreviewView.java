@@ -61,6 +61,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.raas4emf.cms.core.FileUtil;
+import org.raas4emf.cms.core.GeometryJob;
 import org.raas4emf.cms.core.IGeometricCenter;
 import org.raas4emf.cms.core.IGeometricClick;
 import org.raas4emf.cms.core.IGeometricDoubleClick;
@@ -73,7 +74,6 @@ import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.core.geometry.BoundingBoxXYZ;
 import org.raas4emf.cms.core.geometry.XYZ;
 import org.raas4emf.cms.ui.CMSActivator;
-import org.raas4emf.cms.ui.actions.GeometryJob;
 import org.raas4emf.cms.ui.actions.IsolateAction;
 import org.raas4emf.cms.ui.graf.GrafUtil;
 
