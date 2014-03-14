@@ -29,39 +29,6 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 	public static class RAPRAASSessionSingleton extends RAASSessionSingleton {
 
 		@Override
-		public String createDownloadUrl(String filename) {
-			StringBuilder url = new StringBuilder();
-			url.append(RWT.getServiceManager().getServiceHandlerUrl("downloadServiceHandler"));
-			url.append("&artifact=");
-			url.append(filename);
-			String result = RWT.getResponse().encodeURL(url.toString());
-			if ("zipped".equals(filename) || "current".equals(filename))
-				return result;
-			return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
-		}
-
-		@Override
-		public String get3dRendererUrl() {
-			return createDownloadUrl("WebContent/threejs/");
-		}
-
-		@Override
-		public String createFullDownloadUrl(Artifact artifact) {
-			StringBuilder url = new StringBuilder();
-			url.append("http://");
-			url.append(RWT.getRequest().getServerName());
-			url.append(":");
-			url.append(RWT.getRequest().getServerPort());
-			url.append(RWT.getServiceManager().getServiceHandlerUrl("downloadServiceHandler"));
-			url.append("&artifact=");
-			url.append(artifact.cdoID().toURIFragment());
-			url.append("&filename=");
-			url.append(artifact.getName());
-			String encodedURL = RWT.getResponse().encodeURL(url.toString());
-			return encodedURL;
-		}
-
-		@Override
 		public int getBrowserType() {
 			return SWT.NONE;
 		}
