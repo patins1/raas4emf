@@ -88,6 +88,14 @@ public class Activator extends Plugin {
 	}
 
 	public static RAASSessionSingleton getSessionInstance() {
-		return Activator.getService().getInstance();
+		try {
+			if (Activator.getService() != null)
+				return Activator.getService().getInstance();
+		} catch (Exception e) {
+
+		}
+		if (RAASSessionSingleton.SINGLETON != null)
+			return RAASSessionSingleton.SINGLETON;
+		return new RAASSessionSingleton();
 	}
 }
