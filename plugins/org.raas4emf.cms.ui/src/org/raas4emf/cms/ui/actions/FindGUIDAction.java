@@ -15,7 +15,6 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.ifc4emf.metamodel.ifcheader.Model;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.RAASUIUtils;
-import org.raas4emf.cms.ui.adapters.GeometricIDResolverAdapterFactory;
 
 import raascms.Artifact;
 import raascms.Folder;
@@ -91,7 +90,7 @@ public class FindGUIDAction extends AbstractHandler {
 
 	protected void examine(Model model) {
 		long start = System.currentTimeMillis();
-		Integer index = GeometricIDResolverAdapterFactory.getIndexForGUIDStatic(model, guid);
+		Integer index = RAASUtils.getIndexForGUIDStatic(model, guid);
 		long end0 = System.currentTimeMillis();
 		MessageDialog.openInformation(shell, "Search result", "Found #" + index + " in " + (end0 - start) + " milliseconds");
 

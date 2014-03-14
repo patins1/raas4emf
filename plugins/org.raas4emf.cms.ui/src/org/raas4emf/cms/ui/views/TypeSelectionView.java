@@ -15,8 +15,8 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.FilteredTree;
+import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.CMSActivator;
-import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.actions.IsolateAction;
 
 import raascms.Folder;
@@ -30,7 +30,7 @@ public class TypeSelectionView extends PreviewView {
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 		try {
-			Folder sampleBuilding = (Folder) RAASUIUtils.findByPath("RepositoryRoot", "Experiments", TEMPLATE_TYPE_SELECTION_BUILDING);
+			Folder sampleBuilding = (Folder) RAASUtils.findByPath("RepositoryRoot", "Experiments", TEMPLATE_TYPE_SELECTION_BUILDING);
 			loadSelectionIntoBrowser(new StructuredSelection(sampleBuilding));
 		} catch (Exception e) {
 			browser.setText(e.getMessage());

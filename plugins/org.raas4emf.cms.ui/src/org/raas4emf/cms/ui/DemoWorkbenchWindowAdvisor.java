@@ -17,6 +17,7 @@ import org.eclipse.ui.internal.WorkbenchWindow;
 import org.eclipse.ui.internal.WorkbenchWindowConfigurer;
 import org.eclipse.ui.internal.layout.ITrimManager;
 import org.eclipse.ui.internal.progress.ProgressRegion;
+import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.actions.IsolateAction;
 import org.raas4emf.cms.ui.views.DirectoryView;
 import org.raas4emf.cms.ui.views.FilesView;
@@ -81,7 +82,7 @@ public class DemoWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		if (path == null) {
 			return null;
 		}
-		EObject folder = RAASUIUtils.findByPath(path.split("/"));
+		EObject folder = RAASUtils.findByPath(path.split("/"));
 		if (folder == null) {
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Could not locate path!");
 			return null;

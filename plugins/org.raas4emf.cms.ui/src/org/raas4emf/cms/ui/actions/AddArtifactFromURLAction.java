@@ -89,7 +89,7 @@ public class AddArtifactFromURLAction extends AbstractHandler {
 						long ended = new Date().getTime();
 						CMSActivator.log("Took " + (ended - started) + "ms to add to model");
 						Resource resource = root.eResource();
-						AddArtifactAction.increaseSessionTimeout(root);
+						RAASUtils.increaseSessionTimeout(root);
 						final Map<Object, Object> saveOptions = new HashMap<Object, Object>();
 						saveOptions.put(CDOResource.OPTION_SAVE_PROGRESS_MONITOR, new SubProgressMonitor(monitor, 100));
 						resource.save(saveOptions);

@@ -160,7 +160,7 @@ public class RAASEditorInputImpl extends URIEditorInput implements RAASEditorInp
 	}
 
 	protected String getBundleSymbolicName() {
-		return CMSActivator.getContext().getBundle().getSymbolicName();
+		return CMSActivator.PLUGIN_ID;
 	}
 
 	@Override

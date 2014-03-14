@@ -12,37 +12,17 @@ import java.util.List;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.emf.cdo.view.CDOView;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.net4j.util.HexUtil;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.ifc4emf.metamodel.ifcheader.Model;
 import org.raas4emf.cms.core.RAASUtils;
-import org.raas4emf.cms.ui.adapters.GeometricIDResolverAdapterFactory;
 
 import raascms.Artifact;
 import raascms.Folder;
-import IFC2X3.IfcRoot;
 
-public class RAASUIUtils {
-
-	public static EObject findObjectById(String id) {
-		CDOView trans = CMSActivator.getSessionInstance().openView();
-		Resource res = (Resource) trans.getRootResource().getContents().get(0);
-		return RAASUtils.findObjectById(id, res);
-	}
-
-	public static EObject findByPath(String... path) {
-		return findByPath(path, false);
-	}
-
-	public static EObject findByPath(String[] path, boolean force) {
-		CDOView trans = CMSActivator.getSessionInstance().openView();
-		return RAASUtils.findByPath(trans, path, force);
-	}
+public class RAASUIUtils extends RAASUtils {
 
 	public static List<? extends Object> getSelection(ExecutionEvent event) {
 		ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().getSelection();
@@ -88,16 +68,6 @@ public class RAASUIUtils {
 		return result;
 	}
 
-	public static boolean isModelComplete(Artifact artifact) {
-		for (EObject model : artifact.getContents()) {
-			Double ratio = RAASUtils.getCompletionRatio(model);
-			if (ratio != null) {
-				return ratio == 1;
-			}
-		}
-		return !artifact.getContents().isEmpty();
-	}
-
 	public static String getPath(EObject val) {
 		String result = "";
 		EObject cont = val;
@@ -120,18 +90,6 @@ public class RAASUIUtils {
 		byte[] id = digest.digest();
 		String fingerprint = HexUtil.bytesToHex(id);
 		return fingerprint;
-	}
-
-	public static IfcRoot getObjectForGUID(Model model, String guid) {
-		Integer index = GeometricIDResolverAdapterFactory.getIndexForGUIDStatic(model, guid);
-		if (index != null) {
-			EObject eObject = GeometricIDResolverAdapterFactory.getFromIndex(index, (Artifact) model.eContainer());
-			if (eObject instanceof IfcRoot) {
-				IfcRoot ifcRoot = (IfcRoot) eObject;
-				return ifcRoot;
-			}
-		}
-		return null;
 	}
 
 }

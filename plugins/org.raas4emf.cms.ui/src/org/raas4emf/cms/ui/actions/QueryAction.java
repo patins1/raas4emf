@@ -37,7 +37,6 @@ public class QueryAction extends AbstractHandler {
 	private String message;
 	private Resource res;
 	private EObject context;
-	public static Collection<String> otherSearchStrings = new ArrayList<String>();
 
 	public QueryAction() {
 		super();
@@ -54,7 +53,7 @@ public class QueryAction extends AbstractHandler {
 		}
 		if (queryString.toLowerCase().startsWith("select") || queryString.toLowerCase().startsWith("alter table")) {
 			CDOView view = ((CDOResource) res).cdoView();
-			List<Object> result = execSql(queryString, view);
+			List<Object> result = RAASUtils.execSql(queryString, view);
 			for (Object x : result) {
 				CMSActivator.log("" + x.getClass());
 				CMSActivator.log("" + x);
@@ -66,30 +65,6 @@ public class QueryAction extends AbstractHandler {
 	}
 
 	static public CDOList oldList;
-
-	public static List<Object> execSql(String queryString, CDOView view) {
-		// Options options = view.options();
-		// CDORevisionPrefetchingPolicy pref = options.getRevisionPrefetchingPolicy();
-		// CDOSession session = view.getSession();
-		// org.eclipse.emf.cdo.session.CDOSession.Options options2 = session.options();
-		// CDOCollectionLoadingPolicy collLoad = options2.getCollectionLoadingPolicy();
-
-		// view.options().setRevisionPrefetchingPolicy(new CDORevisionPrefetchingPolicyImpl(1000000) {
-		// @Override
-		// public List<CDOID> loadAhead(CDORevisionManager revisionManager, CDOBranchPoint branchPoint, EObject eObject, EStructuralFeature feature, CDOList list, int accessIndex, CDOID accessID) {
-		// // if (oldList == list)
-		// // CMSActivator.log("Should look ahead " + feature.getName() + "[" + accessIndex + "]");
-		// // oldList = list;
-		// return super.loadAhead(revisionManager, branchPoint, eObject, feature, list, accessIndex, accessID);
-		// }
-		// });
-		CDOQuery q = view.createQuery("sql", queryString);
-		if (!queryString.toLowerCase().startsWith("select") && !queryString.toLowerCase().startsWith("explain"))
-			q.setParameter("queryStatement", false);
-		q.setParameter("cdoObjectQuery", false);
-		List<Object> result = q.getResult();
-		return result;
-	}
 
 	private CDOQuery createOclQuery(String queryString) {
 		CDOView view = ((CDOResource) res).cdoView();
@@ -128,7 +103,7 @@ public class QueryAction extends AbstractHandler {
 				res = modelFile.eResource();
 
 				List<String> sorted = new ArrayList<String>();
-				sorted.addAll(otherSearchStrings);
+				sorted.addAll(RAASUtils.otherSearchStrings);
 
 				ComboInputDialog dialog = new ComboInputDialog(sorted.toArray(new String[] {}), shell, "Specify Query", "Query:", null, null) {
 

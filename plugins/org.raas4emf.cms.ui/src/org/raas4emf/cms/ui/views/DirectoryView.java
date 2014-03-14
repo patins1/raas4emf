@@ -19,10 +19,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.raas4emf.cms.core.ILogicalParentChildRelationship;
+import org.raas4emf.cms.core.RAASSessionSingleton;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
-import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
 
 import raascms.Artifact;
 import raascms.Folder;

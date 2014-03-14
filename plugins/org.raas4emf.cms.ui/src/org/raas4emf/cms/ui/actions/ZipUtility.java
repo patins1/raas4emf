@@ -21,9 +21,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.EObject;
 import org.raas4emf.cms.core.FileUtil;
+import org.raas4emf.cms.core.RAASSessionSingleton;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.CMSActivator;
-import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
 import org.raas4emf.cms.ui.views.DirectoryView;
 
 import raascms.Artifact;
