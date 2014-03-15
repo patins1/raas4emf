@@ -3,8 +3,12 @@
  */
 package org.raas4emf.cms.core;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -280,17 +284,21 @@ public class RAASSessionSingleton {
 		return userObject.get(key);
 	}
 
-	public Object decodeJSON(String arg, EClass eClass) {
-		return null;
-	}
-
 	@Deprecated
 	public Object decodeJSON(String arg, EObject eObject) {
 		return decodeJSON(arg, eObject.eClass());
 	}
 
 	public byte[] encodeJSON(Object arg) {
-		return null;
+		ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
+		RAASUtils.encodeJSON(arg, requestBody, Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents", "objects", "comments"), true);
+		return requestBody.toByteArray();
+	}
+
+	public Object decodeJSON(String arg, EClass eClass) {
+		arg = "{\"" + eClass.getName() + "Element\":" + arg + "}";
+		InputStream responseBody = new ByteArrayInputStream(arg.getBytes());
+		return RAASUtils.decodeJSON(responseBody, eClass);
 	}
 
 	public void executeJSMethod(String methodName, String stringArg) {
