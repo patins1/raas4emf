@@ -3,14 +3,9 @@
  */
 package org.raas4emf.cms.ui.rap;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 
-import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.rap.rwt.RWT;
@@ -18,7 +13,6 @@ import org.eclipse.rap.rwt.SingletonUtil;
 import org.eclipse.swt.SWT;
 import org.raas4emf.cms.core.IRAASSessionSingletonService;
 import org.raas4emf.cms.core.RAASSessionSingleton;
-import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.views.PreviewView;
 
@@ -106,20 +100,6 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 			} catch (IOException e) {
 				Activator.err(e);
 			}
-		}
-
-		@Override
-		public byte[] encodeJSON(Object arg) {
-			ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
-			RAASUtils.encodeJSON(arg, requestBody, Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents", "objects", "comments"), true);
-			return requestBody.toByteArray();
-		}
-
-		@Override
-		public Object decodeJSON(String arg, EClass eClass) {
-			arg = "{\"" + eClass.getName() + "Element\":" + arg + "}";
-			InputStream responseBody = new ByteArrayInputStream(arg.getBytes());
-			return RAASUtils.decodeJSON(responseBody, eClass);
 		}
 
 		@Override
