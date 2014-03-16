@@ -39,6 +39,9 @@ public class DownloadServiceHandler implements ServiceHandler {
 		RAASUtils.fixServiceHandlePreconditions();
 
 		String artifactId = RWT.getRequest().getParameter("artifact");
+		String viewer = RWT.getRequest().getParameter("viewer");
+		if (viewer != null)
+			artifactId = viewer;
 		if (artifactId.startsWith("WebContent/"))
 			artifactId = "platform:/plugin/org.raas4emf.service/" + artifactId;
 		if (artifactId.startsWith("/plugin/"))
