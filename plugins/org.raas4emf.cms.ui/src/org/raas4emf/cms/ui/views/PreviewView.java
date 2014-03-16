@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -73,6 +75,7 @@ import org.raas4emf.cms.core.IGeometricSelectionResolver;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.core.geometry.BoundingBoxXYZ;
 import org.raas4emf.cms.core.geometry.XYZ;
+import org.raas4emf.cms.transformation.TransformationUtils;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.actions.IsolateAction;
 import org.raas4emf.cms.ui.graf.GrafUtil;
@@ -95,8 +98,6 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 	private Menu menu;
 	public String attachedOnLoad = null;
 	public static String attachedOnLoadAdditional = null;
-	public static String attachedHeadContent = null;
-	public static String CANVAS_CONTAINER = null;
 
 	public String attachedImmediately = null;
 	private ComposedAdapterFactory adapterFactory;
@@ -444,11 +445,6 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			final String fids = ids.substring(1);
 			String g_path = CMSActivator.getSessionInstance().createDownloadUrl(fids) + "&filename=" + getScene3dName();
 			// scroll bar for safari & chrome
-			String scss = "";
-			scss += "#progress { z-index:20; top:50%; width: 100%; position:absolute; z-index:100; text-align: center; display:none; }";
-			scss += ".shadow {-moz-box-shadow: 0px 0px 5px #000; -webkit-box-shadow: 0px 0px 5px #000; box-shadow: 0px 0px 5px #000; }\n";
-			scss += "#progressbar { text-align: center; background: white; width: 250px; height: 10px; }\n";
-			scss += "#bar { background:#d00; width:0px; height:10px; }\n";
 
 			String colors = CMSActivator.getSessionInstance().getColors();
 			if (colors == null) {
@@ -459,53 +455,46 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			if (attachedOnLoad == null)
 				attachedOnLoad = "";
 
-			String text = "";
-			text += "<!DOCTYPE html>";
-			text += "<html lang=\"en\">";
-			text += "	<head>";
-			text += "		<title>RAAS Viewer</title>";
-			text += "		<meta charset=\"utf-8\">";
-			text += "		<meta name=\"viewport\" content=\"width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0\">";
-			text += "<style type=\"text/css\">";
-			text += scss;
-			text += "html, body {margin: 0; padding: 0; border: 0; height: 100%; }</style>\n";
 			if (colors != null)
 				attachedOnLoad += "g_colors=" + colors + ";\n";
-			text += "		<script src=\"" + dir + "../requirejs-plugins/lib/require.js\"></script> <!-- include require.js library -->";
-			text += "		<script type=\"text/javascript\">var g_path=\"" + g_path + "\";</script>\n";
-			text += "<script type=\"text/javascript\">var g_ortho=" + CMSActivator.getSessionInstance().getOrtho() + ";</script>\n";
-			text += "<script type=\"text/javascript\">var g_fillmode=\"" + CMSActivator.getSessionInstance().getFillMode() + "\";</script>\n";
-			text += "		<script type=\"text/javascript\">var g_dir=\"" + dir + "\";</script>\n";
-			text += "		<script src=\"" + dir + "build/three.js\"></script>";
-			text += "		<script src=\"" + dir + "js/Detector.js\" type=\"text/javascript\"></script>";
-			text += "		<script src=\"" + dir + "js/libs/stats.min.js\"></script>";
-			text += "		<script src=\"" + dir + "js/libs/dat.gui.min.js\"></script>";
 			// text += "		<script src=\"" + dir + "touchgen.js\"></script>";
-			text += "		<script src=\"" + dir + "modelviewer.js\"></script>";
+			String immediately = "";
+			immediately += "var g_ortho=" + CMSActivator.getSessionInstance().getOrtho() + ";\n";
+			immediately += "var g_fillmode=\"" + CMSActivator.getSessionInstance().getFillMode() + "\";\n";
+			immediately += "g_dir=\"" + dir + "\";\n";
+			immediately += "g_path=\"" + g_path + "\";\n";
 			if (renderer.contains("canvas"))
-				text += "	<script type=\"text/javascript\">var g_renderer=\"canvas\";</script>\n";
+				immediately += "var g_renderer=\"canvas\";\n";
 			if (renderer.contains("svg"))
-				text += "	<script type=\"text/javascript\">var g_renderer=\"svg\";</script>\n";
+				immediately += "var g_renderer=\"svg\";\n";
 			if (renderer.contains("software"))
-				text += "	<script type=\"text/javascript\">var g_renderer=\"software\";</script>\n";
+				immediately += "var g_renderer=\"software\";\n";
+
 			String overrideSettings = "";
 			for (Map.Entry<String, String> entry : CMSActivator.getSessionInstance().getParameters().entrySet()) {
 				overrideSettings += "\"" + entry.getKey() + "\"" + ":" + "\"" + entry.getValue() + "\"" + ",";
 			}
 			if (!"".equals(overrideSettings))
-				text += "	<script type=\"text/javascript\">var overrideSettings={" + overrideSettings.substring(0, overrideSettings.length() - 1) + "};</script>\n";
+				immediately += "var overrideSettings={" + overrideSettings.substring(0, overrideSettings.length() - 1) + "};\n";
 
+			String marker = "var g_customInit = function() {";
+			String text;
+			try {
+				text = TransformationUtils.stringFromFile(new File(FileLocator.resolve(new URL("platform:/plugin/org.raas4emf.service/WebContent/threejs/modelviewer.html")).getFile()));
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+			int index = text.indexOf(marker);
 			if (attachedImmediately != null)
-				text += "<script type=\"text/javascript\">" + attachedImmediately + "</script>\n";
-			if (attachedHeadContent != null)
-				text += attachedHeadContent;
+				immediately += attachedImmediately;
+			text = text.substring(0, index) + immediately + text.substring(index);
 			if (attachedOnLoadAdditional != null)
 				attachedOnLoad += attachedOnLoadAdditional;
+			index = text.indexOf(marker) + marker.length();
 			if (attachedOnLoad != null)
-				text += "<script type=\"text/javascript\">var g_customInit=function() {" + attachedOnLoad + "};</script>\n";
+				text = text.substring(0, index) + attachedOnLoad + text.substring(index);
 			attachedOnLoad = null;
-			text += "</head>\n";
-			text += "<body style=\"overflow:hidden; \" onload=\"try{start();}catch(e2){var t=document.getElementById('clients'); var s='The RaaS server does not respond. ('+e2+')'; t.innerHTML=s;}\" onunload=\"try{uninit();}catch(e2){}\" oncontextmenu=\"return false;\">\n";
 
 			String canvasContainer;
 			if (artifacts.size() != 1)
@@ -513,19 +502,8 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			else
 				canvasContainer = "<div id=\"clients\" style=\"position:absolute; left:0px; top:0px; right:0px; bottom:0px; z-index:2; \"></div>\n";
 
-			if (CANVAS_CONTAINER != null)
-				canvasContainer = CANVAS_CONTAINER;
-			text += canvasContainer;
-
 			// text += "<div id=\"map_canvas\" style=\"position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:1;\"></div>";
 
-			if (!Boolean.valueOf(CMSActivator.getSessionInstance().getParameter("nocontextmenu"))) {
-				text += "<div id=\"ellipsis_menu\" tabindex=\"1\" style=\"display:none; background-color:white; position: absolute; z-index: 1000000; outline: none; background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(244, 244, 244)), to(rgb(255, 255, 255))); overflow: hidden; -webkit-box-shadow: rgb(171, 171, 171) 0px 0px 4px; border: 1px solid rgb(160, 179, 202); border-top-left-radius: 2px; border-top-right-radius: 2px; border-bottom-right-radius: 2px; border-bottom-left-radius: 2px; width: 164px; height: 27px; left: 100px; top: 337px; background-position: initial initial; background-repeat: initial initial;\"><div style=\"position: absolute; outline: none; width: 162px; height: 25px; left: 0px; right: 0px; top: 0px; bottom: 0px;\"><div tabindex=\"1\" style=\"position: absolute; overflow: hidden; -webkit-user-select: none; cursor: default; color: rgb(189, 189, 189); text-align: left; outline: none; width: 162px; height: 25px; left: 0px; top: 0px;\"><div style=\"position: absolute; border: 0px none; overflow: hidden; font-family: verdana, 'lucida sans', arial, helvetica, sans-serif; font-size: 14px; font-weight: normal; font-style: normal; left: 25px; width: 112px; top: 4px; height: 17px;\">...</div></div></div></div>";
-			}
-			text += "<div style=\"font-family: sans-serif; font-size: large; position:absolute; left:0; top:0; z-index:3;\" id=\"pickInfo\"></div>\n";
-			text += "<div id=\"progress\"><span id=\"message\">Loading ...</span><center><div id=\"progressbar\" class=\"shadow\"><div id=\"bar\" class=\"shadow\"></div></div></center></div>";
-
-			text += "</body>\n" + "</html>";
 			boolean useObjectTag = false; // turn on to use <object> instead of <iframe>
 			final String ftext = useObjectTag ? "<!DOCTYPE html><body><object type=\"text/html\" data=\"" + CMSActivator.getSessionInstance().createDownloadUrl("iframe_contents") + "&filename=iframe_contents.html" + "\" style=\"width: 500px; height: 500px;\"></object></body>" : text;
 			if (useObjectTag)

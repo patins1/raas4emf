@@ -157,8 +157,8 @@ public class RAASSessionSingleton {
 		url.append(artifact.cdoID().toURIFragment());
 		url.append("&filename=");
 		url.append(artifact.getName());
-		String encodedURL = RWT.getResponse().encodeURL(url.toString());
-		return encodedURL;
+		String result = RWT.getResponse().encodeURL(url.toString());
+		return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
 	}
 
 	public int getBrowserType() {

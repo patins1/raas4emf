@@ -472,8 +472,8 @@ function locateShape(id, artifactId) {
 }
 
 function calcPaths() {
+	if (!g_path) g_path = window.location.href;
 	if (!g_path || g_path.lastIndexOf("threejs/modelviewer.html?artifact=")!=-1) {
-		if (!g_path) g_path = window.location.href;
 	    var index = g_path.lastIndexOf('/threejs');
 	    // Point at the parent directory's assets directory for the moment
 	    g_ids = getParameterByName(g_path,'artifact').split(","); 
@@ -714,6 +714,11 @@ function setClientSize(g_client) {
 	g_client.renderer.setSize( newWidth, newHeight );
 	if (!g_mapenabled)
 	updateProjection(g_client);
+	var customContainer = document.getElementById('clients');
+	if (gui && customContainer) {
+		gui.domElement.style.top = (customContainer.offsetTop+5)+"px";
+		gui.domElement.style.right = (document.body.offsetWidth-customContainer.offsetLeft-customContainer.offsetWidth+5)+"px";
+	}
 }
 
 function onWindowResize() {
@@ -1601,6 +1606,7 @@ function generateTree() {
 	jstree.on("changed.jstree", function (e, data) {
 		jstree = null;
 		select(getObjectsFromTreeIDs(data.selected));
+		updateClients();
 		jstree = $('#jstree');
 	});
 	
@@ -1615,11 +1621,8 @@ function generateGui() {
 
 	if (gui!=null) return;
 	
-	gui = new dat.GUI({ autoPlace: false});
+	gui = new dat.GUI({ width: effectController.opencontrolsWidth, autoPlace: false});
 
-	var customContainer = document.getElementById('clients');
-	gui.domElement.style.top = (customContainer.offsetTop+5)+"px";
-	$( gui.domElement ).prepend( "<div class='visibility_header'>Visibility</div>" );
 	document.body.appendChild(gui.domElement);
 	
 	gui.close();
@@ -1792,6 +1795,12 @@ function generateGui() {
 		});
 		settingsChanged();
 	} );
+
+	expect(gui.add( effectController, 'tree', false ).onChange( function() {
+		$("#part_rightpane").toggleClass('pane_active',effectController.tree);
+		generateTree();
+	    onWindowResize();
+	} ));
 
 	h = gui.addFolder( "maps" );
 	
@@ -2056,6 +2065,7 @@ function generateGui() {
 	// building material (color enablement)
 
 	materialVisibilityGui = gui.addFolder( "Material visibility" );
+	var materialCtls = [];
 
 	
 	if (effectController.flatten_materialvisibility) materialVisibilityGui = gui;
@@ -2067,13 +2077,15 @@ function generateGui() {
     for (var tt = 0; tt < g_visibility_sorted.length; tt++) {
     	var m = g_visibility_sorted[tt];
     	if (!g_colors[m].hideFromMaterialVisibility)
-		materialVisibilityGui.add( g_visibility, m,  g_visibility[m]).onChange(updateCol).neverRemove = effectController.flatten_materialvisibility;
+		var materialCtl = materialVisibilityGui.add( g_visibility, m,  g_visibility[m]).onChange(updateCol);
+    	materialCtls.push(materialCtl);
+    	materialCtl.neverRemove = effectController.flatten_materialvisibility;
 	}
 
-	effectController[ "Select All" ] = function () {for (var m in g_visibility) { g_visibility[m] = true; } updateGui(materialVisibilityGui); updateCol(); };
+	effectController[ "Select All" ] = function () {for (var m in g_visibility) { g_visibility[m] = true; } materialCtls.forEach(updateGuiControl); updateCol(); };
 	materialVisibilityGui.add( effectController, "Select All" ).neverRemove = effectController.flatten_materialvisibility;
 	
-	effectController[ "Select None" ] = function () {for (var m in g_visibility) { g_visibility[m] = false; } updateGui(materialVisibilityGui); updateCol(); };
+	effectController[ "Select None" ] = function () {for (var m in g_visibility) { g_visibility[m] = false; } materialCtls.forEach(updateGuiControl); updateCol(); };
 	materialVisibilityGui.add( effectController, "Select None" ).neverRemove = effectController.flatten_materialvisibility;
 
 	// selection info
@@ -3123,8 +3135,9 @@ function start() {
 			surroundings: true,
 			
 			nurbs_degree: 2,
-			
+
 			panning_mode: false,
+			tree: false,
 			log_on_screen: false,
 			select_by_dblclick: false,
 			select_by_mouseup: true,
@@ -3134,7 +3147,8 @@ function start() {
 			antialias: true,
 			vertexnormals: true,
 			select_face: false,
-			opencontrols: true
+			opencontrols: true,
+			opencontrolsWidth:275
 
 		};
 
@@ -4567,6 +4581,8 @@ function getSelectedObjectIDs(objects) {
 function generateEvent(eventType,e,g_client) {
 	if (typeof(theJavaFunction) != "function") return;
 	
+	if (eventType=="mouseup") eventType="click";
+	
     var type="";
     g_selectedIDs = "";
     for (var ee = 0; ee < g_selectedInfo.length; ee++) {
@@ -4641,7 +4657,7 @@ function onDocumentMouseUp(e) {
 		myLog("dropped");
 	} else {
 		var dist = 5;
-		if (e.which == 3 || e.clientX>=mousedownClientX-dist && e.clientX<=mousedownClientX+dist &&
+		if (e.clientX>=mousedownClientX-dist && e.clientX<=mousedownClientX+dist &&
 		    e.clientY>=mousedownClientY-dist && e.clientY<=mousedownClientY+dist) {
 			if (!effectController.select_by_dblclick || e.which==3)
 				if (effectController.select_by_mouseup) {

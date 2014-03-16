@@ -154,7 +154,8 @@ public class LinksView extends ViewPart implements ISelectionListener {
 		try {
 			if (PreviewView.isWebGL(Arrays.asList(artifact)) || PreviewView.isCollada(Arrays.asList(artifact)) || PreviewView.isGeometryModel(Arrays.asList(artifact))) {
 				String renderer = CMSActivator.getSessionInstance().getRenderer().toLowerCase();
-				String webglUri = RAASUtils.getRAASProp("RAASSERVICEURL") + "threejs/modelviewer.html?artifact=" + artifact.cdoID().toURIFragment();
+				// String webglUri = RAASUtils.getRAASProp("RAASSERVICEURL") + "threejs/modelviewer.html?artifact=" + artifact.cdoID().toURIFragment();
+				String webglUri = CMSActivator.getSessionInstance().createFullDownloadUrl(artifact) + "&viewer=WebContent/threejs/modelviewer.html";
 				if (renderer.contains("canvas"))
 					webglUri += "&renderer=canvas";
 				if (renderer.contains("svg"))
@@ -162,7 +163,7 @@ public class LinksView extends ViewPart implements ISelectionListener {
 				if (renderer.contains("software"))
 					webglUri += "&renderer=software";
 				final String filename = PreviewView.getScene3dName();
-				webglUri += "&filename=" + filename;
+				webglUri = webglUri.replace("&filename=" + artifact.getName(), "&filename=" + filename);
 				html.append("<br>");
 				html.append("<a href=\"");
 				html.append(webglUri);
