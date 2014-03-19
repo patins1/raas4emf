@@ -139,7 +139,7 @@ public class RAASSessionSingleton {
 		String result = RWT.getResponse().encodeURL(url.toString());
 		if ("zipped".equals(filename) || "current".equals(filename))
 			return result;
-		return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
+		return removeCid(result);
 	}
 
 	public String get3dRendererUrl() {
@@ -158,7 +158,13 @@ public class RAASSessionSingleton {
 		url.append("&filename=");
 		url.append(artifact.getName());
 		String result = RWT.getResponse().encodeURL(url.toString());
-		return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
+		return removeCid(result);
+	}
+
+	private String removeCid(String result) {
+		if (result.indexOf("cid=") != -1)
+			return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
+		return result;
 	}
 
 	public int getBrowserType() {

@@ -86,7 +86,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 							Object eObject = Activator.getSessionInstance().decodeJSON(string, targetType);
 							embeddedRequest.eSet(feature, eObject);
 						} else {
-							embeddedRequest.eSet(feature, string);
+							embeddedRequest.eSet(feature, EcoreUtil.createFromString((EDataType) feature.getEType(), string));
 						}
 					}
 				}
@@ -109,38 +109,9 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 			final List<Folder> allFolders = new ArrayList<Folder>();
 			final EMFJQVTEngine testTrafo = new EMFJQVTEngine() {
 
-				@SuppressWarnings("unchecked")
 				@Override
 				public <T> List<T> getInstancesFor(Class<T> clazz, String direction) {
-					if (clazz == Folder.class) {
-						if (!allFolders.isEmpty())
-							return (List<T>) allFolders;
-						String path = getRootPathForFoldersAndArtifacts();
-						Activator.getSessionInstance().setCredentials("Operator", "o");
-						EObject eObject = RAASUtils.findByPath(path.split("/"), true);
-						try {
-							eObject.eResource().save(null);
-						} catch (IOException e) {
-							Activator.err(e);
-							throw new RuntimeException(e);
-						}
-						if (eObject instanceof Folder) {
-							Folder folder = (Folder) eObject;
-							allFolders.addAll(folder.getFolders());
-							allFolders.add(folder);
-							return (List<T>) allFolders;
-						}
-					}
-					if (clazz == Artifact.class) {
-						if (!allArtifacts.isEmpty())
-							return (List<T>) allArtifacts;
-						for (Folder folder : allFolders)
-							allArtifacts.addAll(folder.getArtifacts());
-						return (List<T>) allArtifacts;
-					}
-					if (clazz.isInstance(embeddedRequest))
-						return (List<T>) Arrays.asList(embeddedRequest);
-					return Collections.emptyList();// super.getInstancesFor(clazz, direction);
+					return ReflectiveQVTServiceHandler.this.getInstancesFor(embeddedRequest, allArtifacts, allFolders, clazz);
 				}
 
 			};
@@ -167,6 +138,8 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message), response.getOutputStream());
 		}
 
+		Activator.log("Returned status code " + response.getStatus());
+
 	}
 
 	private Throwable getLastCause(Throwable e) {
@@ -182,4 +155,37 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 	abstract protected String getAPITokenFor(String requestClass);
 
 	abstract protected String getRootPathForFoldersAndArtifacts();
+
+	@SuppressWarnings("unchecked")
+	protected <T> List<T> getInstancesFor(final EObject embeddedRequest, final List<Artifact> allArtifacts, final List<Folder> allFolders, Class<T> clazz) {
+		if (clazz == Folder.class) {
+			if (!allFolders.isEmpty())
+				return (List<T>) allFolders;
+			String path = getRootPathForFoldersAndArtifacts();
+			Activator.getSessionInstance().setCredentials("Operator", "o");
+			EObject eObject = RAASUtils.findByPath(path.split("/"), true);
+			try {
+				eObject.eResource().save(null);
+			} catch (IOException e) {
+				Activator.err(e);
+				throw new RuntimeException(e);
+			}
+			if (eObject instanceof Folder) {
+				Folder folder = (Folder) eObject;
+				allFolders.addAll(folder.getFolders());
+				allFolders.add(folder);
+				return (List<T>) allFolders;
+			}
+		}
+		if (clazz == Artifact.class) {
+			if (!allArtifacts.isEmpty())
+				return (List<T>) allArtifacts;
+			for (Folder folder : allFolders)
+				allArtifacts.addAll(folder.getArtifacts());
+			return (List<T>) allArtifacts;
+		}
+		if (clazz.isInstance(embeddedRequest))
+			return (List<T>) Arrays.asList(embeddedRequest);
+		return Collections.emptyList();// super.getInstancesFor(clazz, direction);
+	}
 }

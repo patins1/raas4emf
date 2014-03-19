@@ -51,7 +51,6 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 			File blendFile = null;
 
 			String REMOTE_BLENDER_URL = RAASUtils.getRAASProp("REMOTE_BLENDER_URL");
-			String catchResult = null;
 			boolean useRemoteConversion = REMOTE_BLENDER_URL != null;
 			if (!useRemoteConversion) {
 				File ifcFile = new File(dir, pureFilename + ".ifc");
@@ -93,18 +92,18 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 
 				File commandsTemplate = new File(FileLocator.resolve(new URL("platform:/plugin/org.raas4emf.cms.core/scripting/commands_template.sh")).getFile());
 
-				String commands = "bin/ifcurl2js.sh \"%IFCURL%\" \"%JSURL%\""; // TransformationUtils.stringFromFile(commandsTemplate);
-				String ifcUrl = System.getProperty(HexUtil.bytesToHex(artifact.getFileContent().getID()) + ".ifc");
-				String jsFile = HexUtil.bytesToHex(artifact.getFileContent().getID()) + ".js";
-				String jsUrl = "s3://ifc-translation/" + jsFile;
+				String commands = "bin/ifc2jshttp.sh %FINGERPRINT% \"%IFCURL%\" \"%JSURL%\""; // TransformationUtils.stringFromFile(commandsTemplate);
+				String fingerprint = HexUtil.bytesToHex(artifact.getFileContent().getID());
+				String ifcUrl = System.getProperty(fingerprint + ".ifc");
+				String jsUrl = System.getProperty(fingerprint + ".js");
 				commands = commands.replace("%IFCURL%", ifcUrl);
 				commands = commands.replace("%JSURL%", jsUrl);
 				TransformationUtils.stringToFile(commandsTemplate, commands);
 				String sshCommand;
 				if (isWindows)
-					sshCommand = "putty.exe -i %SSHKEYFILE% -ssh %REMOTE_BLENDER_URL% 22 -m \"%EXTERNALCOMMANDFILE%\"";
+					sshCommand = "plink.exe -i %SSHKEYFILE% -P 22 -ssh %REMOTE_BLENDER_URL% -m \"%EXTERNALCOMMANDFILE%\"";
 				else
-					sshCommand = "ssh -o StrictHostKeyChecking=no -i %SSHKEYFILE% %REMOTE_BLENDER_URL% bin/ifc2js.sh \"%IFCURL%\" \"%JSURL%\"";
+					sshCommand = "ssh -o StrictHostKeyChecking=no -i %SSHKEYFILE% %REMOTE_BLENDER_URL% bin/ifc2jshttp.sh %FINGERPRINT% \"%IFCURL%\" \"%JSURL%\"";
 
 				try {
 					if (RAASUtils.getRAASProp("BLENDER_SSH_COMMAND") != null)
@@ -125,9 +124,9 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				sshCommand = sshCommand.replace("%EXTERNALCOMMANDFILE%", commandsTemplate.toString());
 				sshCommand = sshCommand.replace("%IFCURL%", ifcUrl);
 				sshCommand = sshCommand.replace("%JSURL%", jsUrl);
+				sshCommand = sshCommand.replace("%FINGERPRINT%", fingerprint);
 
 				cmd = sshCommand;
-				catchResult = RAASUtils.getRAASProp("REMOTE_JS_FOLDER") + jsFile;
 				// cmd = "putty.exe -i " + TransformationUtils.quote(key) + " -ssh " + REMOTE_BLENDER_URL + " 22 -m " + TransformationUtils.quote(commands);
 
 			}
@@ -198,14 +197,12 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 			int exitValue = process.waitFor();
 			Activator.log("Exit value=" + exitValue);
 			Activator.log("Written to " + targetFile);
-			if (exitValue != 0 || catchResult == null && !targetFile.exists()) {
+			if (exitValue != 0 || !"".equals(errorMessages)) {
 				Activator.err("IFC transformation error:\n" + errorMessages);
 				FileUtil.inputstreamToOutputstream(new StringBufferInputStream("Blender exit value = " + exitValue + "\n" + errorMessages), new FileOutputStream(errorFile));
 			}
 			Date ended = new Date();
 			Activator.log("Seconds elapsed =  " + (ended.getTime() - started.getTime()) / 1000);
-			if (catchResult != null)
-				FileUtil.inputstreamToOutputstream(new URL(catchResult).openStream(), new FileOutputStream(targetFile));
 			// ifcFile.delete();
 			if (blendFile != null && !blendFileRequired())
 				blendFile.delete();
