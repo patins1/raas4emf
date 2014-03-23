@@ -35,6 +35,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 
 		response.setContentType("application/octet-stream");
 		response.setHeader("Cache-Control", "no-store");
+		String message = null;
 
 		try {
 			String requestClass = RWT.getRequest().getParameter("request");
@@ -128,7 +129,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 
 		} catch (Throwable e) {
 			e = getLastCause(e);
-			String message = e.getMessage();
+			message = e.getMessage();
 			if (message == null)
 				message = e.toString() + "\n" + Arrays.toString(e.getStackTrace());
 			EClass eclass = findEClass("ErrorResponse");
@@ -138,7 +139,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message), response.getOutputStream());
 		}
 
-		Activator.log("Returned status code " + response.getStatus());
+		Activator.log("Returned status code " + response.getStatus() + " message=" + message);
 
 	}
 

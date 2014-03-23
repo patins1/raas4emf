@@ -27,6 +27,7 @@ import raascms.Artifact;
 
 public class IfcToThreejsTranformator implements IArtifactTransformator, ITranformator {
 
+	public static RemoteGeometryStorage REMOTE_STORAGE = null;
 	static File DEFAULT_BLENDER_LOCATION = null;
 	private int worked;
 	private String errorMessages = "";
@@ -75,6 +76,21 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				cmd = TransformationUtils.quote(DEFAULT_BLENDER_LOCATION) + " -nojoystick -noaudio -b " + TransformationUtils.quote(untitledBlenderFile) + " -P " + TransformationUtils.quote(script) + " -- " + TransformationUtils.quote(ifcFile) + " " + TransformationUtils.quote(targetFile);
 
 			} else {
+				String fingerprint = HexUtil.bytesToHex(artifact.getFileContent().getID());
+				String ifcUrl = System.getProperty(fingerprint + ".ifc");
+				String jsUrl = System.getProperty(fingerprint + ".js");
+				System.setProperty(fingerprint + ".ifc", "");
+				System.setProperty(fingerprint + ".js", "");
+				if (REMOTE_STORAGE != null) {
+					try {
+						if (REMOTE_STORAGE.saveAsFile(fingerprint, targetFile)) {
+							return targetFile;
+						}
+					} catch (RuntimeException e) {
+						if (ifcUrl == null || "".equals(ifcUrl))
+							throw e;
+					}
+				}
 				boolean isWindows = System.getProperty("os.name").contains("Windows");
 
 				String key = new File(FileLocator.resolve(new URL("platform:/plugin/org.raas4emf.cms.core/scripting/" + (isWindows ? "blenderfarm.ppk" : "blenderfarm.pem"))).getFile()).toString();
@@ -93,9 +109,6 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				File commandsTemplate = new File(FileLocator.resolve(new URL("platform:/plugin/org.raas4emf.cms.core/scripting/commands_template.sh")).getFile());
 
 				String commands = "bin/ifc2jshttp.sh %FINGERPRINT% \"%IFCURL%\" \"%JSURL%\""; // TransformationUtils.stringFromFile(commandsTemplate);
-				String fingerprint = HexUtil.bytesToHex(artifact.getFileContent().getID());
-				String ifcUrl = System.getProperty(fingerprint + ".ifc");
-				String jsUrl = System.getProperty(fingerprint + ".js");
 				commands = commands.replace("%IFCURL%", ifcUrl);
 				commands = commands.replace("%JSURL%", jsUrl);
 				TransformationUtils.stringToFile(commandsTemplate, commands);
@@ -197,7 +210,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 			int exitValue = process.waitFor();
 			Activator.log("Exit value=" + exitValue);
 			Activator.log("Written to " + targetFile);
-			if (exitValue != 0 || !"".equals(errorMessages)) {
+			if (exitValue != 0 || !targetFile.exists()) {
 				Activator.err("IFC transformation error:\n" + errorMessages);
 				FileUtil.inputstreamToOutputstream(new StringBufferInputStream("Blender exit value = " + exitValue + "\n" + errorMessages), new FileOutputStream(errorFile));
 			}
