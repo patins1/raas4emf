@@ -31,6 +31,7 @@ var g_clients = [];
 var g_lastPos;
 var g_cameraTransforms = [];
 var g_incidentTransforms = [];
+var isInParse = false;
 
 var g_map;
 var g_overlay;
@@ -104,6 +105,7 @@ var overrideSettings;
 if (overrideSettings == null) overrideSettings = {}; 
 var USE_BUFFERGEOMETRY = true;
 var inProcessMessage;
+var t_dir = "https://raw.githubusercontent.com/timoxley/threejs/master/examples/";
 
 
 function processMessage(event) {
@@ -1009,8 +1011,8 @@ function changeFillMode(mode_string, artifactId) {
 }
 
 function updateFillMode(g_client) {
-	for (var m in g_colors) {
-		material = g_colors[m];
+	for (var m in g_client.g_colors) {
+		material = g_client.g_colors[m];
     	material.wireframe = false;
     	if (g_fillmode == "Wireframe") {
 	    	material.wireframe = true;
@@ -1929,7 +1931,7 @@ function generateGui() {
 			m = "bridge";
 			effectController[ m ] = function () {
 
-				var r = g_dir+"textures/cube/Bridge2/";
+				var r = t_dir+"textures/cube/Bridge2/";
 				var urls = [ r + "posx.jpg", r + "negx.jpg",
 							 r + "posy.jpg", r + "negy.jpg",
 							 r + "posz.jpg", r + "negz.jpg" ];
@@ -1942,7 +1944,7 @@ function generateGui() {
 			m = "castle";
 			effectController[ m ] = function () {
 
-				var path = g_dir+"textures/cube/SwedishRoyalCastle/";
+				var path = t_dir+"textures/cube/SwedishRoyalCastle/";
 				var format = '.jpg';
 				var urls = [
 					path + 'px' + format, path + 'nx' + format,
@@ -1958,7 +1960,7 @@ function generateGui() {
 			m = "park";
 			effectController[ m ] = function () {
 				
-				var path = g_dir+"textures/cube/Park2/";
+				var path = t_dir+"textures/cube/Park2/";
 				var format = '.jpg';
 				var urls = [
 						path + 'posx' + format, path + 'negx' + format,
@@ -1974,7 +1976,7 @@ function generateGui() {
 			m = "park3med";
 			effectController[ m ] = function () {
 				
-				var r = g_dir+"textures/cube/Park3Med/";
+				var r = t_dir+"textures/cube/Park3Med/";
 
 				var urls = [ r + "px.jpg", r + "nx.jpg",
 							 r + "py.jpg", r + "ny.jpg",
@@ -1988,7 +1990,7 @@ function generateGui() {
 			m = "escher";
 			effectController[ m ] = function () {
 				
-				var r = g_dir+"textures/cube/Escher/";
+				var r = t_dir+"textures/cube/Escher/";
 
 				var urls = [ r + "px.jpg", r + "nx.jpg",
 							 r + "py.jpg", r + "ny.jpg",
@@ -2003,7 +2005,7 @@ function generateGui() {
 			m = "sky";
 			effectController[ m ] = function () {
 				
-				var path = g_dir+"textures/cube/skybox/";
+				var path = t_dir+"textures/cube/skybox/";
 				var format = '.jpg';
 				var urls = [
 					path + 'px' + format, path + 'nx' + format,
@@ -2019,7 +2021,7 @@ function generateGui() {
 			m = "pisa";
 			effectController[ m ] = function () {
 				
-				var path = g_dir+"textures/cube/pisa/";
+				var path = t_dir+"textures/cube/pisa/";
 				var format = '.png';
 				var urls = [
 					path + 'px' + format, path + 'nx' + format,
@@ -2278,20 +2280,21 @@ function generateGui() {
 		});		
 		effectController.vertexnormals = geometryCount<50;
 	}
-	expect(misc.add( effectController, 'quickmode' ).onChange( function() {
-		var g_client = g_clients[0];
-		unSelectAll(g_client);
-		if (g_client.originalRoot) {
-			var root = g_client.root;
-			g_client.scene.remove(root);
-			g_client.scene.add(g_client.originalRoot);
-			g_client.root = g_client.originalRoot;
-			g_client.originalRoot=root;
-		} else if (effectController.quickmode) {
-			melt(g_client);
-		}
-		settingsChanged();
-	} ));	
+	misc.add( effectController, 'quickmode' ).onChange( function() {
+		g_clients.forEach( function(g_client) {
+			unSelectAll(g_client);
+			if (g_client.originalRoot) {
+				var root = g_client.root;
+				g_client.scene.remove(root);
+				g_client.scene.add(g_client.originalRoot);
+				g_client.root = g_client.originalRoot;
+				g_client.originalRoot=root;
+			} else if (effectController.quickmode) {
+				melt(g_client);
+			}
+			settingsChanged();
+		}); 
+	});	
 	misc.add( effectController, 'vertexnormals' ).onChange( function() {
 		var g_client = g_clients[0];
 		g_client.root.traverse(function (mesh) {
@@ -2742,8 +2745,8 @@ function melt(g_client) {
 			g += positions2.length;
 		}
 
-		g_colors[mat].meltedGeometry = meltedGeometry;
-		var materialMesh = new THREE.Mesh(meltedGeometry, g_colors[mat] );
+		g_client.g_colors[mat].meltedGeometry = meltedGeometry;
+		var materialMesh = new THREE.Mesh(meltedGeometry, g_client.g_colors[mat] );
 		cityMesh.add( materialMesh );
 		materialMesh.name = "melted meshes for material "+mat;
 		
@@ -2784,8 +2787,8 @@ function melt(g_client) {
 	
 	var cityGeometry= new THREE.Geometry();
 	var materials = [];
-    for (var m in g_colors) {
-    	var mat = g_colors[m];
+    for (var m in g_client.g_colors) {
+    	var mat = g_client.g_colors[m];
     	materials.push(mat);
     }
     var meshIndex = 0;
@@ -3236,7 +3239,7 @@ function start() {
 //    	}
 //    	
 //        require(requiredThreeJS, function () {
-            buildTable();       	 	
+        	buildTable();
             for (var ii = 0; ii < g_num_clients; ++ii) {
             	load(ii);
             }
@@ -3283,7 +3286,7 @@ function hasVertexNormals(geometry) {
 	return geometry.faces && geometry.faces.length>0 && geometry.faces[0].vertexNormals.length>0;
 }
 
-function load(ii) {
+var initStatics = function() {
 
     if (effectController.quickmode) {
     	
@@ -3306,8 +3309,7 @@ function load(ii) {
 
 	THREE.Geometry.prototype.computeBoundingSphere = function () {
 		
-		var g_client = g_clients[ii];
-		if (!g_client.root) return;
+		if (isInParse) return;
 
 		if ( this.boundingSphere === null ) {
 
@@ -3442,6 +3444,7 @@ function load(ii) {
     	this.oldparse = this.parse;
     	
     	this.parse = function ( json, texturePath ) {
+    		isInParse = true;
         	this.numGeometries = this.numGeometries || 0;
         	this.numGeometries = this.numGeometries + 1;
 
@@ -3456,6 +3459,7 @@ function load(ii) {
 	        	if (effectController.vertexnormals && !hasVertexNormals(result.geometry)) bufferGeometry.computeVertexNormals();
 	        	result.geometry = bufferGeometry;
         	}
+        	isInParse = false;
         	return result;
         };
 
@@ -3463,6 +3467,14 @@ function load(ii) {
 
     THREE.JSONLoader2.prototype = Object.create( THREE.JSONLoader.prototype );
     
+};
+
+
+function load(ii) {
+    if (initStatics) {
+    	initStatics();
+	    initStatics = null;
+	}
 	load2(ii);
 }
 function load2(ii) {
@@ -3483,6 +3495,7 @@ function load2(ii) {
     		drawBar(0,"Preparing Geometry ...");	
     		setTimeout(function(){
     		generateGui();
+        	if (effectController.quickmode) melt(g_clients[ii]);
     		drawBar(0,"Rendering WebGL ...");	
     		setTimeout(function(){
     		animate(g_clients[ii]);		
@@ -3574,8 +3587,8 @@ function automaticUnwrapping(geometry,deltaX,deltaY) {
 
 function updateColors (g_client) {
 
-    for(var key in g_visibility) {
-    	var material = g_colors[key];
+	for(var key in g_visibility) {
+    	var material = g_client.g_colors[key];
     	material.visible = (g_visibility[key]==true) && (!material.baseMaterialName || g_visibility[material.baseMaterialName]!=false);
     }
 
@@ -3928,6 +3941,14 @@ function setupColors(g_client) {
 		}
 		materialColor.name = m;
 	}
+	if (g_clients.length>=2) {
+		g_client.g_colors = {};
+		for (m in g_colors) {
+			g_client.g_colors[m] = g_colors[m].clone();
+		}
+	} else {
+		g_client.g_colors = g_colors;		
+	}
 	g_client.root.traverse(function (child) { 
 		if (child.name && child.name.indexOf("__")!=-1)
 			child.name = child.name.substring(0,child.name.indexOf("__")); // OBJLoader		
@@ -3937,21 +3958,21 @@ function setupColors(g_client) {
 				var materialName = /*child.customMaterialName || */material.name;
 				if (materialName && materialName.lastIndexOf("-material")!=-1)
 					materialName = materialName.substring(0,materialName.lastIndexOf("-material"));
-				material = g_colors[materialName];
+				material = g_client.g_colors[materialName];
 		        if (!material && materialName.length>3) {
 		        	var materialNameShortened = materialName.substring(3);
-		        	if (material = g_colors[materialNameShortened])
+		        	if (material = g_client.g_colors[materialNameShortened])
 		        		materialName = materialNameShortened;
 		        }
 		        if (!material) {
 		        	child.material.name = materialName;	
-		        	g_colors[materialName] = material = child.material;
+		        	g_client.g_colors[materialName] = material = child.material;
 		        }
 		        if (material) {
 					child.material = material;
 			        if (child.name && child.name.indexOf("_",1)>=2) {
 			        	var materialName2 = child.name.substring(child.name.indexOf("_",1));
-			        	var material2 = g_colors[materialName2];
+			        	var material2 = g_client.g_colors[materialName2];
 			        	if (material2 && material2!=material) {
 			        		material2.baseMaterialName = child.material.name;
 							child.material = material = material2;
@@ -4134,8 +4155,8 @@ function getScene(scene) {
 
 function switchCustomMaterialForObject(enableCustomMaterial, object, g_client) {
 	object.importedMaterial = object.importedMaterial || object.originalMaterial || object.material;
-	var material = enableCustomMaterial ? g_colors[object.customMaterialName] : object.importedMaterial;
-	if (object.material == g_colors["Selection"]) {
+	var material = enableCustomMaterial ? g_client.g_colors[object.customMaterialName] : object.importedMaterial;
+	if (object.material == g_client.g_colors["Selection"]) {
 		object.originalMaterial = material;
 	} else {
 		object.material = material;
@@ -4199,7 +4220,7 @@ function select(newSelection,g_client) {
 	}
     for (var tt = 0; tt < g_selectedInfo.length; tt++) {
     	bringIntoScene(g_selectedInfo[tt],g_client);
-    	selectRecursive(g_selectedInfo[tt]);
+    	selectRecursive(g_selectedInfo[tt],g_client);
     }
     if (g_selectedInfo.length>0) {
 	    effectController.id = g_selectedInfo[0].name;
@@ -4224,13 +4245,13 @@ function applyOnMaterials(material, func) {
     }
 }
 
-function selectRecursive(transform) {
+function selectRecursive(transform,g_client) {
     for (var tt = 0; tt < transform.children.length; tt++) {
-    	selectRecursive(transform.children[tt]);
+    	selectRecursive(transform.children[tt],g_client);
     }
     if (transform.material && !(transform instanceof THREE.Sprite)) {
 	    transform.originalMaterial = transform.material;
-	    var g_selectionMaterial = g_colors["Selection"];
+		var g_selectionMaterial = g_client.g_colors["Selection"];
 	    g_selectionMaterial.side = transform.material.side;
 	    transform.material = g_selectionMaterial;
     }
@@ -4241,7 +4262,7 @@ function selectRecursive(transform) {
 		geometry.normalsNeedUpdate = true;	
 	}
     if (transform.pred!=null) {
-        selectRecursive(transform.pred);
+        selectRecursive(transform.pred,g_client);
     }
 }
 
@@ -4916,8 +4937,8 @@ function loadLavaMaterial() {
 		time: { type: "f", value: 1.0 },
 		resolution: { type: "v2", value: new THREE.Vector2() },
 		uvScale: { type: "v2", value: new THREE.Vector2( 3.0, 1.0 ) },
-		texture1: { type: "t", value: THREE.ImageUtils.loadTexture( g_dir+"textures/lava/cloud.png", null, updateClients ) },
-		texture2: { type: "t", value: THREE.ImageUtils.loadTexture( g_dir+"textures/lava/lavatile.jpg", null, updateClients ) }
+		texture1: { type: "t", value: THREE.ImageUtils.loadTexture( t_dir+"textures/lava/cloud.png", null, updateClients ) },
+		texture2: { type: "t", value: THREE.ImageUtils.loadTexture( t_dir+"textures/lava/lavatile.jpg", null, updateClients ) }
 
 	};
 
@@ -5162,7 +5183,7 @@ function generateMaterials() {
 	dottedMaterial2.uniforms.uBaseColor.value.setRGB( 0, 0, 0 );
 	dottedMaterial2.uniforms.uLineColor1.value.setHSL( 0.05, 1.0, 0.5 );
 
-	var texture = THREE.ImageUtils.loadTexture( g_dir+"textures/ash_uvgrid01.jpg" );
+	var texture = THREE.ImageUtils.loadTexture( t_dir+"textures/ash_uvgrid01.jpg" );
 	texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 	
 	var textureCube = null;
