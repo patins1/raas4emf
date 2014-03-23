@@ -496,12 +496,8 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				text = text.substring(0, index) + attachedOnLoad + text.substring(index);
 			attachedOnLoad = null;
 
-			String canvasContainer;
 			if (artifacts.size() != 1)
-				canvasContainer = "<div style=\"overflow:auto; width:100%; height:100%; position:absolute; top:0; left:0; \"><table style=\"width: 100%;" + (artifacts.size() == 1 ? "height: 100%; " : "") + " \"><tbody id=\"clients\"></tbody></table></div>\n";
-			else
-				canvasContainer = "<div id=\"clients\" style=\"position:absolute; left:0px; top:0px; right:0px; bottom:0px; z-index:2; \"></div>\n";
-
+				text = text.replace("<div id=\"clients\"></div>", "<div style=\"flex: 1 0 0px; overflow:auto; \"><table style=\"width: 100%;" + (artifacts.size() == 1 ? "height: 100%; " : "") + " \"><tbody id=\"clients\"></tbody></table></div>");
 			// text += "<div id=\"map_canvas\" style=\"position:absolute; left:0px; top:0px; width:100%; height:100%; z-index:1;\"></div>";
 
 			boolean useObjectTag = false; // turn on to use <object> instead of <iframe>
