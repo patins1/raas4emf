@@ -719,7 +719,7 @@ public class RAASUtils {
 
 	public static String getPath(Folder folder) {
 		String result = folder.getName();
-		while ((folder = (Folder) folder.eContainer()) != null && !"RepositoryRoot".equals(folder.getName())) {
+		while (!"RepositoryRoot".equals(folder.getName()) && (folder = (Folder) folder.eContainer()) != null) {
 			result = folder.getName() + "/" + result;
 		}
 		return result;
