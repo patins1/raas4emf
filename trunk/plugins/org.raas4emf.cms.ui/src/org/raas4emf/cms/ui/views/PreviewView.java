@@ -456,7 +456,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				attachedOnLoad = "";
 
 			if (colors != null)
-				attachedOnLoad += "g_colors=" + colors + ";\n";
+				attachedOnLoad += "var o_colors=" + colors + ";\n for (var m in o_colors) g_colors[m] = o_colors[m];\n";
 			// text += "		<script src=\"" + dir + "touchgen.js\"></script>";
 			String immediately = "";
 			immediately += "var g_ortho=" + CMSActivator.getSessionInstance().getOrtho() + ";\n";
