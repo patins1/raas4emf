@@ -1391,8 +1391,8 @@ public class RAASUtils {
 	}
 
 	private static String replaceAttribute(String contents, int fromIndex, String attribute, String value) {
-		int index = contents.indexOf(attribute + "=\"", fromIndex);
-		if (index >= 0 && index < contents.indexOf("-->", fromIndex)) {
+		int index = contents.lastIndexOf(attribute + "=\"", contents.indexOf("-->", fromIndex));
+		if (index >= fromIndex && contents.charAt(index - 1) != '&') {
 			index += (attribute + "=\"").length();
 			value = value.replace("&", "&amp;");
 			return contents.substring(0, index) + value + contents.substring(contents.indexOf('"', index));
