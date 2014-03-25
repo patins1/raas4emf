@@ -719,7 +719,7 @@ function setClientSize(g_client) {
 	var customContainer = document.getElementById('clients');
 	if (gui && customContainer) {
 		gui.domElement.style.top = (customContainer.offsetTop+5)+"px";
-		gui.domElement.style.right = (document.body.offsetWidth-customContainer.offsetLeft-customContainer.offsetWidth+5)+"px";
+		gui.domElement.style.right = effectController.displaceGui ? (document.body.offsetWidth-customContainer.offsetLeft-customContainer.offsetWidth+5)+"px" : "5px";
 	}
 }
 
@@ -1626,6 +1626,8 @@ function generateGui() {
 	gui = new dat.GUI({ width: effectController.opencontrolsWidth, autoPlace: false});
 
 	document.body.appendChild(gui.domElement);
+
+	setClientSize(g_clients[0]);
 	
 	gui.close();
 	gui.domElement.parentNode.style.zIndex = 5;
@@ -3151,8 +3153,8 @@ function start() {
 			vertexnormals: true,
 			select_face: false,
 			opencontrols: true,
-			opencontrolsWidth:275
-
+			opencontrolsWidth:275,
+			displaceGui:true
 		};
 
 	for (var m in overrideSettings) {
@@ -4188,6 +4190,7 @@ function switchCustomMaterial(enableCustomMaterial, g_client) {
 
 function bringIntoScene(object, g_client) {
 	if (!getScene(object)) {
+		object.renderDepth = 2; // fix for IE11
 		object.originalParent = object.parent;
 		g_client.scene.add(object);
 	}
