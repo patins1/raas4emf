@@ -107,6 +107,10 @@ var USE_BUFFERGEOMETRY = true;
 var inProcessMessage;
 var t_dir = "https://raw.githubusercontent.com/timoxley/threejs/master/examples/";
 
+window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
+	$("#progress").html("Fatal error occured: " + errorMsg+"<br>Location: "+url+"("+lineNumber+")");//or any message
+    return false;
+}
 
 function processMessage(event) {
 	inProcessMessage = true;
@@ -600,6 +604,14 @@ function createRenderer(container,ii) {
     g_client.name = 'threejs' + g_ids[ii];
     g_client.renderer = renderer;
     g_clients.push(g_client);
+	var col = g_mapenabled ? { color: 0x000000, a: 0 }/* the default value */ : { r: 1, g: 1, b: 1, color: 0xFFFFFF, a: 1 }/* prevents dark ragged outline of selection in IE / WebGL mode */;
+	g_client.renderer.setClearColor( col.color, col.a  );
+	renderer.clear();	
+    return g_client;
+}
+
+function installRendererEvents(g_client) {
+	var renderer = g_client.renderer;
 	renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
 	renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
 	renderer.domElement.addEventListener( 'mouseup', onDocumentMouseUp, false );
@@ -609,10 +621,6 @@ function createRenderer(container,ii) {
 	renderer.domElement.addEventListener( 'touchmove', touchHandler, false );
 	renderer.domElement.addEventListener( 'touchstart', touchHandler, false );
 	renderer.domElement.addEventListener( 'touchend', touchHandler, false );
-	var col = g_mapenabled ? { color: 0x000000, a: 0 }/* the default value */ : { r: 1, g: 1, b: 1, color: 0xFFFFFF, a: 1 }/* prevents dark ragged outline of selection in IE / WebGL mode */;
-	g_client.renderer.setClearColor( col.color, col.a  );
-	renderer.clear();	
-    return g_client;
 }
 
 function touchHandler(event) {
@@ -2734,6 +2742,7 @@ function melt(g_client) {
 		var g = 0;
 		for (var tt=0; tt<geometries.length; tt++) {
 			var geometry = geometries[tt];
+			geometries[tt] = null;
 			geometry = THREE.BufferGeometryUtils.fromGeometry( geometry );
 			if (!geometry.attributes.normal) geometry.computeVertexNormals();
 			var position = geometry.attributes.position;
@@ -3503,6 +3512,7 @@ function load2(ii) {
     		animate(g_clients[ii]);		
     		document.getElementById('progress').style.display = "none";
     		drawBar(0,"Finished!");	
+    	    installRendererEvents(g_clients[ii]);
     		},waitForBar);
     		},waitForBar);
     		},waitForBar);
@@ -4168,6 +4178,7 @@ function switchCustomMaterialForObject(enableCustomMaterial, object, g_client) {
 	} else {
 		removeFromScene(object, g_client);
 	}
+	updateClient(g_client, false);
 }
 
 function switchCustomMaterial(enableCustomMaterial, g_client) {
