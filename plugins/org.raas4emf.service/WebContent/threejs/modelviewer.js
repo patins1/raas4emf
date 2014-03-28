@@ -3050,6 +3050,7 @@ function paintBendPoints() {
 //				mesh.scale = child.scale.clone();
 
 				parent.add( mesh );
+				g_client.objects.push(mesh);
 				
 
 				var suspensionCount = Math.ceil(sampleClosedSpline.getLength()*ww/effectController["suspension_distance"]);
@@ -3082,6 +3083,7 @@ function paintBendPoints() {
 					mesh.position.y += bbox.max.y;
 					mesh.position.add(point);
 					parent.add( mesh );
+					g_client.objects.push(mesh);
 			    }
 			}
 			
