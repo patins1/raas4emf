@@ -107,10 +107,16 @@ var USE_BUFFERGEOMETRY = true;
 var inProcessMessage;
 var t_dir = "https://raw.githubusercontent.com/timoxley/threejs/master/examples/";
 
+var trident = !!navigator.userAgent.match(/Trident\/7.0/);
+var net = !!navigator.userAgent.match(/.NET4.0E/);
+var isIE11 = trident && net;
+
 window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
-	$("#progress").html("Fatal error occured: " + errorMsg+"<br>Location: "+url+"("+lineNumber+")");//or any message
+	$("#progress").html("Fatal error occured: " + errorMsg);//or any message
+	myLog(errorMsg);
+	myLog("Location: "+url+" ("+lineNumber+")");
     return false;
-}
+};
 
 function processMessage(event) {
 	inProcessMessage = true;
@@ -384,6 +390,7 @@ function doSetCamera(eye,target,angle,ortho,steps,g_client) {
 		effectController.orthographic=g_ortho=ortho;
 	countProgress=0;
 	if (zoomId) window.clearInterval(zoomId);
+	if (g_camera && eye.distanceTo(g_camera.eye)<0.001 && target.distanceTo(g_camera.target)<0.001) return;
 	if (steps<=1) {
 		g_angle=angle;
 		setEyeAndTarget(eye,target,g_client);
@@ -576,7 +583,7 @@ function buildTable() {
 function createRenderer(container,ii) {
 	var renderer;
     if (g_renderer == "webgl") {
-    	renderer = new THREE.WebGLRenderer({ 'antialias': effectController.antialias});
+    	renderer = new THREE.WebGLRenderer({ 'antialias': effectController.antialias, alpha: true});
 		container.appendChild( renderer.domElement );
    } else if (g_renderer == "canvas") {
 	   	renderer = new THREE.CanvasRenderer();
@@ -753,7 +760,7 @@ function getObjectsWithSplittings(name,g_client) {
 		var n = name[j];
 		var n_ = n+"_";	
 		var f = function ( object ) {	
-			if (object.name && (object.name == n || object.name.indexOf(n_)==0)) {
+			if (object.uuid && (object.uuid == n || object.uuid.indexOf(n_)==0)) {
 				found.push(object);
 			}
 		};
@@ -1587,8 +1594,19 @@ function getTreeID(object) {
 	return "ti"+object.id;
 }
 
+function getTreeLabel(node) {
+	var material = node.originalMaterial || node.material;
+	if (material && material.name) {
+		var materialName = material.name;
+		if (materialName.indexOf("Ifc") != 0)
+			materialName = "Ifc" + materialName;
+		return materialName+" "+ node.name;
+	}		
+	return  node.name;
+}
+
 function getTreeNodeForThreejsNode(node) {
-	return {"id": getTreeID(node),  "text": node.text, state : { loaded : node.children.length==0 }};
+	return {"id": getTreeID(node),  "text": getTreeLabel(node), state : { loaded : node.children.length==0 }};
 }
 
 function openParentNodes(object) {
@@ -2529,8 +2547,7 @@ function optimizeMem(g_client) {
 				face.vertexColors = optArray(face.vertexColors);
 				face.vertexNormals = optArray(face.vertexNormals);
 				face.vertexTangents = optArray(face.vertexTangents);
-			}					
-		
+			}
 		}
     });
 }
@@ -2703,7 +2720,6 @@ function melt(g_client) {
 	resetLocalCoordinateSystems(true,g_client);
 	
 	var geometriesOfMaterial = {};
-	var vertexCountOfMaterial = {};
 
 	g_client.root.traverse(function (mesh) {
 		var mat;
@@ -2711,9 +2727,7 @@ function melt(g_client) {
 			var geometries = geometriesOfMaterial[mat];
 			if (!geometries) {
 				geometriesOfMaterial[mat] = geometries = [];
-				vertexCountOfMaterial[mat] = 0;
 			}
-			vertexCountOfMaterial[mat] += mesh.geometry.vertices ? mesh.geometry.vertices.length : mesh.geometry.attributes.position.array.length;
 			geometries.push(mesh.geometry);
 		}
 	});
@@ -2724,10 +2738,24 @@ function melt(g_client) {
 	
 	for (var mat in geometriesOfMaterial) {
 		var geometries = geometriesOfMaterial[mat];
+		var tt = 0;
+		var partition = 0;
+
+		while (tt<geometries.length) {
+		partition += 1; 
+			
+		var ttt = tt;
+		var vertexCountOfMaterial = 0;
+		while (vertexCountOfMaterial<1048576*9 && ttt<geometries.length) {
+			var geometry = geometries[ttt];
+			vertexCountOfMaterial += geometry.vertices ? geometry.vertices.length : geometry.attributes.position.array.length;
+			ttt += 1;
+		}
+
 		var meltedGeometry = new THREE.BufferGeometry();
 
-		var positionBuffer = new ArrayBuffer(vertexCountOfMaterial[mat]*4);
-		var normalBuffer = new ArrayBuffer(vertexCountOfMaterial[mat]*4);
+		var positionBuffer = new ArrayBuffer(vertexCountOfMaterial*4);
+		var normalBuffer = new ArrayBuffer(vertexCountOfMaterial*4);
 		meltedGeometry.attributes = {
 			position: {
 				itemSize: 3,
@@ -2740,7 +2768,7 @@ function melt(g_client) {
 		};
 
 		var g = 0;
-		for (var tt=0; tt<geometries.length; tt++) {
+		while (tt<ttt) {
 			var geometry = geometries[tt];
 			geometries[tt] = null;
 			geometry = THREE.BufferGeometryUtils.fromGeometry( geometry );
@@ -2754,13 +2782,15 @@ function melt(g_client) {
 			normal.array = new Float32Array( normalBuffer, g*4, normals2.length );
 			normal.array.set(normals2);
 			g += positions2.length;
+			tt += 1;
 		}
 
 		g_client.g_colors[mat].meltedGeometry = meltedGeometry;
 		var materialMesh = new THREE.Mesh(meltedGeometry, g_client.g_colors[mat] );
 		cityMesh.add( materialMesh );
-		materialMesh.name = "melted meshes for material "+mat;
-		
+		materialMesh.name = "melted meshes for material "+mat+" partition "+partition;
+		myLog(materialMesh.name); 
+		}
 	}
 
 	g_client.root.traverse(function (mesh) { 		
@@ -3348,7 +3378,24 @@ var initStatics = function() {
 	    set: function(y) {
 	    }
 	});
-	
+
+	// speed: dont store a name
+	Object.defineProperty(THREE.BufferGeometry.prototype, "name", {
+	    get: function() {
+			return null; 
+	    },
+	    set: function(y) {
+	    }
+	});
+
+	// speed: dont store a uuid
+	Object.defineProperty(THREE.BufferGeometry.prototype, "uuid", {
+	    get: function() {
+			return null; 
+	    },
+	    set: function(y) {
+	    }
+	});	
 
 	Object.defineProperty(THREE.Face3.prototype, "normal", {
 	    get: function() {
@@ -3816,6 +3863,8 @@ function init(root,g_client) {
     	var child = g_client.scene.children[tt];
     	if (child.matrix) {
     		child.matrixWorld.decompose( child.position, child.quaternion, child.scale );
+    		if (g_client.scene.children.length==1)
+    			child.position.set(0,0,0); // fix for buildings who are 30km away from point zero!
     	}
     }
 	g_client.scene.position.set(0,0,0);
@@ -3866,14 +3915,13 @@ function init(root,g_client) {
 	g_client.root.traverse(function (child) { 
     	var comps = child.name.split(",");
     	if (comps.length==3) {
-    		child.name = comps[0];
-    		child.text = comps[1]!="" ? comps[2]+" "+comps[1]: comps[2];
+    		child.uuid = comps[0];
+    		child.name = comps[1]!="" ? comps[2]+" "+comps[1]: comps[2];
     	} else
     	if (comps.length==2) {
-    		child.name = comps[0];
-    		child.text = child.material && child.material.name ?  child.material.name+" "+comps[1] : comps[1];
-    	} else 
-    		child.text = child.name;
+    		child.uuid = comps[0];
+    		child.name = comps[1];
+    	}
     });
     if (g_customInit) g_customInit();
     setupColors(g_client);
@@ -3953,6 +4001,24 @@ function setupColors(g_client) {
 			materialColor = g_colors[m] = new THREE.MeshPhongMaterial(materialColor);
 			materialColor.needsUpdate = true;
 		}
+		if (materialColor.side == THREE.DoubleSide && isIE11)
+			materialColor.side = THREE.FrontSide;
+		if (materialColor.transparent) {
+//			materialColor.depthWrite = false;
+			//http://www.openglsuperbible.com/2013/08/20/is-order-independent-transparency-really-necessary/
+//			materialColor.blending = THREE.CustomBlending;
+//			materialColor.blendSrc = THREE.ZeroFactor;
+//			materialColor.blendDst = THREE.SrcColorFactor;
+//			materialColor.color.lerp(new THREE.Color().setRGB(1, 1, 1),1-materialColor.opacity);
+//			materialColor.opacity = 1;
+			//half-half
+//			materialColor.blending = THREE.CustomBlending;
+//			if (materialColor.opacity!=0)
+//				materialColor.opacity = 0.5;
+		}
+		materialColor.shininess = 0;
+		materialColor.ambient = new THREE.Color( 0x0 );
+		materialColor.specular = new THREE.Color( 0x0 );
 		materialColor.name = m;
 	}
 	if (g_clients.length>=2) {
@@ -3984,8 +4050,8 @@ function setupColors(g_client) {
 		        }
 		        if (material) {
 					child.material = material;
-			        if (child.name && child.name.indexOf("_",1)>=2) {
-			        	var materialName2 = child.name.substring(child.name.indexOf("_",1));
+			        if (child.uuid && child.uuid.indexOf("_",1)>=2) {
+			        	var materialName2 = child.uuid.substring(child.uuid.indexOf("_",1));
 			        	var material2 = g_client.g_colors[materialName2];
 			        	if (material2 && material2!=material) {
 			        		material2.baseMaterialName = child.material.name;
@@ -4239,7 +4305,7 @@ function select(newSelection,g_client) {
     	selectRecursive(g_selectedInfo[tt],g_client);
     }
     if (g_selectedInfo.length>0) {
-	    effectController.id = g_selectedInfo[0].name;
+	    effectController.id = g_selectedInfo[0].uuid;
 	    var material = g_selectedInfo[0].originalMaterial || g_selectedInfo[0].material;
 	    effectController.material = material ? material.name : "none";
 	    if (g_oldWorldPosition!=null && g_worldPosition) {
@@ -4490,12 +4556,14 @@ function onDocumentMouseDown(e) {
 
 	var canChangeSelection = !effectController.select_by_dblclick && !effectController.select_by_mouseup || calledFromOtherMouseEvent;
 	
+	var intersects = null;
+    
+    if (canChangeSelection || isShift(e.shiftKey)) {
     g_oldWorldPosition = g_worldPosition;
     g_worldPosition = null;
 
     var raycaster = getRaycaster(mouse,g_client);
 
-	var intersects;
 	
 	if (useOctree) {
 		
@@ -4516,15 +4584,17 @@ function onDocumentMouseDown(e) {
 	}
 	
 	intersects = intersectParticleSystems(raycaster,g_client) || intersects;
+    }
 	
 
 	var oldSelection = g_selectedInfo;
 	if (canChangeSelection) unSelectAll(g_client);
-	myLog("intersects.length = "+intersects.length);
+	if (intersects) myLog("intersects.length = "+intersects.length);
 
 
 	var SELECTED = null;
 	
+	if (intersects)
     for (var tt = 0; tt < intersects.length; tt++) {	
     	var object = intersects[ tt ].object;
     	if ((object.visible || g_client.additionalObjectsToSelect.indexOf(object)>=0) && object.material.opacity != 0 && object.material.visible) {
@@ -4582,7 +4652,7 @@ function onDocumentMouseDown(e) {
 
 	} else {
 		oldSelection = [];
-		myLog("selected no elements");
+		if (intersects) myLog("selected no elements");
 	}
 	
 	enableOrbit(e.which!=3 && !isShift(e.shiftKey),g_client);
@@ -4592,7 +4662,7 @@ function onDocumentMouseDown(e) {
 	if (canChangeSelection) generateEvent(e.type,e,g_client);
 	
 	
-	updateClient(g_client);
+	if (canChangeSelection) updateClient(g_client);
 	
 	if (e.which!=3 && !calledFromOtherMouseEvent) {
 		g_lastPos = [e.x, e.y];
@@ -4611,7 +4681,7 @@ var waitingCount = 0;
 
 function getSelectedObjectIDs(objects) {
 	return objects.map(function(object) {
-		return object.name;
+		return object.uuid;
 	});
 }
 
@@ -4623,7 +4693,7 @@ function generateEvent(eventType,e,g_client) {
     var type="";
     g_selectedIDs = "";
     for (var ee = 0; ee < g_selectedInfo.length; ee++) {
-    	g_selectedIDs += g_selectedInfo[ee].name + " ";
+    	g_selectedIDs += g_selectedInfo[ee].uuid + " ";
     }
 	if (effectController.treeview==false && effectController.properties==false && e.which!=3) return;
     var mainParams = [g_selectedIDs,type,g_client.id,e.clientX,e.clientY,e.which,eventType];
