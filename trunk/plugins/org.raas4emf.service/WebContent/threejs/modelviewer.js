@@ -4004,7 +4004,7 @@ function setupColors(g_client) {
 		if (materialColor.side == THREE.DoubleSide && isIE11)
 			materialColor.side = THREE.FrontSide;
 		if (materialColor.transparent) {
-//			materialColor.depthWrite = false;
+			materialColor.depthWrite = false;
 			//http://www.openglsuperbible.com/2013/08/20/is-order-independent-transparency-really-necessary/
 //			materialColor.blending = THREE.CustomBlending;
 //			materialColor.blendSrc = THREE.ZeroFactor;
