@@ -1594,15 +1594,39 @@ function getTreeID(object) {
 	return "ti"+object.id;
 }
 
+function getIntermediateTreeID(object,parent) {
+	if (parent && getTruncatedIfcClass(parent)=="BuildingStorey") {
+		return getTreeID(parent) + "_"+ getTruncatedIfcClass(object);
+	}
+	return null;
+}
+
 function getTreeLabel(node) {
+//	var material = node.originalMaterial || node.material;
+//	if (material && material.name) {
+//		var materialName = material.name;
+//		if (materialName.indexOf("Ifc") != 0)
+//			materialName = "Ifc" + materialName;
+//		return materialName+" "+ node.name;
+//	}		
+	return node.name;
+}
+
+
+function getTruncatedIfcClass(node) {
+	if (node.storedMaterialName)
+		return node.storedMaterialName;
 	var material = node.originalMaterial || node.material;
-	if (material && material.name) {
-		var materialName = material.name;
-		if (materialName.indexOf("Ifc") != 0)
-			materialName = "Ifc" + materialName;
-		return materialName+" "+ node.name;
-	}		
-	return  node.name;
+	if (material && material.name)
+		return material.name;
+	return "Other";
+}
+
+function truncatedMaterialName(name) {
+	if (name.indexOf("Ifc")==0) {
+		return name.substring(3);
+	}
+	return name;
 }
 
 function getTreeNodeForThreejsNode(node) {
@@ -1611,6 +1635,7 @@ function getTreeNodeForThreejsNode(node) {
 
 function openParentNodes(object) {
 	if (object.parent) openParentNodes(object.parent);
+	jstree.jstree("open_node",'#'+ getIntermediateTreeID(object,object.parent), null ,false);
 	jstree.jstree("open_node",'#'+ getTreeID(object), null ,false);
 }
 
@@ -1625,7 +1650,26 @@ function generateTree() {
 	        		var g_client = g_clients[0];
 		            cb.call(this, [getTreeNodeForThreejsNode(effectController.quickmode ? g_client.originalRoot : g_client.root)]);		        		
 	        	} else {
-		            cb.call(this, getObjectsFromTreeIDs([obj.id])[0].children.map(getTreeNodeForThreejsNode));
+	        		var parentNode = getObjectsFromTreeIDs([obj.id])[0];
+	        		if (getIntermediateTreeID(parentNode, parentNode)) {
+	        			var childrenTree = [];
+	        			var materialToTree = {};
+	        			parentNode.children.forEach(
+	        					function (child) {
+	        						var childMaterial = getTruncatedIfcClass(child);
+	        						var childTree=materialToTree[childMaterial];
+	        						if (childTree==null) {
+	        							childTree = {"id": getIntermediateTreeID(child, parentNode),  "text": childMaterial, state : { loaded : true }, "children": []};
+	        							materialToTree[childMaterial] = childTree;
+	        							childrenTree.push(childTree);
+	        						}
+	        						childTree.children.push(getTreeNodeForThreejsNode(child));
+	        					}
+	        			);
+			            cb.call(this, childrenTree);	        	
+			            return;
+	        		}
+		            cb.call(this, parentNode.children.map(getTreeNodeForThreejsNode));
 	        	}
 	        }
 	    }
@@ -3916,7 +3960,8 @@ function init(root,g_client) {
     	var comps = child.name.split(",");
     	if (comps.length==3) {
     		child.uuid = comps[0];
-    		child.name = comps[1]!="" ? comps[2]+" "+comps[1]: comps[2];
+    		child.storedMaterialName = truncatedMaterialName(comps[2]);
+    		child.name = comps[1] != "" ? comps[1] : child.storedMaterialName;
     	} else
     	if (comps.length==2) {
     		child.uuid = comps[0];
