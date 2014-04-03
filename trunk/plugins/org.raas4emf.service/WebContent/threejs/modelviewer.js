@@ -1587,7 +1587,7 @@ function expect(controller, value) {
 }
 
 function getObjectsFromTreeIDs(selected) {
-	return getObjectsWithIDs(selected.map(function (ti) { return parseInt(ti.substring(2)); }));
+	return getObjectsWithIDs(selected.map(function (ti) { if (ti.indexOf("_")!=-1) return null; return parseInt(ti.substring(2)); }));
 }
 
 function getTreeID(object) {
@@ -1595,7 +1595,7 @@ function getTreeID(object) {
 }
 
 function getIntermediateTreeID(object,parent) {
-	if (parent && getTruncatedIfcClass(parent)=="BuildingStorey") {
+	if (parent && (getTruncatedIfcClass(parent)=="BuildingStorey" ||  getTruncatedIfcClass(parent)=="Space")) {
 		return getTreeID(parent) + "_"+ getTruncatedIfcClass(object);
 	}
 	return null;
@@ -1609,6 +1609,10 @@ function getTreeLabel(node) {
 //			materialName = "Ifc" + materialName;
 //		return materialName+" "+ node.name;
 //	}		
+	if (node.name == "")
+		return getTruncatedIfcClass(node);
+	if (getTruncatedIfcClass(node)=="Space")
+		return "Space " +node.name;
 	return node.name;
 }
 
@@ -1634,9 +1638,10 @@ function getTreeNodeForThreejsNode(node) {
 }
 
 function openParentNodes(object) {
-	if (object.parent) openParentNodes(object.parent);
+	if (!object.parent) return;
+	openParentNodes(object.parent);
+	jstree.jstree("open_node",'#'+ getTreeID(object.parent), null ,false);
 	jstree.jstree("open_node",'#'+ getIntermediateTreeID(object,object.parent), null ,false);
-	jstree.jstree("open_node",'#'+ getTreeID(object), null ,false);
 }
 
 function generateTree() {
@@ -2834,6 +2839,8 @@ function melt(g_client) {
 		cityMesh.add( materialMesh );
 		materialMesh.name = "melted meshes for material "+mat+" partition "+partition;
 		myLog(materialMesh.name); 
+		if (mat=="Door" || mat=="Window")
+			materialMesh.renderDepth = -2; 
 		}
 	}
 
@@ -3958,15 +3965,24 @@ function init(root,g_client) {
     g_finished = true;  // for selenium
 	g_client.root.traverse(function (child) { 
     	var comps = child.name.split(",");
+    	var hasMaximumNameLength = child.name.length == 63;
     	if (comps.length==3) {
     		child.uuid = comps[0];
-    		child.storedMaterialName = truncatedMaterialName(comps[2]);
-    		child.name = comps[1] != "" ? comps[1] : child.storedMaterialName;
+    		if (comps[2].indexOf("Ifc")==0) {
+    			// deprecated geometry file
+        		child.storedMaterialName = truncatedMaterialName(comps[2]);
+        		child.name = comps[1];
+    		} else {
+	    		child.storedMaterialName = truncatedMaterialName(comps[1]);
+	    		child.name = comps[2];
+    		}
     	} else
     	if (comps.length==2) {
     		child.uuid = comps[0];
     		child.name = comps[1];
     	}
+    	if (hasMaximumNameLength)
+    		child.name += "..";
     });
     if (g_customInit) g_customInit();
     setupColors(g_client);
@@ -4062,8 +4078,6 @@ function setupColors(g_client) {
 //				materialColor.opacity = 0.5;
 		}
 		materialColor.shininess = 0;
-		materialColor.ambient = new THREE.Color( 0x0 );
-		materialColor.specular = new THREE.Color( 0x0 );
 		materialColor.name = m;
 	}
 	if (g_clients.length>=2) {
@@ -4340,7 +4354,7 @@ function select(newSelection,g_client) {
 	if (jstree) {
 		jstree.jstree("deselect_all",true);
 		g_selectedInfo.forEach(function (object) {
-			if (object.parent) openParentNodes(object.parent,object);
+			openParentNodes(object);
 			jstree.jstree("select_node", '#'+getTreeID(object),true,false);
 			$('#'+getTreeID(object))[0].scrollIntoView();
 		});
