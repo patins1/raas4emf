@@ -611,7 +611,7 @@ function createRenderer(container,ii) {
     g_client.name = 'threejs' + g_ids[ii];
     g_client.renderer = renderer;
     g_clients.push(g_client);
-	var col = g_mapenabled ? { color: 0x000000, a: 0 }/* the default value */ : { r: 1, g: 1, b: 1, color: 0xFFFFFF, a: 1 }/* prevents dark ragged outline of selection in IE / WebGL mode */;
+	var col = g_mapenabled ? { color: 0x000000, a: 0 }/* the default value */ : { r: 1, g: 1, b: 1, color: 0x0, a: 0 }/* prevents dark ragged outline of selection in IE / WebGL mode */;
 	g_client.renderer.setClearColor( col.color, col.a  );
 	renderer.clear();	
     return g_client;
@@ -2155,10 +2155,11 @@ function generateGui() {
     g_visibility_sorted.sort();
     for (var tt = 0; tt < g_visibility_sorted.length; tt++) {
     	var m = g_visibility_sorted[tt];
-    	if (!g_colors[m].hideFromMaterialVisibility)
+    	if (!g_colors[m].hideFromMaterialVisibility) {
 		var materialCtl = materialVisibilityGui.add( g_visibility, m,  g_visibility[m]).onChange(updateCol);
     	materialCtls.push(materialCtl);
     	materialCtl.neverRemove = effectController.flatten_materialvisibility;
+    	}
 	}
 
 	effectController[ "Select All" ] = function () {for (var m in g_visibility) { g_visibility[m] = true; } materialCtls.forEach(updateGuiControl); updateCol(); };
@@ -4064,18 +4065,37 @@ function setupColors(g_client) {
 		}
 		if (materialColor.side == THREE.DoubleSide && isIE11)
 			materialColor.side = THREE.FrontSide;
+		
+		var opacity = effectController.opacity;
+		if (materialColor.opacity!=0 && opacity) {
+			materialColor.opacity = Number.parseFloat(opacity);
+		}
+		opacity = effectController["opacity."+m];
+		if (opacity) {
+			materialColor.opacity = Number.parseFloat(opacity);
+		}
+		materialColor.transparent = materialColor.opacity<1;
+
 		if (materialColor.transparent) {
 			materialColor.depthWrite = false;
-			//http://www.openglsuperbible.com/2013/08/20/is-order-independent-transparency-really-necessary/
+
+			//http://www.openglsuperbible.com/2013/08/20/is-order-independent-transparency-really-necessary	
+			
+//			/* multiplicative blending */
 //			materialColor.blending = THREE.CustomBlending;
 //			materialColor.blendSrc = THREE.ZeroFactor;
 //			materialColor.blendDst = THREE.SrcColorFactor;
 //			materialColor.color.lerp(new THREE.Color().setRGB(1, 1, 1),1-materialColor.opacity);
 //			materialColor.opacity = 1;
-			//half-half
+//			
+//
+//			/* additive blending */
 //			materialColor.blending = THREE.CustomBlending;
-//			if (materialColor.opacity!=0)
-//				materialColor.opacity = 0.5;
+//			materialColor.blendSrc = THREE.SrcAlphaFactor;
+//			materialColor.blendDst = THREE.OneFactor;
+//			materialColor.color.lerp(new THREE.Color().setRGB(0, 0, 0),1-materialColor.opacity);
+//			materialColor.opacity = 1;
+			
 		}
 		materialColor.shininess = 0;
 		materialColor.name = m;
@@ -4115,11 +4135,11 @@ function setupColors(g_client) {
 			        	if (material2 && material2!=material) {
 			        		material2.baseMaterialName = child.material.name;
 							child.material = material = material2;
-							g_visibility[material2.baseMaterialName] = true;
+							g_visibility[material2.baseMaterialName] = material2.visible;
 			        	}
 			        }					
 			        setupUVs(child);
-					g_visibility[material.name] = true;
+					g_visibility[material.name] = material.visible;
 		        }
 	    	}
 		}; 
