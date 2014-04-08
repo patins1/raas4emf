@@ -114,7 +114,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				TransformationUtils.stringToFile(commandsTemplate, commands);
 				String sshCommand;
 				if (isWindows)
-					sshCommand = "plink.exe -i %SSHKEYFILE% -P 22 -ssh %REMOTE_BLENDER_URL% -m \"%EXTERNALCOMMANDFILE%\"";
+					sshCommand = "plink.exe -batch -i %SSHKEYFILE% -P 22 -ssh %REMOTE_BLENDER_URL% -m \"%EXTERNALCOMMANDFILE%\"";
 				else
 					sshCommand = "ssh -o StrictHostKeyChecking=no -i %SSHKEYFILE% %REMOTE_BLENDER_URL% bin/ifc2jshttp.sh %FINGERPRINT% \"%IFCURL%\" \"%JSURL%\"";
 
