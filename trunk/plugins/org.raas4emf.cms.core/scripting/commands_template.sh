@@ -1,1 +1,0 @@
-bin/ifcurl2js.sh "https://s3-ap-southeast-2.amazonaws.com/ifc-translation/" "s3://ifc-translation/2884ebd5867393e9ef913c86c2f82064fd3a2754.js"

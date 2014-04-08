@@ -106,12 +106,13 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 					}
 				}
 
-				File commandsTemplate = new File(FileLocator.resolve(new URL("platform:/plugin/org.raas4emf.cms.core/scripting/commands_template.sh")).getFile());
+				File commandsTemplate = new File(new File(key).getParentFile(), "commands_template.sh");
 
 				String commands = "bin/ifc2jshttp.sh %FINGERPRINT% \"%IFCURL%\" \"%JSURL%\""; // TransformationUtils.stringFromFile(commandsTemplate);
 				commands = commands.replace("%IFCURL%", ifcUrl);
 				commands = commands.replace("%JSURL%", jsUrl);
-				TransformationUtils.stringToFile(commandsTemplate, commands);
+				if (isWindows)
+					TransformationUtils.stringToFile(commandsTemplate, commands);
 				String sshCommand;
 				if (isWindows)
 					sshCommand = "plink.exe -batch -i %SSHKEYFILE% -P 22 -ssh %REMOTE_BLENDER_URL% -m \"%EXTERNALCOMMANDFILE%\"";
