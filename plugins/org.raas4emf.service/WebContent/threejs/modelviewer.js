@@ -2627,6 +2627,9 @@ function resetLocalCoordinateSystems(SAVEMEM,g_client) {
 	
 }
 
+function getCoordinateCount(geometry) {
+	return geometry.vertices ? geometry.vertices.length*3 : geometry.attributes.position.array.length;
+}
 
 function melt(g_client) {	
 
@@ -2796,9 +2799,8 @@ function melt(g_client) {
 			
 		var ttt = tt;
 		var vertexCountOfMaterial = 0;
-		while (vertexCountOfMaterial<1048576*9 && ttt<geometries.length) {
-			var geometry = geometries[ttt];
-			vertexCountOfMaterial += geometry.vertices ? geometry.vertices.length : geometry.attributes.position.array.length;
+		while (ttt<geometries.length && vertexCountOfMaterial+getCoordinateCount(geometries[ttt])<1048576*9) {
+			vertexCountOfMaterial+=getCoordinateCount(geometries[ttt]);
 			ttt += 1;
 		}
 
