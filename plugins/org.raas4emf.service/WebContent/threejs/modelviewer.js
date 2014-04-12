@@ -1619,10 +1619,10 @@ function getTreeLabel(node) {
 
 function getTruncatedIfcClass(node) {
 	if (node.storedMaterialName)
-		return node.storedMaterialName;
+		return truncatedMaterialName(node.storedMaterialName);
 	var material = node.originalMaterial || node.material;
 	if (material && material.name)
-		return material.name;
+		return truncatedMaterialName(material.name);
 	return "Other";
 }
 
