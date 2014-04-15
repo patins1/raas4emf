@@ -54,6 +54,8 @@ key.R = 82;
 key.I = 73;
 key.O = 79;
 key.B = 66;
+key.F = 70;
+key.T = 84;
 key.SHIFT = 16;
 key.CTRL = 17;
 key.PG_UP = 33;
@@ -80,7 +82,7 @@ var container, stats, rendererStats;
 var projector;
 var mouse;
 
-var gui, jstree, misc, selectionInfoGui, extrusionLengthGui, closingAngleGui, lazyRenderingGui, materialVisibilityGui;
+var gui, jstree, misc, selectionInfoGui, extrusionLengthGui, closingAngleGui, lazyRenderingGui, materialVisibilityGui, fpsGui;
 var effectController;
 var geoHandle;
 var materials, current_material;
@@ -2464,7 +2466,7 @@ function generateGui() {
 	debugGui.add( effectController, 'log_on_screen' ).onChange( function() {
 		settingsChanged();
 	} );
-	expect(debugGui.add( effectController, 'fps').onChange( function() {
+	expect(fpsGui = debugGui.add( effectController, 'fps').onChange( function() {
 		if (effectController.fps) {
 			if (stats==null) {
 				stats = new Stats();
@@ -2535,12 +2537,13 @@ function generateGui() {
 
 	effectController[ "threex.rendererstats" ] = function () {
 		g_clients[0].scene.traverse(function (child) { 
-	        require(['https://raw.github.com/jeromeetienne/threex.rendererstats/master/threex.rendererstats.js'], function () {
+	        require(['https://raw.githubusercontent.com/jeromeetienne/threex.rendererstats/master/threex.rendererstats.js'], function () {
 				rendererStats   = new THREEx.RendererStats();
 				rendererStats.domElement.style.zIndex = 4;
 				rendererStats.domElement.style.position = 'absolute';
 				rendererStats.domElement.style.left = '0px';
 				rendererStats.domElement.style.bottom   = '0px';
+				rendererStats.domElement.style.width   = 'auto';
 				document.body.appendChild( rendererStats.domElement );
 	        });
 		});
@@ -3271,13 +3274,23 @@ function start() {
 		  if (!keyIsDown[keyChar]) {
 			  keyIsDown[keyChar] = true;
 			  motionByKeysAll();
-			  if (keyChar==key.S || keyChar==key.W || keyChar==key.D || keyChar==key.A || keyChar==key.R) {				  
+			  if (!keyIsDown[key.SHIFT] && (keyChar==key.S || keyChar==key.W || keyChar==key.D || keyChar==key.A || keyChar==key.R)) {				  
 				  	var g_client = g_clients[0];
 				  	if (keyChar==key.S) toggleVisibility(g_client.root, "Space", g_client.hideSpaces = !g_client.hideSpaces);
 				  	if (keyChar==key.W) toggleVisibility(g_client.root, "Wall", g_client.hideWalls = !g_client.hideWalls);
 				  	if (keyChar==key.D) toggleVisibility(g_client.root, "Door", g_client.hideDoors = !g_client.hideDoors);
 				  	if (keyChar==key.R) toggleVisibility(g_client.root, "", g_client.hideModel = !g_client.hideModel);
 					updateClient(g_client);
+			  }
+			  if (keyIsDown[key.F] && keyIsDown[key.SHIFT]) {
+				  fpsGui.setValue(!effectController.fps);
+				  lazyRenderingGui.setValue(!effectController.fps);
+			  }
+			  if (keyIsDown[key.T] && keyIsDown[key.SHIFT]) {
+				  effectController[ "ThreeInspector" ]();
+			  }
+			  if (keyIsDown[key.R] && keyIsDown[key.SHIFT]) {
+				  effectController[ "threex.rendererstats" ]();
 			  }
 		  }
 		  if (keyChar==key.PLUS) {		
