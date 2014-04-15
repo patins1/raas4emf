@@ -360,6 +360,10 @@ function clickCamera(args,steps,artifactId) {
     updateClient(g_client);	
 }
 
+function StrToIntArray(a) {
+	return [parseInt(a[0]),parseInt(a[1]),parseInt(a[2])];
+}
+
 function asVector3(a) {
 	return new THREE.Vector3(a[0],a[2],-a[1]);
 }
@@ -3933,7 +3937,8 @@ function init(root,g_client) {
 	g_client.scene.autoUpdate = false;
 	
 	var hasSomething = locate(g_client.root,g_client,1);
-	
+	if (effectController.eye && effectController.target)
+	    doSetCamera(asVector3M(StrToIntArray(effectController.eye.split(","))),asVector3M(StrToIntArray(effectController.target.split(","))),g_angle,null,1,g_client);
 
     var toDelete = [];
 	scene.traverse(function (child) { 
