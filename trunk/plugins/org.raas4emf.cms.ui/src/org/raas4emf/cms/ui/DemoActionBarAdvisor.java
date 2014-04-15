@@ -316,7 +316,11 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 			public void run() {
 				if (MessageDialog.openQuestion(window.getShell(), "", "Do you really want to restart the server?")) {
 					try {
-						Runtime.getRuntime().exec("cmd /c start C:" + RAASUtils.ROOTPATH.replace('/', '\\') + "\\update_and_restart.bat");
+						boolean isWindows = System.getProperty("os.name").contains("Windows");
+						if (isWindows)
+							Runtime.getRuntime().exec("cmd /c start C:" + RAASUtils.ROOTPATH.replace('/', '\\') + "\\update_and_restart.bat");
+						else
+							Runtime.getRuntime().exec(RAASUtils.ROOTPATH + "/update_and_restart.bat");
 					} catch (IOException e) {
 						CMSActivator.err(e);
 					}
