@@ -34,6 +34,6 @@ public class StreamGobbler extends Thread {
 	}
 
 	protected void println(String line) {
-		Activator.log(this.type + ">" + line); //$NON-NLS-1$
+		Activator.info(this.type + ">" + line); //$NON-NLS-1$
 	}
 }
