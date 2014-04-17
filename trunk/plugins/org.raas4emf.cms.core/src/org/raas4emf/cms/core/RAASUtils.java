@@ -591,7 +591,7 @@ public class RAASUtils {
 	public static List<EObject> getNamedChildren(final Folder folder) {
 		List<EObject> result = new ArrayList<EObject>(folder.eContents());
 		while (result.remove(null))
-			Activator.log("Removed null");
+			Activator.err("Removed null");
 		return result;
 	}
 
@@ -1294,7 +1294,7 @@ public class RAASUtils {
 				ContainmentTreeOrderedByNumberHelper helper = new ContainmentTreeOrderedByNumberHelper(model);
 				EObject result = helper.get(integer);
 				long end = System.currentTimeMillis();
-				Activator.log("Find EObject from index " + (end - start) + " milliseconds");
+				Activator.perf("Find EObject from index " + (end - start) + " milliseconds");
 				return result;
 			}
 		}

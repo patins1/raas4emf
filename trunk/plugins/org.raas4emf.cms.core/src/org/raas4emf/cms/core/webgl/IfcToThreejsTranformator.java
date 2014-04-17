@@ -150,7 +150,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				return null;
 			monitor.subTask("Creating geometry");
 
-			Activator.log("Executing " + cmd);
+			Activator.info("Executing " + cmd);
 			String[] envp = null;
 			if (System.getProperty("LD_LIBRARY_PATH") != null)
 				envp = new String[] { "LD_LIBRARY_PATH=" + System.getProperty("LD_LIBRARY_PATH") };
