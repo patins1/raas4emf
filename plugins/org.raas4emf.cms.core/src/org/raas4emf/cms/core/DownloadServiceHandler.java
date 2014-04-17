@@ -171,7 +171,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 						if (!isModified(response, file, file))
 							return;
 					} catch (Exception e) {
-						Activator.log(e.getMessage());
+						Activator.err(e.getMessage());
 					}
 				}
 			}
