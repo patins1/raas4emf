@@ -48,6 +48,10 @@ public class Activator extends Plugin {
 	}
 
 	public static void log(String msg) {
+		getDefault().getLog().log(new Status(Status.OK, getDefault().getBundle().getSymbolicName(), Status.OK, msg, null));
+	}
+
+	public static void info(String msg) {
 		getDefault().getLog().log(new Status(Status.INFO, getDefault().getBundle().getSymbolicName(), Status.OK, msg, null));
 	}
 
