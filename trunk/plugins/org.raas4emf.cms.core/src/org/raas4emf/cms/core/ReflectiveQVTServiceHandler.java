@@ -124,7 +124,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 				throw new Exception("Could not produce response for request " + requestClass);
 			String result = new String(Activator.getSessionInstance().encodeJSON(targetModel.get(0)));
 
-			response.setHeader("RAASHeader", "" + message);
+			response.setHeader("RAASResponseMessage", "" + message);
 			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(result), response.getOutputStream());
 			Activator.log("Produced " + targetModel.get(0).getClass());
 
@@ -137,7 +137,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 			EObject res = eclass.getEPackage().getEFactoryInstance().create(eclass);
 			res.eSet(eclass.getEStructuralFeature("errorMessage"), message);
 			message = new String(Activator.getSessionInstance().encodeJSON(res));
-			response.setHeader("RAASHeader", "" + message);
+			response.setHeader("RAASResponseMessage", "" + message);
 			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message), response.getOutputStream());
 		}
 
