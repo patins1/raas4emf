@@ -5,6 +5,9 @@ var countProgress;
 var g_colors;
 var reviseSelection = function (s) { return s; };
 if (g_colors == null) g_colors= {};
+var g_colorSchemes;
+var b_colorSchemes = {};
+var materialCtls = [];
 var g_visibility = [];
 var useOctree = false, octree;
 
@@ -23,7 +26,6 @@ var NUM_DOWN;
 var up;
 var g_dragging = false;
 var g_worldPosition;
-var g_selectedIDs;
 var g_customInit;
 var g_offs;
 var g_finished = false;  // for selenium
@@ -2137,6 +2139,31 @@ function generateGui() {
 		});
 	};
 
+	var inUpdateColScheme = false;
+	var updateColScheme = function () {
+		
+		var selectedColorScheme = this.property;
+		if (inUpdateColScheme) return;
+		inUpdateColScheme = true;
+		
+		for (var m in g_colorSchemes) {
+			if (m != selectedColorScheme)
+				b_colorSchemes[m] = false;
+		}
+
+		if (!b_colorSchemes[selectedColorScheme])
+			selectedColorScheme = "default";
+		
+		g_colors = g_colorSchemes[selectedColorScheme];
+
+		g_clients.forEach(function (g_client) {
+			setupColors(g_client);
+			updateColors(g_client);
+			updateClient(g_client);
+		});
+		materialCtls.forEach(updateGuiControl);
+		inUpdateColScheme=false;
+	};
 //	h = misc.addFolder( "Building material color" );
 
 //	for (var m in g_colors) {
@@ -2150,10 +2177,19 @@ function generateGui() {
 	// building material (color enablement)
 
 	materialVisibilityGui = gui.addFolder( "Material visibility" );
-	var materialCtls = [];
 
 	
 	if (effectController.flatten_materialvisibility) materialVisibilityGui = gui;
+
+	for (var m in g_colorSchemes) {
+		if (m!="default") {
+			b_colorSchemes[m] = false;
+			var mScheme = m;
+			var colorScheme = materialVisibilityGui.add( b_colorSchemes, m,  b_colorSchemes[m]).onChange(updateColScheme);
+	    	materialCtls.push(colorScheme);		
+	    	colorScheme.neverRemove = effectController.flatten_materialvisibility;	
+		}
+	}
 
     var g_visibility_sorted = [];
     for(var key in g_visibility)
@@ -2772,6 +2808,15 @@ function melt(g_client) {
 	
 	if (meltIntoBufferGeometry) {
 
+	g_client.root.traverse(function (mesh) {
+		if (mesh.geometry && mesh.material) {
+			if (mesh.geometry.taken) {
+				mesh.geometry = mesh.geometry.clone();
+			} else {
+				mesh.geometry.taken = true;
+			}
+		}
+	});
 	g_client.root.traverse(function (mesh) {
 		if (mesh.geometry && mesh.material) {
 			mesh.geometry.applyMatrix(mesh.matrixWorld);	
@@ -3627,6 +3672,8 @@ function load2(ii) {
     		setTimeout(function(){
     		generateGui();
         	if (effectController.quickmode) melt(g_clients[ii]);
+    		if (effectController.selection) select(getObjectsWithSplittings(effectController.selection.split(",")),g_clients[ii]);
+    		if (effectController.locate) locate(g_selectedInfo,g_clients[ii],1);
     		drawBar(0,"Rendering WebGL ...");	
     		setTimeout(function(){
     		animate(g_clients[ii]);		
@@ -4006,6 +4053,12 @@ function init(root,g_client) {
     		child.name += "..";
     });
     if (g_customInit) g_customInit();
+	if (g_colors["default"]) {
+		g_colorSchemes = g_colors;
+		g_colors = g_colors["default"];
+	} else {
+		g_colorSchemes = [g_colors];
+	}
     setupColors(g_client);
 	g_client.root.traverse(function (child) { 
     	child.visible = true; //non-meshes are not visible by default, but required to be visible for canvas renderer
@@ -4784,18 +4837,20 @@ function getSelectedObjectIDs(objects) {
 	});
 }
 
+function selectionAsString(delimiter) {
+	return g_selectedInfo.map(function (object) {
+		return object.uuid;
+	}).join(delimiter || " ");
+}
+
 function generateEvent(eventType,e,g_client) {
 	if (typeof(theJavaFunction) != "function") return;
 	
 	if (eventType=="mouseup") eventType="click";
 	
     var type="";
-    g_selectedIDs = "";
-    for (var ee = 0; ee < g_selectedInfo.length; ee++) {
-    	g_selectedIDs += g_selectedInfo[ee].uuid + " ";
-    }
 	if (effectController.treeview==false && effectController.properties==false && e.which!=3) return;
-    var mainParams = [g_selectedIDs,type,g_client.id,e.clientX,e.clientY,e.which,eventType];
+    var mainParams = [selectionAsString(),type,g_client.id,e.clientX,e.clientY,e.which,eventType];
 	if ( g_selectedInfo.length != 0 ) {
 		if (g_worldPosition) {
 			mainParams = mainParams.concat(vector3ToArray(g_worldPosition));
@@ -4859,7 +4914,7 @@ function onDocumentMouseUp(e) {
 		myLog("drop");
 		var x = vector3ToArray(g_offs)[0];
 		var y = vector3ToArray(g_offs)[1];
-		setTimeout(function(){try { theJavaFunction(g_selectedIDs,"",g_client.id,x,y,e.which,"drop");  } catch (e2) {}},100);
+		setTimeout(function(){try { theJavaFunction(selectionAsString(),"",g_client.id,x,y,e.which,"drop");  } catch (e2) {}},100);
 		myLog("dropped");
 	} else {
 		var dist = 5;
