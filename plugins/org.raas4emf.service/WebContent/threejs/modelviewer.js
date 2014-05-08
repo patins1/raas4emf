@@ -2876,7 +2876,7 @@ function melt(g_client) {
 			var geometry = geometries[tt];
 			geometries[tt] = null;
 			geometry = THREE.BufferGeometryUtils.fromGeometry( geometry );
-			if (!geometry.attributes.normal) geometry.computeVertexNormals();
+			if (!hasVertexNormals(geometry)) geometry.computeVertexNormals();
 			var position = geometry.attributes.position;
 			var positions2 = position.array;
 			position.array = new Float32Array( positionBuffer, g*4, positions2.length );
@@ -3442,6 +3442,19 @@ var allGeometries = 0;
 var waitForBar = 1;
 
 function hasVertexNormals(geometry) {
+	if (geometry.attributes) {
+		
+		if (!geometry.attributes.normal) 
+			return false;
+
+		for ( i = 0, il = geometry.attributes[ "normal" ].array.length; i < il; i ++ ) {
+
+			if (geometry.attributes[ "normal" ].array[ i ] != 0) return true;
+
+		}
+
+		return false;
+	}
 	return geometry.faces && geometry.faces.length>0 && geometry.faces[0].vertexNormals.length>0;
 }
 
