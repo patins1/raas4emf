@@ -20,7 +20,7 @@ THREE.BufferGeometryUtils = {
 		var faceVertexUvs = geometry.faceVertexUvs;
 		var vertexColors = settings.vertexColors;
 		var hasFaceVertexUv = faceVertexUvs[ 0 ].length > 0;
-		var hasFaceVertexNormals = faces.length && faces[ 0 ].vertexNormals.length == 3;
+		var hasFaceVertexNormals = faces[ 0 ].vertexNormals.length == 3;
 
 		var bufferGeometry = new THREE.BufferGeometry();
 
