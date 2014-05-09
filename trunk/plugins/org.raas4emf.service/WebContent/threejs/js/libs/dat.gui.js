@@ -1130,7 +1130,7 @@ dat.controllers.BooleanController = (function (Controller, dom, common) {
     this.updateDisplay();
 
     function onChange() {
-      _this.setValue(!_this.__prev);
+        _this.setValue($(_this.__checkbox).is(':checked'));
     }
 
   };
