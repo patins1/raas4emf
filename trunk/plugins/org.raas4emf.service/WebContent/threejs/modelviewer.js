@@ -4083,7 +4083,7 @@ function init(root,g_client) {
 		g_colorSchemes = g_colors;
 		g_colors = g_colors["default"];
 	} else {
-		g_colorSchemes = [g_colors];
+		g_colorSchemes = { "default": g_colors};
 	}
     setupColors(g_client);
 	g_client.root.traverse(function (child) { 
