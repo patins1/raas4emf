@@ -1,3 +1,0 @@
-Construct a transformation that replaces all empty Blocks in the source model by a Square in the target model.
-
-Type: Abstraction
