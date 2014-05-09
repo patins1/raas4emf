@@ -26,6 +26,7 @@ import org.eclipse.xtext.common.types.JvmGenericArrayTypeReference;
 import org.eclipse.xtext.common.types.JvmIdentifiableElement;
 import org.eclipse.xtext.common.types.JvmOperation;
 import org.eclipse.xtext.common.types.JvmParameterizedTypeReference;
+import org.eclipse.xtext.common.types.JvmType;
 import org.eclipse.xtext.common.types.JvmTypeReference;
 import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.serializer.ISerializer;
@@ -65,36 +66,36 @@ public class JQVTUtils {
     final HashSet<String> names = _hashSet;
     EList<RelationDomain> _domains = relation.getDomains();
     final Function1<RelationDomain,Boolean> _function = new Function1<RelationDomain,Boolean>() {
-        public Boolean apply(final RelationDomain domain) {
-          boolean _and = false;
-          boolean _isTarget = JQVTUtils.this.isTarget(domain);
-          boolean _not = (!_isTarget);
-          if (!_not) {
-            _and = false;
-          } else {
-            String _name = JQVTUtils.this.getName(domain);
-            boolean _add = names.add(_name);
-            _and = (_not && _add);
-          }
-          return Boolean.valueOf(_and);
+      public Boolean apply(final RelationDomain domain) {
+        boolean _and = false;
+        boolean _isTarget = JQVTUtils.this.isTarget(domain);
+        boolean _not = (!_isTarget);
+        if (!_not) {
+          _and = false;
+        } else {
+          String _name = JQVTUtils.this.getName(domain);
+          boolean _add = names.add(_name);
+          _and = (_not && _add);
         }
-      };
+        return Boolean.valueOf(_and);
+      }
+    };
     Iterable<RelationDomain> _filter = IterableExtensions.<RelationDomain>filter(_domains, _function);
     EList<RelationDomain> _domains_1 = relation.getDomains();
     final Function1<RelationDomain,Boolean> _function_1 = new Function1<RelationDomain,Boolean>() {
-        public Boolean apply(final RelationDomain domain) {
-          boolean _and = false;
-          boolean _isTarget = JQVTUtils.this.isTarget(domain);
-          if (!_isTarget) {
-            _and = false;
-          } else {
-            String _name = JQVTUtils.this.getName(domain);
-            boolean _add = names.add(_name);
-            _and = (_isTarget && _add);
-          }
-          return Boolean.valueOf(_and);
+      public Boolean apply(final RelationDomain domain) {
+        boolean _and = false;
+        boolean _isTarget = JQVTUtils.this.isTarget(domain);
+        if (!_isTarget) {
+          _and = false;
+        } else {
+          String _name = JQVTUtils.this.getName(domain);
+          boolean _add = names.add(_name);
+          _and = (_isTarget && _add);
         }
-      };
+        return Boolean.valueOf(_and);
+      }
+    };
     Iterable<RelationDomain> _filter_1 = IterableExtensions.<RelationDomain>filter(_domains_1, _function_1);
     return Iterables.<RelationDomain>concat(_filter, _filter_1);
   }
@@ -115,43 +116,43 @@ public class JQVTUtils {
     final Relation relation = this.getReferredRelation(call);
     Iterable<RelationDomain> _uniqueDomains = this.getUniqueDomains(relation);
     final Function1<RelationDomain,Boolean> _function = new Function1<RelationDomain,Boolean>() {
-        public Boolean apply(final RelationDomain domain) {
-          boolean _and = false;
-          boolean _or = false;
-          boolean _equals = Objects.equal(isTarget, null);
-          if (_equals) {
-            _or = true;
-          } else {
-            boolean _isTarget = JQVTUtils.this.isTarget(domain);
-            boolean _equals_1 = isTarget.equals(Boolean.valueOf(_isTarget));
-            _or = (_equals || _equals_1);
-          }
-          if (!_or) {
-            _and = false;
-          } else {
-            Iterable<RelationDomain> _uniqueDomains = JQVTUtils.this.getUniqueDomains(relation);
-            List<RelationDomain> _list = IterableExtensions.<RelationDomain>toList(_uniqueDomains);
-            int _indexOf = _list.indexOf(domain);
-            EList<XExpression> _featureCallArguments = call.getFeatureCallArguments();
-            int _size = _featureCallArguments.size();
-            boolean _lessThan = (_indexOf < _size);
-            _and = (_or && _lessThan);
-          }
-          return Boolean.valueOf(_and);
+      public Boolean apply(final RelationDomain domain) {
+        boolean _and = false;
+        boolean _or = false;
+        boolean _equals = Objects.equal(isTarget, null);
+        if (_equals) {
+          _or = true;
+        } else {
+          boolean _isTarget = JQVTUtils.this.isTarget(domain);
+          boolean _equals_1 = isTarget.equals(Boolean.valueOf(_isTarget));
+          _or = (_equals || _equals_1);
         }
-      };
-    Iterable<RelationDomain> _filter = IterableExtensions.<RelationDomain>filter(_uniqueDomains, _function);
-    final Function1<RelationDomain,ParamPair> _function_1 = new Function1<RelationDomain,ParamPair>() {
-        public ParamPair apply(final RelationDomain domain) {
-          EList<XExpression> _featureCallArguments = call.getFeatureCallArguments();
+        if (!_or) {
+          _and = false;
+        } else {
           Iterable<RelationDomain> _uniqueDomains = JQVTUtils.this.getUniqueDomains(relation);
           List<RelationDomain> _list = IterableExtensions.<RelationDomain>toList(_uniqueDomains);
           int _indexOf = _list.indexOf(domain);
-          XExpression _get = _featureCallArguments.get(_indexOf);
-          ParamPair _paramPair = new ParamPair(_get, domain);
-          return _paramPair;
+          EList<XExpression> _featureCallArguments = call.getFeatureCallArguments();
+          int _size = _featureCallArguments.size();
+          boolean _lessThan = (_indexOf < _size);
+          _and = (_or && _lessThan);
         }
-      };
+        return Boolean.valueOf(_and);
+      }
+    };
+    Iterable<RelationDomain> _filter = IterableExtensions.<RelationDomain>filter(_uniqueDomains, _function);
+    final Function1<RelationDomain,ParamPair> _function_1 = new Function1<RelationDomain,ParamPair>() {
+      public ParamPair apply(final RelationDomain domain) {
+        EList<XExpression> _featureCallArguments = call.getFeatureCallArguments();
+        Iterable<RelationDomain> _uniqueDomains = JQVTUtils.this.getUniqueDomains(relation);
+        List<RelationDomain> _list = IterableExtensions.<RelationDomain>toList(_uniqueDomains);
+        int _indexOf = _list.indexOf(domain);
+        XExpression _get = _featureCallArguments.get(_indexOf);
+        ParamPair _paramPair = new ParamPair(_get, domain);
+        return _paramPair;
+      }
+    };
     return IterableExtensions.<RelationDomain, ParamPair>map(_filter, _function_1);
   }
   
@@ -220,15 +221,18 @@ public class JQVTUtils {
   }
   
   public XVariableDeclaration findVarDecl(final EObject eObject, final String name) {
+    Iterable<XVariableDeclaration> _allVarDecls = null;
     Relation _outerRelation = this.getOuterRelation(eObject);
-    Iterable<XVariableDeclaration> _allVarDecls = _outerRelation==null?(Iterable<XVariableDeclaration>)null:this.getAllVarDecls(_outerRelation);
+    if (_outerRelation!=null) {
+      _allVarDecls=this.getAllVarDecls(_outerRelation);
+    }
     final Function1<XVariableDeclaration,Boolean> _function = new Function1<XVariableDeclaration,Boolean>() {
-        public Boolean apply(final XVariableDeclaration x) {
-          String _name = x.getName();
-          boolean _equals = name.equals(_name);
-          return Boolean.valueOf(_equals);
-        }
-      };
+      public Boolean apply(final XVariableDeclaration x) {
+        String _name = x.getName();
+        boolean _equals = name.equals(_name);
+        return Boolean.valueOf(_equals);
+      }
+    };
     XVariableDeclaration _findFirst = IterableExtensions.<XVariableDeclaration>findFirst(_allVarDecls, _function);
     return _findFirst;
   }
@@ -236,14 +240,17 @@ public class JQVTUtils {
   public Relation getReferredRelation(final XAbstractFeatureCall xFeatureCall) {
     final String name = xFeatureCall.getConcreteSyntaxFeatureName();
     Transformation _outerTransformation = this.getOuterTransformation(xFeatureCall);
-    EList<Relation> _rules = _outerTransformation==null?(EList<Relation>)null:_outerTransformation.getRules();
+    EList<Relation> _rules = null;
+    if (_outerTransformation!=null) {
+      _rules=_outerTransformation.getRules();
+    }
     final Function1<Relation,Boolean> _function = new Function1<Relation,Boolean>() {
-        public Boolean apply(final Relation x) {
-          String _name = x.getName();
-          boolean _equals = name.equals(_name);
-          return Boolean.valueOf(_equals);
-        }
-      };
+      public Boolean apply(final Relation x) {
+        String _name = x.getName();
+        boolean _equals = name.equals(_name);
+        return Boolean.valueOf(_equals);
+      }
+    };
     return IterableExtensions.<Relation>findFirst(_rules, _function);
   }
   
@@ -289,7 +296,10 @@ public class JQVTUtils {
     Iterable<EObject> _containerIterable = JQVTUtilsExtended.getContainerIterable(eObject);
     Iterable<Transformation> _filter = Iterables.<Transformation>filter(_containerIterable, Transformation.class);
     Transformation _head = IterableExtensions.<Transformation>head(_filter);
-    EList<Direction> _directions = _head==null?(EList<Direction>)null:_head.getDirections();
+    EList<Direction> _directions = null;
+    if (_head!=null) {
+      _directions=_head.getDirections();
+    }
     Direction _last = IterableExtensions.<Direction>last(_directions);
     return _last;
   }
@@ -297,6 +307,44 @@ public class JQVTUtils {
   public boolean isRootTemplate(final EObject objectTemplate) {
     EObject _eContainer = objectTemplate.eContainer();
     return (_eContainer instanceof RelationDomain);
+  }
+  
+  public static String toGetterName(final JvmOperation property) {
+    String _simpleName = property.getSimpleName();
+    return _simpleName;
+  }
+  
+  public static String toSetterName(final JvmOperation property) {
+    String _propertyName = JQVTUtils.toPropertyName(property);
+    return ("set" + _propertyName);
+  }
+  
+  public static String toPropertyName(final JvmOperation op) {
+    boolean _or = false;
+    boolean _equals = Objects.equal(op, null);
+    if (_equals) {
+      _or = true;
+    } else {
+      String _simpleName = op.getSimpleName();
+      boolean _equals_1 = Objects.equal(_simpleName, null);
+      _or = (_equals || _equals_1);
+    }
+    if (_or) {
+      return null;
+    }
+    String _simpleName_1 = op.getSimpleName();
+    boolean _startsWith = _simpleName_1.startsWith("get");
+    if (_startsWith) {
+      String _simpleName_2 = op.getSimpleName();
+      return _simpleName_2.substring(3);
+    }
+    String _simpleName_3 = op.getSimpleName();
+    boolean _startsWith_1 = _simpleName_3.startsWith("is");
+    if (_startsWith_1) {
+      String _simpleName_4 = op.getSimpleName();
+      return _simpleName_4.substring(2);
+    }
+    return null;
   }
   
   public JvmTypeReference getComponentType(final JvmTypeReference type) {
@@ -314,12 +362,37 @@ public class JQVTUtils {
   
   public boolean isMany(final JvmTypeReference type) {
     boolean _or = false;
+    boolean _or_1 = false;
     JvmTypeReference _newTypeRef = this._jvmTypesBuilder.newTypeRef(type, Collection.class);
     boolean _isConformant = this._jvmOnlyTypeConformanceComputer.isConformant(_newTypeRef, type, true);
     if (_isConformant) {
+      _or_1 = true;
+    } else {
+      boolean _and = false;
+      boolean _and_1 = false;
+      JvmType _type = type.getType();
+      boolean _notEquals = (!Objects.equal(_type, null));
+      if (!_notEquals) {
+        _and_1 = false;
+      } else {
+        JvmType _type_1 = type.getType();
+        boolean _eIsProxy = _type_1.eIsProxy();
+        _and_1 = (_notEquals && _eIsProxy);
+      }
+      if (!_and_1) {
+        _and = false;
+      } else {
+        JvmType _type_2 = type.getType();
+        String _string = _type_2.toString();
+        boolean _contains = _string.contains("EList");
+        _and = (_and_1 && _contains);
+      }
+      _or_1 = (_isConformant || _and);
+    }
+    if (_or_1) {
       _or = true;
     } else {
-      _or = (_isConformant || (type instanceof JvmGenericArrayTypeReference));
+      _or = (_or_1 || (type instanceof JvmGenericArrayTypeReference));
     }
     return _or;
   }
@@ -367,5 +440,13 @@ public class JQVTUtils {
     String _trim = _qVT.trim();
     String _replace = _trim.replace("\n", "\n// ");
     return _replace.replace("\r", "");
+  }
+  
+  public static String toQVTWithinString(final EObject clause) {
+    String _qVT = JQVTUtils.toQVT(clause);
+    String _trim = _qVT.trim();
+    String _replace = _trim.replace("\n", "\\n");
+    String _replace_1 = _replace.replace("\"", "\\\"");
+    return _replace_1.replace("\r", "");
   }
 }

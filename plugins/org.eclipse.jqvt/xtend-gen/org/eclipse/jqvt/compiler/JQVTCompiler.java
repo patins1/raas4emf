@@ -73,16 +73,20 @@ public class JQVTCompiler extends XbaseCompiler {
       for (final XExpression arg : _explicitArguments) {
         this.prepareExpression(arg, b);
       }
+      DependencyInfo _dependencyInfo = null;
       Iterable<EObject> _containerIterable = JQVTUtilsExtended.getContainerIterable(expr);
       final Function1<EObject,Boolean> _function = new Function1<EObject,Boolean>() {
-          public Boolean apply(final EObject x) {
-            DependencyInfo _dependencyInfo = JQVTCompiler.this._dependencyProcessor.getDependencyInfo(x);
-            boolean _notEquals = (!Objects.equal(_dependencyInfo, null));
-            return Boolean.valueOf(_notEquals);
-          }
-        };
+        public Boolean apply(final EObject x) {
+          DependencyInfo _dependencyInfo = JQVTCompiler.this._dependencyProcessor.getDependencyInfo(x);
+          boolean _notEquals = (!Objects.equal(_dependencyInfo, null));
+          return Boolean.valueOf(_notEquals);
+        }
+      };
       EObject _findFirst = IterableExtensions.<EObject>findFirst(_containerIterable, _function);
-      DependencyInfo info = _findFirst==null?(DependencyInfo)null:this._dependencyProcessor.getDependencyInfo(_findFirst);
+      if (_findFirst!=null) {
+        _dependencyInfo=this._dependencyProcessor.getDependencyInfo(_findFirst);
+      }
+      DependencyInfo info = _dependencyInfo;
       final XFeatureCall call = ((XFeatureCall) expr);
       this.declareSyntheticVariable(expr, b);
       String _varName = this.getVarName(expr, b);

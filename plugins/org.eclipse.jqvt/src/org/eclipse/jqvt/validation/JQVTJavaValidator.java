@@ -5,13 +5,19 @@ package org.eclipse.jqvt.validation;
 
 import static org.eclipse.xtext.xbase.validation.IssueCodes.INCOMPATIBLE_TYPES;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jqvt.jQVT.ObjectTemplate;
 import org.eclipse.jqvt.jQVT.PropertyTemplateItem;
 import org.eclipse.jqvt.jQVT.Relation;
+import org.eclipse.jqvt.jQVT.Transformation;
 import org.eclipse.jqvt.jvmmodel.DependencyProcessor;
+import org.eclipse.jqvt.jvmmodel.FakeRelation;
 import org.eclipse.jqvt.jvmmodel.ParamPair;
+import org.eclipse.jqvt.jvmmodel.TopRelationSorter;
 import org.eclipse.jqvt.util.JQVTUtils;
 import org.eclipse.xtext.common.types.JvmTypeReference;
 import org.eclipse.xtext.validation.Check;
@@ -89,6 +95,48 @@ public class JQVTJavaValidator extends AbstractJQVTJavaValidator {
 					error("Incompatible RHS value of property template item. Expected " + getNameOfTypes(expectedTypeLight) + " but was " + canonicalName(actualType), value, null, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);
 			}
 		}
+	}
+
+	@Check
+	public void checkTopSortRelationErrors(Transformation trafo) {
+		TopRelationSorter sorter = new TopRelationSorter() {
+			public void validationException(String message, EObject source, EStructuralFeature feature, int index) throws ValidationException {
+				throw new ValidationException(message, source, feature, index);
+			}
+		};
+		String message = "Found the following circles: ";
+		FakeRelation foundfk = null;
+		for (Relation relation : sorter.getTopSortedTopRelations(trafo)) {
+			if (relation instanceof FakeRelation) {
+				message = message + relation.getName();
+				foundfk = (FakeRelation) relation;
+			}
+		}
+
+		if (foundfk != null) {
+			List<Relation> flattened = new ArrayList<Relation>();
+			flatten(foundfk, flattened);
+			for (Relation r : flattened) {
+				for (Relation relation : flattened) {
+					for (XExpression expr : r.getWhen())
+						if (sorter.mentionedRel(expr, relation))
+							warning(message, expr, null, null);
+					for (XExpression expr : r.getWhere())
+						if (sorter.mentionedRel(expr, relation))
+							warning(message, expr, null, null);
+
+				}
+
+			}
+		}
+	}
+
+	private void flatten(FakeRelation fake, List<Relation> flattened) {
+		for (Relation r : fake.getMembers())
+			if (r instanceof FakeRelation)
+				flatten((FakeRelation) r, flattened);
+			else
+				flattened.add(r);
 	}
 
 	@Override
