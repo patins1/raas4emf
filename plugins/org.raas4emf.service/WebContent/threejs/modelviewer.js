@@ -84,7 +84,7 @@ var container, stats, rendererStats;
 var projector;
 var mouse;
 
-var gui, jstree, misc, selectionInfoGui, extrusionLengthGui, closingAngleGui, lazyRenderingGui, materialVisibilityGui, fpsGui;
+var gui, jstree, misc, selectionInfoGui, extrusionLengthGui, closingAngleGui, lazyRenderingGui, materialVisibilityGui, fpsGui, componentsGui;
 var effectController;
 var geoHandle;
 var materials, current_material;
@@ -1090,12 +1090,7 @@ function ensureLoop( animation ) {
 }
 
 function updateGuiControl(c) {
-
-		  if (c.property && c.object && c.setValue) {
-			  c.setValue(c.object[c.property]); //updateDisplay alone not works!
-		  }
-		  if (c.updateDisplay) c.updateDisplay();
-
+	  if (c.updateDisplay) c.updateDisplay();
 }
 
 function updateGui(gui) {
@@ -1702,6 +1697,18 @@ function generateTree() {
 	
 }
 
+function updateComponentsCheckbox() {
+	var oneVisible = false;
+	var oneHidden = false;
+	for (var m in g_visibility) { 
+		oneVisible = oneVisible || g_visibility[m]; 
+		oneHidden = oneHidden || ! g_visibility[m]; 
+	} 
+	effectController["Components"] = oneVisible;
+	updateGuiControl(componentsGui);
+    $(componentsGui.__checkbox).prop("indeterminate", oneVisible && oneHidden); 
+}
+
 function generateGui() {	
 
 	if (gui!=null) return;
@@ -2134,6 +2141,7 @@ function generateGui() {
 	
 	var updateCol = function () {	
 		g_clients.forEach(function (g_client) {
+			updateComponentsCheckbox();
 			updateColors(g_client);
 			updateClient(g_client);
 		});
@@ -2181,15 +2189,15 @@ function generateGui() {
 	
 	if (effectController.flatten_materialvisibility) materialVisibilityGui = gui;
 
-	for (var m in g_colorSchemes) {
-		if (m!="default") {
-			b_colorSchemes[m] = false;
-			var mScheme = m;
-			var colorScheme = materialVisibilityGui.add( b_colorSchemes, m,  b_colorSchemes[m]).onChange(updateColScheme);
-	    	materialCtls.push(colorScheme);		
-	    	colorScheme.neverRemove = effectController.flatten_materialvisibility;	
-		}
-	}
+	effectController["Components"] = true;
+	componentsGui = materialVisibilityGui.add( effectController, "Components", effectController["Components"] );
+	componentsGui.onChange( function () {
+		for (var m in g_visibility) { g_visibility[m] = effectController["Components"]; } 
+		materialCtls.forEach(updateGuiControl); 
+		updateCol(); 
+	} );
+	componentsGui.neverRemove = effectController.flatten_materialvisibility;
+	updateComponentsCheckbox();
 
     var g_visibility_sorted = [];
     for(var key in g_visibility)
@@ -2203,12 +2211,17 @@ function generateGui() {
     	materialCtl.neverRemove = effectController.flatten_materialvisibility;
     	}
 	}
+    
 
-	effectController[ "Select All" ] = function () {for (var m in g_visibility) { g_visibility[m] = true; } materialCtls.forEach(updateGuiControl); updateCol(); };
-	materialVisibilityGui.add( effectController, "Select All" ).neverRemove = effectController.flatten_materialvisibility;
-	
-	effectController[ "Select None" ] = function () {for (var m in g_visibility) { g_visibility[m] = false; } materialCtls.forEach(updateGuiControl); updateCol(); };
-	materialVisibilityGui.add( effectController, "Select None" ).neverRemove = effectController.flatten_materialvisibility;
+	for (var m in g_colorSchemes) {
+		if (m!="default") {
+			b_colorSchemes[m] = false;
+			var mScheme = m;
+			var colorScheme = materialVisibilityGui.add( b_colorSchemes, m,  b_colorSchemes[m]).onChange(updateColScheme);
+	    	materialCtls.push(colorScheme);		
+	    	colorScheme.neverRemove = effectController.flatten_materialvisibility;	
+		}
+	}
 
 	// selection info
 
