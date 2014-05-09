@@ -27,7 +27,6 @@ public class InternalJQVTLexer extends Lexer {
     public static final int EOF=-1;
     public static final int T__19=19;
     public static final int T__91=91;
-    public static final int T__92=92;
     public static final int RULE_HEX=5;
     public static final int T__16=16;
     public static final int T__90=90;
@@ -1695,11 +1694,10 @@ public class InternalJQVTLexer extends Lexer {
         try {
             int _type = T__89;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:87:7: ( '*.' )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:87:9: '*.'
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:87:7: ( '|' )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:87:9: '|'
             {
-            match("*."); 
-
+            match('|'); 
 
             }
 
@@ -1716,10 +1714,11 @@ public class InternalJQVTLexer extends Lexer {
         try {
             int _type = T__90;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:88:7: ( '|' )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:88:9: '|'
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:88:7: ( 'var' )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:88:9: 'var'
             {
-            match('|'); 
+            match("var"); 
+
 
             }
 
@@ -1736,29 +1735,8 @@ public class InternalJQVTLexer extends Lexer {
         try {
             int _type = T__91;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:89:7: ( 'var' )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:89:9: 'var'
-            {
-            match("var"); 
-
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "T__91"
-
-    // $ANTLR start "T__92"
-    public final void mT__92() throws RecognitionException {
-        try {
-            int _type = T__92;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:90:7: ( 'true' )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:90:9: 'true'
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:89:7: ( 'true' )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:89:9: 'true'
             {
             match("true"); 
 
@@ -1771,17 +1749,17 @@ public class InternalJQVTLexer extends Lexer {
         finally {
         }
     }
-    // $ANTLR end "T__92"
+    // $ANTLR end "T__91"
 
     // $ANTLR start "RULE_SL_COMMENT"
     public final void mRULE_SL_COMMENT() throws RecognitionException {
         try {
             int _type = RULE_SL_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20169:17: ( ( '--' | '//' ) (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20169:19: ( '--' | '//' ) (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20069:17: ( ( '--' | '//' ) (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20069:19: ( '--' | '//' ) (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
             {
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20169:19: ( '--' | '//' )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20069:19: ( '--' | '//' )
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -1799,7 +1777,7 @@ public class InternalJQVTLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20169:20: '--'
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20069:20: '--'
                     {
                     match("--"); 
 
@@ -1807,7 +1785,7 @@ public class InternalJQVTLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20169:25: '//'
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20069:25: '//'
                     {
                     match("//"); 
 
@@ -1817,7 +1795,7 @@ public class InternalJQVTLexer extends Lexer {
 
             }
 
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20169:31: (~ ( ( '\\n' | '\\r' ) ) )*
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20069:31: (~ ( ( '\\n' | '\\r' ) ) )*
             loop2:
             do {
                 int alt2=2;
@@ -1830,7 +1808,7 @@ public class InternalJQVTLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20169:31: ~ ( ( '\\n' | '\\r' ) )
+            	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20069:31: ~ ( ( '\\n' | '\\r' ) )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -1850,7 +1828,7 @@ public class InternalJQVTLexer extends Lexer {
                 }
             } while (true);
 
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20169:47: ( ( '\\r' )? '\\n' )?
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20069:47: ( ( '\\r' )? '\\n' )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -1859,9 +1837,9 @@ public class InternalJQVTLexer extends Lexer {
             }
             switch (alt4) {
                 case 1 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20169:48: ( '\\r' )? '\\n'
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20069:48: ( '\\r' )? '\\n'
                     {
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20169:48: ( '\\r' )?
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20069:48: ( '\\r' )?
                     int alt3=2;
                     int LA3_0 = input.LA(1);
 
@@ -1870,7 +1848,7 @@ public class InternalJQVTLexer extends Lexer {
                     }
                     switch (alt3) {
                         case 1 :
-                            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20169:48: '\\r'
+                            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20069:48: '\\r'
                             {
                             match('\r'); 
 
@@ -1902,10 +1880,10 @@ public class InternalJQVTLexer extends Lexer {
         try {
             int _type = RULE_HEX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20171:10: ( ( '0x' | '0X' ) ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+ ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )? )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20171:12: ( '0x' | '0X' ) ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+ ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )?
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20071:10: ( ( '0x' | '0X' ) ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+ ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )? )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20071:12: ( '0x' | '0X' ) ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+ ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )?
             {
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20171:12: ( '0x' | '0X' )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20071:12: ( '0x' | '0X' )
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -1933,7 +1911,7 @@ public class InternalJQVTLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20171:13: '0x'
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20071:13: '0x'
                     {
                     match("0x"); 
 
@@ -1941,7 +1919,7 @@ public class InternalJQVTLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20171:18: '0X'
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20071:18: '0X'
                     {
                     match("0X"); 
 
@@ -1951,7 +1929,7 @@ public class InternalJQVTLexer extends Lexer {
 
             }
 
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20171:24: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20071:24: ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' | '_' )+
             int cnt6=0;
             loop6:
             do {
@@ -1989,7 +1967,7 @@ public class InternalJQVTLexer extends Lexer {
                 cnt6++;
             } while (true);
 
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20171:58: ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )?
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20071:58: ( '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) ) )?
             int alt8=2;
             int LA8_0 = input.LA(1);
 
@@ -1998,10 +1976,10 @@ public class InternalJQVTLexer extends Lexer {
             }
             switch (alt8) {
                 case 1 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20171:59: '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) )
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20071:59: '#' ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) )
                     {
                     match('#'); 
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20171:63: ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) )
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20071:63: ( ( 'b' | 'B' ) ( 'i' | 'I' ) | ( 'l' | 'L' ) )
                     int alt7=2;
                     int LA7_0 = input.LA(1);
 
@@ -2019,7 +1997,7 @@ public class InternalJQVTLexer extends Lexer {
                     }
                     switch (alt7) {
                         case 1 :
-                            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20171:64: ( 'b' | 'B' ) ( 'i' | 'I' )
+                            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20071:64: ( 'b' | 'B' ) ( 'i' | 'I' )
                             {
                             if ( input.LA(1)=='B'||input.LA(1)=='b' ) {
                                 input.consume();
@@ -2043,7 +2021,7 @@ public class InternalJQVTLexer extends Lexer {
                             }
                             break;
                         case 2 :
-                            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20171:84: ( 'l' | 'L' )
+                            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20071:84: ( 'l' | 'L' )
                             {
                             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                                 input.consume();
@@ -2082,11 +2060,11 @@ public class InternalJQVTLexer extends Lexer {
         try {
             int _type = RULE_INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20173:10: ( '0' .. '9' ( '0' .. '9' | '_' )* )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20173:12: '0' .. '9' ( '0' .. '9' | '_' )*
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20073:10: ( '0' .. '9' ( '0' .. '9' | '_' )* )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20073:12: '0' .. '9' ( '0' .. '9' | '_' )*
             {
             matchRange('0','9'); 
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20173:21: ( '0' .. '9' | '_' )*
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20073:21: ( '0' .. '9' | '_' )*
             loop9:
             do {
                 int alt9=2;
@@ -2135,11 +2113,11 @@ public class InternalJQVTLexer extends Lexer {
         try {
             int _type = RULE_DECIMAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20175:14: ( RULE_INT ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )? ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )? )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20175:16: RULE_INT ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )? ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )?
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20075:14: ( RULE_INT ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )? ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )? )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20075:16: RULE_INT ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )? ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )?
             {
             mRULE_INT(); 
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20175:25: ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )?
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20075:25: ( ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT )?
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -2148,7 +2126,7 @@ public class InternalJQVTLexer extends Lexer {
             }
             switch (alt11) {
                 case 1 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20175:26: ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20075:26: ( 'e' | 'E' ) ( '+' | '-' )? RULE_INT
                     {
                     if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                         input.consume();
@@ -2159,7 +2137,7 @@ public class InternalJQVTLexer extends Lexer {
                         recover(mse);
                         throw mse;}
 
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20175:36: ( '+' | '-' )?
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20075:36: ( '+' | '-' )?
                     int alt10=2;
                     int LA10_0 = input.LA(1);
 
@@ -2192,7 +2170,7 @@ public class InternalJQVTLexer extends Lexer {
 
             }
 
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20175:58: ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )?
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20075:58: ( ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' ) | ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' ) )?
             int alt12=3;
             int LA12_0 = input.LA(1);
 
@@ -2204,7 +2182,7 @@ public class InternalJQVTLexer extends Lexer {
             }
             switch (alt12) {
                 case 1 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20175:59: ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' )
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20075:59: ( 'b' | 'B' ) ( 'i' | 'I' | 'd' | 'D' )
                     {
                     if ( input.LA(1)=='B'||input.LA(1)=='b' ) {
                         input.consume();
@@ -2228,7 +2206,7 @@ public class InternalJQVTLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20175:87: ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' )
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20075:87: ( 'l' | 'L' | 'd' | 'D' | 'f' | 'F' )
                     {
                     if ( input.LA(1)=='D'||input.LA(1)=='F'||input.LA(1)=='L'||input.LA(1)=='d'||input.LA(1)=='f'||input.LA(1)=='l' ) {
                         input.consume();
@@ -2261,10 +2239,10 @@ public class InternalJQVTLexer extends Lexer {
         try {
             int _type = RULE_ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20177:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )* )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20177:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )*
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20077:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )* )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20077:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )*
             {
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20177:11: ( '^' )?
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20077:11: ( '^' )?
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -2273,7 +2251,7 @@ public class InternalJQVTLexer extends Lexer {
             }
             switch (alt13) {
                 case 1 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20177:11: '^'
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20077:11: '^'
                     {
                     match('^'); 
 
@@ -2291,7 +2269,7 @@ public class InternalJQVTLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20177:44: ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )*
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20077:44: ( 'a' .. 'z' | 'A' .. 'Z' | '$' | '_' | '0' .. '9' )*
             loop14:
             do {
                 int alt14=2;
@@ -2340,10 +2318,10 @@ public class InternalJQVTLexer extends Lexer {
         try {
             int _type = RULE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20179:13: ( ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20179:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20079:13: ( ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20079:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             {
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20179:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20079:15: ( '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             int alt17=2;
             int LA17_0 = input.LA(1);
 
@@ -2361,10 +2339,10 @@ public class InternalJQVTLexer extends Lexer {
             }
             switch (alt17) {
                 case 1 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20179:16: '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20079:16: '\"' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
                     {
                     match('\"'); 
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20179:20: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )*
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20079:20: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\"' ) ) )*
                     loop15:
                     do {
                         int alt15=3;
@@ -2380,7 +2358,7 @@ public class InternalJQVTLexer extends Lexer {
 
                         switch (alt15) {
                     	case 1 :
-                    	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20179:21: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' )
+                    	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20079:21: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' )
                     	    {
                     	    match('\\'); 
                     	    if ( input.LA(1)=='\"'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||(input.LA(1)>='t' && input.LA(1)<='u') ) {
@@ -2396,7 +2374,7 @@ public class InternalJQVTLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20179:66: ~ ( ( '\\\\' | '\"' ) )
+                    	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20079:66: ~ ( ( '\\\\' | '\"' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -2421,10 +2399,10 @@ public class InternalJQVTLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20179:86: '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20079:86: '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
                     {
                     match('\''); 
-                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20179:91: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )*
+                    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20079:91: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )*
                     loop16:
                     do {
                         int alt16=3;
@@ -2440,7 +2418,7 @@ public class InternalJQVTLexer extends Lexer {
 
                         switch (alt16) {
                     	case 1 :
-                    	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20179:92: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' )
+                    	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20079:92: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | 'u' | '\"' | '\\'' | '\\\\' )
                     	    {
                     	    match('\\'); 
                     	    if ( input.LA(1)=='\"'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||(input.LA(1)>='t' && input.LA(1)<='u') ) {
@@ -2456,7 +2434,7 @@ public class InternalJQVTLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20179:137: ~ ( ( '\\\\' | '\\'' ) )
+                    	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20079:137: ~ ( ( '\\\\' | '\\'' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -2499,12 +2477,12 @@ public class InternalJQVTLexer extends Lexer {
         try {
             int _type = RULE_ML_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20181:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20181:19: '/*' ( options {greedy=false; } : . )* '*/'
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20081:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20081:19: '/*' ( options {greedy=false; } : . )* '*/'
             {
             match("/*"); 
 
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20181:24: ( options {greedy=false; } : . )*
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20081:24: ( options {greedy=false; } : . )*
             loop18:
             do {
                 int alt18=2;
@@ -2529,7 +2507,7 @@ public class InternalJQVTLexer extends Lexer {
 
                 switch (alt18) {
             	case 1 :
-            	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20181:52: .
+            	    // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20081:52: .
             	    {
             	    matchAny(); 
 
@@ -2559,10 +2537,10 @@ public class InternalJQVTLexer extends Lexer {
         try {
             int _type = RULE_WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20183:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20183:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20083:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20083:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             {
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20183:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20083:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             int cnt19=0;
             loop19:
             do {
@@ -2616,8 +2594,8 @@ public class InternalJQVTLexer extends Lexer {
         try {
             int _type = RULE_ANY_OTHER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20185:16: ( . )
-            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20185:18: .
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20085:16: ( . )
+            // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:20085:18: .
             {
             matchAny(); 
 
@@ -2632,8 +2610,8 @@ public class InternalJQVTLexer extends Lexer {
     // $ANTLR end "RULE_ANY_OTHER"
 
     public void mTokens() throws RecognitionException {
-        // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:8: ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | RULE_SL_COMMENT | RULE_HEX | RULE_INT | RULE_DECIMAL | RULE_ID | RULE_STRING | RULE_ML_COMMENT | RULE_WS | RULE_ANY_OTHER )
-        int alt20=89;
+        // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:8: ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | RULE_SL_COMMENT | RULE_HEX | RULE_INT | RULE_DECIMAL | RULE_ID | RULE_STRING | RULE_ML_COMMENT | RULE_WS | RULE_ANY_OTHER )
+        int alt20=88;
         alt20 = dfa20.predict(input);
         switch (alt20) {
             case 1 :
@@ -3190,70 +3168,63 @@ public class InternalJQVTLexer extends Lexer {
                 }
                 break;
             case 80 :
-                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:484: T__92
-                {
-                mT__92(); 
-
-                }
-                break;
-            case 81 :
-                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:490: RULE_SL_COMMENT
+                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:484: RULE_SL_COMMENT
                 {
                 mRULE_SL_COMMENT(); 
 
                 }
                 break;
-            case 82 :
-                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:506: RULE_HEX
+            case 81 :
+                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:500: RULE_HEX
                 {
                 mRULE_HEX(); 
 
                 }
                 break;
-            case 83 :
-                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:515: RULE_INT
+            case 82 :
+                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:509: RULE_INT
                 {
                 mRULE_INT(); 
 
                 }
                 break;
-            case 84 :
-                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:524: RULE_DECIMAL
+            case 83 :
+                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:518: RULE_DECIMAL
                 {
                 mRULE_DECIMAL(); 
 
                 }
                 break;
-            case 85 :
-                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:537: RULE_ID
+            case 84 :
+                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:531: RULE_ID
                 {
                 mRULE_ID(); 
 
                 }
                 break;
-            case 86 :
-                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:545: RULE_STRING
+            case 85 :
+                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:539: RULE_STRING
                 {
                 mRULE_STRING(); 
 
                 }
                 break;
-            case 87 :
-                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:557: RULE_ML_COMMENT
+            case 86 :
+                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:551: RULE_ML_COMMENT
                 {
                 mRULE_ML_COMMENT(); 
 
                 }
                 break;
-            case 88 :
-                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:573: RULE_WS
+            case 87 :
+                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:567: RULE_WS
                 {
                 mRULE_WS(); 
 
                 }
                 break;
-            case 89 :
-                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:581: RULE_ANY_OTHER
+            case 88 :
+                // ../org.eclipse.jqvt.ui/src-gen/org/eclipse/jqvt/ui/contentassist/antlr/internal/InternalJQVT.g:1:575: RULE_ANY_OTHER
                 {
                 mRULE_ANY_OTHER(); 
 
@@ -3268,28 +3239,28 @@ public class InternalJQVTLexer extends Lexer {
     protected DFA20 dfa20 = new DFA20(this);
     static final String DFA20_eotS =
         "\1\uffff\1\60\1\62\1\64\2\uffff\1\70\1\72\1\74\1\100\1\102\1\104"+
-        "\1\107\1\112\1\115\1\117\1\uffff\7\122\4\uffff\5\122\3\uffff\2\122"+
-        "\2\165\1\55\1\uffff\2\55\2\uffff\1\173\10\uffff\1\175\11\uffff\1"+
-        "\177\3\uffff\1\u0081\13\uffff\1\122\1\uffff\10\122\1\u008c\10\122"+
-        "\4\uffff\3\122\1\u009d\1\122\1\u009f\3\uffff\3\122\2\uffff\1\165"+
-        "\13\uffff\1\u00a4\1\u00a5\10\122\1\uffff\1\122\1\u00af\3\122\1\u00b3"+
-        "\3\122\1\u00b7\6\122\1\uffff\1\122\1\uffff\2\122\1\u00c2\1\122\2"+
-        "\uffff\2\122\1\u00c6\6\122\1\uffff\3\122\1\uffff\1\u00d0\2\122\1"+
-        "\uffff\10\122\1\u00db\1\122\1\uffff\1\u00dd\2\122\1\uffff\1\122"+
-        "\1\u00e2\3\122\1\u00e6\3\122\1\uffff\1\122\1\u00eb\1\u00ec\2\122"+
-        "\1\uffff\1\122\1\u00f0\2\122\1\uffff\1\u00f3\1\uffff\3\122\1\u00f7"+
-        "\1\uffff\1\u00f8\1\u00f9\1\122\1\uffff\3\122\1\u00fe\2\uffff\1\122"+
-        "\1\u0100\2\uffff\1\u0101\1\122\1\uffff\1\u0103\1\122\1\u0105\3\uffff"+
-        "\1\122\1\u0107\1\u0108\1\122\1\uffff\1\122\2\uffff\1\u010b\1\uffff"+
-        "\1\122\1\uffff\1\122\2\uffff\1\122\1\u010f\1\uffff\1\u0110\2\122"+
-        "\2\uffff\1\u0113\1\122\1\uffff\3\122\1\u0118\1\uffff";
+        "\1\107\1\112\1\114\1\116\1\uffff\7\121\4\uffff\5\121\3\uffff\2\121"+
+        "\2\164\1\55\1\uffff\2\55\2\uffff\1\172\10\uffff\1\174\11\uffff\1"+
+        "\176\3\uffff\1\u0080\12\uffff\1\121\1\uffff\10\121\1\u008b\10\121"+
+        "\4\uffff\3\121\1\u009c\1\121\1\u009e\3\uffff\3\121\2\uffff\1\164"+
+        "\13\uffff\1\u00a3\1\u00a4\10\121\1\uffff\1\121\1\u00ae\3\121\1\u00b2"+
+        "\3\121\1\u00b6\6\121\1\uffff\1\121\1\uffff\2\121\1\u00c1\1\121\2"+
+        "\uffff\2\121\1\u00c5\6\121\1\uffff\3\121\1\uffff\1\u00cf\2\121\1"+
+        "\uffff\10\121\1\u00da\1\121\1\uffff\1\u00dc\2\121\1\uffff\1\121"+
+        "\1\u00e1\3\121\1\u00e5\3\121\1\uffff\1\121\1\u00ea\1\u00eb\2\121"+
+        "\1\uffff\1\121\1\u00ef\2\121\1\uffff\1\u00f2\1\uffff\3\121\1\u00f6"+
+        "\1\uffff\1\u00f7\1\u00f8\1\121\1\uffff\3\121\1\u00fd\2\uffff\1\121"+
+        "\1\u00ff\2\uffff\1\u0100\1\121\1\uffff\1\u0102\1\121\1\u0104\3\uffff"+
+        "\1\121\1\u0106\1\u0107\1\121\1\uffff\1\121\2\uffff\1\u010a\1\uffff"+
+        "\1\121\1\uffff\1\121\2\uffff\1\121\1\u010e\1\uffff\1\u010f\2\121"+
+        "\2\uffff\1\u0112\1\121\1\uffff\3\121\1\u0117\1\uffff";
     static final String DFA20_eofS =
-        "\u0119\uffff";
+        "\u0118\uffff";
     static final String DFA20_minS =
         "\1\0\1\75\1\174\1\46\2\uffff\1\56\1\72\1\75\1\55\3\75\1\56\2\52"+
         "\1\uffff\1\141\1\154\1\164\1\146\2\141\1\150\4\uffff\1\165\1\145"+
         "\1\150\1\145\1\163\3\uffff\1\141\1\145\2\60\1\44\1\uffff\2\0\2\uffff"+
-        "\1\75\10\uffff\1\74\11\uffff\1\75\3\uffff\1\76\13\uffff\1\154\1"+
+        "\1\75\10\uffff\1\74\11\uffff\1\75\3\uffff\1\76\12\uffff\1\154\1"+
         "\uffff\1\164\1\146\1\163\1\141\1\160\1\151\1\160\1\163\1\44\1\154"+
         "\1\162\1\156\1\143\1\141\1\160\1\162\1\160\4\uffff\1\145\1\154\1"+
         "\145\1\44\1\146\1\44\3\uffff\1\163\1\167\1\154\2\uffff\1\60\13\uffff"+
@@ -3309,10 +3280,10 @@ public class InternalJQVTLexer extends Lexer {
         "\1\156\1\44\1\uffff";
     static final String DFA20_maxS =
         "\1\uffff\1\76\1\174\1\46\2\uffff\1\56\1\72\1\75\1\76\2\75\1\76"+
-        "\1\72\1\56\1\57\1\uffff\1\141\1\170\1\167\1\156\1\157\1\141\1\171"+
+        "\1\72\1\52\1\57\1\uffff\1\141\1\170\1\167\1\156\1\157\1\141\1\171"+
         "\4\uffff\1\165\1\145\1\150\1\157\1\163\3\uffff\1\141\1\165\1\170"+
         "\1\154\1\172\1\uffff\2\uffff\2\uffff\1\75\10\uffff\1\74\11\uffff"+
-        "\1\75\3\uffff\1\76\13\uffff\1\162\1\uffff\1\164\1\146\1\163\1\141"+
+        "\1\75\3\uffff\1\76\12\uffff\1\162\1\uffff\1\164\1\146\1\163\1\141"+
         "\1\160\1\151\1\160\1\163\1\172\1\154\1\162\1\156\1\143\1\171\1\160"+
         "\1\162\1\160\4\uffff\1\145\1\164\1\151\1\172\1\146\1\172\3\uffff"+
         "\1\164\1\167\1\154\2\uffff\1\154\13\uffff\2\172\1\145\1\157\1\145"+
@@ -3332,21 +3303,21 @@ public class InternalJQVTLexer extends Lexer {
         "\172\1\uffff";
     static final String DFA20_acceptS =
         "\4\uffff\1\4\1\5\12\uffff\1\36\7\uffff\1\51\1\52\1\53\1\54\5\uffff"+
-        "\1\66\1\67\1\70\5\uffff\1\125\2\uffff\1\130\1\131\1\uffff\1\25\1"+
-        "\1\1\2\1\116\1\3\1\112\1\4\1\5\1\uffff\1\6\1\7\1\56\1\10\1\31\1"+
-        "\11\1\22\1\121\1\32\1\uffff\1\37\1\16\1\20\1\uffff\1\26\1\21\1\27"+
-        "\1\114\1\111\1\34\1\115\1\33\1\127\1\35\1\36\1\uffff\1\125\21\uffff"+
-        "\1\51\1\52\1\53\1\54\6\uffff\1\66\1\67\1\70\3\uffff\1\122\1\123"+
-        "\1\uffff\1\124\1\126\1\130\1\14\1\12\1\23\1\24\1\15\1\13\1\30\1"+
-        "\17\12\uffff\1\71\20\uffff\1\100\1\uffff\1\65\4\uffff\1\40\1\117"+
-        "\11\uffff\1\76\3\uffff\1\106\3\uffff\1\113\12\uffff\1\101\3\uffff"+
-        "\1\72\11\uffff\1\120\5\uffff\1\60\4\uffff\1\75\1\uffff\1\102\4\uffff"+
+        "\1\66\1\67\1\70\5\uffff\1\124\2\uffff\1\127\1\130\1\uffff\1\25\1"+
+        "\1\1\2\1\115\1\3\1\112\1\4\1\5\1\uffff\1\6\1\7\1\56\1\10\1\31\1"+
+        "\11\1\22\1\120\1\32\1\uffff\1\37\1\16\1\20\1\uffff\1\26\1\21\1\27"+
+        "\1\114\1\111\1\34\1\33\1\126\1\35\1\36\1\uffff\1\124\21\uffff\1"+
+        "\51\1\52\1\53\1\54\6\uffff\1\66\1\67\1\70\3\uffff\1\121\1\122\1"+
+        "\uffff\1\123\1\125\1\127\1\14\1\12\1\23\1\24\1\15\1\13\1\30\1\17"+
+        "\12\uffff\1\71\20\uffff\1\100\1\uffff\1\65\4\uffff\1\40\1\116\11"+
+        "\uffff\1\76\3\uffff\1\106\3\uffff\1\113\12\uffff\1\101\3\uffff\1"+
+        "\72\11\uffff\1\117\5\uffff\1\60\4\uffff\1\75\1\uffff\1\102\4\uffff"+
         "\1\45\3\uffff\1\46\4\uffff\1\104\1\55\2\uffff\1\61\1\77\2\uffff"+
         "\1\110\3\uffff\1\42\1\73\1\43\4\uffff\1\103\1\uffff\1\105\1\63\1"+
         "\uffff\1\41\1\uffff\1\62\1\uffff\1\107\1\47\2\uffff\1\74\3\uffff"+
         "\1\57\1\44\2\uffff\1\64\4\uffff\1\50";
     static final String DFA20_specialS =
-        "\1\2\51\uffff\1\0\1\1\u00ed\uffff}>";
+        "\1\2\51\uffff\1\0\1\1\u00ec\uffff}>";
     static final String[] DFA20_transitionS = {
             "\11\55\2\54\2\55\1\54\22\55\1\54\1\12\1\52\1\41\1\51\1\20\1"+
             "\3\1\53\1\30\1\31\1\16\1\10\1\4\1\11\1\6\1\17\1\46\11\47\1\7"+
@@ -3367,51 +3338,42 @@ public class InternalJQVTLexer extends Lexer {
             "\1\103",
             "\1\105\1\106",
             "\1\111\13\uffff\1\110",
-            "\1\113\3\uffff\1\114",
-            "\1\116\4\uffff\1\77",
+            "\1\113",
+            "\1\115\4\uffff\1\77",
             "",
-            "\1\121",
-            "\1\125\1\uffff\1\124\11\uffff\1\123",
-            "\1\126\1\127\1\uffff\1\130",
-            "\1\133\6\uffff\1\131\1\132",
-            "\1\134\7\uffff\1\136\5\uffff\1\135",
-            "\1\137",
-            "\1\142\6\uffff\1\143\2\uffff\1\140\6\uffff\1\141",
-            "",
-            "",
+            "\1\120",
+            "\1\124\1\uffff\1\123\11\uffff\1\122",
+            "\1\125\1\126\1\uffff\1\127",
+            "\1\132\6\uffff\1\130\1\131",
+            "\1\133\7\uffff\1\135\5\uffff\1\134",
+            "\1\136",
+            "\1\141\6\uffff\1\142\2\uffff\1\137\6\uffff\1\140",
             "",
             "",
+            "",
+            "",
+            "\1\147",
             "\1\150",
             "\1\151",
-            "\1\152",
-            "\1\154\11\uffff\1\153",
-            "\1\155",
+            "\1\153\11\uffff\1\152",
+            "\1\154",
             "",
             "",
             "",
-            "\1\161",
-            "\1\162\17\uffff\1\163",
-            "\12\166\10\uffff\1\167\1\uffff\3\167\5\uffff\1\167\13\uffff"+
-            "\1\164\6\uffff\1\166\2\uffff\1\167\1\uffff\3\167\5\uffff\1\167"+
-            "\13\uffff\1\164",
-            "\12\166\10\uffff\1\167\1\uffff\3\167\5\uffff\1\167\22\uffff"+
-            "\1\166\2\uffff\1\167\1\uffff\3\167\5\uffff\1\167",
-            "\1\122\34\uffff\32\122\4\uffff\1\122\1\uffff\32\122",
+            "\1\160",
+            "\1\161\17\uffff\1\162",
+            "\12\165\10\uffff\1\166\1\uffff\3\166\5\uffff\1\166\13\uffff"+
+            "\1\163\6\uffff\1\165\2\uffff\1\166\1\uffff\3\166\5\uffff\1\166"+
+            "\13\uffff\1\163",
+            "\12\165\10\uffff\1\166\1\uffff\3\166\5\uffff\1\166\22\uffff"+
+            "\1\165\2\uffff\1\166\1\uffff\3\166\5\uffff\1\166",
+            "\1\121\34\uffff\32\121\4\uffff\1\121\1\uffff\32\121",
             "",
-            "\0\170",
-            "\0\170",
-            "",
-            "",
-            "\1\172",
+            "\0\167",
+            "\0\167",
             "",
             "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "\1\174",
+            "\1\171",
             "",
             "",
             "",
@@ -3420,12 +3382,7 @@ public class InternalJQVTLexer extends Lexer {
             "",
             "",
             "",
-            "",
-            "\1\176",
-            "",
-            "",
-            "",
-            "\1\u0080",
+            "\1\173",
             "",
             "",
             "",
@@ -3435,10 +3392,24 @@ public class InternalJQVTLexer extends Lexer {
             "",
             "",
             "",
+            "\1\175",
             "",
             "",
-            "\1\u0082\5\uffff\1\u0083",
             "",
+            "\1\177",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\u0081\5\uffff\1\u0082",
+            "",
+            "\1\u0083",
             "\1\u0084",
             "\1\u0085",
             "\1\u0086",
@@ -3446,41 +3417,38 @@ public class InternalJQVTLexer extends Lexer {
             "\1\u0088",
             "\1\u0089",
             "\1\u008a",
-            "\1\u008b",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u008c",
             "\1\u008d",
             "\1\u008e",
             "\1\u008f",
-            "\1\u0090",
-            "\1\u0091\23\uffff\1\u0093\3\uffff\1\u0092",
+            "\1\u0090\23\uffff\1\u0092\3\uffff\1\u0091",
+            "\1\u0093",
             "\1\u0094",
             "\1\u0095",
+            "",
+            "",
+            "",
+            "",
             "\1\u0096",
+            "\1\u0097\7\uffff\1\u0098",
+            "\1\u0099\3\uffff\1\u009a",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\14\121\1\u009b\15\121",
+            "\1\u009d",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
             "",
             "",
             "",
-            "",
-            "\1\u0097",
-            "\1\u0098\7\uffff\1\u0099",
-            "\1\u009a\3\uffff\1\u009b",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\14\122\1\u009c\15\122",
-            "\1\u009e",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
-            "",
-            "",
-            "",
-            "\1\u00a0\1\u00a1",
+            "\1\u009f\1\u00a0",
+            "\1\u00a1",
             "\1\u00a2",
-            "\1\u00a3",
             "",
             "",
-            "\12\166\10\uffff\1\167\1\uffff\3\167\5\uffff\1\167\22\uffff"+
-            "\1\166\2\uffff\1\167\1\uffff\3\167\5\uffff\1\167",
-            "",
-            "",
+            "\12\165\10\uffff\1\166\1\uffff\3\166\5\uffff\1\166\22\uffff"+
+            "\1\165\2\uffff\1\166\1\uffff\3\166\5\uffff\1\166",
             "",
             "",
             "",
@@ -3490,10 +3458,13 @@ public class InternalJQVTLexer extends Lexer {
             "",
             "",
             "",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "",
+            "",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00a5",
             "\1\u00a6",
             "\1\u00a7",
             "\1\u00a8",
@@ -3501,57 +3472,57 @@ public class InternalJQVTLexer extends Lexer {
             "\1\u00aa",
             "\1\u00ab",
             "\1\u00ac",
-            "\1\u00ad",
             "",
-            "\1\u00ae",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\u00ad",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00af",
             "\1\u00b0",
             "\1\u00b1",
-            "\1\u00b2",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00b3",
             "\1\u00b4",
             "\1\u00b5",
-            "\1\u00b6",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00b7",
             "\1\u00b8",
             "\1\u00b9",
-            "\1\u00ba",
-            "\1\u00bb\3\uffff\1\u00bc",
+            "\1\u00ba\3\uffff\1\u00bb",
+            "\1\u00bc",
             "\1\u00bd",
+            "",
             "\1\u00be",
             "",
             "\1\u00bf",
-            "",
             "\1\u00c0",
-            "\1\u00c1",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00c2",
+            "",
+            "",
             "\1\u00c3",
-            "",
-            "",
             "\1\u00c4",
-            "\1\u00c5",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00c6",
             "\1\u00c7",
             "\1\u00c8",
             "\1\u00c9",
             "\1\u00ca",
             "\1\u00cb",
-            "\1\u00cc",
             "",
+            "\1\u00cc",
             "\1\u00cd",
             "\1\u00ce",
-            "\1\u00cf",
             "",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00d0",
             "\1\u00d1",
-            "\1\u00d2",
             "",
+            "\1\u00d2",
             "\1\u00d3",
             "\1\u00d4",
             "\1\u00d5",
@@ -3559,118 +3530,117 @@ public class InternalJQVTLexer extends Lexer {
             "\1\u00d7",
             "\1\u00d8",
             "\1\u00d9",
-            "\1\u00da",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
-            "\1\u00dc",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00db",
             "",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
-            "\1\u00de\16\uffff\1\u00df",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00dd\16\uffff\1\u00de",
+            "\1\u00df",
+            "",
             "\1\u00e0",
-            "",
-            "\1\u00e1",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00e2",
             "\1\u00e3",
             "\1\u00e4",
-            "\1\u00e5",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00e6",
             "\1\u00e7",
             "\1\u00e8",
+            "",
             "\1\u00e9",
-            "",
-            "\1\u00ea",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00ec",
             "\1\u00ed",
+            "",
             "\1\u00ee",
-            "",
-            "\1\u00ef",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00f0",
             "\1\u00f1",
-            "\1\u00f2",
             "",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
             "",
+            "\1\u00f3",
             "\1\u00f4",
             "\1\u00f5",
-            "\1\u00f6",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
             "",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u00f9",
+            "",
             "\1\u00fa",
-            "",
             "\1\u00fb",
             "\1\u00fc",
-            "\1\u00fd",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
             "",
             "",
-            "\1\u00ff",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\u00fe",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
             "",
             "",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
-            "\1\u0102",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u0101",
             "",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
-            "\1\u0104",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u0103",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
             "",
             "",
             "",
-            "\1\u0106",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\u0105",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u0108",
+            "",
             "\1\u0109",
             "",
-            "\1\u010a",
             "",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
             "",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\u010b",
             "",
             "\1\u010c",
             "",
+            "",
             "\1\u010d",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
             "",
-            "",
-            "\1\u010e",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
-            "",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u0110",
             "\1\u0111",
-            "\1\u0112",
             "",
             "",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
+            "\1\u0113",
+            "",
             "\1\u0114",
-            "",
             "\1\u0115",
             "\1\u0116",
-            "\1\u0117",
-            "\1\122\13\uffff\12\122\7\uffff\32\122\4\uffff\1\122\1\uffff"+
-            "\32\122",
+            "\1\121\13\uffff\12\121\7\uffff\32\121\4\uffff\1\121\1\uffff"+
+            "\32\121",
             ""
     };
 
@@ -3704,7 +3674,7 @@ public class InternalJQVTLexer extends Lexer {
             this.transition = DFA20_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | RULE_SL_COMMENT | RULE_HEX | RULE_INT | RULE_DECIMAL | RULE_ID | RULE_STRING | RULE_ML_COMMENT | RULE_WS | RULE_ANY_OTHER );";
+            return "1:1: Tokens : ( T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | RULE_SL_COMMENT | RULE_HEX | RULE_INT | RULE_DECIMAL | RULE_ID | RULE_STRING | RULE_ML_COMMENT | RULE_WS | RULE_ANY_OTHER );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             IntStream input = _input;
@@ -3714,7 +3684,7 @@ public class InternalJQVTLexer extends Lexer {
                         int LA20_42 = input.LA(1);
 
                         s = -1;
-                        if ( ((LA20_42>='\u0000' && LA20_42<='\uFFFF')) ) {s = 120;}
+                        if ( ((LA20_42>='\u0000' && LA20_42<='\uFFFF')) ) {s = 119;}
 
                         else s = 45;
 
@@ -3724,7 +3694,7 @@ public class InternalJQVTLexer extends Lexer {
                         int LA20_43 = input.LA(1);
 
                         s = -1;
-                        if ( ((LA20_43>='\u0000' && LA20_43<='\uFFFF')) ) {s = 120;}
+                        if ( ((LA20_43>='\u0000' && LA20_43<='\uFFFF')) ) {s = 119;}
 
                         else s = 45;
 
