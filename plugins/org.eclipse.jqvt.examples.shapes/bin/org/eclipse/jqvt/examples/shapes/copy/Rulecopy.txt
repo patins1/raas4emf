@@ -1,3 +1,0 @@
-Base transformation called copy.jqvt establish a full copy of the model.
-
-You can perform "Compare with -> Each Other" to see differences from copy.jqvt to the other QVT scripts.

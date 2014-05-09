@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Shapes:RootBlock xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Shapes="urn:Shapes.ecore">
-  <modelElement xsi:type="Shapes:Circle" name="a*b"/>
-  <modelElement xsi:type="Shapes:Circle" name="Circle1"/>
-</Shapes:RootBlock>
