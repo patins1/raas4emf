@@ -10,6 +10,12 @@
             sourceFileExtension="ifc"
             targetFileExtension="js">
       </transformator>
+      <transformator
+            class="org.raas4emf.cms.core.webgl.ColladaToGLTFTranformator"
+            description="GLTF"
+            sourceFileExtension="dae"
+            targetFileExtension="json">
+      </transformator>
    </extension>
    
    
