@@ -24,6 +24,11 @@ public class GeometryJob extends RAASJob {
 		System.setProperty(HexUtil.bytesToHex(artifact.getFileContent().getID()) + ".js", jsurl);
 	}
 
+	public GeometryJob(Artifact artifact, String sceneName) {
+		this(artifact);
+		this.sceneName = sceneName;
+	}
+
 	protected IStatus run(IProgressMonitor monitor) {
 		monitor = interceptMonitor(monitor);
 		try {
