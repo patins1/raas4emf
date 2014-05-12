@@ -255,6 +255,10 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 	}
 
 	public Object getFileOrStream(String filename, IProgressMonitor monitor) throws IOException {
+		if (filename.lastIndexOf('/') != -1)
+			filename = filename.substring(filename.lastIndexOf('/') + 1);
+		if (filename.lastIndexOf('\\') != -1)
+			filename = filename.substring(filename.lastIndexOf('\\') + 1);
 		String targetFileExtension = TransformationUtils.getFileExtension(filename);
 		String sourceFileExtension = TransformationUtils.getFileExtension(getName());
 		String pureFilename = "scene";
