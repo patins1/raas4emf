@@ -80,6 +80,7 @@ var g_renderer;
 if (g_renderer == null) g_renderer = getParameterByName(document.URL,"renderer") || "webgl"; 
 var doCollada= document.evaluate!=undefined && g_renderer!="svg";
 var doJsonLoader = true;
+var doGLTF = false;
 var container, stats, rendererStats;
 var projector;
 var mouse;
@@ -516,6 +517,7 @@ function calcPaths() {
     var ext = filename.substring(filename.lastIndexOf("."));
     doJsonLoader = (ext == ".js");
     doCollada = (ext == ".dae");
+    doGLTF = (ext == ".json");
 	
 }
 
@@ -3395,7 +3397,7 @@ function start() {
     	mouse = new THREE.Vector2();
     	up = new THREE.Vector3( 0, 1, 0 );
 		
-//    	var requiredThreeJS = doJsonLoader ? [] : [doCollada ? g_dir+"js/loaders/ColladaLoader.js" : g_dir+"js/loaders/OBJLoader.js"];
+    	var requiredThreeJS = doJsonLoader ? [] : doCollada ? [g_dir+"js/loaders/ColladaLoader.js"] : doGLTF ? [g_dir+"js/loaders/gltf/glTF-parser.js",g_dir+"js/loaders/gltf/glTFLoader.js",g_dir+"js/loaders/gltf/glTFLoaderUtils.js",g_dir+"js/loaders/gltf/glTFAnimation.js"] : [g_dir+"js/loaders/OBJLoader.js"];
 //    	requiredThreeJS.push(g_dir+"js/controls/OrbitControls.js");
 //    	requiredThreeJS.push(g_dir+"js/curves/NURBSUtils.js");
 //    	requiredThreeJS.push(g_dir+"js/curves/NURBSCurve.js");
@@ -3410,12 +3412,12 @@ function start() {
 //        	requiredThreeJS.push(g_dir+"js/renderers/WebGLDeferredRenderer.js");
 //    	}
 //    	
-//        require(requiredThreeJS, function () {
+        require(requiredThreeJS, function () {
         	buildTable();
             for (var ii = 0; ii < g_num_clients; ++ii) {
             	load(ii);
             }
-//        });
+        });
 
 }
 
@@ -3671,6 +3673,12 @@ var initStatics = function() {
     
 };
 
+function prepareMisc(g_client) {
+        	if (effectController.quickmode) melt(g_client);
+    		if (effectController.selection) select(getObjectsWithSplittings(effectController.selection.split(",")),g_client);
+    		if (effectController.locate) locate(g_selectedInfo,g_client,1);
+}
+
 
 function load(ii) {
     if (initStatics) {
@@ -3679,6 +3687,26 @@ function load(ii) {
 	}
 	load2(ii);
 }
+
+function afterLoad(root,g_client) {
+	drawBar(0,"Customizing Scene ...");	
+	setTimeout(function(){
+	init(root,g_client);
+	drawBar(0,"Preparing Geometry ...");	
+	setTimeout(function(){
+	generateGui();
+	prepareMisc(g_client);
+	drawBar(0,"Rendering WebGL ...");	
+	setTimeout(function(){
+	animate(g_client);		
+	document.getElementById('progress').style.display = "none";
+	drawBar(0,"Finished!");	
+    installRendererEvents(g_client);
+	},waitForBar);
+	},waitForBar);
+	},waitForBar);	
+}
+
 function load2(ii) {
 	g_clients[ii].invalidated = true;
 	g_pickInfoElem = document.getElementById('pickInfo');
@@ -3691,24 +3719,7 @@ function load2(ii) {
     	var loader = new THREE.SceneLoader();
     	loader.addGeometryHandler( "ascii", THREE.JSONLoader2 );
     	loader.load2( g_paths[ii], function ( result ) {
-    		drawBar(0,"Customizing Scene ...");	
-    		setTimeout(function(){
-    		init(result.scene,g_clients[ii]);
-    		drawBar(0,"Preparing Geometry ...");	
-    		setTimeout(function(){
-    		generateGui();
-        	if (effectController.quickmode) melt(g_clients[ii]);
-    		if (effectController.selection) select(getObjectsWithSplittings(effectController.selection.split(",")),g_clients[ii]);
-    		if (effectController.locate) locate(g_selectedInfo,g_clients[ii],1);
-    		drawBar(0,"Rendering WebGL ...");	
-    		setTimeout(function(){
-    		animate(g_clients[ii]);		
-    		document.getElementById('progress').style.display = "none";
-    		drawBar(0,"Finished!");	
-    	    installRendererEvents(g_clients[ii]);
-    		},waitForBar);
-    		},waitForBar);
-    		},waitForBar);
+    		afterLoad(result.scene,g_clients[ii]);
     	}, function ( event ) {
 			drawBar(event.total ? event.loaded / event.total : 0, "Loading ..." );
     	}, function ( event ) { 
@@ -3718,13 +3729,22 @@ function load2(ii) {
 	if (doCollada) {
     	var loader = new THREE.ColladaLoader();
     	loader.options.convertUpAxis = true;
-    	loader.load( g_paths[ii], function ( collada ) {	
-	        var g_client = g_clients[ii];
-    		init(collada.scene,g_client);
-    		animate(g_client);		
+    	loader.load( g_paths[ii], function ( result ) {
+    		var root = result.scene.children[result.scene.children.length-1];
+    		afterLoad(root,g_clients[ii]);
+    	} );
+	} else 
+	if (doGLTF) {
+    	var loader = new THREE.glTFLoader();
+    	var index = g_paths[ii].lastIndexOf("scene.");
+    	loader.load( g_paths[ii].substring(0,index)+"/"+g_paths[ii].substr(index), function ( result ) {
+    		var root = result.scene.children[result.scene.children.length-1];
+    	    root.rotation.x += -Math.PI/2 ;
+    	    root.updateMatrix();
+    		effectController.quickmode = false; // this mode not works
+    	    afterLoad(root,g_clients[ii]);
     	} );
 	} else {
-
 		var loader = new THREE.OBJLoader();
 
     	loader.load( g_paths[ii], function ( object ) {	
