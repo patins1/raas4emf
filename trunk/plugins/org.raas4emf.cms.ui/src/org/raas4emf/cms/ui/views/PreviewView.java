@@ -508,7 +508,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			artifactsToProcess = artifacts.size();
 			for (final Artifact artifact : artifacts) {
 				// if (JobManager.getInstance().find(artifact))
-				Job job = new GeometryJob(artifact) {
+				Job job = new GeometryJob(artifact, getScene3dName()) {
 
 					protected IStatus run(final IProgressMonitor monitor) {
 						final IStatus status = super.run(monitor);
