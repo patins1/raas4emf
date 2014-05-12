@@ -298,7 +298,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 
 		change3dFormatAction = new Action() {
 			public void run() {
-				ComboInputDialog inputdialog = new ComboInputDialog(new String[] { ".js - three.js internal JSON format", ".dae - COLLADA", ".obj - Wafefront" }, window.getShell(), "Change 3D format", "Select 3D file format:", CMSActivator.getSessionInstance().get3dFormat(), null);
+				ComboInputDialog inputdialog = new ComboInputDialog(new String[] { ".js - three.js internal JSON format", ".dae - COLLADA", ".obj - Wafefront", ".json - glTF" }, window.getShell(), "Change 3D format", "Select 3D file format:", CMSActivator.getSessionInstance().get3dFormat(), null);
 				if (inputdialog.open() == Window.OK) {
 					String format = inputdialog.getValue();
 					CMSActivator.getSessionInstance().set3dFormat(format);
