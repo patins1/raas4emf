@@ -34,6 +34,7 @@ var g_lastPos;
 var g_cameraTransforms = [];
 var g_incidentTransforms = [];
 var isInParse = false;
+var defaultScheme;
 
 var g_map;
 var g_overlay;
@@ -2162,7 +2163,7 @@ function generateGui() {
 		}
 
 		if (!b_colorSchemes[selectedColorScheme])
-			selectedColorScheme = "default";
+			selectedColorScheme = defaultScheme;
 		
 		g_colors = g_colorSchemes[selectedColorScheme];
 
@@ -2200,6 +2201,7 @@ function generateGui() {
 	} );
 	componentsGui.neverRemove = effectController.flatten_materialvisibility;
 	updateComponentsCheckbox();
+	componentsGui.domElement.parentNode.parentNode.style.backgroundColor = "#000000";
 
     var g_visibility_sorted = [];
     for(var key in g_visibility)
@@ -2215,14 +2217,19 @@ function generateGui() {
 	}
     
 
+	effectController["Transparency"] = true;
+	var transparencyGui = materialVisibilityGui.add( effectController, "Transparency", effectController["Transparency"] );
+	transparencyGui.domElement.parentNode.parentNode.style.backgroundColor = "#000000";
+	transparencyGui.__checkbox.style.visibility = "hidden";
+	transparencyGui.neverRemove = effectController.flatten_materialvisibility;
+	
 	for (var m in g_colorSchemes) {
-		if (m!="default") {
-			b_colorSchemes[m] = false;
+			b_colorSchemes[m] = (m == defaultScheme);
 			var mScheme = m;
 			var colorScheme = materialVisibilityGui.add( b_colorSchemes, m,  b_colorSchemes[m]).onChange(updateColScheme);
 	    	materialCtls.push(colorScheme);		
 	    	colorScheme.neverRemove = effectController.flatten_materialvisibility;	
-		}
+	    	colorScheme.__checkbox.type= "radio";
 	}
 
 	// selection info
@@ -4099,11 +4106,19 @@ function init(root,g_client) {
     		child.name += "..";
     });
     if (g_customInit) g_customInit();
-	if (g_colors["default"]) {
+    defaultScheme = null;
+	for (var m in g_colors) {
+		if (g_colors[m].isDefaultColorScheme) {
+			defaultScheme = m;
+		}
+	}
+	if (defaultScheme) {
 		g_colorSchemes = g_colors;
-		g_colors = g_colors["default"];
+		g_colors = g_colors[defaultScheme];
 	} else {
-		g_colorSchemes = { "default": g_colors};
+		defaultScheme = "default";
+		g_colorSchemes = { };
+		g_colorSchemes[defaultScheme] = g_colors;
 	}
     setupColors(g_client);
 	g_client.root.traverse(function (child) { 
