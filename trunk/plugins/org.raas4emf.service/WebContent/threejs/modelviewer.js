@@ -27,6 +27,7 @@ var up;
 var g_dragging = false;
 var g_worldPosition;
 var g_customInit;
+var g_fullyLoaded;
 var g_offs;
 var g_finished = false;  // for selenium
 var g_clients = [];
@@ -3707,7 +3708,8 @@ function afterLoad(root,g_client) {
 	setTimeout(function(){
 	animate(g_client);		
 	document.getElementById('progress').style.display = "none";
-	drawBar(0,"Finished!");	
+	drawBar(0,"Finished!");
+    if (g_fullyLoaded) g_fullyLoaded();
     installRendererEvents(g_client);
 	},waitForBar);
 	},waitForBar);
