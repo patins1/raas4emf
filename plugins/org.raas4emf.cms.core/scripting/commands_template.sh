@@ -1,0 +1,1 @@
+bin/ifc2jshttp.sh %FINGERPRINT% "http://127.0.0.1:80/embedded?servicehandler=downloadServiceHandler&artifact=14&filename=Duplex_MEP_20110907_optimized.ifc" "http://127.0.0.1:80/embedded?servicehandler=embeddedapi&request=GeometryUploadRequest&UUID=285b322f-ae2c-4220-be14-0de578c44a2c"

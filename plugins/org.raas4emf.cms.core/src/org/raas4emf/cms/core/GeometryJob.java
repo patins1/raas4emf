@@ -40,7 +40,7 @@ public class GeometryJob extends RAASJob {
 				return Status.CANCEL_STATUS;
 		} catch (final Exception e) {
 			Activator.err(e);
-			return new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e);
+			return new Status(IStatus.CANCEL, Activator.PLUGIN_ID, e.getMessage(), e);
 		}
 		return Status.OK_STATUS;
 	}
