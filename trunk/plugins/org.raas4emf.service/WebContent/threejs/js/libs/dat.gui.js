@@ -1123,6 +1123,7 @@ dat.controllers.BooleanController = (function (Controller, dom, common) {
 
 
     dom.bind(this.__checkbox, 'change', onChange, false);
+    dom.bind(this.__checkbox, 'click', onChange, false); //required for IE when checkbox is in indeterminate state!
 
     this.domElement.appendChild(this.__checkbox);
 

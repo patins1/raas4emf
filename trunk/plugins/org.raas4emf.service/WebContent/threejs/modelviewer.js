@@ -1708,7 +1708,10 @@ function updateComponentsCheckbox() {
 		oneVisible = oneVisible || g_visibility[m]; 
 		oneHidden = oneHidden || ! g_visibility[m]; 
 	} 
-	effectController["Components"] = oneVisible;
+	if (oneVisible && oneHidden)
+		effectController["Components"] = isIE11;
+	else
+		effectController["Components"] = oneVisible;
 	updateGuiControl(componentsGui);
     $(componentsGui.__checkbox).prop("indeterminate", oneVisible && oneHidden); 
 }
