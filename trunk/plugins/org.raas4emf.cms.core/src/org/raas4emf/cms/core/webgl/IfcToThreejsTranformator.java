@@ -52,6 +52,22 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 			File blendFile = null;
 
 			String REMOTE_BLENDER_URL = RAASUtils.getRAASProp("REMOTE_BLENDER_URL");
+
+			String fingerprint = HexUtil.bytesToHex(artifact.getFileContent().getID());
+			String ifcUrl = System.getProperty(fingerprint + ".ifc");
+			String jsUrl = System.getProperty(fingerprint + ".js");
+			System.setProperty(fingerprint + ".ifc", "");
+			System.setProperty(fingerprint + ".js", "");
+			if (REMOTE_STORAGE != null) {
+				try {
+					if (REMOTE_STORAGE.saveAsFile(fingerprint, targetFile)) {
+						return targetFile;
+					}
+				} catch (RuntimeException e) {
+					Activator.err("REMOTE_STORAGE.saveAsFile not succesfull!", e);
+				}
+			}
+
 			boolean useRemoteConversion = REMOTE_BLENDER_URL != null;
 			if (!useRemoteConversion) {
 				File ifcFile = new File(dir, pureFilename + ".ifc");
@@ -76,21 +92,6 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				cmd = TransformationUtils.quote(DEFAULT_BLENDER_LOCATION) + " -nojoystick -noaudio -b " + TransformationUtils.quote(untitledBlenderFile) + " -P " + TransformationUtils.quote(script) + " -- " + TransformationUtils.quote(ifcFile) + " " + TransformationUtils.quote(targetFile);
 
 			} else {
-				String fingerprint = HexUtil.bytesToHex(artifact.getFileContent().getID());
-				String ifcUrl = System.getProperty(fingerprint + ".ifc");
-				String jsUrl = System.getProperty(fingerprint + ".js");
-				System.setProperty(fingerprint + ".ifc", "");
-				System.setProperty(fingerprint + ".js", "");
-				if (REMOTE_STORAGE != null) {
-					try {
-						if (REMOTE_STORAGE.saveAsFile(fingerprint, targetFile)) {
-							return targetFile;
-						}
-					} catch (RuntimeException e) {
-						if (ifcUrl == null || "".equals(ifcUrl))
-							throw e;
-					}
-				}
 				boolean isWindows = System.getProperty("os.name").contains("Windows");
 
 				String key = new File(FileLocator.resolve(new URL("platform:/plugin/org.raas4emf.cms.core/scripting/" + (isWindows ? "blenderfarm.ppk" : "blenderfarm.pem"))).getFile()).toString();
