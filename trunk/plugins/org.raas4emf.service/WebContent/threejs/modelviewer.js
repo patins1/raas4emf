@@ -4125,7 +4125,7 @@ function init(root,g_client) {
 		g_colorSchemes = { };
 		g_colorSchemes[defaultScheme] = g_colors;
 	}
-    setupColors(g_client);
+    setupColors(g_client,true);
 	g_client.root.traverse(function (child) { 
     	child.visible = true; //non-meshes are not visible by default, but required to be visible for canvas renderer
     });
@@ -4173,7 +4173,7 @@ function setupUVs(mesh) {
 	}
 }
 
-function setupColors(g_client) {
+function setupColors(g_client,updateVisibilityArray) {
 
 	for (var m in g_colors) {
 //			var color = g_colors[m];
@@ -4274,11 +4274,11 @@ function setupColors(g_client) {
 			        	if (material2 && material2!=material) {
 			        		material2.baseMaterialName = child.material.name;
 							child.material = material = material2;
-							g_visibility[material2.baseMaterialName] = material2.visible;
+							if (updateVisibilityArray) g_visibility[material2.baseMaterialName] = material2.visible;
 			        	}
 			        }					
 			        setupUVs(child);
-					g_visibility[material.name] = material.visible;
+					if (updateVisibilityArray) g_visibility[material.name] = material.visible;
 		        }
 	    	}
 		}; 
