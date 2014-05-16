@@ -30,7 +30,7 @@ import raascms.Folder;
 @SuppressWarnings("deprecation")
 public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 
-	public void service(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+	synchronized public void service(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 		RAASUtils.fixServiceHandlePreconditions();
 
 		response.setContentType("application/json");
