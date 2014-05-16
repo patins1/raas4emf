@@ -1,0 +1,95 @@
+package org.raas4emf.cms.propertysets;
+ 
+import jxl.*;
+import psets.*;  
+import org.eclipse.emf.ecore.*;
+import bim.*;
+import org.eclipse.emf.ecore.util.EcoreUtil; 
+import org.apache.poi.hssf.usermodel.*;
+import org.ifc4emf.metamodel.ifc.samples.IFCComparer;
+
+transformation xls2propertysets(source : ifc, target : bim) { 
+	
+	query toInt(String s) : int {
+		try {
+			return Integer.parseInt(s);
+		} 
+		catch (Exception e) {
+			return 0;
+		}
+	}
+	
+	relation MapPropertySet {
+		  
+		enforce domain source psetName : String { 
+		}
+		
+		enforce domain target aPset : IPropertySet {
+				name = psetName:String {} 
+		}		
+		  
+	}
+	
+	relation MapProperty {
+		
+		psetName : String;
+		value : String;
+		theLodVisibility : String;
+		  
+		enforce domain source row : HSSFRow { }
+		
+		enforce domain target iArtifact : IArtifact {
+			propertySets = aPset : IPropertySet { 
+				properties = def : IProperty { 
+					name = attName :String {}					
+					propertyValues = valueDef : IDefaultValue {
+						Value = IFCComparer.normalizeIfcValue(value)
+					}
+					lodVisibility = toInt(theLodVisibility)
+				}				
+			}
+		}
+		
+		when {
+			attName = row.getCell(0/*Name Column*/)?.toString();			
+			attName!=null;
+			psetName = row.getCell(10/*ExtIdentifier Column*/)?.toString();
+			psetName != null;
+			value = row.getCell(6/*Value Column*/)?.toString();
+			value != null;
+			theLodVisibility = row.getCell(13)?.toString();
+		}
+		
+		where {
+			MapPropertySet(psetName,aPset);
+		}
+		  
+	}
+	
+	top relation MapWorkbook {
+		
+		i:int;
+		sheet : HSSFSheet;
+		  
+		enforce domain source w : HSSFWorkbook { }
+		
+		enforce domain target iArtifact : IArtifact {
+			
+		}
+		
+		when {
+			sheet = w.getSheet("Attribute");
+			sheet != null;
+		}
+		
+		where {
+			i=1;
+			while (i <= sheet.lastRowNum) {
+				MapProperty(sheet.getRow(i),iArtifact);
+				i = i +1;
+			};			
+		}
+		  
+	}
+
+}
