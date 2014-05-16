@@ -12,7 +12,7 @@ transformation xls2propertysets(source : ifc, target : bim) {
 	
 	query toInt(String s) : int {
 		try {
-			return Integer.parseInt(s);
+			return Double.parseDouble(s) as int;
 		} 
 		catch (Exception e) {
 			return 0;
