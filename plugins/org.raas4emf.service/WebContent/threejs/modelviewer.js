@@ -3642,6 +3642,10 @@ var initStatics = function() {
     			drawBar(0,"Parsing Json ...");
         		setTimeout(function(){
     			var json = JSON.parse( text );
+    			if (json.errorMessage) {
+    				$("#progress").html(json.errorMessage);
+    				return;
+    			}
     			drawBar(0,"Building Scene ...");
         		setTimeout(function(){
     			allGeometries = json.metadata.geometries;
