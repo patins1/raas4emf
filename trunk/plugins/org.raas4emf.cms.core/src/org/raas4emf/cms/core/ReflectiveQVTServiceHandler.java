@@ -106,27 +106,10 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 				}
 			}
 
-			final List<Artifact> allArtifacts = new ArrayList<Artifact>();
-			final List<Folder> allFolders = new ArrayList<Folder>();
-			final EMFJQVTEngine testTrafo = new EMFJQVTEngine() {
-
-				@Override
-				public <T> List<T> getInstancesFor(Class<T> clazz, String direction) {
-					return ReflectiveQVTServiceHandler.this.getInstancesFor(embeddedRequest, allArtifacts, allFolders, clazz);
-				}
-
-			};
-
-			List<Object> targetModel = new ArrayList<Object>();
-			executeSpecificQVTTransformation(testTrafo, targetModel);
-
-			if (targetModel.size() == 0)
-				throw new Exception("Could not produce response for request " + requestClass);
-			String result = new String(Activator.getSessionInstance().encodeJSON(targetModel.get(0)));
+			String result = processRequest(embeddedRequest);
 
 			response.setHeader("RAASResponseMessage", "" + message);
 			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(result), response.getOutputStream());
-			Activator.log("Produced " + targetModel.get(0).getClass());
 
 		} catch (Throwable e) {
 			e = getLastCause(e);
@@ -143,6 +126,28 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 
 		Activator.info(requestClass + " returned status code " + response.getStatus() + " message=" + message);
 
+	}
+
+	public String processRequest(final EObject embeddedRequest) throws IllegalAccessException, InvocationTargetException, IOException, Exception {
+		final List<Artifact> allArtifacts = new ArrayList<Artifact>();
+		final List<Folder> allFolders = new ArrayList<Folder>();
+		final EMFJQVTEngine testTrafo = new EMFJQVTEngine() {
+
+			@Override
+			public <T> List<T> getInstancesFor(Class<T> clazz, String direction) {
+				return ReflectiveQVTServiceHandler.this.getInstancesFor(embeddedRequest, allArtifacts, allFolders, clazz);
+			}
+
+		};
+
+		List<Object> targetModel = new ArrayList<Object>();
+		executeSpecificQVTTransformation(testTrafo, targetModel);
+
+		if (targetModel.size() == 0)
+			throw new Exception("Could not produce response for request " + embeddedRequest.eClass().getName());
+		Activator.log("Produced " + targetModel.get(0).getClass());
+		String result = new String(Activator.getSessionInstance().encodeJSON(targetModel.get(0)));
+		return result;
 	}
 
 	private Throwable getLastCause(Throwable e) {

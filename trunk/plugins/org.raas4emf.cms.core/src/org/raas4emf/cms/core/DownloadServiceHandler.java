@@ -81,6 +81,11 @@ public class DownloadServiceHandler implements ServiceHandler {
 			}
 			return;
 		}
+		if ("log".equals(artifactId)) {
+			String body = FileUtil.inputstreamToString(request.getInputStream());
+			Activator.info("Logged request body:" + body);
+			return;
+		}
 		if ("iframe_contents".equals(artifactId)) {
 			// Send the file in the response
 			response.setContentType("text/html");
