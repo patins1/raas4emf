@@ -118,68 +118,76 @@ public class DownloadServiceHandler implements ServiceHandler {
 		}
 
 		if (OWN_PROVISION) {
+			try {
+				response.setHeader("Expires", "-1");
+				response.setHeader("Cache-Control", "must-revalidate, private");
+				response.addHeader("Access-Control-Allow-Origin", "*");
+				response.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+				// Send the file in the response
+				response.setContentType("application/octet-stream");
 
-			response.setHeader("Expires", "-1");
-			response.setHeader("Cache-Control", "must-revalidate, private");
-			response.addHeader("Access-Control-Allow-Origin", "*");
-			response.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-			// Send the file in the response
-			response.setContentType("application/octet-stream");
+				String filename = RWT.getRequest().getParameter("filename");
+				if (filename == null)
+					throw new RuntimeException("No filename provided when requesting " + artifactId + "!");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-			String filename = RWT.getRequest().getParameter("filename");
-			if (filename == null)
-				throw new RuntimeException("No filename provided when requesting " + artifactId + "!");
-			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-
-			Object fileObject = null;
-			Artifact artifact = null;
-			if (artifactId.startsWith("RepositoryRoot/")) {
-				EObject eObject = RAASUtils.findByPath(artifactId.split("/"));
-				if (eObject instanceof Artifact) {
-					artifact = (Artifact) eObject;
+				Object fileObject = null;
+				Artifact artifact = null;
+				if (artifactId.startsWith("RepositoryRoot/")) {
+					EObject eObject = RAASUtils.findByPath(artifactId.split("/"));
+					if (eObject instanceof Artifact) {
+						artifact = (Artifact) eObject;
+						fileObject = artifact.getFileOrStream(filename, new NullProgressMonitor());
+					}
+					if (eObject instanceof Folder) {
+						Folder folder = (Folder) eObject;
+						for (Artifact a : folder.getArtifacts()) {
+							fileObject = a.getFileOrStream(filename, new NullProgressMonitor());
+							if (fileObject != null) {
+								artifact = a;
+								break;
+							}
+						}
+					}
+				} else {
+					artifact = (Artifact) RAASUtils.findObjectById(artifactId);
 					fileObject = artifact.getFileOrStream(filename, new NullProgressMonitor());
 				}
-				if (eObject instanceof Folder) {
-					Folder folder = (Folder) eObject;
-					for (Artifact a : folder.getArtifacts()) {
-						fileObject = a.getFileOrStream(filename, new NullProgressMonitor());
-						if (fileObject != null) {
-							artifact = a;
-							break;
+
+				InputStream inputStream;
+				if (fileObject instanceof File) {
+					File file = (File) fileObject;
+					if (!isModified(response, file, file))
+						return;
+					inputStream = new FileInputStream(file);
+				} else {
+					inputStream = (InputStream) fileObject;
+					if (fileObject instanceof ExpectedFileInputStream) {
+						ExpectedFileInputStream expectedFileInputStream = (ExpectedFileInputStream) fileObject;
+						try {
+							Field f = expectedFileInputStream.getClass().getDeclaredField("file");
+							f.setAccessible(true);
+							File file = (File) f.get(expectedFileInputStream);
+							if (!isModified(response, file, file))
+								return;
+						} catch (Exception e) {
+							Activator.err(e.getMessage());
 						}
 					}
 				}
-			} else {
-				artifact = (Artifact) RAASUtils.findObjectById(artifactId);
-				fileObject = artifact.getFileOrStream(filename, new NullProgressMonitor());
-			}
 
-			InputStream inputStream;
-			if (fileObject instanceof File) {
-				File file = (File) fileObject;
-				if (!isModified(response, file, file))
-					return;
-				inputStream = new FileInputStream(file);
-			} else {
-				inputStream = (InputStream) fileObject;
-				if (fileObject instanceof ExpectedFileInputStream) {
-					ExpectedFileInputStream expectedFileInputStream = (ExpectedFileInputStream) fileObject;
-					try {
-						Field f = expectedFileInputStream.getClass().getDeclaredField("file");
-						f.setAccessible(true);
-						File file = (File) f.get(expectedFileInputStream);
-						if (!isModified(response, file, file))
-							return;
-					} catch (Exception e) {
-						Activator.err(e.getMessage());
-					}
+				try {
+					TransformationUtils.inputstreamToOutputstream(inputStream, response.getOutputStream(), Integer.MAX_VALUE);
+				} catch (IOException ioe) {
+					throw new RuntimeException(ioe);
 				}
-			}
-
-			try {
-				TransformationUtils.inputstreamToOutputstream(inputStream, response.getOutputStream(), Integer.MAX_VALUE);
-			} catch (IOException ioe) {
-				throw new RuntimeException(ioe);
+			} catch (Throwable e) {
+				response.setStatus(400);
+				String message = "" + e.getMessage();
+				response.setHeader("RAASResponseMessage", "" + message);
+				message = message.replace("\"", "");
+				message = "{\"errorMessage\": \"" + message + "\"}";
+				FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message), response.getOutputStream());
 			}
 		} else {
 			HttpClient httpclient = new HttpClient();

@@ -13,15 +13,17 @@ import raascms.Folder;
 public class GeometryJob extends RAASJob {
 
 	private String sceneName;
+	private String fingerprint;
+	private String ifcUrl;
+	private String jsUrl;
 
 	public GeometryJob(Artifact artifact) {
 		super("Generate WebGL for " + artifact.getName(), artifact);
 		Folder folder = (Folder) artifact.eContainer();
 		sceneName = "scene.js";
-		String url = Activator.getSessionInstance().createFullDownloadUrl(artifact);
-		System.setProperty(HexUtil.bytesToHex(artifact.getFileContent().getID()) + ".ifc", url);
-		String jsurl = url.substring(0, url.indexOf("downloadServiceHandler")) + "embeddedapi&request=GeometryUploadRequest&UUID=" + folder.getName();
-		System.setProperty(HexUtil.bytesToHex(artifact.getFileContent().getID()) + ".js", jsurl);
+		ifcUrl = Activator.getSessionInstance().createFullDownloadUrl(artifact);
+		fingerprint = HexUtil.bytesToHex(artifact.getFileContent().getID());
+		jsUrl = ifcUrl.substring(0, ifcUrl.indexOf("downloadServiceHandler")) + "embeddedapi&request=GeometryUploadRequest&UUID=" + folder.getName();
 	}
 
 	public GeometryJob(Artifact artifact, String sceneName) {
@@ -32,6 +34,8 @@ public class GeometryJob extends RAASJob {
 	protected IStatus run(IProgressMonitor monitor) {
 		monitor = interceptMonitor(monitor);
 		try {
+			System.setProperty(fingerprint + ".ifc", ifcUrl);
+			System.setProperty(fingerprint + ".js", jsUrl);
 			InputStream is = artifact.asFile(sceneName, monitor);
 			if (is == null)
 				return Status.CANCEL_STATUS;
@@ -41,6 +45,9 @@ public class GeometryJob extends RAASJob {
 		} catch (final Exception e) {
 			Activator.err(e);
 			return new Status(IStatus.CANCEL, Activator.PLUGIN_ID, e.getMessage(), e);
+		} finally {
+			System.setProperty(fingerprint + ".ifc", "");
+			System.setProperty(fingerprint + ".js", "");
 		}
 		return Status.OK_STATUS;
 	}

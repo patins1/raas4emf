@@ -37,6 +37,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 	}
 
 	public File transform(Object oArtifact, File dir, String pureFilename, final IProgressMonitor monitor) throws IOException {
+		String IS_PROCESSING = "This document is still being processed. Please try again in a few minutes";
 		Artifact artifact = (Artifact) oArtifact;
 		Activator.log("Start transforming " + pureFilename);
 		worked = 0;
@@ -92,6 +93,9 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				cmd = TransformationUtils.quote(DEFAULT_BLENDER_LOCATION) + " -nojoystick -noaudio -b " + TransformationUtils.quote(untitledBlenderFile) + " -P " + TransformationUtils.quote(script) + " -- " + TransformationUtils.quote(ifcFile) + " " + TransformationUtils.quote(targetFile);
 
 			} else {
+				if (ifcUrl == null || "".equals(ifcUrl)) {
+					throw new RuntimeException(IS_PROCESSING);
+				}
 				boolean isWindows = System.getProperty("os.name").contains("Windows");
 
 				String key = new File(FileLocator.resolve(new URL("platform:/plugin/org.raas4emf.cms.core/scripting/" + (isWindows ? "blenderfarm.ppk" : "blenderfarm.pem"))).getFile()).toString();
@@ -224,6 +228,9 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 
 			monitor.worked(1);
 		} catch (Exception e) {
+			if (IS_PROCESSING.equals(e.getMessage())) {
+				throw (RuntimeException) e;
+			}
 			String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
 			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message + "\n" + errorMessages), new FileOutputStream(errorFile));
 			Activator.err("Stopped conversion with message: " + message, e);
