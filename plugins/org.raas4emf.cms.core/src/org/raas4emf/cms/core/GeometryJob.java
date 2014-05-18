@@ -16,6 +16,7 @@ public class GeometryJob extends RAASJob {
 	private String fingerprint;
 	private String ifcUrl;
 	private String jsUrl;
+	public static StatusChangeCallback STATUS_CHANGED_CALLBACK;
 
 	public GeometryJob(Artifact artifact) {
 		super("Generate WebGL for " + artifact.getName(), artifact);
@@ -48,6 +49,8 @@ public class GeometryJob extends RAASJob {
 		} finally {
 			System.setProperty(fingerprint + ".ifc", "");
 			System.setProperty(fingerprint + ".js", "");
+			if (STATUS_CHANGED_CALLBACK != null)
+				STATUS_CHANGED_CALLBACK.stateChanged(artifact);
 		}
 		return Status.OK_STATUS;
 	}

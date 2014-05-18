@@ -35,6 +35,9 @@ public class ParsingJob extends RAASJob {
 			} catch (Exception e) {
 				Activator.err(e);
 				return new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Error while building " + RAASUtils.getPath(artifact), e);
+			} finally {
+				if (GeometryJob.STATUS_CHANGED_CALLBACK != null)
+					GeometryJob.STATUS_CHANGED_CALLBACK.stateChanged(artifact);
 			}
 		}
 		return Status.OK_STATUS;
