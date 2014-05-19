@@ -118,6 +118,12 @@ var trident = !!navigator.userAgent.match(/Trident\/7.0/);
 var net = !!navigator.userAgent.match(/.NET4.0E/);
 var isIE11 = trident && net;
 
+var framesCount = 0;
+var startedTestFps=null;
+var testFps=null;
+var disableRendering = false;
+
+
 window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
 	$("#progress").html("Fatal error occured: " + errorMsg);//or any message
 	myLog(errorMsg);
@@ -3327,7 +3333,8 @@ function start() {
 			select_face: false,
 			opencontrols: true,
 			opencontrolsWidth:275,
-			displaceGui:true
+			displaceGui:true,
+			acceptablefps:2
 		};
 
 	for (var m in overrideSettings) {
@@ -4322,6 +4329,7 @@ function updateClient(g_client, lazy) {
 //		g_client.renderer.sortObjects=  false;
 		g_client.renderer.autoUpdateObjects=  false;
 	}
+	if (disableRendering) return;
 	requestAnimationFrame( function() { animate(g_client); } );
 }
 
@@ -4405,7 +4413,26 @@ function render(g_client) {
 
 	motionByKeys(g_client);
 	g_updateClientTime=new Date().getTime() - updateClientStart;
-	if (!effectController.lazy_rendering) {
+
+	framesCount+=1;
+	var testFpsAt = 2;
+	if (framesCount==testFpsAt) {
+		startedTestFps = new Date().getTime();
+	}
+	var stoppedTestFps = new Date().getTime();
+	
+	if (startedTestFps!=null && (stoppedTestFps-startedTestFps)>=1000) {
+		testFps = (framesCount-testFpsAt)*1000/(stoppedTestFps-startedTestFps);
+		console.log("testFps="+testFps);
+		startedTestFps = null;
+		if (testFps<effectController.acceptablefps) {
+			if (confirm("It seems you have a slow graphics card. Do you want to disable the graphical display of the model?")) {
+				disableRendering = true;
+			}
+		}
+	}
+	
+	if (!effectController.lazy_rendering || testFps==null) {
 		updateClient(g_client,true);
 	}
 	if (useOctree) octree.update();
