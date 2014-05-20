@@ -4847,7 +4847,8 @@ function onDocumentMouseDown(e) {
 	if (intersects)
     for (var tt = 0; tt < intersects.length; tt++) {	
     	var object = intersects[ tt ].object;
-    	if ((object.visible || g_client.additionalObjectsToSelect.indexOf(object)>=0) && object.material.opacity != 0 && object.material.visible) {
+    	var material = g_client.g_colors[object.material.name];
+    	if ((object.visible || g_client.additionalObjectsToSelect.indexOf(object)>=0) && material && material.opacity != 0 && material.visible) {
     		SELECTED = object;
     		break;
     	}
