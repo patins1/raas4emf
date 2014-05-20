@@ -52,7 +52,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 			String cmd = null;
 			File blendFile = null;
 
-			String REMOTE_BLENDER_URL = RAASUtils.getRAASProp("REMOTE_BLENDER_URL");
+			String REMOTE_BLENDER_URL = System.getProperty("REMOTE_BLENDER_URL");
 
 			String fingerprint = HexUtil.bytesToHex(artifact.getFileContent().getID());
 			String ifcUrl = System.getProperty(fingerprint + ".ifc");
