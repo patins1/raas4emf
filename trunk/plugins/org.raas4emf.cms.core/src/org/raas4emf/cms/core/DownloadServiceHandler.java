@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
@@ -190,8 +191,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 				response.setStatus(400);
 				String message = "" + e.getMessage();
 				response.setHeader("RAASResponseMessage", "" + message);
-				message = message.replace("\"", "");
-				message = "{\"errorMessage\": \"" + message + "\"}";
+				message = "{\"errorMessage\": " + JSONObject.quote(message) + "}";
 				FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message), response.getOutputStream());
 			}
 		} else {
