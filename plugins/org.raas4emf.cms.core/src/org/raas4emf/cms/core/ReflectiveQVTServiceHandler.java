@@ -1,5 +1,8 @@
 package org.raas4emf.cms.core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringBufferInputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -78,8 +81,10 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 						throw new Exception("Unknown parameter: " + item.getFieldName());
 					}
 					if (!item.isFormField()) {
-						embeddedRequest.eSet(feature, item.openStream());
-						break; // dont call items.hasNext as the stream is not read yet!
+						File temp = File.createTempFile("temp-raas-upload", ".tmp");
+						FileUtil.inputstreamToOutputstream(item.openStream(), new FileOutputStream(temp));
+						embeddedRequest.eSet(feature, new FileInputStream(temp));
+						temp.deleteOnExit();
 					} else {
 						String string = FileUtil.inputstreamToString(item.openStream());
 						if (feature.getEType() instanceof EClass) {
