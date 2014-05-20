@@ -4428,6 +4428,7 @@ function render(g_client) {
 		if (testFps<effectController.acceptablefps) {
 			if (confirm("It seems you have a slow graphics card. Do you want to disable the graphical display of the model?")) {
 				disableRendering = true;
+				$(g_client).fadeOut(2500);
 			}
 		}
 	}
