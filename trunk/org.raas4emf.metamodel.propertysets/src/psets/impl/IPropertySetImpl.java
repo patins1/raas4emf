@@ -18,17 +18,16 @@ import psets.PsetsPackage;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>{@link psets.impl.IPropertySetImpl#getProperties <em>Properties</em>}</li>
- * <li>{@link psets.impl.IPropertySetImpl#getName <em>Name</em>}</li>
+ *   <li>{@link psets.impl.IPropertySetImpl#getProperties <em>Properties</em>}</li>
+ *   <li>{@link psets.impl.IPropertySetImpl#getName <em>Name</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class IPropertySetImpl extends CDOObjectImpl implements IPropertySet {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected IPropertySetImpl() {
@@ -37,7 +36,6 @@ public class IPropertySetImpl extends CDOObjectImpl implements IPropertySet {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -47,7 +45,6 @@ public class IPropertySetImpl extends CDOObjectImpl implements IPropertySet {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -57,26 +54,23 @@ public class IPropertySetImpl extends CDOObjectImpl implements IPropertySet {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	public EList<IProperty> getProperties() {
-		return (EList<IProperty>) eGet(PsetsPackage.Literals.IPROPERTY_SET__PROPERTIES, true);
+		return (EList<IProperty>)eGet(PsetsPackage.Literals.IPROPERTY_SET__PROPERTIES, true);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getName() {
-		return (String) eGet(PsetsPackage.Literals.IPROPERTY_SET__NAME, true);
+		return (String)eGet(PsetsPackage.Literals.IPROPERTY_SET__NAME, true);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setName(String newName) {
@@ -85,7 +79,6 @@ public class IPropertySetImpl extends CDOObjectImpl implements IPropertySet {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public IProperty createProperty(String propName) {
@@ -97,7 +90,7 @@ public class IPropertySetImpl extends CDOObjectImpl implements IPropertySet {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public EList<String> getApplicableClasses() {
 		return new BasicEList<String>();
@@ -106,7 +99,7 @@ public class IPropertySetImpl extends CDOObjectImpl implements IPropertySet {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public String getDefinition() {
 		return null;
@@ -114,18 +107,17 @@ public class IPropertySetImpl extends CDOObjectImpl implements IPropertySet {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
 		switch (operationID) {
-		case PsetsPackage.IPROPERTY_SET___CREATE_PROPERTY__STRING:
-			return createProperty((String) arguments.get(0));
-		case PsetsPackage.IPROPERTY_SET___GET_APPLICABLE_CLASSES:
-			return getApplicableClasses();
-		case PsetsPackage.IPROPERTY_SET___GET_DEFINITION:
-			return getDefinition();
+			case PsetsPackage.IPROPERTY_SET___CREATE_PROPERTY__STRING:
+				return createProperty((String)arguments.get(0));
+			case PsetsPackage.IPROPERTY_SET___GET_APPLICABLE_CLASSES:
+				return getApplicableClasses();
+			case PsetsPackage.IPROPERTY_SET___GET_DEFINITION:
+				return getDefinition();
 		}
 		return super.eInvoke(operationID, arguments);
 	}

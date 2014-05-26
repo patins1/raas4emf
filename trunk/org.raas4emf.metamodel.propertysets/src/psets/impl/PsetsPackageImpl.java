@@ -258,6 +258,24 @@ public class PsetsPackageImpl extends EPackageImpl implements PsetsPackage {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getIProperty_LodReadOnly() {
+		return (EAttribute)iPropertyEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getIProperty_LodMustChange() {
+		return (EAttribute)iPropertyEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EOperation getIProperty__GetFullName() {
 		return iPropertyEClass.getEOperations().get(0);
 	}
@@ -486,6 +504,8 @@ public class PsetsPackageImpl extends EPackageImpl implements PsetsPackage {
 		createEReference(iPropertyEClass, IPROPERTY__PROPERTY_VALUES);
 		createEAttribute(iPropertyEClass, IPROPERTY__LOD_VISIBILITY);
 		createEAttribute(iPropertyEClass, IPROPERTY__NAME);
+		createEAttribute(iPropertyEClass, IPROPERTY__LOD_READ_ONLY);
+		createEAttribute(iPropertyEClass, IPROPERTY__LOD_MUST_CHANGE);
 		createEOperation(iPropertyEClass, IPROPERTY___GET_FULL_NAME);
 		createEOperation(iPropertyEClass, IPROPERTY___CLEAN_UP);
 		createEOperation(iPropertyEClass, IPROPERTY___GET_SIMPLE_TYPE);
@@ -566,6 +586,8 @@ public class PsetsPackageImpl extends EPackageImpl implements PsetsPackage {
 		initEReference(getIProperty_PropertyValues(), this.getIPropertyValue(), null, "propertyValues", null, 0, -1, IProperty.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getIProperty_LodVisibility(), ecorePackage.getEInt(), "lodVisibility", null, 0, 1, IProperty.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getIProperty_Name(), ecorePackage.getEString(), "name", null, 0, 1, IProperty.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIProperty_LodReadOnly(), ecorePackage.getEInt(), "lodReadOnly", null, 0, 1, IProperty.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getIProperty_LodMustChange(), ecorePackage.getEInt(), "lodMustChange", null, 0, 1, IProperty.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEOperation(getIProperty__GetFullName(), ecorePackage.getEString(), "getFullName", 0, 1, IS_UNIQUE, IS_ORDERED);
 

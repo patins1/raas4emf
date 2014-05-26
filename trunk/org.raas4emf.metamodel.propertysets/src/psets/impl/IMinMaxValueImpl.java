@@ -16,17 +16,16 @@ import psets.PsetsPackage;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>{@link psets.impl.IMinMaxValueImpl#getMinValue <em>Min Value</em>}</li>
- * <li>{@link psets.impl.IMinMaxValueImpl#getMaxValue <em>Max Value</em>}</li>
+ *   <li>{@link psets.impl.IMinMaxValueImpl#getMinValue <em>Min Value</em>}</li>
+ *   <li>{@link psets.impl.IMinMaxValueImpl#getMaxValue <em>Max Value</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class IMinMaxValueImpl extends IPropertyValueImpl implements IMinMaxValue {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected IMinMaxValueImpl() {
@@ -35,7 +34,6 @@ public class IMinMaxValueImpl extends IPropertyValueImpl implements IMinMaxValue
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -45,16 +43,14 @@ public class IMinMaxValueImpl extends IPropertyValueImpl implements IMinMaxValue
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getMinValue() {
-		return (String) eGet(PsetsPackage.Literals.IMIN_MAX_VALUE__MIN_VALUE, true);
+		return (String)eGet(PsetsPackage.Literals.IMIN_MAX_VALUE__MIN_VALUE, true);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setMinValue(String newMinValue) {
@@ -63,16 +59,14 @@ public class IMinMaxValueImpl extends IPropertyValueImpl implements IMinMaxValue
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getMaxValue() {
-		return (String) eGet(PsetsPackage.Literals.IMIN_MAX_VALUE__MAX_VALUE, true);
+		return (String)eGet(PsetsPackage.Literals.IMIN_MAX_VALUE__MAX_VALUE, true);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setMaxValue(String newMaxValue) {
@@ -82,7 +76,7 @@ public class IMinMaxValueImpl extends IPropertyValueImpl implements IMinMaxValue
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public Double getMinNumber() {
 		String value = IFCComparer.normalizeIfcValue(getMinValue());
@@ -95,7 +89,7 @@ public class IMinMaxValueImpl extends IPropertyValueImpl implements IMinMaxValue
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public Double getMaxNumber() {
 		String value = IFCComparer.normalizeIfcValue(getMaxValue());
@@ -107,16 +101,15 @@ public class IMinMaxValueImpl extends IPropertyValueImpl implements IMinMaxValue
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
 		switch (operationID) {
-		case PsetsPackage.IMIN_MAX_VALUE___GET_MIN_NUMBER:
-			return getMinNumber();
-		case PsetsPackage.IMIN_MAX_VALUE___GET_MAX_NUMBER:
-			return getMaxNumber();
+			case PsetsPackage.IMIN_MAX_VALUE___GET_MIN_NUMBER:
+				return getMinNumber();
+			case PsetsPackage.IMIN_MAX_VALUE___GET_MAX_NUMBER:
+				return getMaxNumber();
 		}
 		return super.eInvoke(operationID, arguments);
 	}

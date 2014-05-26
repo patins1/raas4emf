@@ -19,17 +19,16 @@ import psets.PsetsPackage;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>{@link psets.impl.IArtifactImpl#getPropertySets <em>Property Sets</em>}</li>
- * <li>{@link psets.impl.IArtifactImpl#getTemplateType <em>Template Type</em>}</li>
+ *   <li>{@link psets.impl.IArtifactImpl#getPropertySets <em>Property Sets</em>}</li>
+ *   <li>{@link psets.impl.IArtifactImpl#getTemplateType <em>Template Type</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class IArtifactImpl extends CDOObjectImpl implements IArtifact {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected IArtifactImpl() {
@@ -38,7 +37,6 @@ public class IArtifactImpl extends CDOObjectImpl implements IArtifact {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -48,7 +46,6 @@ public class IArtifactImpl extends CDOObjectImpl implements IArtifact {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -58,18 +55,17 @@ public class IArtifactImpl extends CDOObjectImpl implements IArtifact {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	public EList<IPropertySet> getPropertySets() {
-		return (EList<IPropertySet>) eGet(PsetsPackage.Literals.IARTIFACT__PROPERTY_SETS, true);
+		return (EList<IPropertySet>)eGet(PsetsPackage.Literals.IARTIFACT__PROPERTY_SETS, true);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public String getTemplateType() {
 		// return (String)eGet(PsetsPackage.Literals.IARTIFACT__TEMPLATE_TYPE, true);
@@ -105,7 +101,6 @@ public class IArtifactImpl extends CDOObjectImpl implements IArtifact {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setTemplateType(String newTemplateType) {
@@ -114,7 +109,6 @@ public class IArtifactImpl extends CDOObjectImpl implements IArtifact {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public IPropertySet createPropertySet(String psetName) {
@@ -125,14 +119,13 @@ public class IArtifactImpl extends CDOObjectImpl implements IArtifact {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
 		switch (operationID) {
-		case PsetsPackage.IARTIFACT___CREATE_PROPERTY_SET__STRING:
-			return createPropertySet((String) arguments.get(0));
+			case PsetsPackage.IARTIFACT___CREATE_PROPERTY_SET__STRING:
+				return createPropertySet((String)arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}

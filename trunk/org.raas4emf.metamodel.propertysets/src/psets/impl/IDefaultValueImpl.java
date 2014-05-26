@@ -16,16 +16,15 @@ import psets.PsetsPackage;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>{@link psets.impl.IDefaultValueImpl#getValue <em>Value</em>}</li>
+ *   <li>{@link psets.impl.IDefaultValueImpl#getValue <em>Value</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class IDefaultValueImpl extends IPropertyValueImpl implements IDefaultValue {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected IDefaultValueImpl() {
@@ -34,7 +33,6 @@ public class IDefaultValueImpl extends IPropertyValueImpl implements IDefaultVal
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -44,16 +42,14 @@ public class IDefaultValueImpl extends IPropertyValueImpl implements IDefaultVal
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getValue() {
-		return (String) eGet(PsetsPackage.Literals.IDEFAULT_VALUE__VALUE, true);
+		return (String)eGet(PsetsPackage.Literals.IDEFAULT_VALUE__VALUE, true);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setValue(String newValue) {
@@ -63,7 +59,7 @@ public class IDefaultValueImpl extends IPropertyValueImpl implements IDefaultVal
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public Double getNumber() {
 		String value = IFCComparer.normalizeIfcValue(getValue());
@@ -75,14 +71,13 @@ public class IDefaultValueImpl extends IPropertyValueImpl implements IDefaultVal
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
 		switch (operationID) {
-		case PsetsPackage.IDEFAULT_VALUE___GET_NUMBER:
-			return getNumber();
+			case PsetsPackage.IDEFAULT_VALUE___GET_NUMBER:
+				return getNumber();
 		}
 		return super.eInvoke(operationID, arguments);
 	}
