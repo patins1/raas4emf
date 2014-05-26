@@ -22,18 +22,19 @@ import psets.PsetsPackage;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>{@link psets.impl.IPropertyImpl#getPropertyValues <em>Property Values</em>}</li>
- * <li>{@link psets.impl.IPropertyImpl#getLodVisibility <em>Lod Visibility</em>}</li>
- * <li>{@link psets.impl.IPropertyImpl#getName <em>Name</em>}</li>
+ *   <li>{@link psets.impl.IPropertyImpl#getPropertyValues <em>Property Values</em>}</li>
+ *   <li>{@link psets.impl.IPropertyImpl#getLodVisibility <em>Lod Visibility</em>}</li>
+ *   <li>{@link psets.impl.IPropertyImpl#getName <em>Name</em>}</li>
+ *   <li>{@link psets.impl.IPropertyImpl#getLodReadOnly <em>Lod Read Only</em>}</li>
+ *   <li>{@link psets.impl.IPropertyImpl#getLodMustChange <em>Lod Must Change</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected IPropertyImpl() {
@@ -42,7 +43,6 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -52,7 +52,6 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -62,26 +61,23 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@SuppressWarnings("unchecked")
 	public EList<IPropertyValue> getPropertyValues() {
-		return (EList<IPropertyValue>) eGet(PsetsPackage.Literals.IPROPERTY__PROPERTY_VALUES, true);
+		return (EList<IPropertyValue>)eGet(PsetsPackage.Literals.IPROPERTY__PROPERTY_VALUES, true);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public int getLodVisibility() {
-		return (Integer) eGet(PsetsPackage.Literals.IPROPERTY__LOD_VISIBILITY, true);
+		return (Integer)eGet(PsetsPackage.Literals.IPROPERTY__LOD_VISIBILITY, true);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setLodVisibility(int newLodVisibility) {
@@ -90,16 +86,14 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getName() {
-		return (String) eGet(PsetsPackage.Literals.IPROPERTY__NAME, true);
+		return (String)eGet(PsetsPackage.Literals.IPROPERTY__NAME, true);
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setName(String newName) {
@@ -108,8 +102,40 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
+	 */
+	public int getLodReadOnly() {
+		return (Integer)eGet(PsetsPackage.Literals.IPROPERTY__LOD_READ_ONLY, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setLodReadOnly(int newLodReadOnly) {
+		eSet(PsetsPackage.Literals.IPROPERTY__LOD_READ_ONLY, newLodReadOnly);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @generated
+	 */
+	public int getLodMustChange() {
+		return (Integer)eGet(PsetsPackage.Literals.IPROPERTY__LOD_MUST_CHANGE, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setLodMustChange(int newLodMustChange) {
+		eSet(PsetsPackage.Literals.IPROPERTY__LOD_MUST_CHANGE, newLodMustChange);
+	}
+
+	/**
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * 
+	 * @generated NOT
 	 */
 	public String getFullName() {
 		IPropertySet pset = (IPropertySet) eContainer();
@@ -119,7 +145,7 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public void cleanUp() {
 		// do nothing
@@ -128,18 +154,16 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public String getSimpleType() {
-		// TODO: implement this method
-		// Ensure that you remove @generated or mark it @generated NOT
-		throw new UnsupportedOperationException();
+		return "STRING";
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public EList<String> getEnumerationLiterals() {
 		return new BasicEList<String>();
@@ -147,7 +171,6 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setValue(String value) {
@@ -159,7 +182,7 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public String getTypeInfo() {
 		return null;
@@ -168,7 +191,7 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public String getDefinition() {
 		return null;
@@ -177,7 +200,7 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public void removePropertyValue(int index) {
 		getPropertyValues().remove(index);
@@ -186,7 +209,7 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public IDefaultValue addDefaultValue(int index) {
 		IDefaultValue defaultValue = PsetsFactory.eINSTANCE.createIDefaultValue();
@@ -198,7 +221,7 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public IMinMaxValue addMinMaxValue(int index) {
 		IMinMaxValue minMaxValue = PsetsFactory.eINSTANCE.createIMinMaxValue();
@@ -210,35 +233,34 @@ public class IPropertyImpl extends CDOObjectImpl implements IProperty {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
 		switch (operationID) {
-		case PsetsPackage.IPROPERTY___GET_FULL_NAME:
-			return getFullName();
-		case PsetsPackage.IPROPERTY___CLEAN_UP:
-			cleanUp();
-			return null;
-		case PsetsPackage.IPROPERTY___GET_SIMPLE_TYPE:
-			return getSimpleType();
-		case PsetsPackage.IPROPERTY___GET_ENUMERATION_LITERALS:
-			return getEnumerationLiterals();
-		case PsetsPackage.IPROPERTY___SET_VALUE__STRING:
-			setValue((String) arguments.get(0));
-			return null;
-		case PsetsPackage.IPROPERTY___GET_TYPE_INFO:
-			return getTypeInfo();
-		case PsetsPackage.IPROPERTY___GET_DEFINITION:
-			return getDefinition();
-		case PsetsPackage.IPROPERTY___REMOVE_PROPERTY_VALUE__INT:
-			removePropertyValue((Integer) arguments.get(0));
-			return null;
-		case PsetsPackage.IPROPERTY___ADD_DEFAULT_VALUE__INT:
-			return addDefaultValue((Integer) arguments.get(0));
-		case PsetsPackage.IPROPERTY___ADD_MIN_MAX_VALUE__INT:
-			return addMinMaxValue((Integer) arguments.get(0));
+			case PsetsPackage.IPROPERTY___GET_FULL_NAME:
+				return getFullName();
+			case PsetsPackage.IPROPERTY___CLEAN_UP:
+				cleanUp();
+				return null;
+			case PsetsPackage.IPROPERTY___GET_SIMPLE_TYPE:
+				return getSimpleType();
+			case PsetsPackage.IPROPERTY___GET_ENUMERATION_LITERALS:
+				return getEnumerationLiterals();
+			case PsetsPackage.IPROPERTY___SET_VALUE__STRING:
+				setValue((String)arguments.get(0));
+				return null;
+			case PsetsPackage.IPROPERTY___GET_TYPE_INFO:
+				return getTypeInfo();
+			case PsetsPackage.IPROPERTY___GET_DEFINITION:
+				return getDefinition();
+			case PsetsPackage.IPROPERTY___REMOVE_PROPERTY_VALUE__INT:
+				removePropertyValue((Integer)arguments.get(0));
+				return null;
+			case PsetsPackage.IPROPERTY___ADD_DEFAULT_VALUE__INT:
+				return addDefaultValue((Integer)arguments.get(0));
+			case PsetsPackage.IPROPERTY___ADD_MIN_MAX_VALUE__INT:
+				return addMinMaxValue((Integer)arguments.get(0));
 		}
 		return super.eInvoke(operationID, arguments);
 	}

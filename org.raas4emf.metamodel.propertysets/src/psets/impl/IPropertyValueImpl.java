@@ -15,13 +15,12 @@ import psets.PsetsPackage;
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>IProperty Value</b></em>'. <!-- end-user-doc -->
  * <p>
  * </p>
- * 
+ *
  * @generated
  */
 public class IPropertyValueImpl extends CDOObjectImpl implements IPropertyValue {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected IPropertyValueImpl() {
@@ -30,7 +29,6 @@ public class IPropertyValueImpl extends CDOObjectImpl implements IPropertyValue 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -40,7 +38,6 @@ public class IPropertyValueImpl extends CDOObjectImpl implements IPropertyValue 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
@@ -50,7 +47,6 @@ public class IPropertyValueImpl extends CDOObjectImpl implements IPropertyValue 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getDisplayValue() {
@@ -62,7 +58,7 @@ public class IPropertyValueImpl extends CDOObjectImpl implements IPropertyValue 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @generated
+	 * @generated NOT
 	 */
 	public String getUnit() {
 		return "";
@@ -70,16 +66,15 @@ public class IPropertyValueImpl extends CDOObjectImpl implements IPropertyValue 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	@Override
 	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
 		switch (operationID) {
-		case PsetsPackage.IPROPERTY_VALUE___GET_DISPLAY_VALUE:
-			return getDisplayValue();
-		case PsetsPackage.IPROPERTY_VALUE___GET_UNIT:
-			return getUnit();
+			case PsetsPackage.IPROPERTY_VALUE___GET_DISPLAY_VALUE:
+				return getDisplayValue();
+			case PsetsPackage.IPROPERTY_VALUE___GET_UNIT:
+				return getUnit();
 		}
 		return super.eInvoke(operationID, arguments);
 	}

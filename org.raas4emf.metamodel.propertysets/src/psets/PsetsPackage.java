@@ -223,13 +223,31 @@ public interface PsetsPackage extends EPackage {
 	int IPROPERTY__NAME = 2;
 
 	/**
+	 * The feature id for the '<em><b>Lod Read Only</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IPROPERTY__LOD_READ_ONLY = 3;
+
+	/**
+	 * The feature id for the '<em><b>Lod Must Change</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IPROPERTY__LOD_MUST_CHANGE = 4;
+
+	/**
 	 * The number of structural features of the '<em>IProperty</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IPROPERTY_FEATURE_COUNT = 3;
+	int IPROPERTY_FEATURE_COUNT = 5;
 
 	/**
 	 * The operation id for the '<em>Get Full Name</em>' operation.
@@ -672,6 +690,28 @@ public interface PsetsPackage extends EPackage {
 	EAttribute getIProperty_Name();
 
 	/**
+	 * Returns the meta object for the attribute '{@link psets.IProperty#getLodReadOnly <em>Lod Read Only</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Lod Read Only</em>'.
+	 * @see psets.IProperty#getLodReadOnly()
+	 * @see #getIProperty()
+	 * @generated
+	 */
+	EAttribute getIProperty_LodReadOnly();
+
+	/**
+	 * Returns the meta object for the attribute '{@link psets.IProperty#getLodMustChange <em>Lod Must Change</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Lod Must Change</em>'.
+	 * @see psets.IProperty#getLodMustChange()
+	 * @see #getIProperty()
+	 * @generated
+	 */
+	EAttribute getIProperty_LodMustChange();
+
+	/**
 	 * Returns the meta object for the '{@link psets.IProperty#getFullName() <em>Get Full Name</em>}' operation.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1024,6 +1064,22 @@ public interface PsetsPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute IPROPERTY__NAME = eINSTANCE.getIProperty_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Lod Read Only</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IPROPERTY__LOD_READ_ONLY = eINSTANCE.getIProperty_LodReadOnly();
+
+		/**
+		 * The meta object literal for the '<em><b>Lod Must Change</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute IPROPERTY__LOD_MUST_CHANGE = eINSTANCE.getIProperty_LodMustChange();
 
 		/**
 		 * The meta object literal for the '<em><b>Get Full Name</b></em>' operation.

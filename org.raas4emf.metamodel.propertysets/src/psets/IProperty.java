@@ -17,6 +17,8 @@ import org.eclipse.emf.common.util.EList;
  *   <li>{@link psets.IProperty#getPropertyValues <em>Property Values</em>}</li>
  *   <li>{@link psets.IProperty#getLodVisibility <em>Lod Visibility</em>}</li>
  *   <li>{@link psets.IProperty#getName <em>Name</em>}</li>
+ *   <li>{@link psets.IProperty#getLodReadOnly <em>Lod Read Only</em>}</li>
+ *   <li>{@link psets.IProperty#getLodMustChange <em>Lod Must Change</em>}</li>
  * </ul>
  * </p>
  *
@@ -93,6 +95,58 @@ public interface IProperty extends CDOObject {
 	 * @generated
 	 */
 	void setName(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Lod Read Only</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Lod Read Only</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Lod Read Only</em>' attribute.
+	 * @see #setLodReadOnly(int)
+	 * @see psets.PsetsPackage#getIProperty_LodReadOnly()
+	 * @model
+	 * @generated
+	 */
+	int getLodReadOnly();
+
+	/**
+	 * Sets the value of the '{@link psets.IProperty#getLodReadOnly <em>Lod Read Only</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Lod Read Only</em>' attribute.
+	 * @see #getLodReadOnly()
+	 * @generated
+	 */
+	void setLodReadOnly(int value);
+
+	/**
+	 * Returns the value of the '<em><b>Lod Must Change</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Lod Must Change</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Lod Must Change</em>' attribute.
+	 * @see #setLodMustChange(int)
+	 * @see psets.PsetsPackage#getIProperty_LodMustChange()
+	 * @model
+	 * @generated
+	 */
+	int getLodMustChange();
+
+	/**
+	 * Sets the value of the '{@link psets.IProperty#getLodMustChange <em>Lod Must Change</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Lod Must Change</em>' attribute.
+	 * @see #getLodMustChange()
+	 * @generated
+	 */
+	void setLodMustChange(int value);
 
 	/**
 	 * <!-- begin-user-doc -->

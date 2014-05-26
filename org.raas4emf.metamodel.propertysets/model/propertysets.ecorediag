@@ -67,6 +67,14 @@
         <element xmi:type="ecore:EAttribute" href="propertysets.ecore#//IProperty/lodVisibility"/>
         <layoutConstraint xmi:type="notation:Location" xmi:id="_fRwwkdshEeOfEpq3dfnq2w"/>
       </children>
+      <children xmi:type="notation:Node" xmi:id="_P2fKQOR1EeO_i7ddepQKZQ" type="2001">
+        <element xmi:type="ecore:EAttribute" href="propertysets.ecore#//IProperty/lodReadOnly"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_P2fKQeR1EeO_i7ddepQKZQ"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_TnPfEOR1EeO_i7ddepQKZQ" type="2001">
+        <element xmi:type="ecore:EAttribute" href="propertysets.ecore#//IProperty/lodMustChange"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_TnPfEeR1EeO_i7ddepQKZQ"/>
+      </children>
       <styles xmi:type="notation:DrawerStyle" xmi:id="_w342kdsdEeOfEpq3dfnq2w"/>
       <styles xmi:type="notation:SortingStyle" xmi:id="_w342ktsdEeOfEpq3dfnq2w"/>
       <styles xmi:type="notation:FilteringStyle" xmi:id="_w342k9sdEeOfEpq3dfnq2w"/>
