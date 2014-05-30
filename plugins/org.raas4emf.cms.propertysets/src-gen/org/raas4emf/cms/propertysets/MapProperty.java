@@ -45,6 +45,8 @@ public class MapProperty {
   
   public String psetName;
   
+  public String theLodReadOnly;
+  
   public IDefaultValue valueDef;
   
   public String value;
@@ -52,6 +54,8 @@ public class MapProperty {
   public IArtifact iArtifact;
   
   public final HSSFRow row;
+  
+  public String theLodMustChange;
   
   public IPropertySet aPset;
   
@@ -106,7 +110,25 @@ public class MapProperty {
     this.theLodVisibility = _string;
   }
   
+  public void evaluateClause9() {
+    HSSFCell _cell = this.row.getCell(14);
+    String _string = null;
+    if (_cell!=null) {
+      _string=_cell.toString();
+    }
+    this.theLodReadOnly = _string;
+  }
+  
   public void evaluateClause10() {
+    HSSFCell _cell = this.row.getCell(15);
+    String _string = null;
+    if (_cell!=null) {
+      _string=_cell.toString();
+    }
+    this.theLodMustChange = _string;
+  }
+  
+  public void evaluateClause12() {
     boolean _MapPropertySet = false;
     MapPropertySet _MapPropertySet_tuple;
     if (this.psetName != null && 
@@ -117,12 +139,22 @@ public class MapProperty {
     }
   }
   
-  public int evaluateExpression17() {
+  public int evaluateExpression19() {
     int _int = trafo.toInt(this.theLodVisibility);
     return _int;
   }
   
-  public String evaluateExpression20() {
+  public int evaluateExpression20() {
+    int _int = trafo.toInt(this.theLodReadOnly);
+    return _int;
+  }
+  
+  public int evaluateExpression21() {
+    int _int = trafo.toInt(this.theLodMustChange);
+    return _int;
+  }
+  
+  public String evaluateExpression24() {
     String _normalizeIfcValue = IFCComparer.normalizeIfcValue(this.value);
     return _normalizeIfcValue;
   }
@@ -134,31 +166,35 @@ public class MapProperty {
     // Error occured: Operator [super] is not supported.
     // Semantic Object: PackageDeclaration'org.raas4emf.cms.propertysets'.transformation->Transformation.rules[1]->Relation'MapProperty'.when[1]->XBinaryOperation
     // Context: XExpression
-    if (!evaluateClause3()) {trafo.logFailure(55);
+    if (!evaluateClause3()) {trafo.logFailure(59);
     return false;
-    }trafo.logSuccess(55);
+    }trafo.logSuccess(59);
     // psetName = row.getCell(10/*ExtIdentifier Column*/)?.toString()
     evaluateClause4();
     // Error occured: Operator [super] is not supported.
     // Semantic Object: PackageDeclaration'org.raas4emf.cms.propertysets'.transformation->Transformation.rules[1]->Relation'MapProperty'.when[3]->XBinaryOperation
     // Context: XExpression
-    if (!evaluateClause5()) {trafo.logFailure(57);
+    if (!evaluateClause5()) {trafo.logFailure(61);
     return false;
-    }trafo.logSuccess(57);
+    }trafo.logSuccess(61);
     // value = row.getCell(6/*Value Column*/)?.toString()
     evaluateClause6();
     // Error occured: Operator [super] is not supported.
     // Semantic Object: PackageDeclaration'org.raas4emf.cms.propertysets'.transformation->Transformation.rules[1]->Relation'MapProperty'.when[5]->XBinaryOperation
     // Context: XExpression
-    if (!evaluateClause7()) {trafo.logFailure(59);
+    if (!evaluateClause7()) {trafo.logFailure(63);
     return false;
-    }trafo.logSuccess(59);
+    }trafo.logSuccess(63);
     // theLodVisibility = row.getCell(13)?.toString()
     evaluateClause8();
+    // theLodReadOnly = row.getCell(14)?.toString()
+    evaluateClause9();
+    // theLodMustChange = row.getCell(15)?.toString()
+    evaluateClause10();
     // attName : String {..}
     if (attName==null) attName = transformation.create(java.lang.String.class);
     // MapPropertySet(psetName,aPset)
-    evaluateClause10();
+    evaluateClause12();
     // iArtifact : IArtifact {..}
     if (iArtifact==null) iArtifact = transformation.create(psets.IArtifact.class);
     // PropertySets = aPset : IPropertySet {..}
@@ -170,13 +206,17 @@ public class MapProperty {
     // Name = attName : String {..}
     def.setName(attName);
     // LodVisibility = toInt(theLodVisibility)
-    def.setLodVisibility(evaluateExpression17());
+    def.setLodVisibility(evaluateExpression19());
+    // LodReadOnly = toInt(theLodReadOnly)
+    def.setLodReadOnly(evaluateExpression20());
+    // LodMustChange = toInt(theLodMustChange)
+    def.setLodMustChange(evaluateExpression21());
     // valueDef : IDefaultValue {..}
     valueDef = transformation.create(psets.IDefaultValue.class);
     // PropertyValues = valueDef : IDefaultValue {..}
     def.getPropertyValues().add(valueDef);
     // Value = IFCComparer.normalizeIfcValue(value)
-    valueDef.setValue(evaluateExpression20());
+    valueDef.setValue(evaluateExpression24());
     return true;
   }
 }

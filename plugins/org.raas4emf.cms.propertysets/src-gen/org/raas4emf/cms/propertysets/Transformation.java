@@ -31,7 +31,8 @@ public abstract class Transformation {
   
   public int toInt(final String s) {
     try {
-      return Integer.parseInt(s);
+      double _parseDouble = Double.parseDouble(s);
+      return ((int) _parseDouble);
     } catch (final Throwable _t) {
       if (_t instanceof Exception) {
         final Exception e = (Exception)_t;
