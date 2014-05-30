@@ -87,9 +87,9 @@ public class MapWorkbook {
     // Error occured: Operator [super] is not supported.
     // Semantic Object: PackageDeclaration'org.raas4emf.cms.propertysets'.transformation->Transformation.rules[2]->Relation'MapWorkbook'.when[1]->XBinaryOperation
     // Context: XExpression
-    if (!evaluateClause3()) {trafo.logFailure(82);
+    if (!evaluateClause3()) {trafo.logFailure(88);
     return false;
-    }trafo.logSuccess(82);
+    }trafo.logSuccess(88);
     // i=1
     evaluateClause4();
     // iArtifact : IArtifact {..}

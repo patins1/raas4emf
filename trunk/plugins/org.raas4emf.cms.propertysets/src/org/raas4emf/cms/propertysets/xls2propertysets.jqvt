@@ -35,6 +35,8 @@ transformation xls2propertysets(source : ifc, target : bim) {
 		psetName : String;
 		value : String;
 		theLodVisibility : String;
+		theLodReadOnly : String;
+		theLodMustChange : String;
 		  
 		enforce domain source row : HSSFRow { }
 		
@@ -46,6 +48,8 @@ transformation xls2propertysets(source : ifc, target : bim) {
 						Value = IFCComparer.normalizeIfcValue(value)
 					}
 					lodVisibility = toInt(theLodVisibility)
+					lodReadOnly = toInt(theLodReadOnly)
+					lodMustChange = toInt(theLodMustChange)
 				}				
 			}
 		}
@@ -58,6 +62,8 @@ transformation xls2propertysets(source : ifc, target : bim) {
 			value = row.getCell(6/*Value Column*/)?.toString();
 			value != null;
 			theLodVisibility = row.getCell(13)?.toString();
+			theLodReadOnly = row.getCell(14)?.toString();
+			theLodMustChange = row.getCell(15)?.toString();
 		}
 		
 		where {
