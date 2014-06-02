@@ -37,7 +37,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 	}
 
 	public File transform(Object oArtifact, File dir, String pureFilename, final IProgressMonitor monitor) throws IOException {
-		String IS_PROCESSING = "This document is still being processed. Please try again in a few minutes";
+		Exception throwEx = null;
 		Artifact artifact = (Artifact) oArtifact;
 		Activator.log("Start transforming " + pureFilename);
 		worked = 0;
@@ -64,7 +64,8 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 					if (REMOTE_STORAGE.saveAsFile(fingerprint, targetFile)) {
 						return targetFile;
 					}
-				} catch (RuntimeException e) {
+				} catch (Exception e) {
+					throwEx = e;
 					Activator.err("REMOTE_STORAGE.saveAsFile not succesfull!", e);
 				}
 			}
@@ -94,7 +95,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 
 			} else {
 				if (ifcUrl == null || "".equals(ifcUrl)) {
-					throw new RuntimeException(IS_PROCESSING);
+					throw (throwEx != null ? throwEx : (throwEx = new RuntimeException("Geometry not available")));
 				}
 				boolean isWindows = System.getProperty("os.name").contains("Windows");
 
@@ -228,9 +229,8 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 
 			monitor.worked(1);
 		} catch (Exception e) {
-			if (IS_PROCESSING.equals(e.getMessage())) {
-				throw (RuntimeException) e;
-			}
+			if (throwEx != null)
+				throw (RuntimeException) throwEx;
 			String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
 			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message + "\n" + errorMessages), new FileOutputStream(errorFile));
 			Activator.err("Stopped conversion with message: " + message, e);
