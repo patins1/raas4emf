@@ -60,7 +60,6 @@ transformation xls2propertysets(source : ifc, target : bim) {
 			psetName = row.getCell(10/*ExtIdentifier Column*/)?.toString();
 			psetName != null;
 			value = row.getCell(6/*Value Column*/)?.toString();
-			value != null;
 			theLodVisibility = row.getCell(13)?.toString();
 			theLodReadOnly = row.getCell(14)?.toString();
 			theLodMustChange = row.getCell(15)?.toString();
