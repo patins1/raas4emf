@@ -74,10 +74,19 @@ public class DemoWorkbench implements EntryPoint {
 				String password = autoLogin ? getAutoLoginPassword() : loginDialog.getPassword();
 				org.raas4emf.cms.ui.CMSActivator.getSessionInstance().setCredentials(userID, password);
 				CMSActivator.getSessionInstance();
+				boolean retry = true;
 				try {
 					org.raas4emf.cms.ui.CMSActivator.getSessionInstance().getSession();
+					if (!autoLogin && !"Architect".equals(userID) && !"o".equals(password)) {
+						retry = false;
+						throw new RuntimeException("Wrong user/password combination!");
+					}
 				} catch (Exception e) {
 					IStatus status = new Status(IStatus.ERROR, "org.raas4emf.cms.ui", e.getMessage(), e);
+					if (!retry) {
+						ErrorDialog.openError(display.getActiveShell(), "Error", "DB Login was not successful!", status);
+						break;
+					}
 					if (ErrorDialog.openError(display.getActiveShell(), "Error", "DB Login was not successful! Continue without DB connection?", status) != Dialog.OK) {
 						break;
 					}
