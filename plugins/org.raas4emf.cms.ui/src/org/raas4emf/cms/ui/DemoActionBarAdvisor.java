@@ -181,7 +181,8 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		register(rapWebSiteAction);
 		showViewMenuMgr = new MenuManager("Show View", "showView");
 		IContributionItem showViewMenu = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
-		showViewMenuMgr.add(showViewMenu);
+		if (CMSActivator.getSessionInstance().isLibarian())
+			showViewMenuMgr.add(showViewMenu);
 
 		generateFingerprintAction = new Action() {
 			public void run() {
@@ -645,7 +646,8 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 			}
 
 		});
-		typeActions.add(perspectiveMenu);
+		if (CMSActivator.getSessionInstance().isLibarian())
+			typeActions.add(perspectiveMenu);
 
 		loadMenuFromDatabase();
 	}
@@ -764,7 +766,8 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		webGlMenu.add(changeRendererAction);
 		webGlMenu.add(change3dFormatAction);
 		windowMenu.add(showViewMenuMgr);
-		windowMenu.add(preferencesAction);
+		if (CMSActivator.getSessionInstance().isLibarian())
+			windowMenu.add(preferencesAction);
 		windowMenu.add(resetPerspectiveAction);
 		windowMenu.add(browserAction);
 		windowMenu.add(webGlMenu);
