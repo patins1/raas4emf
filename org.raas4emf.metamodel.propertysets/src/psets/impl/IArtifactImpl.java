@@ -87,7 +87,7 @@ public class IArtifactImpl extends CDOObjectImpl implements IArtifact {
 		if (pset.getName().endsWith("_inherent")) {
 			return pset.getName();
 		}
-		if (pset.getName().equals("Pset_Revit")) {
+//		if (pset.getName().equals("Pset_Revit")) {
 			for (IProperty prop : pset.getProperties()) {
 				if (prop.getFullName().endsWith(".IfcExportAs")) {
 					for (IPropertyValue val : prop.getPropertyValues()) {
@@ -95,7 +95,7 @@ public class IArtifactImpl extends CDOObjectImpl implements IArtifact {
 					}
 				}
 			}
-		}
+//		}
 		return null;
 	}
 
