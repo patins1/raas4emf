@@ -701,7 +701,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 							if (RAASUtils.getPropertiesFile(subTypeFolder) != null)
 								EditAction.openEditor(new StructuredSelection(subTypeFolder));
 							else
-								TypeSelectionView.selectType(mainType + " " + subtype);
+								TypeSelectionView.selectType(subtype);
 						}
 					};
 					subtypeAction.setId("org.raas4emf.cms.ui.toolSubType" + +typeActionsCount++);
