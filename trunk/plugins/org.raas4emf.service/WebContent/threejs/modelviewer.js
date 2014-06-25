@@ -4088,14 +4088,6 @@ function init(root,g_client) {
 
 	ambientLight = new THREE.AmbientLight( 0x080808 );
 	scene.add( ambientLight );
-
-	if (pointLight==null) {
-		pointLight = new THREE.PointLight( 0xff3300 );
-		pointLight.position.set( 0, 0, 100 );
-		pointLight.color.setHSL( effectController.lhue, effectController.lsaturation, effectController.llightness );
-		g_client.scene.add( pointLight );
-		pointLight.updateMatrixWorld();
-	}
 	
 	setClientSize(g_client);
 
