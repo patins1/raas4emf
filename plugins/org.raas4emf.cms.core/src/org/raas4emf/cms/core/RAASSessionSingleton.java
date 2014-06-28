@@ -33,7 +33,6 @@ public class RAASSessionSingleton {
 	private CDOView transaction;
 	private String g_colors;
 	private boolean g_ortho = false;
-	private String g_fillmode = "Solid";
 	private String g_renderer;
 	private String g_format;
 	private String passwords;
@@ -213,14 +212,6 @@ public class RAASSessionSingleton {
 
 	public void setOrtho(boolean value) {
 		g_ortho = value;
-	}
-
-	public String getFillMode() {
-		return g_fillmode;
-	}
-
-	public void setFillMode(String string) {
-		g_fillmode = string;
 	}
 
 	public Artifact getArtifactWithModelTree(Artifact artifact) {

@@ -1,1 +1,1 @@
-bin/ifc2jshttp.sh %FINGERPRINT% "http://localhost:80/embedded?servicehandler=downloadServiceHandler&artifact=2620&filename=Autodesk_Hospital_Metric_Architectural2013_2x3.ifc" "http://localhost:80/embedded?servicehandler=embeddedapi&request=GeometryUploadRequest&UUID=8408e486-e67f-452a-ae0d-8a9ceabc9484"
+bin/ifc2jshttp.sh %FINGERPRINT% "http://127.0.0.1:80/raascms/nol?servicehandler=downloadServiceHandler&artifact=1341353&filename=index.ifc" "http://127.0.0.1:80/raascms/nol?servicehandler=embeddedapi&request=GeometryUploadRequest&UUID=Windows_Sliding-1200h x 900w-(200)"
