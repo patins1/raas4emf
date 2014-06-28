@@ -101,8 +101,6 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction closeAllAction;
 	private Action showEclipseLogAction;
 	private Action restartRAASServerAction;
-	private Action changeProjectionModeAction;
-	private Action changeFillModeAction;
 	private List<Action> configActions = new ArrayList<Action>();
 	private IToolBarManager mainToolBar;
 	private Action loadBackup;
@@ -248,38 +246,6 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		showEclipseLogAction.setText("Show Eclipse Log");
 		showEclipseLogAction.setId("org.raas4emf.cms.ui.ShowEclipseLogAction");
 		register(showEclipseLogAction);
-
-		changeProjectionModeAction = new Action() {
-			public void run() {
-				ComboInputDialog inputdialog = new ComboInputDialog(new String[] { "Orthogonal", "3d" }, window.getShell(), "Change WebGL Projection Mode", "Select projection mode:", "", null);
-				if (inputdialog.open() == Window.OK) {
-					boolean ortho = "Orthogonal".equals(inputdialog.getValue());
-					CMSActivator.getSessionInstance().setOrtho(ortho);
-					for (PreviewView preview : PreviewView.findView()) {
-						preview.changeProjectionMode(ortho);
-					}
-				}
-			}
-		};
-		changeProjectionModeAction.setText("Change Projection Mode");
-		changeProjectionModeAction.setId("org.raas4emf.cms.ui.ChangeProjectionModeAction");
-		register(changeProjectionModeAction);
-
-		changeFillModeAction = new Action() {
-			public void run() {
-				ComboInputDialog inputdialog = new ComboInputDialog(new String[] { "Point", "Wireframe", "Solid" }, window.getShell(), "Change WebGL Fill Mode", "Select fill mode:", CMSActivator.getSessionInstance().getFillMode(), null);
-				if (inputdialog.open() == Window.OK) {
-					String fillMode = inputdialog.getValue();
-					CMSActivator.getSessionInstance().setFillMode(fillMode);
-					for (PreviewView preview : PreviewView.findView()) {
-						preview.changeFillMode(fillMode);
-					}
-				}
-			}
-		};
-		changeFillModeAction.setText("Change Fill Mode");
-		changeFillModeAction.setId("org.raas4emf.cms.ui.ChangeFillModeAction");
-		register(changeFillModeAction);
 
 		changeRendererAction = new Action() {
 			public void run() {
@@ -761,8 +727,6 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		adminMenu.add(saveBackup);
 		for (Action action : configActions)
 			adminMenu.add(action);
-		webGlMenu.add(changeProjectionModeAction);
-		webGlMenu.add(changeFillModeAction);
 		webGlMenu.add(changeRendererAction);
 		webGlMenu.add(change3dFormatAction);
 		windowMenu.add(showViewMenuMgr);

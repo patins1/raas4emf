@@ -348,32 +348,6 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 		}
 	}
 
-	public void changeFillMode(String mode_string) {
-		for (Artifact artifact : currentlyDisplayedArtifact) {
-			String artifactId = artifact.cdoID().toURIFragment();
-			if (artifactId != null) {
-				try {
-					browser.evaluate("changeFillMode('" + mode_string + "','" + artifactId + "');");
-				} catch (SWTException e) {
-					CMSActivator.err("Could not execute changeFillMode()");
-				}
-			}
-		}
-	}
-
-	public void changeProjectionMode(boolean orthogonal) {
-		for (Artifact artifact : currentlyDisplayedArtifact) {
-			String artifactId = artifact.cdoID().toURIFragment();
-			if (artifactId != null) {
-				try {
-					browser.evaluate("changeProjectionMode(" + orthogonal + ",'" + artifactId + "');");
-				} catch (SWTException e) {
-					CMSActivator.err("Could not execute changeProjectionMode()");
-				}
-			}
-		}
-	}
-
 	static public Artifact getArtifact(EObject parent) {
 		while (parent != null) {
 			if (parent instanceof Artifact) {
@@ -460,7 +434,6 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			// text += "		<script src=\"" + dir + "touchgen.js\"></script>";
 			String immediately = "";
 			immediately += "var g_ortho=" + CMSActivator.getSessionInstance().getOrtho() + ";\n";
-			immediately += "var g_fillmode=\"" + CMSActivator.getSessionInstance().getFillMode() + "\";\n";
 			immediately += "g_dir=\"" + dir + "\";\n";
 			immediately += "g_path=\"" + g_path + "\";\n";
 			if (renderer.contains("canvas"))
@@ -768,6 +741,9 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 		}
 		if (arguments[6].equals("StartPointMoved")) {
 			GrafUtil.getDefaultFactory().startPointMoved(getXYZFromArgs(arguments, 3), getXYZFromArgs(arguments, 7), null);
+		}
+		if (newSel.isEmpty() && currentlyDisplayedArtifact.size() >= 2 && artifact != null) {
+			select(Arrays.asList(artifact.eContainer()));
 		}
 
 		return returnValue;
