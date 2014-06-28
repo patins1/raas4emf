@@ -75,7 +75,8 @@ html,body {
 
 #clients {
 	flex: 1 0 0px;
-	overflow: hidden;
+	display: flex;
+	flex-flow: row wrap;
 }
 
 .dg.main {
