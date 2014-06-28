@@ -13,16 +13,12 @@ var useOctree = false, octree;
 
 var g_ortho;
 if (g_ortho == null) g_ortho = false;
-var g_fillmode;
-if (g_fillmode == null) g_fillmode = "Solid";
 var g_angle = 45;
 var g_cameraHistory = [];
 var g_selectedInfo = [];
 //multiple extension
 var g_paths = [];
 var g_num_clients;
-var NUM_ACROSS = 2;
-var NUM_DOWN;
 var up;
 var g_dragging = false;
 var g_worldPosition;
@@ -509,7 +505,6 @@ function calcPaths() {
 	    g_ids = getParameterByName(g_path,'artifact').split(","); 
 	    var filename = getParameterByName(g_path,'filename'); 
 	  	g_num_clients = g_ids.length;
-	  	NUM_DOWN = g_num_clients / NUM_ACROSS;
 	    for (var ii = 0; ii < g_num_clients; ii++) 
 	        g_paths[ii] = g_path.substring(0, index)+'/services/Artifact/GetArtifact/'+g_ids[ii]+'/'+filename;
 	} else {
@@ -517,7 +512,6 @@ function calcPaths() {
 	    g_ids = getParameterByName(g_path,'artifact').split(","); 
 	    var filename = getParameterByName(g_path,'filename'); 
 	  	g_num_clients = g_ids.length;
-	  	NUM_DOWN = g_num_clients / NUM_ACROSS;
 	    for (var ii = 0; ii < g_num_clients; ii++) 
 	        g_paths[ii] = g_path.substring(0, index2+'artifact='.length)+g_ids[ii]+"&filename="+filename;
 	}
@@ -539,61 +533,19 @@ function buildTable() {
 	      objElem.style.width = '100%';
 	      objElem.style.height = g_num_clients==1 ? '100%' : 'auto';		  
 	  } else
-	  for (var row = 0; row < NUM_DOWN; row++) {
-	    var trElem = document.createElement('tr');
-	    for (var column = 0; column < NUM_ACROSS; column++) {
-			  var aElem = document.createElement('button');
-			  aElem.style.position = 'relative';
-			  aElem.style.left = '0';
-			  aElem.style.top = '0';
-			  aElem.innerHTML = '+';
-			  aElem.style.zIndex = '100';
-			  aElem.type="button";
-			  var tdElem = document.createElement('td');
-			  aElem.onclick=function(event) {
-				  var td = this.parentNode;
-				  if (!td.isZoomed) try {theJavaFunction("","",td.raasClient.id,0,0,0); } catch (e2) {}
-				  return;
-				  var asIcons = td.isZoomed;
-				  var everything=document.all;
-				  if (!everything) everything=document.getElementsByTagName("*");
-				  for(var i=0; i<everything.length; i++) {
-				  	var e=everything[i];
-				  	var cl = e.raasClient;
-				  	if (e.tagName=="td" || e.tagName=="TD") 
-				  	if (asIcons) {
-				  		e.style.display="";
-				  		e.isZoomed = false;
-				  		e.aElem.innerHTML = '+';
-				  	} else
-				  	if (e==td) {
-				  		e.style.display="";
-				  		e.isZoomed = true;
-				  		e.aElem.innerHTML = '-';
-				  		//g_zoomed = e.raasClient;
-				  		//g_zoomedTimer=setTimeout("setClientSize(g_zoomed.raasClient.client);clearTimeout(g_zoomedTimer);g_zoomed.style.width = '500px",1000);
-				  	} else {
-				  		e.style.display="none";
-				  	}
-				  }			  
-				  setClientSize(td.raasClient.client);
-				  updateClient(td.raasClient.client);
-			  };
-			  if (g_num_clients>1)
-			  tdElem.appendChild(aElem);
-		      var objElem = createRenderer(tdElem,ii);
+	  for (var ii = 0; ii < g_num_clients; ii++) {
+			  var tdElem = document.createElement('div');
+			  var objElem = createRenderer(tdElem,ii);
 		      objElem.style.width = '100%';
 		      objElem.style.height = g_num_clients==1 ? '100%' : 'auto';
 		      tdElem.raasClient = objElem;
-		      tdElem.aElem = aElem;
-		      tdElem.style.width = '50%';
+		      tdElem.style.flex = '0 0 49.9%';
 		      tdElem.style.height = 'auto';
-		      trElem.appendChild(tdElem);
-		      ii++;
-			  if (g_num_clients == ii) break;
-	    }
-	    tbodyElem.appendChild(trElem);
-		if (g_num_clients == ii) break;
+		      tbodyElem.appendChild(tdElem);
+
+		  
+
+		      
 	  }
 	  
 }
@@ -1034,37 +986,6 @@ function OnGLCanvasCreated(canvasElement, elementId) {
 function OnGLCanvasFailed(canvasElement, elementId) {
 	myLog("Could not create WebGL IE plugin, defaulting to Canvas renderer!");
 	g_renderer = "canvas";
-}
-
-function changeFillMode(mode_string, artifactId) {
-	var g_client = resolveArtifact(artifactId);
-	g_fillmode = mode_string;
-	updateFillMode(g_client);
-    updateClient(g_client);
-}
-
-function updateFillMode(g_client) {
-	for (var m in g_client.g_colors) {
-		material = g_client.g_colors[m];
-    	material.wireframe = false;
-    	if (g_fillmode == "Wireframe") {
-	    	material.wireframe = true;
-	    	material.wireframeLinewidth = 0;
-    	} else
-    	if (g_fillmode == "Point") {
-	    	material.wireframe = true;
-	    	material.wireframeLinewidth = 2;
-    	} else {
-	    	material.wireframe = false;
-    	}
-    }
-}
-
-function changeProjectionMode(ortho, artifactId) {
-	var g_client = resolveArtifact(artifactId);
-	g_ortho = ortho;
-	updateProjection(g_client);
-    updateClient(g_client);
 }
 
 function toggleVisibility(transform,materialName,hide) {
@@ -2552,9 +2473,13 @@ function generateGui() {
 		settingsChanged();
 	} ));
 	expect(debugGui.add( effectController, 'wireframe' ).onChange( function() {
-		g_fillmode = effectController.wireframe ? "Wireframe" : "Solid";
-		g_clients.forEach(function (g_client) {
-			updateFillMode(g_client);
+		g_clients.forEach(function updateFillMode(g_client) {
+				for (var m in g_client.g_colors) {
+					material = g_client.g_colors[m];
+			    	material.wireframe = effectController.wireframe;
+				    material.wireframeLinewidth = 1;
+				    material.needsUpdate = true;
+				}
 		});
 		settingsChanged();
 	} ));
@@ -3292,7 +3217,7 @@ function start() {
 	
 	effectController = {
 			orthographic : g_ortho,
-			wireframe : g_fillmode == "Wireframe",
+			wireframe : false,
 			enable_maps : g_mapenabled,
 			latitude : g_mapcenter ? g_mapcenter[0] : 0.0,
 			longitude : g_mapcenter ? g_mapcenter[1] : 0.0,
@@ -4532,7 +4457,7 @@ function removeFromScene(object, g_client) {
 function select(newSelection,g_client) {
 	g_client = g_client || g_clients[0];
 	newSelection = reviseSelection(newSelection);
-	unSelectAll(g_client);
+	g_clients.forEach(unSelectAll);
 	g_selectedInfo = newSelection;
 	if (jstree) {
 		jstree.jstree("deselect_all",true);
@@ -4905,7 +4830,7 @@ function onDocumentMouseDown(e) {
 	if (canChangeSelection) generateEvent(e.type,e,g_client);
 	
 	
-	if (canChangeSelection) updateClient(g_client);
+	if (canChangeSelection) g_clients.forEach(updateClient);
 	
 	if (e.which!=3 && !calledFromOtherMouseEvent) {
 		g_lastPos = [e.x, e.y];
