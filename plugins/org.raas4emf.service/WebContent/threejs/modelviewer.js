@@ -2848,6 +2848,7 @@ function melt(g_client) {
 
 		g_client.g_colors[mat].meltedGeometry = meltedGeometry;
 		var materialMesh = new THREE.Mesh(meltedGeometry, g_client.g_colors[mat] );
+	    setupUVs(materialMesh);
 		cityMesh.add( materialMesh );
 		materialMesh.name = "melted meshes for material "+mat+" partition "+partition;
 		myLog(materialMesh.name); 
@@ -4126,9 +4127,7 @@ function setupColors(g_client,updateVisibilityArray) {
 				materialColor.map = g_path.substring(0,g_path.indexOf("&filename=")) + "&filename=" + materialColor.map;
     		var texture = THREE.ImageUtils.loadTexture( materialColor.map, function() {alert("Could not load texture of material!");}, updateClients );
     		texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    		materialColor=material = new THREE.MeshPhongMaterial({map: texture });
-			materialColor = g_colors[m] = new THREE.MeshPhongMaterial(materialColor);
-			materialColor.needsUpdate = true;
+    		materialColor = g_colors[m] = new THREE.MeshPhongMaterial({map: texture });
 		}
 		if (materialColor.side == THREE.DoubleSide && isIE11)
 			materialColor.side = THREE.FrontSide;
