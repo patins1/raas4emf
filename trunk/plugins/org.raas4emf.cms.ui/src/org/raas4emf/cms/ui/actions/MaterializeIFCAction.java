@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -397,7 +398,7 @@ public class MaterializeIFCAction extends AbstractHandler {
 			}
 		}
 		if (options.length() > 0) {
-			return "\"" + styleName + "\": {" + options.substring(0, options.length() - 1) + "},\n";
+			return JSONObject.quote(styleName) + ": {" + options.substring(0, options.length() - 1) + "},\n";
 		}
 		return "";
 	}

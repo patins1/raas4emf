@@ -623,14 +623,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 			EObject userInterface = RAASUtils.findByPath("RepositoryRoot", "Experiments", USER_INTERFACE);
 			if (userInterface instanceof Folder) {
 				Folder folder = (Folder) userInterface;
-				List<Folder> sortedFolders = new ArrayList<Folder>(folder.getFolders());
-				Collections.sort(sortedFolders, new Comparator<Folder>() {
-					@Override
-					public int compare(Folder o1, Folder o2) {
-						return o1.getName().compareTo(o2.getName());
-					}
-				});
-				for (final Folder typeFolder : sortedFolders) {
+				for (final Folder typeFolder : getSortedFolders(folder)) {
 					final String type = typeFolder.getName().length() > 3 ? typeFolder.getName().substring(3) : typeFolder.getName();
 					Action typeAction = new Action() {
 						public void run() {
@@ -652,6 +645,17 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 		}
 	}
 
+	private List<Folder> getSortedFolders(Folder folder) {
+		List<Folder> sortedFolders = new ArrayList<Folder>(folder.getFolders());
+		Collections.sort(sortedFolders, new Comparator<Folder>() {
+			@Override
+			public int compare(Folder o1, Folder o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		return sortedFolders;
+	}
+
 	private void createSubMenu(final Folder typeFolder, Action typeAction, final String mainType) {
 		if (typeFolder.getFolders().isEmpty())
 			return;
@@ -659,7 +663,7 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 
 			@Override
 			protected void fillMenu(MenuManager dropDownMenuMgr) {
-				for (final Folder subTypeFolder : typeFolder.getFolders()) {
+				for (final Folder subTypeFolder : getSortedFolders(typeFolder)) {
 
 					final String subtype = subTypeFolder.getName();
 					Action subtypeAction = new Action(subtype) {
