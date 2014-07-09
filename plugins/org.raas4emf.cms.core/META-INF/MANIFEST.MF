@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Import-Package: javax.servlet,
  javax.servlet.http
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.raas4emf.cms.core,
+Export-Package: org.codehaus.jettison.json,
+ org.raas4emf.cms.core,
  org.raas4emf.cms.core.geometry,
  org.raas4emf.cms.core.graf,
  org.raas4emf.cms.core.webgl
