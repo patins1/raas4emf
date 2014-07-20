@@ -3255,7 +3255,7 @@ function start() {
 			lazy_rendering: true,
 			quickmode: true,
 			antialias: true,
-			vertexnormals: true,
+			vertexnormals: false,
 			select_face: false,
 			opencontrols: true,
 			opencontrolsWidth:275,
