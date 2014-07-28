@@ -91,7 +91,7 @@ public class EMFJQVTEngine extends JQVTEngine {
 		super.execute(trafo);
 
 		for (Object eObject : createdElements) {
-			if (((EObject) eObject).eContainer() == null) {
+			if (((EObject) eObject).eContainer() == null && ((EObject) eObject).eResource()==null) {
 				if (targetRes instanceof Resource)
 					((Resource) targetRes).getContents().add((EObject) eObject);
 				else
