@@ -147,7 +147,7 @@ public class RAASSessionSingleton {
 
 	public String createFullDownloadUrl(Artifact artifact) {
 		StringBuilder url = new StringBuilder();
-		url.append("http://");
+		url.append(RWT.getRequest().getScheme() + "://");
 		url.append(RWT.getRequest().getServerName());
 		url.append(":");
 		url.append(RWT.getRequest().getServerPort());
