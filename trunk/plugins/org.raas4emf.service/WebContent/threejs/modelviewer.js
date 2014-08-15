@@ -296,9 +296,32 @@ function locate(transforms,g_client,steps) {
     var target = lerpVector(bbox.min,bbox.max,0.5);   
     var diag = bbox.max.distanceTo(bbox.min);
     var eye = target.clone().add(new THREE.Vector3(-0.65 * diag,0.65 * diag,0.65 * diag));
+
+    if (g_client.objects && !keyIsDown[key.SHIFT]) {
+		var s_camera = g_client.g_camera;
+		setEyeAndTarget(eye,target,g_client);
+		var raycaster = getRaycaster(new THREE.Vector2(),g_client);
+		var intersects = raycaster.intersectObjects( g_client.objects );
+		g_client.g_camera = g_client.controls.object = s_camera;
+	
+		if (intersects)
+	    for (var tt = 0; tt < intersects.length; tt++) {	
+	    	var object = intersects[ tt ].object;
+	    	if (g_selectedInfo.length>0 && object.uuid==g_selectedInfo[0].uuid) break;
+	    	if (isIntersectedObjectVisible(object, g_client)) {
+		    	eye = intersects[ tt ].point;
+	    		myLog("In between: "+object.uuid);
+	    	}
+	    }	    
+    }
 	
     doSetCamera(eye,target,g_angle,null,steps,g_client);
 	return true;
+}
+
+function isIntersectedObjectVisible(object, g_client) {
+	var material = g_client.g_colors[object.material.name];
+	return (object.visible || g_client.additionalObjectsToSelect.indexOf(object)>=0) && material && material.opacity != 0 && material.visible;
 }
 
 function getParameterByName(url,name)
@@ -4471,6 +4494,7 @@ function select(newSelection,g_client) {
     	selectRecursive(g_selectedInfo[tt],g_client);
     }
     if (g_selectedInfo.length>0) {
+    	myLog("Selected "+g_selectedInfo[0].uuid);
 	    effectController.id = g_selectedInfo[0].uuid;
 	    var material = g_selectedInfo[0].originalMaterial || g_selectedInfo[0].material;
 	    effectController.material = material ? material.name : "none";
@@ -4763,8 +4787,7 @@ function onDocumentMouseDown(e) {
 	if (intersects)
     for (var tt = 0; tt < intersects.length; tt++) {	
     	var object = intersects[ tt ].object;
-    	var material = g_client.g_colors[object.material.name];
-    	if ((object.visible || g_client.additionalObjectsToSelect.indexOf(object)>=0) && material && material.opacity != 0 && material.visible) {
+    	if (isIntersectedObjectVisible(object, g_client)) {
     		SELECTED = object;
     		break;
     	}
