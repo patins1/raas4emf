@@ -4507,6 +4507,8 @@ function select(newSelection,g_client) {
 	} else {
 	    if (g_pickInfoElem) g_pickInfoElem.innerHTML = '';
 	}
+    if (window.parent != window)
+    	window.parent.postMessage({'selectionChanged':{"guids":getSelectedObjectIDs(g_selectedInfo)}},'*');
 }
 
 function applyOnMaterials(material, func) {
