@@ -609,7 +609,7 @@ public class IfcLoadHelper implements Part21LoadHelper {
 			if (guid != null && !"".equalsIgnoreCase(guid)) {
 				if (model.getGuidToPart21() == null)
 					model.setGuidToPart21(Part21Factory.eINSTANCE.createGuidToPart21Container());
-				model.getGuidToPart21().getGuidToPart21().put(guid, index);
+				model.getGuidToPart21().getGuidToPart21().put(guid, ifcObject);
 			}
 		}
 	}
