@@ -90,10 +90,9 @@ public class FindGUIDAction extends AbstractHandler {
 
 	protected void examine(Model model) {
 		long start = System.currentTimeMillis();
-		Integer index = RAASUtils.getIndexForGUIDStatic(model, guid);
+		Number index = RAASUtils.getIndexForGUIDStatic(model, guid);
 		long end0 = System.currentTimeMillis();
 		MessageDialog.openInformation(shell, "Search result", "Found #" + index + " in " + (end0 - start) + " milliseconds");
 
 	}
-
 }
