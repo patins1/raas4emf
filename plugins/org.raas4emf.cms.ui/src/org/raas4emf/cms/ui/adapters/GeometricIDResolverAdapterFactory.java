@@ -40,7 +40,7 @@ public class GeometricIDResolverAdapterFactory extends AdapterFactoryTyped<Strin
 					if (eObject instanceof Model) {
 						Model model = (Model) eObject;
 						long start = System.currentTimeMillis();
-						Integer index = getIndexForGUID(model, guid);
+						Number index = getIndexForGUID(model, guid);
 						long end0 = System.currentTimeMillis();
 						// EMap<String, Integer> guidToPart21 = model.getGuidToPart21() != null ? model.getGuidToPart21().getGuidToPart21() : new BasicEMap<String, Integer>();
 						// long end1 = System.currentTimeMillis();
@@ -60,7 +60,7 @@ public class GeometricIDResolverAdapterFactory extends AdapterFactoryTyped<Strin
 				return null;// findByName(artifact.getContents());
 			}
 
-			private Integer getIndexForGUID(Model model, String guid) {
+			private Number getIndexForGUID(Model model, String guid) {
 				return RAASUtils.getIndexForGUIDStatic(model, guid);
 			}
 
