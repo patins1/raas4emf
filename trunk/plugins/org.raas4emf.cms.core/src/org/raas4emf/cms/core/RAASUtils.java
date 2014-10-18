@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.cdo.CDOObject;
+import org.eclipse.emf.cdo.common.CDOCommonRepository;
 import org.eclipse.emf.cdo.common.id.CDOID;
 import org.eclipse.emf.cdo.common.id.CDOIDUtil;
 import org.eclipse.emf.cdo.common.lob.CDOBlob;
@@ -1245,13 +1246,14 @@ public class RAASUtils {
 
 			CDORevision revision = model.getGuidToPart21().cdoRevision();
 			int branch = revision.getBranch().getID();
+			CDOCommonRepository repo = revision.getBranch().getBranchManager().getRepository();
 			// int branch = model.cdoRevision().getBranch().getID();
 			long id = CDOIDUtil.getLong(revision.getID());
 
 			String sql = "SELECT map." + VALUE0 + " FROM IFCHEADER_GUIDTOPART21MAP map, IFCHEADER_GUIDTOPART21CONTAINER_GUIDTOPART21_LIST list";
 			// String sql = "SELECT map."+VALUE+" FROM IFCHEADER_GUIDTOPART21MAP map, IFCHEADER_MODEL_GUIDTOPART21_LIST list";
-			sql += " WHERE map.CDO_ID=list.CDO_VALUE AND map.CDO_BRANCH=" + branch + " AND (map.CDO_REVISED=0) ";
-			sql += " AND list.CDO_SOURCE=" + id + " AND list.CDO_BRANCH=" + branch + " AND list.CDO_VERSION=" + revision.getVersion();
+			sql += " WHERE map.CDO_ID=list.CDO_VALUE" + (repo.isSupportingBranches() ? " AND map.CDO_BRANCH=" + branch : "") + " AND (map.CDO_REVISED=0) ";
+			sql += " AND list.CDO_SOURCE=" + id + (repo.isSupportingBranches() ? " AND list.CDO_BRANCH=" + branch : "") + (repo.isSupportingAudits() ? " AND list.CDO_VERSION=" + revision.getVersion() : "");
 			// sql += " AND model.CDO_ID=" + id + " AND model.CDO_BRANCH=" + branch + " AND (model.CDO_REVISED=0)";
 			sql += " AND map." + KEY0 + "='" + guid + "'";
 
