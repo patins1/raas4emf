@@ -1211,7 +1211,7 @@ public class RAASUtils {
 	}
 
 	public static IfcRoot getObjectForGUID(Model model, String guid) {
-		Integer index = getIndexForGUIDStatic(model, guid);
+		Number index = getIndexForGUIDStatic(model, guid);
 		if (index != null) {
 			EObject eObject = getFromIndex(index, (Artifact) model.eContainer());
 			if (eObject instanceof IfcRoot) {
@@ -1222,7 +1222,7 @@ public class RAASUtils {
 		return null;
 	}
 
-	public static Integer getIndexForGUIDStatic(Model model, String guid) {
+	public static Number getIndexForGUIDStatic(Model model, String guid) {
 		try {
 			// long id;
 			// // Object obj = ((CDORevisionImpl) model.cdoRevision()).get(Part21Package.eINSTANCE.getModel_GuidToPart21(), -1);
@@ -1270,12 +1270,16 @@ public class RAASUtils {
 			otherSearchStrings.remove(oldSql);
 			otherSearchStrings.add(oldSql = sql);
 
+			long start = System.currentTimeMillis();
 			List<Object> result = execSql(sql, model.cdoResource().cdoView());
+			long end = System.currentTimeMillis();
+			Activator.perf("Find index from guid " + (end - start) + " milliseconds");
+
 			if (result.size() == 1 && result.get(0) instanceof String) {
 				Activator.log((String) result.get(0));
 			}
-			if (result.size() == 1 && result.get(0) instanceof Integer) {
-				return (Integer) result.get(0);
+			if (result.size() == 1 && result.get(0) instanceof Number) {
+				return (Number) result.get(0);
 			}
 
 		} catch (Exception e) {
@@ -1288,19 +1292,34 @@ public class RAASUtils {
 		return null;
 	}
 
-	public static EObject getFromIndex(int integer, Artifact artifact) {
-		for (EObject content : artifact.getContents()) {
-			if (content instanceof Model) {
-				Model model = (Model) content;
-				long start = System.currentTimeMillis();
-				ContainmentTreeOrderedByNumberHelper helper = new ContainmentTreeOrderedByNumberHelper(model);
-				EObject result = helper.get(integer);
-				long end = System.currentTimeMillis();
-				Activator.perf("Find EObject from index " + (end - start) + " milliseconds");
-				return result;
+	/**
+	 * Returns the object identified by the index
+	 * 
+	 * @param number
+	 *            if it is a Long, resolve it as CDO ID, otherwise (an Integer) as Part21 index
+	 * @param artifact
+	 * @return
+	 */
+	public static EObject getFromIndex(Number number, Artifact artifact) {
+		long start = System.currentTimeMillis();
+		try {
+			if (number instanceof Long) {
+				return findObjectById(number.toString(), artifact.eResource());
 			}
+			int integer = (Integer) number;
+			for (EObject content : artifact.getContents()) {
+				if (content instanceof Model) {
+					Model model = (Model) content;
+					ContainmentTreeOrderedByNumberHelper helper = new ContainmentTreeOrderedByNumberHelper(model);
+					EObject result = helper.get(integer);
+					return result;
+				}
+			}
+			return null;
+		} finally {
+			long end = System.currentTimeMillis();
+			Activator.perf("Find EObject from index " + (end - start) + " milliseconds");
 		}
-		return null;
 	}
 
 	public static List<Object> execSql(String queryString, CDOView view) {
