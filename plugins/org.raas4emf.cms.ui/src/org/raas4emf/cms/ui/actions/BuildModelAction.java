@@ -70,7 +70,7 @@ public class BuildModelAction extends AbstractHandler {
 	}
 
 	protected void buildArtifact(Artifact artifact) {
-		Job job = new ParsingJob(artifact, isTreeMvd()) {
+		Job job = new ParsingJob(artifact, isTreeMvd(), true) {
 
 			protected IStatus run(final IProgressMonitor monitor) {
 				long start = System.currentTimeMillis();
