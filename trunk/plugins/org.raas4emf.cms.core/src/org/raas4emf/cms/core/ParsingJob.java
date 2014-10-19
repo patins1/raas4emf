@@ -19,10 +19,17 @@ public class ParsingJob extends RAASJob {
 
 	final private boolean treeMvd;
 
+	private boolean treeMvdAssociationClasses = false;
+
 	public ParsingJob(Artifact artifact, boolean treeMvd) {
 		super("Parsing " + artifact.getName(), artifact);
 		this.treeMvd = treeMvd;
 		this.setRule(new RAASSchedulingRule());
+	}
+
+	public ParsingJob(Artifact artifact, boolean treeMvd, boolean treeMvdAssociationClasses) {
+		this(artifact, treeMvd);
+		this.treeMvdAssociationClasses = treeMvdAssociationClasses;
 	}
 
 	protected IStatus run(IProgressMonitor monitor) {
@@ -52,10 +59,14 @@ public class ParsingJob extends RAASJob {
 		addClass(whiteList, IFC2X3Package.eINSTANCE.getIfcProject());
 		addClass(whiteList, IFC2X3Package.eINSTANCE.getIfcElement());
 		addClass(whiteList, IFC2X3Package.eINSTANCE.getIfcSpatialStructureElement());
-		// association classes
-		addClass(whiteList, IFC2X3Package.eINSTANCE.getIfcRelDecomposes());
-		addClass(whiteList, IFC2X3Package.eINSTANCE.getIfcRelContainedInSpatialStructure());
-		addClass(whiteList, IFC2X3Package.eINSTANCE.getIfcRelFillsElement());
+		if (treeMvdAssociationClasses) {
+			// association classes
+			addClass(whiteList, IFC2X3Package.eINSTANCE.getIfcRelDecomposes());
+			addClass(whiteList, IFC2X3Package.eINSTANCE.getIfcRelContainedInSpatialStructure());
+			addClass(whiteList, IFC2X3Package.eINSTANCE.getIfcRelFillsElement());
+		} else {
+			result.getLoadOptions().put(ArtifactImpl.OPTION_SKIPREFERENCES, true);
+		}
 		result.getLoadOptions().put(ArtifactImpl.OPTION_MVD, whiteList);
 		return result;
 	}
