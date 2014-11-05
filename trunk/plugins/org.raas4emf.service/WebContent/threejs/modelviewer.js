@@ -80,7 +80,6 @@ var doCollada= document.evaluate!=undefined && g_renderer!="svg";
 var doJsonLoader = true;
 var doGLTF = false;
 var container, stats, rendererStats;
-var projector;
 var mouse;
 
 var gui, jstree, misc, selectionInfoGui, extrusionLengthGui, closingAngleGui, lazyRenderingGui, materialVisibilityGui, fpsGui, componentsGui;
@@ -209,7 +208,7 @@ function paintBoundingBox(bbox, g_client, id) {
 	});
 	
 	var mesh = new THREE.Mesh( geometry, material );	
-	mesh.position = lerpVector(min,max,0.5);
+	mesh.position.copy(lerpVector(min,max,0.5));
 	
 	g_client.scene.add( mesh );
 	mesh.updateMatrixWorld();
@@ -238,7 +237,7 @@ function paintBoundingSphere(bsphere, g_client) {
 	});
 	
 	var mesh = new THREE.Mesh( geometry, material );	
-	mesh.position = bsphere.center;
+	mesh.position.copy(bsphere.center);
 	
 	g_client.scene.add( mesh );
 	mesh.updateMatrixWorld();
@@ -261,7 +260,7 @@ function paintNormals(mesh, g_client) {
     }
     meshWithVisualizedNormals = mesh;
 
-    mesh = THREE.BufferGeometryUtils.assureMeshWithNoBufferGeometry(mesh);
+    mesh = THREE.BufferGeometry.assureMeshWithNoBufferGeometry(mesh);
     g_client.scene.add( oldFaceNormalsHelper = new THREE.FaceNormalsHelper( mesh, 1 ) );
     g_client.scene.add( oldVertexNormalsHelper = new THREE.VertexNormalsHelper( mesh, 1 ) );
 	
@@ -383,7 +382,7 @@ function clickCamera(args,steps,artifactId) {
 	var g_client = resolveArtifact(artifactId);
 	var aspect = 1;
 	var camera = new THREE.PerspectiveCamera( args[6], aspect, 0.5, 1000 );
-	camera.position = camera.eye = asVector3([args[0],args[1],args[2]]);	
+	camera.eye = camera.position.copy(asVector3([args[0],args[1],args[2]]));	
 	camera.up = up;
 	camera.lookAt(camera.target = asVector3([args[3],args[4],args[5]]));	
 	camera.updateProjectionMatrix();
@@ -888,9 +887,9 @@ function placeInto(px,py,width,height,tilt45,ox,oy) {
 			}
 			var v = new THREE.Vector3(-ownTarget.x+target.x,0,-ownTarget.z+target.z);
 			v = v.multiplyScalar(scale);
-			g_client.circleShape.position = v;
-			g_client.circleShape.rotation = new THREE.Vector3(THREE.Math.degToRad(270),THREE.Math.degToRad(0),THREE.Math.degToRad(0));
-			g_client.circleShape.scale = new THREE.Vector3(0.2*g_colladaUnit,0.2*g_colladaUnit,0.2*g_colladaUnit);
+			g_client.circleShape.position.copy(v);
+			g_client.circleShape.rotation.copy(new THREE.Vector3(THREE.Math.degToRad(270),THREE.Math.degToRad(0),THREE.Math.degToRad(0)));
+			g_client.circleShape.scale.copy(new THREE.Vector3(0.2*g_colladaUnit,0.2*g_colladaUnit,0.2*g_colladaUnit));
 			g_client.circleShape.updateMatrixWorld();
 		}
 	}	
@@ -914,7 +913,7 @@ function getPos(eye,target,px,py,g_client) {
 	var raycaster = getRaycaster(mouse,g_client);
 	
 	var plane = g_client.plane;
-	plane.position = target;
+	plane.position.copy(target);
 	plane.lookAt( plane.position.clone().add( up ) );	
 	plane.updateMatrixWorld();
 	
@@ -1323,14 +1322,14 @@ function printLines(lines, artifactId, prefix, message) {
 			animation.play( true );
 			animation.update( 0 );
 			
-			mesh.scale = new THREE.Vector3(0.8,0.8,0.8);
+			mesh.scale.copy(new THREE.Vector3(0.8,0.8,0.8));
 
 			g_client.scene.add(mesh);
 			g_client.me = mesh;
 			g_client.me.shiftUp = 1.7;
 //			addSelectableObjects(g_client,mesh);
 
-			g_client.me.position = lastAnimationPos = myPosition;
+			g_client.me.position.copy(lastAnimationPos = myPosition);
 			g_client.me.position.y = g_client.me.position.y + g_client.me.shiftUp;
 			g_client.me.updateMatrixWorld();
 		    
@@ -1365,7 +1364,7 @@ function printLines(lines, artifactId, prefix, message) {
 		g_client.me = mesh;
 		g_client.me.shiftUp = 0;
 	}
-	g_client.me.position = lastAnimationPos = myPosition;
+	g_client.me.position.copy(lastAnimationPos = myPosition);
 	g_client.me.position.y = g_client.me.position.y + g_client.me.shiftUp;
 	g_client.me.updateMatrixWorld();
     }
@@ -2400,10 +2399,10 @@ function generateGui() {
 					geometry.computeVertexNormals();
 					geometry.attributes.normal.needsUpdate = true;
 					if (effectController.vertexnormals) {
-						var faceGeometry = THREE.BufferGeometryUtils.assureNoBufferGeometry(geometry);
+						var faceGeometry = THREE.BufferGeometry.assureNoBufferGeometry(geometry);
 						faceGeometry.computeFaceNormals();
 						faceGeometry.computeVertexNormals(true);	
-						var bufferGeometry = THREE.BufferGeometryUtils.fromGeometry(faceGeometry);
+						var bufferGeometry = THREE.BufferGeometry.assureBufferGeometry(faceGeometry);
 						geometry.attributes.normal.array.set(bufferGeometry.attributes.normal.array);
 						geometry.normalsNeedUpdate = true;
 					}
@@ -2745,14 +2744,6 @@ function melt(g_client) {
 
 			faceCopy.materialIndex = face.materialIndex + materialIndexOffset;
 
-//			faceCopy.centroid.copy( face.centroid );
-
-//			if ( matrix ) {
-//
-//				faceCopy.centroid.applyMatrix4( matrix );
-//
-//			}
-
 			faces1.push( faceCopy );
 
 		}
@@ -2802,7 +2793,7 @@ function melt(g_client) {
 			mesh.geometry.applyMatrix(mesh.matrixWorld);	
 		}
 	});
-	resetLocalCoordinateSystems(true,g_client);
+	resetLocalCoordinateSystems(false,g_client);
 	
 	var geometriesOfMaterial = {};
 
@@ -2839,23 +2830,15 @@ function melt(g_client) {
 		var meltedGeometry = new THREE.BufferGeometry();
 
 		var positionBuffer = new ArrayBuffer(vertexCountOfMaterial*4);
+		meltedGeometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array( positionBuffer ), 3 ) );
 		var normalBuffer = new ArrayBuffer(vertexCountOfMaterial*4);
-		meltedGeometry.attributes = {
-			position: {
-				itemSize: 3,
-				array: new Float32Array( positionBuffer )
-			},
-			normal: {
-				itemSize: 3,
-				array: new Float32Array( normalBuffer )
-			}
-		};
+		meltedGeometry.addAttribute( 'normal', new THREE.BufferAttribute( new Float32Array( normalBuffer ), 3 ) );
 
 		var g = 0;
 		while (tt<ttt) {
 			var geometry = geometries[tt];
 			geometries[tt] = null;
-			geometry = THREE.BufferGeometryUtils.fromGeometry( geometry );
+			geometry = THREE.BufferGeometry.assureBufferGeometry( geometry );
 			if (!hasVertexNormals(geometry)) geometry.computeVertexNormals();
 			var position = geometry.attributes.position;
 			var positions2 = position.array;
@@ -3131,7 +3114,7 @@ function paintBendPoints() {
 
 				var inval = false;
 				for ( var v = 0, vlen = vectors.length; v < vlen; v ++ ) {
-					inval =  vectors[ v ].clone().sub(bbox.min).dot(normal)!=0;
+					inval =  parseFloat(vectors[ v ].clone().sub(bbox.min).dot(normal).toFixed(6))!=0;
 					if (inval) break;
 					var p = vectors[ v ].clone().sub(offs);
 					if (normal.y==1)
@@ -3359,7 +3342,6 @@ function start() {
 	
 	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); return; }
 
-    	projector = new THREE.Projector();    	
     	window.addEventListener( 'resize', onWindowResize, false );
     	mouse = new THREE.Vector2();
     	up = new THREE.Vector3( 0, 1, 0 );
@@ -3443,20 +3425,6 @@ function hasVertexNormals(geometry) {
 var initStatics = function() {
 
     if (effectController.quickmode) {
-    	
-    THREE.Geometry.prototype.computeCentroids = function () {
-
-		var f, fl, face;
-
-		for ( f = 0, fl = this.faces.length; f < fl; f ++ ) {
-
-			face = this.faces[ f ];
-			face.geometry = this;
-
-		}
-
-	};
-
 
 	THREE.Geometry.prototype.computeFaceNormals = function () {
 	};
@@ -3474,21 +3442,6 @@ var initStatics = function() {
 		this.boundingSphere.setFromPoints( getOnlyUsedVertices(this) );
 
 	};
-
-	Object.defineProperty(THREE.Face3.prototype, "centroid", {
-	    get: function() {
-	    	var centroid = new THREE.Vector3();
-	    	if (this.geometry) {
-				centroid.add( this.geometry.vertices[ this.a ] );
-				centroid.add( this.geometry.vertices[ this.b ] );
-				centroid.add( this.geometry.vertices[ this.c ] );
-				centroid.divideScalar( 3 );
-	    	}
-			return centroid; 
-	    },
-	    set: function(y) {
-	    }
-	});
 
 	// speed: dont store a name
 	Object.defineProperty(THREE.BufferGeometry.prototype, "name", {
@@ -3535,7 +3488,7 @@ var initStatics = function() {
 	
     }
     
-	THREE.BufferGeometryUtils.assureMeshWithNoBufferGeometry = function ( mesh ) {
+	THREE.BufferGeometry.assureMeshWithNoBufferGeometry = function ( mesh ) {
 
 		if ( mesh.geometry instanceof THREE.Geometry ) {
 
@@ -3545,7 +3498,7 @@ var initStatics = function() {
 		
 		mesh = mesh.clone();
 		mesh.matrix.copy(mesh.matrixWorld); // has no parents
-		mesh.geometry = THREE.BufferGeometryUtils.assureNoBufferGeometry(mesh.geometry);
+		mesh.geometry = THREE.BufferGeometry.assureNoBufferGeometry(mesh.geometry);
 		
 		return mesh;
 	};
@@ -3559,7 +3512,26 @@ var initStatics = function() {
 		return vertices.length-1;		
 	}
 
-	THREE.BufferGeometryUtils.assureNoBufferGeometry = function ( geometry ) {
+	THREE.BufferGeometry.assureBufferGeometry = function ( geometry ) {
+
+		if ( geometry instanceof THREE.BufferGeometry ) {
+
+			return geometry;
+
+		}
+		
+		if (geometry.faces.length==0) {
+			var bufferGeometry = new THREE.BufferGeometry();
+			bufferGeometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(0), 3 ) );
+			bufferGeometry.addAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(0), 3 ) );
+			return bufferGeometry;
+		}
+		
+		return new THREE.BufferGeometry().fromGeometry(geometry);
+		
+	}
+
+	THREE.BufferGeometry.assureNoBufferGeometry = function ( geometry ) {
 
 		if ( geometry instanceof THREE.Geometry ) {
 
@@ -3577,7 +3549,6 @@ var initStatics = function() {
 		}
 		
 		result.faces = faces;
-		result.computeCentroids();
 		result.computeFaceNormals();
 		if (effectController.vertexnormals)
 			result.computeVertexNormals(true);
@@ -3630,7 +3601,7 @@ var initStatics = function() {
         	if (effectController.vertexnormals)
         		result.geometry.computeVertexNormals(true);
         	if (USE_BUFFERGEOMETRY && g_renderer == "webgl") {
-	        	var bufferGeometry = THREE.BufferGeometryUtils.fromGeometry( result.geometry );
+	        	var bufferGeometry = THREE.BufferGeometry.assureBufferGeometry( result.geometry );
 	        	if (effectController.vertexnormals && !hasVertexNormals(result.geometry)) bufferGeometry.computeVertexNormals();
 	        	result.geometry = bufferGeometry;
         	}
@@ -3835,6 +3806,7 @@ function init(root,g_client) {
 	//http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/NURBS/NURBS-knot-insert.html
 	//http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/NURBS-knot-insert.html
 
+	if (THREE.NURBSCurve) {
 
 	THREE.NURBSCurve.prototype.addKnot = function ( t ) {
 
@@ -3947,6 +3919,8 @@ function init(root,g_client) {
 		this.z *= invScalar;
 		return this;
 	};
+	
+	}
 
 	var loadingComplete = false;
 	myLog("Model load time="+(new Date().getTime() - startTime));
@@ -4591,7 +4565,7 @@ function onDocumentMouseMove( e ) {
 		var raycaster = getRaycaster(mouse,g_client);
 
 		var plane = g_client.plane;
-		plane.position = (g_worldPosition || g_client.g_camera.target).clone();
+		plane.position.copy(g_worldPosition || g_client.g_camera.target);
 		plane.lookAt( plane.position.clone().add( up ) );	
 		plane.updateMatrixWorld();
 		
@@ -4625,7 +4599,7 @@ function onDocumentMouseMove( e ) {
 					}
 					if (object.cam) {
 						var camera = g_client.additionalCamera = object.cam;
-				    	camera.position = camera.eye.add(localOffs);	
+				    	camera.position.copy(camera.eye.add(localOffs));	
 				    	camera.lookAt(camera.target);	
 				    	camera.updateProjectionMatrix();
 				    	camera.updateMatrixWorld();
@@ -4647,13 +4621,29 @@ function onDocumentMouseMove( e ) {
 	updateClient(g_client,lazy);
 }
 
+function pickingRay( vector, camera ) {
+
+	// set two vectors with opposing z values
+	vector.z = -1.0;
+	var end = new THREE.Vector3( vector.x, vector.y, 1.0 );
+
+	vector.unproject( camera );
+	end.unproject( camera );
+
+	// find direction from vector to end
+	end.sub( vector ).normalize();
+
+	return new THREE.Raycaster( vector, end );
+
+};
+
 function getRaycaster(mouse,g_client) {
 	var camera = g_client.g_camera;
 	var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
-	var raycaster = projector.pickingRay( vector.clone(), camera );
+	var raycaster = pickingRay( vector.clone(), camera );
 	if (!g_ortho) {
 		// TODO these two lines should not be necessary! threejs bug?
-		projector.unprojectVector( vector, camera );
+		vector.unproject( camera );
 		raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
 	}
 	return raycaster;
@@ -4812,7 +4802,7 @@ function onDocumentMouseDown(e) {
 //		g_client.scene.add( g_line );
 		
 	    if (effectController.select_face) {
-	        var mesh = THREE.BufferGeometryUtils.assureMeshWithNoBufferGeometry(SELECTED);
+	        var mesh = THREE.BufferGeometry.assureMeshWithNoBufferGeometry(SELECTED);
 	    	intersects = raycaster.intersectObjects( [mesh] );
 	        for (var tt = 0; tt < intersects.length; tt++) {
 	        	var object = intersects[ tt ].object;
@@ -5033,7 +5023,7 @@ function getBoundingBoxOfTree(object3Ds) {
 	        var vertices = getOnlyUsedVertices(obj3D.geometry);
 	        var matrix = obj3D.matrixWorld;
 			vertices.forEach(function (vertex) {
-				box.addPoint( v.copy(vertex).applyMatrix4( matrix ) );
+				box.expandByPoint( v.copy(vertex).applyMatrix4( matrix ) );
 			});
 	    });
     }
@@ -5060,7 +5050,7 @@ function setEyeAndTarget(eye,target,g_client,_up) {
 		camera = new THREE.PerspectiveCamera( g_angle, aspect, 0.01, 2000000 );
 	}
 	g_client.g_camera = g_client.controls.object = camera;
-	camera.position = camera.eye = eye;	
+	camera.eye = camera.position.copy(eye);	
 	camera.target = g_client.controls.target = target;	
 	if (g_mapenabled)
 		camera.up.set(0,0,1); else
@@ -5096,18 +5086,17 @@ function printCameras(lines, artifactId) {
     
 	    	var aspect = lines[tt+7];// g_client.parentNode.offsetWidth / g_client.parentNode.offsetHeight;
 	    	var camera = new THREE.PerspectiveCamera( lines[tt+6], aspect, 0.5, 1000 );
-	    	camera.position = camera.eye = lastPoint;	
+	    	camera.eye = camera.position.copy(lastPoint);	
 			camera.up = up;
 	    	camera.lookAt(camera.target = nextPoint);	
 	    	camera.updateProjectionMatrix();
 	    	camera.updateMatrixWorld();
 
 	    	var p = lastPoint;
-	    	var projector = new THREE.Projector();
-	    	var n1 = projector.unprojectVector( new THREE.Vector3(-1, -1,-1), camera );
-	    	var n2 = projector.unprojectVector( new THREE.Vector3( 1, -1,-1), camera );
-	    	var n3 = projector.unprojectVector( new THREE.Vector3( 1,  1,-1), camera );
-	    	var n4 = projector.unprojectVector( new THREE.Vector3(-1,  1,-1), camera );
+	    	var n1 = new THREE.Vector3(-1, -1,-1).unproject( camera );
+	    	var n2 = new THREE.Vector3( 1, -1,-1).unproject( camera );
+	    	var n3 = new THREE.Vector3( 1,  1,-1).unproject( camera );
+	    	var n4 = new THREE.Vector3(-1,  1,-1).unproject( camera );
 
 
 	    	var geometry = new THREE.Geometry();
@@ -5380,7 +5369,7 @@ function printIncidents(lines, artifactId) {
 	    	}
 			
 	    	var cube = new THREE.Mesh( geometry, material );
-			cube.position = lastPoint;
+			cube.position.copy(lastPoint);
 			cube.position.y = cube.position.y+0.5;
 			cube.rotation.x = -Math.PI / 2;
 			cube.rotation.z = -Math.PI / 2;
