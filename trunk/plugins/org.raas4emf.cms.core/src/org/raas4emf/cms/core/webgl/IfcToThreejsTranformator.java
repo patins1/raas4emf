@@ -14,7 +14,6 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.net4j.util.HexUtil;
 import org.raas4emf.cms.core.Activator;
 import org.raas4emf.cms.core.FileUtil;
 import org.raas4emf.cms.core.RAASUtils;
@@ -54,7 +53,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 
 			String REMOTE_BLENDER_URL = System.getProperty("REMOTE_BLENDER_URL");
 
-			String fingerprint = HexUtil.bytesToHex(artifact.getFileContent().getID());
+			String fingerprint = artifact.getFingerPrint();
 			String ifcUrl = System.getProperty(fingerprint + ".ifc");
 			String jsUrl = System.getProperty(fingerprint + ".js");
 			System.setProperty(fingerprint + ".ifc", "");

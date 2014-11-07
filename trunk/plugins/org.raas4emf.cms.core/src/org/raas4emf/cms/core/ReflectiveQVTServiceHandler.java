@@ -2,6 +2,7 @@ package org.raas4emf.cms.core;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringBufferInputStream;
@@ -39,6 +40,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 		response.setContentType("application/json");
 		response.setHeader("Cache-Control", "no-store");
 		String message = null;
+		List<Runnable> inits = new ArrayList<Runnable>();
 
 		String requestClass = RWT.getRequest().getParameter("request");
 		try {
@@ -75,15 +77,27 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 						token = FileUtil.inputstreamToString(item.openStream());
 						continue;
 					}
-					EStructuralFeature feature = embeddedRequest.eClass().getEStructuralFeature(item.getFieldName());
+					final EStructuralFeature feature = embeddedRequest.eClass().getEStructuralFeature(item.getFieldName());
 					if (feature == null) {
 						response.setStatus(400);
 						throw new Exception("Unknown parameter: " + item.getFieldName());
 					}
 					if (!item.isFormField()) {
-						File temp = File.createTempFile("temp-raas-upload", ".tmp");
+						final File temp = File.createTempFile("temp-raas-upload", ".tmp");
 						FileUtil.inputstreamToOutputstream(item.openStream(), new FileOutputStream(temp));
-						embeddedRequest.eSet(feature, new FileInputStream(temp));
+						Runnable init = new Runnable() {
+
+							@Override
+							public void run() {
+								try {
+									embeddedRequest.eSet(feature, new FileInputStream(temp));
+								} catch (FileNotFoundException e) {
+									e.printStackTrace();
+								}
+							}
+						};
+						init.run();
+						inits.add(init);
 						temp.deleteOnExit();
 					} else {
 						String string = FileUtil.inputstreamToString(item.openStream());
@@ -111,7 +125,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 				}
 			}
 
-			String result = processRequest(embeddedRequest);
+			String result = processRequest(embeddedRequest, inits);
 
 			response.setHeader("RAASResponseMessage", "" + message);
 			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(result), response.getOutputStream());
@@ -133,7 +147,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 
 	}
 
-	public String processRequest(final EObject embeddedRequest) throws IllegalAccessException, InvocationTargetException, IOException, Exception {
+	public String processRequest(final EObject embeddedRequest, List<Runnable> inits) throws IllegalAccessException, InvocationTargetException, IOException, Exception {
 		final List<Artifact> allArtifacts = new ArrayList<Artifact>();
 		final List<Folder> allFolders = new ArrayList<Folder>();
 		final EMFJQVTEngine testTrafo = new EMFJQVTEngine() {
