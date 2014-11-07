@@ -244,5 +244,7 @@ public interface Artifact extends CDOObject {
 	public boolean isBlobUpToDate();
 
 	public File getTransformationsDirectory();
+
+	public String getFingerPrint();
 	
 } // Artifact

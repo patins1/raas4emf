@@ -71,6 +71,7 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 	static public final String OPTION_CONTENTSLIST = EList.class.getName();
 	public static final String OPTION_SAVE_PROGRESS_MONITOR = IProgressMonitor.class.getName();
 	static public final String OPTION_MVD = "OPTION_MVD";
+	static public final String OPTION_SKIPREFERENCES = "OPTION_SKIPREFERENCES";
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -334,9 +335,19 @@ public class ArtifactImpl extends CDOObjectImpl implements Artifact {
 
 	public File getTransformationsDirectory() {
 		File artifactsDir = new File(CACHE_DIR, "transformations");
-		File dir = new File(artifactsDir, HexUtil.bytesToHex(getFileContent().getID()));
+		File dir = new File(artifactsDir, getFingerPrint());
 		dir.mkdirs();
 		return dir;
+	}
+
+	@Override
+	public String getFingerPrint() {
+		String name = this.getName();
+		if (name != null && name.indexOf("--ITERATE") != -1 && eContainer() instanceof Folder) {
+			Folder folder = (Folder) eContainer();
+			return folder.getName();
+		}
+		return HexUtil.bytesToHex(this.getFileContent().getID());
 	}
 
 	public boolean isBlobUpToDate() {
