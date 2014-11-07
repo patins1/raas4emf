@@ -122,7 +122,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				if (isWindows)
 					sshCommand = "plink.exe -batch -i %SSHKEYFILE% -P 22 -ssh %REMOTE_BLENDER_URL% -m \"%EXTERNALCOMMANDFILE%\"";
 				else
-					sshCommand = "ssh -o StrictHostKeyChecking=no -i %SSHKEYFILE% %REMOTE_BLENDER_URL% bin/ifc2jshttp.sh %FINGERPRINT% \"%IFCURL%\" \"%JSURL%\"";
+					sshCommand = "ssh -o StrictHostKeyChecking=no -i %SSHKEYFILE% %REMOTE_BLENDER_URL% bin/ifc2jshttp.sh %FINGERPRINT% \"%IFCURL%\" \"%JSURL%\" %IFCSIZE%";
 
 				try {
 					if (RAASUtils.getRAASProp("BLENDER_SSH_COMMAND") != null)
@@ -144,6 +144,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				sshCommand = sshCommand.replace("%IFCURL%", ifcUrl);
 				sshCommand = sshCommand.replace("%JSURL%", jsUrl);
 				sshCommand = sshCommand.replace("%FINGERPRINT%", fingerprint);
+				sshCommand = sshCommand.replace("%IFCSIZE%", "" + artifact.getFileContent().getSize());
 
 				cmd = sshCommand;
 				// cmd = "putty.exe -i " + TransformationUtils.quote(key) + " -ssh " + REMOTE_BLENDER_URL + " 22 -m " + TransformationUtils.quote(commands);
