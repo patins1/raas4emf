@@ -3,20 +3,14 @@
  */
 package org.raas4emf.cms.core;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.eclipse.emf.cdo.net4j.CDONet4jSession;
 import org.eclipse.emf.cdo.view.CDOView;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.rap.rwt.RWT;
 
 import raascms.Artifact;
@@ -279,23 +273,6 @@ public class RAASSessionSingleton {
 
 	public Object getUserObject(String key) {
 		return userObject.get(key);
-	}
-
-	@Deprecated
-	public Object decodeJSON(String arg, EObject eObject) {
-		return decodeJSON(arg, eObject.eClass());
-	}
-
-	public byte[] encodeJSON(Object arg) {
-		ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
-		RAASUtils.encodeJSON(arg, requestBody, Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents", "objects", "comments"), true);
-		return requestBody.toByteArray();
-	}
-
-	public Object decodeJSON(String arg, EClass eClass) {
-		arg = "{\"" + eClass.getName() + "Element\":" + arg + "}";
-		InputStream responseBody = new ByteArrayInputStream(arg.getBytes());
-		return RAASUtils.decodeJSON(responseBody, eClass);
 	}
 
 	public void executeJSMethod(String methodName, String stringArg) {

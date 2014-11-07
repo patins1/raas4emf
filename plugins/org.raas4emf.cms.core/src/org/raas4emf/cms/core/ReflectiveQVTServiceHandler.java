@@ -89,7 +89,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 						String string = FileUtil.inputstreamToString(item.openStream());
 						if (feature.getEType() instanceof EClass) {
 							EClass targetType = (EClass) feature.getEType();
-							Object eObject = Activator.getSessionInstance().decodeJSON(string, targetType);
+							Object eObject = RAASUtils.decodeJSON(string, targetType);
 							embeddedRequest.eSet(feature, eObject);
 						} else {
 							embeddedRequest.eSet(feature, EcoreUtil.createFromString((EDataType) feature.getEType(), string));
@@ -124,7 +124,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 			EClass eclass = findEClass("ErrorResponse");
 			EObject res = eclass.getEPackage().getEFactoryInstance().create(eclass);
 			res.eSet(eclass.getEStructuralFeature("errorMessage"), message);
-			message = new String(Activator.getSessionInstance().encodeJSON(res));
+			message = new String(RAASUtils.encodeJSON(res));
 			response.setHeader("RAASResponseMessage", "" + message);
 			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message), response.getOutputStream());
 		}
@@ -151,7 +151,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 		if (targetModel.size() == 0)
 			throw new Exception("Could not produce response for request " + embeddedRequest.eClass().getName());
 		Activator.log("Produced " + targetModel.get(0).getClass());
-		String result = new String(Activator.getSessionInstance().encodeJSON(targetModel.get(0)));
+		String result = new String(RAASUtils.encodeJSON(targetModel.get(0)));
 		return result;
 	}
 
@@ -175,8 +175,13 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 			if (!allFolders.isEmpty())
 				return (List<T>) allFolders;
 			String path = getRootPathForFoldersAndArtifacts();
-			Activator.getSessionInstance().setCredentials("Operator", "o");
-			EObject eObject = RAASUtils.findByPath(path.split("/"), true);
+			// RAASSessionSingleton sessionInstance = Activator.getSessionInstance();
+			/**
+			 * Create a completely new session, as a session can be shared when the same web client triggers multiple parsing processes! So do not use Activator.getSessionInstance()!
+			 */
+			RAASSessionSingleton sessionInstance = new RAASSessionSingleton();
+			sessionInstance.setCredentials("Operator", "o");
+			EObject eObject = RAASUtils.findByPath(sessionInstance.openView(), path.split("/"), true);
 			try {
 				eObject.eResource().save(null);
 			} catch (IOException e) {
