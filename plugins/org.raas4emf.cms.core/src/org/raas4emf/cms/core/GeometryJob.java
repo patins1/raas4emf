@@ -5,7 +5,6 @@ import java.io.InputStream;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.net4j.util.HexUtil;
 
 import raascms.Artifact;
 import raascms.Folder;
@@ -23,7 +22,7 @@ public class GeometryJob extends RAASJob {
 		Folder folder = (Folder) artifact.eContainer();
 		sceneName = "scene.js";
 		ifcUrl = Activator.getSessionInstance().createFullDownloadUrl(artifact);
-		fingerprint = HexUtil.bytesToHex(artifact.getFileContent().getID());
+		fingerprint = artifact.getFingerPrint();
 		jsUrl = ifcUrl.substring(0, ifcUrl.indexOf("downloadServiceHandler")) + "embeddedapi&request=GeometryUploadRequest&UUID=" + folder.getName();
 	}
 
