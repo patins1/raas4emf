@@ -4,6 +4,7 @@
 package org.raas4emf.cms.core;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -21,6 +22,7 @@ import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
@@ -1478,5 +1480,17 @@ public class RAASUtils {
 	public static void fixServiceHandlePreconditions() {
 		if (fixServiceHandlePreconditionsRunnable != null)
 			fixServiceHandlePreconditionsRunnable.run();
+	}
+
+	static public byte[] encodeJSON(Object arg) {
+		ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
+		encodeJSON(arg, requestBody, Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents", "objects", "comments"), true);
+		return requestBody.toByteArray();
+	}
+
+	static public Object decodeJSON(String arg, EClass eClass) {
+		arg = "{\"" + eClass.getName() + "Element\":" + arg + "}";
+		InputStream responseBody = new ByteArrayInputStream(arg.getBytes());
+		return decodeJSON(responseBody, eClass);
 	}
 }

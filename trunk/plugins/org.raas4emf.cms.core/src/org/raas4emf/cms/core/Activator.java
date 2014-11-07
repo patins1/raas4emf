@@ -2,6 +2,7 @@ package org.raas4emf.cms.core;
 
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.rap.rwt.SingletonUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -90,20 +91,15 @@ public class Activator extends Plugin {
 		if (service == null) {
 			// Register directly with the service
 			ServiceReference<?> reference = context.getServiceReference(IRAASSessionSingletonService.class.getName());
-			service = (IRAASSessionSingletonService) context.getService(reference);
+			if (reference != null)
+				service = (IRAASSessionSingletonService) context.getService(reference);
 		}
 		return service;
 	}
 
 	public static RAASSessionSingleton getSessionInstance() {
-		try {
-			if (Activator.getService() != null)
-				return Activator.getService().getInstance();
-		} catch (Exception e) {
-
-		}
-		if (RAASSessionSingleton.SINGLETON != null)
-			return RAASSessionSingleton.SINGLETON;
-		return new RAASSessionSingleton();
+		if (Activator.getService() != null)
+			return Activator.getService().getInstance();
+		return SingletonUtil.getSessionInstance(RAASSessionSingleton.class);
 	}
 }
