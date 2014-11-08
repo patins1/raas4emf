@@ -32,7 +32,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 
 public class EMFJQVTEngine extends JQVTEngine {
 
-	final List<Object> createdElements = new ArrayList<Object>();
+	public final List<Object> createdElements = new ArrayList<Object>();
 	final Map<String, Collection<?>> srcResMap = new HashMap<String, Collection<?>>();
 
 	// Collection<?> srcRes = null;
@@ -91,7 +91,7 @@ public class EMFJQVTEngine extends JQVTEngine {
 		super.execute(trafo);
 
 		for (Object eObject : createdElements) {
-			if (((EObject) eObject).eContainer() == null && ((EObject) eObject).eResource()==null) {
+			if (((EObject) eObject).eContainer() == null && ((EObject) eObject).eResource()==null && !((EObject)eObject).eIsProxy()) {
 				if (targetRes instanceof Resource)
 					((Resource) targetRes).getContents().add((EObject) eObject);
 				else
