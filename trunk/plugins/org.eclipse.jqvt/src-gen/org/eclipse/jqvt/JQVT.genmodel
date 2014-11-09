@@ -4,7 +4,7 @@
     editorDirectory="/org.eclipse.jqvt.editor/src" modelPluginID="org.eclipse.jqvt"
     forceOverwrite="true" modelName="JQVT" updateClasspath="false" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
     complianceLevel="5.0" copyrightFields="false" editPluginID="org.eclipse.jqvt.edit"
-    editorPluginID="org.eclipse.jqvt.editor" runtimeVersion="2.9" usedGenPackages="../../../../../org.eclipse.xtext.common.types/model/JavaVMTypes.genmodel#//types ../../../../../org.eclipse.xtext.xbase/model/Xbase.genmodel#//xbase">
+    editorPluginID="org.eclipse.jqvt.editor" runtimeVersion="2.10" usedGenPackages="platform:/resource/org.eclipse.xtext.common.types/model/JavaVMTypes.genmodel#//types platform:/resource/org.eclipse.xtext.xbase/model/Xbase.genmodel#//xbase">
   <genPackages prefix="JQVT" basePackage="org.eclipse.jqvt" disposableProviderFactory="true"
       ecorePackage="JQVT.ecore#/">
     <genClasses ecoreClass="JQVT.ecore#//PackageDeclaration">

@@ -27,8 +27,6 @@ import org.eclipse.xtext.xbase.XFeatureCall;
 import org.eclipse.xtext.xbase.XUnaryOperation;
 import org.eclipse.xtext.xbase.XVariableDeclaration;
 import org.eclipse.xtext.xbase.lib.IteratorExtensions;
-import org.eclipse.xtext.xbase.typing.ITypeProvider;
-import org.eclipse.xtext.xbase.typing.JvmOnlyTypeConformanceComputer;
 
 import com.google.inject.Inject;
 
@@ -39,12 +37,6 @@ import com.google.inject.Inject;
 public class DependencyProcessor {
 
 	private static Map<EObject, DependencyInfo> dependencyMap = new HashMap<EObject, DependencyInfo>();
-
-	@Inject
-	private ITypeProvider _iTypeProvider;
-
-	@Inject
-	private JvmOnlyTypeConformanceComputer _jvmOnlyTypeConformanceComputer;
 
 	@Inject
 	JQVTUtils jQVTUtils;
@@ -165,7 +157,7 @@ public class DependencyProcessor {
 				for (XVariableDeclaration var : info2.getWrite()) {
 					JvmTypeReference type = info.getWrittenType(var);
 					JvmTypeReference type2 = info2.getWrittenType(var);
-					if (type != null && type2 != null && _jvmOnlyTypeConformanceComputer.isConformant(type, type2) && !_jvmOnlyTypeConformanceComputer.isConformant(type2, type)) {
+					if (type != null && type2 != null && jQVTUtils.isConformant(type, type2) && !jQVTUtils.isConformant(type2, type)) {
 						return false;
 					}
 				}
@@ -187,7 +179,7 @@ public class DependencyProcessor {
 			XVariableDeclaration var = jQVTUtils.asVar(xAssignment);
 			if (var != null) {
 				DependencyInfo info = new DependencyInfo(expression, isTarget);
-				info.write(var, _iTypeProvider.getType(xAssignment.getValue()));
+				info.write(var, jQVTUtils.getType(xAssignment.getValue()));
 				info.andWith(processExpression(xAssignment.getValue(), isTarget));
 				return info;
 			}

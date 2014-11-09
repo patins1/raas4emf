@@ -14,19 +14,23 @@ import org.eclipse.jqvt.jQVT.RelationDomain
 import org.eclipse.jqvt.jQVT.Transformation
 import org.eclipse.jqvt.jvmmodel.ParamPair
 import org.eclipse.xtext.common.types.JvmDeclaredType
+import org.eclipse.xtext.common.types.JvmMember
+import org.eclipse.xtext.common.types.JvmOperation
 import org.eclipse.xtext.common.types.JvmParameterizedTypeReference
 import org.eclipse.xtext.common.types.JvmTypeReference
+import org.eclipse.xtext.common.types.JvmVisibility
+import org.eclipse.xtext.common.types.util.TypeReferences
+import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.xbase.XAbstractFeatureCall
 import org.eclipse.xtext.xbase.XAssignment
 import org.eclipse.xtext.xbase.XFeatureCall
 import org.eclipse.xtext.xbase.XVariableDeclaration
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
-import org.eclipse.xtext.xbase.typing.JvmOnlyTypeConformanceComputer
-import org.eclipse.xtext.resource.XtextResource
-import java.lang.Iterable
-import org.eclipse.xtext.common.types.JvmGenericArrayTypeReference
-import org.eclipse.xtext.common.types.JvmOperation
+import org.eclipse.xtext.xbase.typesystem.references.OwnedConverter
+import org.eclipse.xtext.xbase.typesystem.references.StandardTypeReferenceOwner
+import org.eclipse.xtext.xbase.typesystem.util.CommonTypeComputationServices
+import org.eclipse.xtext.xbase.XExpression
 
 import static org.eclipse.jqvt.util.JQVTUtilsExtended.*
 
@@ -35,7 +39,11 @@ import static org.eclipse.jqvt.util.JQVTUtilsExtended.*
  */
 class JQVTUtils {
 	
-	@Inject extension JvmOnlyTypeConformanceComputer
+	@Inject TypeReferences typeReferences;
+	
+	@Inject JvmTypesBuilder typesBuilder;
+	
+	@Inject CommonTypeComputationServices services;
 	
 	@Inject	extension IJvmModelAssociations 
 	
@@ -137,7 +145,7 @@ class JQVTUtils {
 	}
 	
 	def boolean isMany(JvmTypeReference type) {
-		isConformant(type.newTypeRef(typeof(Collection)),type,true) || type.type!=null && type.type.eIsProxy && type.type.toString().contains("EList") || type instanceof JvmGenericArrayTypeReference
+		typeReferences.is(type, typeof(Collection)) || type.type!=null && type.type.eIsProxy && type.type.toString().contains("EList") || typeReferences.isArray(type)
 	}
 	
 	def static String toQVT(EObject clause) {
@@ -160,6 +168,23 @@ class JQVTUtils {
 		
 	def static String toQVTWithinString(EObject clause) {
 		return toQVT(clause).trim.replace("\n", "\\n").replace("\"", "\\\"").replace("\r", "");
+	}
+	
+	def isConformant(JvmTypeReference t1, JvmTypeReference t2) {
+		t1.toLightweightTypeReference.isAssignableFrom(t2.toLightweightTypeReference)
+	}
+
+	def toLightweightTypeReference(JvmTypeReference typeRef) {
+		val converter = new OwnedConverter(new StandardTypeReferenceOwner(services, typeRef))
+		converter.toLightweightReference(typeRef)
+	}
+	
+	def makePublic(JvmMember member) {
+		member.setVisibility(JvmVisibility.PUBLIC);
+	}
+	
+	def getType(XExpression exp) {
+		typesBuilder.inferredType(exp)
 	}
 	
 }

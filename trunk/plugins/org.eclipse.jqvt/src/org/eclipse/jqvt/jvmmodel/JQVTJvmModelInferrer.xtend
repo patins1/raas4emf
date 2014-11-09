@@ -12,20 +12,17 @@ import org.eclipse.jqvt.jQVT.Relation
 import org.eclipse.jqvt.jQVT.RelationDomain
 import org.eclipse.jqvt.jQVT.Transformation
 import org.eclipse.jqvt.util.JQVTUtils
-import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.eclipse.xtend2.lib.StringConcatenation
 import org.eclipse.xtext.common.types.JvmPrimitiveType
 import org.eclipse.xtext.common.types.util.TypeReferences
 import org.eclipse.xtext.naming.IQualifiedNameProvider
+import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 import org.eclipse.xtext.xbase.XAssignment
 import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.XVariableDeclaration
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
-import org.eclipse.xtext.xbase.jvmmodel.JvmVisibilityExtension
-import org.eclipse.xtext.xbase.typing.JvmOnlyTypeConformanceComputer
-import org.eclipse.xtext.xbase.compiler.ImportManager
 
 import static org.eclipse.xtext.common.types.TypesFactory.*
 
@@ -41,10 +38,6 @@ class JQVTJvmModelInferrer extends AbstractModelInferrer {
 	@Inject	extension TypeReferences	
 	
 	@Inject	extension DependencyProcessor	
-   
-	@Inject	extension JvmVisibilityExtension
-	 
-	@Inject extension JvmOnlyTypeConformanceComputer
 	
 	@Inject	extension JQVTUtils
 	

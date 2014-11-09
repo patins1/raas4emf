@@ -19,9 +19,12 @@ Require-Bundle: org.eclipse.xtext;visibility:=reexport,
  org.eclipse.xtext.common.types,
  org.eclipse.xtend.lib,
  org.eclipse.xtext.xbase,
- org.eclipse.xtext.xbase.lib
-Import-Package: org.apache.log4j,
- org.apache.commons.logging
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.equinox.common,
+ org.objectweb.asm;resolution:=optional
+Import-Package: org.apache.commons.logging,
+ org.apache.log4j,
+ org.eclipse.jqvt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.jqvt,
  org.eclipse.jqvt.services,
