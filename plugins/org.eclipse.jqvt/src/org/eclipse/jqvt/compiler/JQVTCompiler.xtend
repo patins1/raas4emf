@@ -9,11 +9,8 @@ import org.eclipse.jqvt.jvmmodel.DependencyProcessor
 import org.eclipse.jqvt.util.JQVTUtils
 import org.eclipse.xtext.xbase.XAbstractFeatureCall
 import org.eclipse.xtext.xbase.XFeatureCall
-import org.eclipse.xtext.xbase.compiler.IAppendable
-import org.eclipse.xtext.xbase.compiler.XbaseCompiler
-import org.eclipse.xtext.xbase.typing.ITypeProvider
-import org.eclipse.xtext.xbase.typing.JvmOnlyTypeConformanceComputer
 import org.eclipse.xtext.xbase.XNullLiteral
+import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
 
 import static org.eclipse.jqvt.util.JQVTUtilsExtended.*
@@ -24,10 +21,6 @@ import static org.eclipse.jqvt.util.JQVTUtilsExtended.*
 class JQVTCompiler extends XbaseCompiler {
    
 	@Inject	extension JQVTUtils
-	
-	@Inject extension ITypeProvider
-	
-	@Inject extension JvmOnlyTypeConformanceComputer
 	
 	@Inject extension DependencyProcessor
 	

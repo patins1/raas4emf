@@ -43,7 +43,7 @@ public class JQVTFeatureScopes extends FeatureScopes {
 				if (type != null && !type.isUnknown()) {
 					XFeatureCall implicitReceiver = xbaseFactory.createXFeatureCall();
 					implicitReceiver.setFeature(fieldElement);
-					return createFeatureScopeForTypeRef(implicitReceiver, type, true, featureCall, session, fieldElement, parent);
+					return createFeatureScopeForTypeRef(implicitReceiver, type, true, featureCall, session, fieldElement, parent, true/*hope TRUE is correct here..*/);
 				}
 			}
 		}
