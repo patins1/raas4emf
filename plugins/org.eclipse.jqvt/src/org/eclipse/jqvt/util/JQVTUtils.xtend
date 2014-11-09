@@ -145,7 +145,7 @@ class JQVTUtils {
 	}
 	
 	def boolean isMany(JvmTypeReference type) {
-		type instanceof JvmParameterizedTypeReference || typeReferences.is(type, typeof(Collection)) || type.type!=null && type.type.eIsProxy && type.type.toString().contains("EList") || typeReferences.isArray(type)
+		isConformant(type.newTypeRef(typeof(Collection)),type) || type.type!=null && type.type.eIsProxy && type.type.toString().contains("EList") || typeReferences.isArray(type)
 	}
 	
 	def static String toQVT(EObject clause) {
