@@ -71,11 +71,6 @@ class JQVTJvmModelInferrer extends AbstractModelInferrer {
 		if (decl.type!=null) decl.type.qualifiedName else "unknown_type"
 	}
 	
-	def EObject eNull() {
-//		eINSTANCE.createJvmTypeParameter();
-		 JQVTUtilsExtended::getRsetContext()
-	}
-	
 	def String relBody(Relation relation, boolean useTraces, boolean onlyTraces) {
 		return '''
 	«relation.name» result = new «relation.name»(«FOR domain:relation.sourceDomains SEPARATOR ', '»«domain.paramName»«ENDFOR»);
@@ -139,7 +134,7 @@ class JQVTJvmModelInferrer extends AbstractModelInferrer {
        documentation = transformation.documentation
        for (relation : transformation.rules) {
 			members += relation.toMethod(relation.name, transformation.newTypeRef(typeof(boolean))) [
-               for (domain:relation.uniqueDomains) parameters += eNull.toParameter(domain.paramName, domain.newTypeRef(typeof(Object)))
+               for (domain:relation.uniqueDomains) parameters += relation.toParameter(domain.paramName, domain.newTypeRef(typeof(Object)))
                documentation = relation.documentation
                body = [append('''throw new RuntimeException("should never be called");''')]
 			]			
@@ -164,18 +159,18 @@ class JQVTJvmModelInferrer extends AbstractModelInferrer {
 	    
 	        c.documentation = relation.documentation
 	        c.members += relation.toField("trafo",  (relation.eContainer() as Transformation).typeForTransformation.createTypeRef())
-	       	c.members += eNull.toField('hash', relation.newTypeRef(typeof(int)))
-			c.members += eNull.toConstructor() [
+	       	c.members += relation.toField('hash', relation.newTypeRef(typeof(int)))
+			c.members += relation.toConstructor() [
 			   simpleName = relation.name;
                for (domain:relation.sourceDomains) {
-                 parameters += eNull.toParameter(domain.name, domain.type)
+                 parameters += relation.toParameter(domain.name, domain.type)
                }	
 			   it.eAdapters().clear(); //otherwise the default constructor body is inserted!
 		       body = [		       
 	               append(relation.sourceDomains.map(domain|'''this.«domain.name»=«domain.name»;''').join("\n"));
 		       ]
 			]
-			c.members += eNull.toMethod("hashCode", relation.newTypeRef(typeof(int))) [	
+			c.members += relation.toMethod("hashCode", relation.newTypeRef(typeof(int))) [	
 				val b = '''if (hash != 0) return hash;
 final int prime = 31;
 int result = 1;
@@ -184,8 +179,8 @@ int result = 1;
 return hash = result;'''								
 				body = [append(b)]
 			]
-			c.members += eNull.toMethod("equals", relation.newTypeRef(typeof(boolean))) [	
-				parameters += eNull.toParameter('obj', relation.newTypeRef(typeof(Object)))
+			c.members += relation.toMethod("equals", relation.newTypeRef(typeof(boolean))) [	
+				parameters += relation.toParameter('obj', relation.newTypeRef(typeof(Object)))
 				val b = '''if (this == obj) return true;
 if (!(obj instanceof «relation.name»)) return false;
 «relation.name» other = («relation.name») obj;
@@ -239,7 +234,7 @@ return true;'''
 										rhsExp = clause.value.asVar.name;
 									} else {
 										rhsExp = "evaluateExpression" + i + "()";
-										c.members += eNull.toMethod("evaluateExpression"+i, field.returnType) [	
+										c.members += relation.toMethod("evaluateExpression"+i, field.returnType) [	
 											body = clause.value
 										]
 									} 
@@ -294,7 +289,7 @@ return true;'''
 						}
 						XExpression: {
 							val booleanTyped = !info.isTarget && !(clause instanceof XAssignment);
-							c.members += eNull.toMethod("evaluateClause"+i, if (booleanTyped) relation.newTypeRef(typeof(boolean)) else relation.newTypeRef(Void::TYPE)) [	
+							c.members += relation.toMethod("evaluateClause"+i, if (booleanTyped) relation.newTypeRef(typeof(boolean)) else relation.newTypeRef(Void::TYPE)) [	
 								body = clause
 							]			
 							val printFailure = '''trafo.logFailure(«NodeModelUtils::getNode(clause).getStartLine()»);
@@ -323,8 +318,8 @@ return true;'''
 	        mapMethod.append('''return «IF nesting>0»result«ELSE»true«ENDIF»;''');			
 			
 			
-			c.members += eNull.toMethod("execute", relation.newTypeRef(typeof(boolean))) [
-               parameters += eNull.toParameter("transformation",  (relation.eContainer() as Transformation).typeForTransformation.createTypeRef())
+			c.members += relation.toMethod("execute", relation.newTypeRef(typeof(boolean))) [
+               parameters += relation.toParameter("transformation",  (relation.eContainer() as Transformation).typeForTransformation.createTypeRef())
 		       body = [append(mapMethod)] 
 			]
 			/*====== Change end here ======= */
@@ -342,17 +337,17 @@ return true;'''
        		val relationType = c.createTypeRef();  	
        		
 			val hashMap = relation.newTypeRef("java.util.HashMap", c.createTypeRef(), c.createTypeRef());
-            val traceField = eNull.toField(relation.tracesName, hashMap)
+            val traceField = transformation.toField(relation.tracesName, hashMap)
        		makePublic(traceField);
             trafoType.members += traceField
             
-			trafoType.members += eNull.toMethod((if (relation.topRelation) "top_relation_" else "push_relation_")+relation.name, relationType) [
+			trafoType.members += transformation.toMethod((if (relation.topRelation) "top_relation_" else "push_relation_")+relation.name, relationType) [
                 for (domain:relation.uniqueDomains) 
-                	if (!relation.topRelation || !domain.isTarget) parameters += eNull.toParameter(domain.paramName, domain.type)
+                	if (!relation.topRelation || !domain.isTarget) parameters += transformation.toParameter(domain.paramName, domain.type)
 				body = [append(relBody(relation,true, false))]
 			]
 			if(relation.topRelation){
-				val directionField = eNull.toField("top_relation_"+relation.name+"_directions", typeStringArray)[
+				val directionField = transformation.toField("top_relation_"+relation.name+"_directions", typeStringArray)[
 					val directionNames = relation.domains.map(e|"\"" +e.direction.name + "\"").join(", ")
 					^static = true
 					setInitializer([append('''java.util.Arrays.asList(«directionNames»)''')])
@@ -362,14 +357,14 @@ return true;'''
 			}		
 			
 			if (!relation.topRelation)
-			trafoType.members += eNull.toMethod("relation_"+relation.name, relationType) [
-                for (domain:relation.uniqueDomains) if (!domain.isTarget) parameters += eNull.toParameter(domain.paramName, domain.type)
+			trafoType.members += transformation.toMethod("relation_"+relation.name, relationType) [
+                for (domain:relation.uniqueDomains) if (!domain.isTarget) parameters += transformation.toParameter(domain.paramName, domain.type)
 				body = [append(relBody(relation,true, true))]
 			]
 			}
        }    
        
-       val globalDirectionField = eNull.toField("global_direction",typeStringArray)[
+       val globalDirectionField = transformation.toField("global_direction",typeStringArray)[
        		^static = true
        		val directionNames = transformation.directions.map(e|"\"" +e.name + "\"").join(", ")
        		setInitializer([append('''java.util.Arrays.asList(«directionNames»)''')])
@@ -389,7 +384,7 @@ return true;'''
        			if (r instanceof FakeRelation) (r as FakeRelation).forceBreakCircleToString(transformation)
        			else "\"" + r.name + "\"").join(", ")
        
-       val orderField = eNull.toField(_topFieldName,typeStringArray)[
+       val orderField = transformation.toField(_topFieldName,typeStringArray)[
        	setInitializer([append('''java.util.Arrays.asList( «topRelationString» )''')])
        ]
        makePublic(orderField);
@@ -401,12 +396,12 @@ return true;'''
        	transformation.newTypeRef("java.lang.reflect.Method")
        )
        val _cachedMethods = "cachedTopMethods"
-       val cachedTopSortedMethod = eNull.toField(_cachedMethods, typeMethodList)[
+       val cachedTopSortedMethod = transformation.toField(_cachedMethods, typeMethodList)[
        	setInitializer([append("null")])
        ]
        trafoType.members += cachedTopSortedMethod
        
-       trafoType.members += eNull.toMethod(_topMethodName, typeMethodList)[
+       trafoType.members += transformation.toMethod(_topMethodName, typeMethodList)[
        	body = [append('''
        	if(«_cachedMethods»!=null)
        		return «_cachedMethods»;
@@ -428,9 +423,9 @@ return true;'''
 	    val T = eINSTANCE.createJvmTypeParameter();		
 	    T.name = "T"
 	    val returnT = _typeReferences.createTypeRef(T);
-		trafoType.members += eNull.toMethod("create", returnT) [
+		trafoType.members += transformation.toMethod("create", returnT) [
 		   typeParameters += T;
-	       parameters += eNull.toParameter("c", transformation.newTypeRef(typeof(Class),returnT))
+	       parameters += transformation.toParameter("c", transformation.newTypeRef(typeof(Class),returnT))
 	       abstract = true; 
 		]  
        
@@ -445,13 +440,13 @@ return true;'''
         	transformation.newTypeRef(typeof(Object))
         )
         
-        val waitingList = eNull.toField("waitingList",typeMapRel2SetRel)[
+        val waitingList = transformation.toField("waitingList",typeMapRel2SetRel)[
         	setInitializer([append('''new HashMap<Object,Set<Object>>()''')])
         ]
         waitingList.makePublic
         trafoType.members += waitingList
         
-        val relStack = eNull.toField("relStack",typeStackRel)[
+        val relStack = transformation.toField("relStack",typeStackRel)[
         	setInitializer([append('''new Stack<Object>()''')])
         ]
         relStack.makePublic
@@ -463,27 +458,27 @@ return true;'''
         	transformation.newTypeRef("java.lang.Integer")
         )
         
-        val successMap = eNull.toField("successes",logClausesMap)[
+        val successMap = transformation.toField("successes",logClausesMap)[
         	setInitializer([append('''new HashMap<Integer,Integer>()''')])
         ]
         successMap.makePublic
         trafoType.members += successMap
         
-        val failureMap = eNull.toField("failures",logClausesMap)[
+        val failureMap = transformation.toField("failures",logClausesMap)[
         	setInitializer([append('''new HashMap<Integer,Integer>()''')])
         ]
         failureMap.makePublic
         trafoType.members += failureMap
 
-        trafoType.members += eNull.toMethod("logSuccess", transformation.newTypeRef(typeof(void)))[
-			parameters += eNull.toParameter('i', transformation.newTypeRef(typeof(int)))
+        trafoType.members += transformation.toMethod("logSuccess", transformation.newTypeRef(typeof(void)))[
+			parameters += transformation.toParameter('i', transformation.newTypeRef(typeof(int)))
 	       	body = [append('''
 			  Integer prev = successes.get(i);
 			  successes.put(i, prev == null ? 1 : prev+1);''')]
         ]
        
-        trafoType.members += eNull.toMethod("logFailure", transformation.newTypeRef(typeof(void)))[
-			parameters += eNull.toParameter('i', transformation.newTypeRef(typeof(int)))
+        trafoType.members += transformation.toMethod("logFailure", transformation.newTypeRef(typeof(void)))[
+			parameters += transformation.toParameter('i', transformation.newTypeRef(typeof(int)))
 	       	body = [append('''
 			  Integer prev = failures.get(i);
 			  failures.put(i, prev == null ? 1 : prev+1);''')]
