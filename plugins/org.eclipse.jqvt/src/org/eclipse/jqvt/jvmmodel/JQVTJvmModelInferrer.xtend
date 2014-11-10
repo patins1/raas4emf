@@ -135,16 +135,35 @@ class JQVTJvmModelInferrer extends AbstractModelInferrer {
      val trafoType = transformation.toClass(transformation.eContainer.fullyQualifiedName.append('Transformation')) [
        abstract = true;
        documentation = transformation.documentation
+       for (relation : transformation.rules) {
+			members += relation.toMethod(relation.name, transformation.newTypeRef(typeof(boolean))) [
+               for (domain:relation.uniqueDomains) parameters += eNull.toParameter(domain.paramName, domain.newTypeRef(typeof(Object)))
+               documentation = relation.documentation
+               body = [append('''throw new RuntimeException("should never be called");''')]
+			]			
+		}
+       for (Query query:transformation.queries) {
+             members += query.toMethod(query.name, query.type) [
+               for (p : query.params) {
+                 parameters += p.toParameter(p.name, p.parameterType)
+               }
+               documentation = query.documentation
+               body = query.body
+             ]                   
+       	}
      ]
      acceptor.accept(trafoType)
     
 		
        for (relation : transformation.rules) {
-	     val c =relation.toClass(relation.fullyQualifiedName) [
-	       documentation = relation.documentation
-	        members += relation.toField("trafo",  (relation.eContainer() as Transformation).typeForTransformation.createTypeRef())
-	       	members += eNull.toField('hash', relation.newTypeRef(typeof(int)))
-			members += eNull.toConstructor() [
+	       val c =relation.toClass(relation.fullyQualifiedName) 
+		   acceptor.accept(c);
+		   if (!isPrelinkingPhase) {
+	    
+	        c.documentation = relation.documentation
+	        c.members += relation.toField("trafo",  (relation.eContainer() as Transformation).typeForTransformation.createTypeRef())
+	       	c.members += eNull.toField('hash', relation.newTypeRef(typeof(int)))
+			c.members += eNull.toConstructor() [
 			   simpleName = relation.name;
                for (domain:relation.sourceDomains) {
                  parameters += eNull.toParameter(domain.name, domain.type)
@@ -154,7 +173,7 @@ class JQVTJvmModelInferrer extends AbstractModelInferrer {
 	               append(relation.sourceDomains.map(domain|'''this.«domain.name»=«domain.name»;''').join("\n"));
 		       ]
 			]
-			members += eNull.toMethod("hashCode", relation.newTypeRef(typeof(int))) [	
+			c.members += eNull.toMethod("hashCode", relation.newTypeRef(typeof(int))) [	
 				val b = '''if (hash != 0) return hash;
 final int prime = 31;
 int result = 1;
@@ -163,7 +182,7 @@ int result = 1;
 return hash = result;'''								
 				body = [append(b)]
 			]
-			members += eNull.toMethod("equals", relation.newTypeRef(typeof(boolean))) [	
+			c.members += eNull.toMethod("equals", relation.newTypeRef(typeof(boolean))) [	
 				parameters += eNull.toParameter('obj', relation.newTypeRef(typeof(Object)))
 				val b = '''if (this == obj) return true;
 if (!(obj instanceof «relation.name»)) return false;
@@ -173,10 +192,7 @@ if (!(obj instanceof «relation.name»)) return false;
 return true;'''								
 				body = [append(b)]
 			]
-		]
-		if (c!=null) {
-	    acceptor.accept(c);
-	    if(isPrelinkingPhase) return;
+		
 	    
 	       val mapMethod = new StringConcatenation()
 	       mapMethod.append('''this.trafo = transformation;
@@ -314,23 +330,7 @@ return true;'''
 	   }
 	   
 	    if(isPrelinkingPhase) return;
-       for (relation : transformation.rules) {
-			trafoType.members += relation.toMethod(relation.name, relation.newTypeRef(typeof(boolean))) [
-               for (domain:relation.uniqueDomains) parameters += eNull.toParameter(domain.paramName, domain.newTypeRef(typeof(Object)))
-               documentation = relation.documentation
-               body = [append('''throw new RuntimeException("should never be called");''')]
-			]			
-		}
 	         
-       for (Query query:transformation.queries) {
-             trafoType.members += query.toMethod(query.name, query.type) [
-               for (p : query.params) {
-                 parameters += p.toParameter(p.name, p.parameterType)
-               }
-               documentation = query.documentation
-               body = query.body
-             ]                   
-       	}
        	
 	   val typeStringArray = transformation.newTypeRef("java.util.List",transformation.newTypeRef("java.lang.String"));
 	     
