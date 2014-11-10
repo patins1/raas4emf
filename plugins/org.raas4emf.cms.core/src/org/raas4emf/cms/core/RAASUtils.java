@@ -80,7 +80,6 @@ import org.eclipse.net4j.util.container.IManagedContainer;
 import org.eclipse.net4j.util.om.monitor.MonitorCanceledException;
 import org.eclipse.net4j.util.security.IPasswordCredentials;
 import org.eclipse.net4j.util.security.IPasswordCredentialsProvider;
-import org.eclipse.osgi.framework.internal.core.FrameworkProperties;
 import org.ifc4emf.metamodel.ifcheader.Model;
 import org.ifc4emf.part21.loader.ContainmentTreeOrderedByNumberHelper;
 import org.ifc4emf.part21.loader.Part21ResourceImpl;
@@ -1389,7 +1388,7 @@ public class RAASUtils {
 			}
 		}
 		Activator.log("Read config file from " + file.getParentFile().toString());
-		FrameworkProperties.setProperty(AbstractPlatform.SYSTEM_PROPERTY_NET4J_CONFIG, file.getParentFile().toString());
+		System.setProperty(AbstractPlatform.SYSTEM_PROPERTY_NET4J_CONFIG, file.getParentFile().toString());
 
 		try {
 			RAASUtils.getRAASProp("RAASSERVER");
