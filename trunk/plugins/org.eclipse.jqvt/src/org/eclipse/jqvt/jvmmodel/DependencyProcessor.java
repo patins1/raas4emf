@@ -157,7 +157,7 @@ public class DependencyProcessor {
 				for (XVariableDeclaration var : info2.getWrite()) {
 					JvmTypeReference type = info.getWrittenType(var);
 					JvmTypeReference type2 = info2.getWrittenType(var);
-					if (type != null && type2 != null && jQVTUtils.isConformant(type, type2) && !jQVTUtils.isConformant(type2, type)) {
+					if (type != null && type2 != null && jQVTUtils.isConformant(type, type2, var) && !jQVTUtils.isConformant(type2, type, var)) {
 						return false;
 					}
 				}

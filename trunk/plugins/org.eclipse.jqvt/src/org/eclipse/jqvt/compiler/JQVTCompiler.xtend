@@ -40,15 +40,15 @@ class JQVTCompiler extends XbaseCompiler {
 			var nl="\n    ";
 			b.append("\n").append(relation.typeForRelation).append(" ").append(relationVar).append(";")
 			b.append("\n"+'if (');
-			for (pair:call.getParamPairs(false)) {internalToJavaExpression(pair.exp, b) if (!pair.domain.type.isConformant(pair.exp.type)) b.append(" instanceof ").append(pair.domain.type.type) else b.append(" != null") b.append(" && ") b.append(nl) }
-			for (pair:call.getParamPairs(true)) if (!(info!=null && pair.exp.asVar!=null && !info.isRead(pair.exp.asVar)) && !pair.domain.type.isConformant(pair.exp.type)) { b.append("(") internalToJavaExpression(pair.exp, b) b.append("==null || ") internalToJavaExpression(pair.exp, b) b.append(" instanceof ").append(pair.domain.type.type).append(") && ").append(nl)}
+			for (pair:call.getParamPairs(false)) {internalToJavaExpression(pair.exp, b) if (!pair.domain.isConformant(pair.exp.type)) b.append(" instanceof ").append(pair.domain.type.type) else b.append(" != null") b.append(" && ") b.append(nl) }
+			for (pair:call.getParamPairs(true)) if (!(info!=null && pair.exp.asVar!=null && !info.isRead(pair.exp.asVar)) && !pair.domain.isConformant(pair.exp.type)) { b.append("(") internalToJavaExpression(pair.exp, b) b.append("==null || ") internalToJavaExpression(pair.exp, b) b.append(" instanceof ").append(pair.domain.type.type).append(") && ").append(nl)}
 			b.append('''(«relationVar» = trafo.«IF info!=null && info.isTarget && !relation.isTopRelation»push_«ENDIF»«relation.triggerName»('''.toString());
 			var connector="";
-			for (pair:call.getParamPairs(if (info!=null && info.isTarget && !relation.isTopRelation) null else false)) { b.append(connector) connector=", " if (info!=null && pair.exp.asVar!=null && !info.isRead(pair.exp.asVar)) b.append("null") else {if (!pair.domain.type.isConformant(pair.exp.type)) b.append("(").append(pair.domain.type.type).append(")") internalToJavaExpression(pair.exp, b) } }
+			for (pair:call.getParamPairs(if (info!=null && info.isTarget && !relation.isTopRelation) null else false)) { b.append(connector) connector=", " if (info!=null && pair.exp.asVar!=null && !info.isRead(pair.exp.asVar)) b.append("null") else {if (!pair.domain.isConformant(pair.exp.type)) b.append("(").append(pair.domain.type.type).append(")") internalToJavaExpression(pair.exp, b) } }
 			b.append(")) != null");
-			for (pair:call.getParamPairs(true)) if (info!=null && pair.exp.asVar!=null && !info.isRead(pair.exp.asVar)) { if (!pair.exp.type.isConformant(pair.domain.type)) { b.append(nl+''' && «relationVar».«pair.domain.name» instanceof ''').append(pair.exp.type.type) } } else if (!(pair.exp instanceof XNullLiteral)) { b.append(nl+''' && (''') internalToJavaExpression(pair.exp, b) b.append("==null || ") internalToJavaExpression(pair.exp, b) b.append('''.equals(«relationVar».«pair.domain.name»))'''.toString()) }
+			for (pair:call.getParamPairs(true)) if (info!=null && pair.exp.asVar!=null && !info.isRead(pair.exp.asVar)) { if (!pair.exp.type.isConformant(pair.domain)) { b.append(nl+''' && «relationVar».«pair.domain.name» instanceof ''').append(pair.exp.type.type) } } else if (!(pair.exp instanceof XNullLiteral)) { b.append(nl+''' && (''') internalToJavaExpression(pair.exp, b) b.append("==null || ") internalToJavaExpression(pair.exp, b) b.append('''.equals(«relationVar».«pair.domain.name»))'''.toString()) }
 			b.append(")\n{").increaseIndentation
-			for (pair:call.getParamPairs(true)) if (info!=null && pair.exp.asVar!=null && info.isWrite(pair.exp.asVar)) b.append("\n"+'''«pair.exp.asVar.name» = «IF !pair.exp.type.isConformant(pair.domain.type)»(«pair.exp.type.qualifiedName»)«ENDIF» «relationVar».«pair.domain.name»;''');
+			for (pair:call.getParamPairs(true)) if (info!=null && pair.exp.asVar!=null && info.isWrite(pair.exp.asVar)) b.append("\n"+'''«pair.exp.asVar.name» = «IF !pair.exp.type.isConformant(pair.domain)»(«pair.exp.type.qualifiedName»)«ENDIF» «relationVar».«pair.domain.name»;''');
 			b.append("\n"+'''«getVarName(expr,b)» = true;''').decreaseIndentation;
 			b.append("\n}")
 		} else
