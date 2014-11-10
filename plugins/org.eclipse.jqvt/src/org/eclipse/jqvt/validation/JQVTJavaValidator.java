@@ -64,7 +64,7 @@ public class JQVTJavaValidator extends AbstractJQVTJavaValidator {
 			for (ParamPair pair : jQVTUtils.getParamPairs(featureCall, null)) {
 				LightweightTypeReference actualType = getActualType(pair.exp);
 				LightweightTypeReference expectedType = toLightweightTypeReference(pair.domain.getRootTemplate().getType());
-				if (!(actualType.isAssignableFrom(expectedType) || expectedType.isAssignableFrom(actualType)))
+				if (!(actualType!=null && actualType.isAssignableFrom(expectedType) || expectedType!=null && expectedType.isAssignableFrom(actualType)))
 					error("Incompatible relation call argument. Expected " + getNameOfTypes(expectedType) + " but was " + canonicalName(actualType), pair.exp, null, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);
 			}
 		}
@@ -86,12 +86,12 @@ public class JQVTJavaValidator extends AbstractJQVTJavaValidator {
 				if (jQVTUtils.isMany(expectedType))
 					expectedType = jQVTUtils.getComponentType(expectedType);
 				LightweightTypeReference expectedTypeLight = toLightweightTypeReference(expectedType);
-				if (!expectedTypeLight.isAssignableFrom(actualType))
+				if (!(expectedTypeLight!=null && expectedTypeLight.isAssignableFrom(actualType)))
 					error("Incompatible RHS value of property template item. Expected " + getNameOfTypes(expectedTypeLight) + " but was " + canonicalName(actualType), ot, XbasePackage.eINSTANCE.getXVariableDeclaration_Type(), ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);
 			} else {
 				LightweightTypeReference actualType = getActualType(value);
 				LightweightTypeReference expectedTypeLight = toLightweightTypeReference(expectedType);
-				if (!(actualType.isAssignableFrom(expectedTypeLight) || expectedTypeLight.isAssignableFrom(actualType)))
+				if (!(actualType!=null && actualType.isAssignableFrom(expectedTypeLight) || expectedTypeLight!=null && expectedTypeLight.isAssignableFrom(actualType)))
 					error("Incompatible RHS value of property template item. Expected " + getNameOfTypes(expectedTypeLight) + " but was " + canonicalName(actualType), value, null, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);
 			}
 		}

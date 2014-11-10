@@ -252,7 +252,7 @@ return true;'''
 											'''
 											val rhs = clause.value as ObjectTemplate;
 											val componentType =  field.returnType.componentType
-											val conformant = rhs.type.isConformant(componentType);
+											val conformant = rhs.isConformant(componentType);
 											mapMethod.append('''for («componentType.qualifiedName» __«rhs.name» : «objectTemplate.name».«getter»()) {
 «IF !conformant»if (!(__«rhs.name» instanceof «rhs.simpleTypeName»)) {«printFailure»«stopTuple»}«printSuccess»«ENDIF»
 «rhs.name» = «IF !conformant»(«rhs.simpleTypeName»)«ENDIF»__«rhs.name»;
@@ -260,7 +260,7 @@ return true;'''
 										} else
 										if (clause.value.asVar!=null && info.isWrite(clause.value.asVar) && !info.isRead(clause.value.asVar)) {
 												val rhs = clause.value.asVar;
-												val conformant = rhs.type.isConformant(field.returnType);
+												val conformant = rhs.isConformant(field.returnType);
 												mapMethod.append('''«IF !conformant»if (!(«objectTemplate.name».«getter»() instanceof «rhs.simpleTypeName»)) {«printFailure»«stopTuple»}«printSuccess»«ENDIF»
 «IF conformant && (clause.value instanceof ObjectTemplate || rhs.type.type instanceof JvmPrimitiveType && !(field.returnType.type instanceof JvmPrimitiveType))»if («objectTemplate.name».«getter»() == null) {«printFailure»«stopTuple»}«printSuccess»«ENDIF»
 «rhs.name» = «IF !conformant»(«rhs.simpleTypeName»)«ENDIF» «objectTemplate.name».«getter»();
