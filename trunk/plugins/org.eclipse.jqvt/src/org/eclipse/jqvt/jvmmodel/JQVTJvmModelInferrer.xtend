@@ -142,7 +142,7 @@ class JQVTJvmModelInferrer extends AbstractModelInferrer {
        for (relation : transformation.rules) {
 	     val c =relation.toClass(relation.fullyQualifiedName) [
 	       documentation = relation.documentation
-	        members += relation.toField("trafo", trafoType.createTypeRef())
+	        members += relation.toField("trafo",  (relation.eContainer() as Transformation).typeForTransformation.createTypeRef())
 	       	members += eNull.toField('hash', relation.newTypeRef(typeof(int)))
 			members += eNull.toConstructor() [
 			   simpleName = relation.name;
@@ -306,7 +306,7 @@ return true;'''
 			
 			
 			c.members += eNull.toMethod("execute", relation.newTypeRef(typeof(boolean))) [
-               parameters += eNull.toParameter("transformation", trafoType.createTypeRef())
+               parameters += eNull.toParameter("transformation",  (relation.eContainer() as Transformation).typeForTransformation.createTypeRef())
 		       body = [append(mapMethod)] 
 			]
 			/*====== Change end here ======= */
