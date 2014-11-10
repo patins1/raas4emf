@@ -12,6 +12,7 @@ import org.eclipse.jqvt.jQVT.Relation
 import org.eclipse.jqvt.jQVT.RelationDomain
 import org.eclipse.jqvt.jQVT.Transformation
 import org.eclipse.jqvt.util.JQVTUtils
+import org.eclipse.jqvt.util.JQVTUtilsExtended
 import org.eclipse.xtend2.lib.StringConcatenation
 import org.eclipse.xtext.common.types.JvmPrimitiveType
 import org.eclipse.xtext.common.types.util.TypeReferences
@@ -19,6 +20,7 @@ import org.eclipse.xtext.naming.IQualifiedNameProvider
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils
 import org.eclipse.xtext.xbase.XAssignment
 import org.eclipse.xtext.xbase.XExpression
+import org.eclipse.xtext.xbase.XFeatureCall
 import org.eclipse.xtext.xbase.XVariableDeclaration
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
@@ -71,7 +73,7 @@ class JQVTJvmModelInferrer extends AbstractModelInferrer {
 	
 	def EObject eNull() {
 //		eINSTANCE.createJvmTypeParameter();
-		 org.eclipse.jqvt.util.JQVTUtilsExtended::getRsetContext()
+		 JQVTUtilsExtended::getRsetContext()
 	}
 	
 	def String relBody(Relation relation, boolean useTraces, boolean onlyTraces) {
@@ -233,7 +235,7 @@ return true;'''
 									val getter = JQVTUtils::toGetterName(clause.referredProperty);
 									val isMany = field.returnType.isMany 
 									var rhsExp = 'unknown';
-									if (clause.value.asVar!=null) {
+									if (clause.value.asVar!=null && !(clause.value instanceof XFeatureCall)) {
 										rhsExp = clause.value.asVar.name;
 									} else {
 										rhsExp = "evaluateExpression" + i + "()";
