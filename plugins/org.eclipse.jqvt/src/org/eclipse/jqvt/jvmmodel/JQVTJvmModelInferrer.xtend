@@ -70,7 +70,8 @@ class JQVTJvmModelInferrer extends AbstractModelInferrer {
 	}
 	
 	def EObject eNull() {
-		eINSTANCE.createJvmTypeParameter();
+//		eINSTANCE.createJvmTypeParameter();
+		 org.eclipse.jqvt.util.JQVTUtilsExtended::getRsetContext()
 	}
 	
 	def String relBody(Relation relation, boolean useTraces, boolean onlyTraces) {
@@ -175,6 +176,7 @@ return true;'''
 		]
 		if (c!=null) {
 	    acceptor.accept(c);
+	    if(isPrelinkingPhase) return;
 	    
 	       val mapMethod = new StringConcatenation()
 	       mapMethod.append('''this.trafo = transformation;
@@ -311,6 +313,7 @@ return true;'''
 	     }
 	   }
 	   
+	    if(isPrelinkingPhase) return;
        for (relation : transformation.rules) {
 			trafoType.members += relation.toMethod(relation.name, relation.newTypeRef(typeof(boolean))) [
                for (domain:relation.uniqueDomains) parameters += eNull.toParameter(domain.paramName, domain.newTypeRef(typeof(Object)))

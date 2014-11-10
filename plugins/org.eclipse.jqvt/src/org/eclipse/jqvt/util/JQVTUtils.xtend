@@ -30,7 +30,7 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypeReferenceBuilder
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
 import org.eclipse.xtext.xbase.typesystem.IBatchTypeResolver
-import org.eclipse.xtext.xbase.typesystem.references.OwnedConverter
+import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReferenceFactory
 import org.eclipse.xtext.xbase.typesystem.references.StandardTypeReferenceOwner
 import org.eclipse.xtext.xbase.typesystem.util.CommonTypeComputationServices
 
@@ -76,6 +76,10 @@ class JQVTUtils {
 	
 	def JvmDeclaredType getTypeForRelation(Relation relation) {
 		return relation.jvmElements.filter(typeof(JvmDeclaredType)).head
+	}
+	
+	def JvmDeclaredType getTypeForTransformation(Transformation transformation) {
+		return transformation.jvmElements.filter(typeof(JvmDeclaredType)).head
 	}
 	
 	def String triggerName(Relation r) {
@@ -194,9 +198,14 @@ class JQVTUtils {
 	}
 
 	def toLightweightTypeReference(JvmTypeReference typeRef, EObject context) {
-//		return typeResolver.resolveTypes(expression).getActualType(expression);
-		val converter = new OwnedConverter(new StandardTypeReferenceOwner(services, context))
-		converter.toLightweightReference(typeRef)
+		return toLightweightTypeReference(typeRef, false, context);
+	}
+	
+	def toLightweightTypeReference(JvmTypeReference typeRef, boolean keepUnboundWildcardInformation, EObject context) {
+		val owner = new StandardTypeReferenceOwner(services, context);
+		val factory = new LightweightTypeReferenceFactory(owner, keepUnboundWildcardInformation);
+		val reference = factory.toLightweightReference(typeRef);
+		return reference;
 	}
 	
 	def makePublic(JvmMember member) {
