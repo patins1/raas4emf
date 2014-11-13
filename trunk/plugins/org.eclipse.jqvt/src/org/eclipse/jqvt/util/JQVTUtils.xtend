@@ -152,7 +152,7 @@ class JQVTUtils {
 	}
 	
 	def getComponentType(JvmTypeReference type) {
-		if (type instanceof JvmParameterizedTypeReference) (type as JvmParameterizedTypeReference).arguments.get(0) else type.newTypeRef(typeof(Object));
+		if (type instanceof JvmParameterizedTypeReference && (type as JvmParameterizedTypeReference).arguments.length!=0) (type as JvmParameterizedTypeReference).arguments.get(0) else type.newTypeRef(typeof(Object));
 	}
 	
 	def boolean isMany(JvmTypeReference type) {		
