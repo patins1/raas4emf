@@ -228,7 +228,7 @@ return true;'''
 								if (propName!=null) {
 									val field = clause.referredProperty;
 									val getter = JQVTUtils::toGetterName(clause.referredProperty);
-									val isMany = field.returnType.isMany 
+									val isMany = field.returnType.isMany(field)
 									var rhsExp = 'unknown';
 									if (clause.value.asVar!=null && !(clause.value instanceof XFeatureCall)) {
 										rhsExp = clause.value.asVar.name;

@@ -83,7 +83,7 @@ public class JQVTJavaValidator extends AbstractJQVTJavaValidator {
 			if (value instanceof ObjectTemplate) {
 				ObjectTemplate ot = (ObjectTemplate) value;
 				LightweightTypeReference actualType = toLightweightTypeReference(ot.getType());
-				if (jQVTUtils.isMany(expectedType))
+				if (jQVTUtils.isMany(expectedType,item.getReferredProperty()))
 					expectedType = jQVTUtils.getComponentType(expectedType);
 				LightweightTypeReference expectedTypeLight = toLightweightTypeReference(expectedType);
 				if (!(actualType!=null && expectedTypeLight!=null && expectedTypeLight.isAssignableFrom(actualType)))
