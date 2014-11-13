@@ -6,6 +6,7 @@ package org.eclipse.jqvt.util
 import com.google.inject.Inject
 import com.google.inject.Provider
 import java.util.HashSet
+import java.util.List
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.jqvt.jQVT.Direction
 import org.eclipse.jqvt.jQVT.ObjectTemplate
@@ -13,7 +14,9 @@ import org.eclipse.jqvt.jQVT.Relation
 import org.eclipse.jqvt.jQVT.RelationDomain
 import org.eclipse.jqvt.jQVT.Transformation
 import org.eclipse.jqvt.jvmmodel.ParamPair
+import org.eclipse.xtext.common.types.JvmArrayType
 import org.eclipse.xtext.common.types.JvmDeclaredType
+import org.eclipse.xtext.common.types.JvmGenericArrayTypeReference
 import org.eclipse.xtext.common.types.JvmMember
 import org.eclipse.xtext.common.types.JvmOperation
 import org.eclipse.xtext.common.types.JvmParameterizedTypeReference
@@ -30,6 +33,7 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypeReferenceBuilder
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
 import org.eclipse.xtext.xbase.typesystem.IBatchTypeResolver
+import org.eclipse.xtext.xbase.typesystem.conformance.TypeConformanceComputationArgument
 import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReferenceFactory
 import org.eclipse.xtext.xbase.typesystem.references.StandardTypeReferenceOwner
 import org.eclipse.xtext.xbase.typesystem.util.CommonTypeComputationServices
@@ -43,10 +47,7 @@ class JQVTUtils {
 	@Inject
 	private IBatchTypeResolver typeResolver;
 	
-		@Inject Provider<JvmTypeReferenceBuilder> builderProvider;
-    @Inject JvmTypeReferenceBuilder _typeReferenceBuilder;
-	
-	@Inject TypeReferences typeReferences;
+    @Inject extension JvmTypeReferenceBuilder;
 	
 	@Inject JvmTypesBuilder typesBuilder;
 	
@@ -155,8 +156,8 @@ class JQVTUtils {
 		if (type instanceof JvmParameterizedTypeReference && (type as JvmParameterizedTypeReference).arguments.length!=0) (type as JvmParameterizedTypeReference).arguments.get(0) else type.newTypeRef(typeof(Object));
 	}
 	
-	def boolean isMany(JvmTypeReference type) {		
-		type.type!=null && type.type.toString().contains("List") || typeReferences.isArray(type)
+	def boolean isMany(JvmTypeReference type, EObject context) {		
+		isConformantRawTypes(context.newTypeRef(typeof(List)),type,context) || type instanceof JvmGenericArrayTypeReference || type.type instanceof JvmArrayType
 	}
 	
 	def static String toQVT(EObject clause) {
@@ -195,6 +196,10 @@ class JQVTUtils {
 	
 	def isConformant(JvmTypeReference t1, JvmTypeReference t2, EObject context) {
 		t1.toLightweightTypeReference(context).isAssignableFrom(t2.toLightweightTypeReference(context))
+	}
+	
+	def isConformantRawTypes(JvmTypeReference t1, JvmTypeReference t2, EObject context) {
+		t1.toLightweightTypeReference(context).isAssignableFrom(t2.toLightweightTypeReference(context), new TypeConformanceComputationArgument(!false, false, true, true, false, true))
 	}
 
 	def toLightweightTypeReference(JvmTypeReference typeRef, EObject context) {
