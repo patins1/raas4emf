@@ -57,7 +57,7 @@ public class AddArtifactAction extends AbstractHandler {
 		if (!DirectoryView.checkCanWrite(root, shell)) {
 			return;
 		}
-		FileDialog fileDialog = new FileDialog(shell, SWT.TITLE | SWT.MULTI);
+		FileDialog fileDialog = createFileDialog(shell);
 		// fileDialog.setFilterNames(new String[] { "All Files" });
 		// fileDialog.setFilterExtensions(new String[] { "*.*" });
 		fileDialog.setText("Upload Files");
@@ -113,6 +113,10 @@ public class AddArtifactAction extends AbstractHandler {
 
 		};
 		job.schedule();
+	}
+
+	public FileDialog createFileDialog(final Shell shell) {
+		return new FileDialog(shell, SWT.TITLE | SWT.MULTI);
 	}
 
 	private String removeTempFileNamePart(String filename) {

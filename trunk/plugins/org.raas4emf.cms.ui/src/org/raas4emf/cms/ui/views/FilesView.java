@@ -4,6 +4,8 @@
 package org.raas4emf.cms.ui.views;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,6 +49,7 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -63,17 +66,23 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.rap.rwt.client.ClientFile;
+import org.eclipse.rap.rwt.dnd.ClientFileTransfer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
@@ -89,7 +98,9 @@ import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.DemoActionBarAdvisor;
 import org.raas4emf.cms.ui.FilteredTreeWithoutExpansion;
 import org.raas4emf.cms.ui.IInputChanged;
+import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.ViewAsEditor;
+import org.raas4emf.cms.ui.actions.AddArtifactAction;
 import org.raas4emf.cms.ui.actions.EditAction;
 import org.raas4emf.cms.ui.actions.RAASDeleteAction;
 import org.raas4emf.cms.ui.editor.editor.PersistentRAASActionBarContributor;
@@ -330,14 +341,60 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 
 		if (allowWriteAccess()) {
 			int dndOperations = DND.DROP_MOVE;
-			Transfer[] transfers = new Transfer[] { LocalTransfer.getInstance() };
+			Transfer[] transfers = new Transfer[] { LocalTransfer.getInstance(), ClientFileTransfer.getInstance() };
 			viewer.addDragSupport(dndOperations, transfers, new ViewerDragAdapter(viewer));
 			viewer.addDropSupport(dndOperations, transfers, new EditingDomainViewerDropAdapter(editingDomain, viewer) {
 
 				@Override
 				public void drop(DropTargetEvent event) {
 					super.drop(event);
+					if (event.data instanceof ClientFile[]) {
+						ClientFile[] clientFiles = (ClientFile[]) event.data;
+						
+						Folder repoRoot = (Folder) RAASUtils.findByPath("RepositoryRoot");						
+						for (Object object: RAASUIUtils.getSelection(viewer.getSelection())) {
+							if (object instanceof Folder) {
+								Folder folder = (Folder) object;
+								repoRoot = folder;
+							}
+							if (object instanceof Artifact) {
+								Artifact artifact = (Artifact) object;
+								repoRoot = (Folder) artifact.eContainer();
+							}
+						}						
+
+						new AddArtifactAction() {
+							
+							public FileDialog createFileDialog(org.eclipse.swt.widgets.Shell shell) {
+
+								return new FileDialog(shell, SWT.TITLE | SWT.MULTI) {
+
+									  protected void runEventLoop( Shell shell ) {									    
+									    try {
+											Method m = FileDialog.class.getDeclaredMethod("handleFileDrop", ClientFile[].class);
+											m.setAccessible(true);
+											m.invoke(this, (Object)clientFiles);
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+									    super.runEventLoop(shell);
+									  }
+									  
+								};
+								
+							}
+							
+						}.execute(repoRoot, getSite().getShell(), false, null);
+						
+					}
+				}				
+
+				public void dropAccept(DropTargetEvent event) {
+					if (event.dataTypes==null && event.currentDataType!=null)
+						event.dataTypes = new TransferData[] {event.currentDataType};						
+					super.dropAccept(event);
 				}
+				
 			});
 		}
 
@@ -536,10 +593,10 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 			try {
 				if (res instanceof CDOResource) {
 					CDOResource cdoResource = (CDOResource) res;
-					if (cdoResource.isModified()) {
+//					if (cdoResource.isModified()) {
 						cdoResource.save(Collections.EMPTY_MAP);
 						CMSActivator.log("Saving root resource");
-					}
+//					}
 				}
 			} catch (IOException e) {
 				throw new RuntimeException(e);
