@@ -1492,4 +1492,8 @@ public class RAASUtils {
 		InputStream responseBody = new ByteArrayInputStream(arg.getBytes());
 		return decodeJSON(responseBody, eClass);
 	}
+	
+	static public <T extends EObject> T copyContainmentOnly(T eObject) {
+		return (T) new EcoreUtil.Copier().copy(eObject);
+	}
 }

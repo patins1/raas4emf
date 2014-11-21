@@ -122,7 +122,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				if (isWindows)
 					sshCommand = "plink.exe -batch -i %SSHKEYFILE% -P 22 -ssh %REMOTE_BLENDER_URL% -m \"%EXTERNALCOMMANDFILE%\"";
 				else
-					sshCommand = "ssh -o StrictHostKeyChecking=no -i %SSHKEYFILE% %REMOTE_BLENDER_URL% bin/ifc2jshttp.sh %FINGERPRINT% \"%IFCURL%\" \"%JSURL%\" %IFCSIZE%";
+					sshCommand = "ssh -o StrictHostKeyChecking=no -i %SSHKEYFILE% %REMOTE_BLENDER_URL% bin/ifc2jshttp.sh '%FINGERPRINT%' '%IFCURL%' '%JSURL%' '%IFCSIZE%'";
 
 				try {
 					if (RAASUtils.getRAASProp("BLENDER_SSH_COMMAND") != null)
@@ -166,7 +166,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				@Override
 				protected void println(String line) {
 					super.println(line);
-					errorMessages += line + "\n";
+					errorMessages += "ERROR" + ">" + line + "\n";
 				}
 
 			};
@@ -174,6 +174,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				@Override
 				protected void println(String line) {
 					super.println(line);
+					errorMessages += "OUTPUT" + ">" + line + "\n";
 					if (line.startsWith("[")) {
 						int routes = 0;
 						for (int i = 0; i < line.length(); i++) {
@@ -219,7 +220,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 			Activator.log("Written to " + targetFile);
 			if (exitValue != 0 || !targetFile.exists()) {
 				Activator.err("IFC transformation error:\n" + errorMessages);
-				FileUtil.inputstreamToOutputstream(new StringBufferInputStream("Blender exit value = " + exitValue + "\n" + errorMessages), new FileOutputStream(errorFile));
+				FileUtil.inputstreamToOutputstream(new StringBufferInputStream("Exit value = " + exitValue + "\n" + errorMessages), new FileOutputStream(errorFile));
 			}
 			Date ended = new Date();
 			Activator.log("Seconds elapsed =  " + (ended.getTime() - started.getTime()) / 1000);

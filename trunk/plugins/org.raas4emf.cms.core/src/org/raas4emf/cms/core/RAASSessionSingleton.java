@@ -20,7 +20,7 @@ public class RAASSessionSingleton {
 	public Artifact workingArtifact;
 	protected File zippedContents;
 
-	private static final boolean USE_SINGLE_CDOCLIENT = Boolean.valueOf(System.getProperty("USE_SINGLE_CDOCLIENT"));
+	public static final boolean USE_SINGLE_CDOCLIENT = Boolean.valueOf(System.getProperty("USE_SINGLE_CDOCLIENT"));
 	private String userID = "Architect";
 	private String password = "a";
 	private CDONet4jSession session;
