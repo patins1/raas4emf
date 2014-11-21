@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.eclipse.emf.cdo.CDOObject;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
@@ -30,6 +32,7 @@ import org.eclipse.rap.rwt.service.ServiceHandler;
 
 import raascms.Artifact;
 import raascms.Folder;
+import raascms.RaascmsFactory;
 
 @SuppressWarnings("deprecation")
 public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
@@ -148,6 +151,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 	}
 
 	public String processRequest(final EObject embeddedRequest, List<Runnable> inits) throws IllegalAccessException, InvocationTargetException, IOException, Exception {
+		Date startDate = new Date();
 		final List<Artifact> allArtifacts = new ArrayList<Artifact>();
 		final List<Folder> allFolders = new ArrayList<Folder>();
 		final EMFJQVTEngine testTrafo = new EMFJQVTEngine() {
@@ -159,13 +163,12 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 
 		};
 
-		List<Object> targetModel = new ArrayList<Object>();
-		executeSpecificQVTTransformation(testTrafo, targetModel);
+		executeSpecificQVTTransformation(testTrafo, new ArrayList<Object>());
 
-		if (targetModel.size() == 0)
+		if (testTrafo.createdElements.size() == 0)
 			throw new Exception("Could not produce response for request " + embeddedRequest.eClass().getName());
-		Activator.log("Produced " + targetModel.get(0).getClass());
-		String result = new String(RAASUtils.encodeJSON(targetModel.get(0)));
+		Activator.log("Produced " + testTrafo.createdElements.get(0).getClass());
+		String result = new String(RAASUtils.encodeJSON(testTrafo.createdElements.get(0)));
 		return result;
 	}
 
@@ -189,11 +192,15 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 			if (!allFolders.isEmpty())
 				return (List<T>) allFolders;
 			String path = getRootPathForFoldersAndArtifacts();
-			// RAASSessionSingleton sessionInstance = Activator.getSessionInstance();
-			/**
-			 * Create a completely new session, as a session can be shared when the same web client triggers multiple parsing processes! So do not use Activator.getSessionInstance()!
-			 */
-			RAASSessionSingleton sessionInstance = new RAASSessionSingleton();
+			RAASSessionSingleton sessionInstance;
+			if (RAASSessionSingleton.USE_SINGLE_CDOCLIENT) {
+				sessionInstance = Activator.getSessionInstance();
+			} else {
+				/**
+				 * Create a completely new session, as a session can be shared when the same web client triggers multiple parsing processes! So do not use Activator.getSessionInstance()!
+				 */
+				sessionInstance = new RAASSessionSingleton();
+			}
 			sessionInstance.setCredentials("Operator", "o");
 			EObject eObject = RAASUtils.findByPath(sessionInstance.openView(), path.split("/"), true);
 			try {
