@@ -578,6 +578,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 
 	public EList<EObject> getRootContent(CDOResource modelElement, CDOView trans) {
 		EList<EObject> result = modelElement.getContents();
+		if (!allowWriteAccess()) return result;
 		if (result.isEmpty()) {
 			CMSActivator.log("Adding root resource");
 			((CDOTransaction) trans).createResource(RAASUtils.ROOT_RESOURCE_NAME);
