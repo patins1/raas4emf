@@ -5,6 +5,7 @@ import java.io.InputStream;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.raas4emf.cms.core.webgl.IfcToThreejsTranformator;
 
 import raascms.Artifact;
 import raascms.Folder;
@@ -15,6 +16,8 @@ public class GeometryJob extends RAASJob {
 	private String fingerprint;
 	private String ifcUrl;
 	private String jsUrl;
+	private String instanceId;
+	private String ipAddress;
 	public static StatusChangeCallback STATUS_CHANGED_CALLBACK;
 
 	public GeometryJob(Artifact artifact) {
@@ -24,6 +27,7 @@ public class GeometryJob extends RAASJob {
 		ifcUrl = Activator.getSessionInstance().createFullDownloadUrl(artifact);
 		fingerprint = artifact.getFingerPrint();
 		jsUrl = ifcUrl.substring(0, ifcUrl.indexOf("downloadServiceHandler")) + "embeddedapi&request=GeometryUploadRequest&UUID=" + folder.getName();
+		this.setRule(new RAASSchedulingRule(10));
 	}
 
 	public GeometryJob(Artifact artifact, String sceneName) {
@@ -34,8 +38,9 @@ public class GeometryJob extends RAASJob {
 	protected IStatus run(IProgressMonitor monitor) {
 		monitor = interceptMonitor(monitor);
 		try {
-			System.setProperty(fingerprint + ".ifc", ifcUrl);
-			System.setProperty(fingerprint + ".js", jsUrl);
+			this.monitor.setProperty("ifc", ifcUrl);
+			this.monitor.setProperty("js", jsUrl);
+			this.monitor.setProperty("job", this);
 			InputStream is = artifact.asFile(sceneName, monitor);
 			if (is == null)
 				return Status.CANCEL_STATUS;
@@ -46,12 +51,26 @@ public class GeometryJob extends RAASJob {
 			Activator.err(e);
 			return new Status(IStatus.CANCEL, Activator.PLUGIN_ID, e.getMessage(), e);
 		} finally {
-			System.setProperty(fingerprint + ".ifc", "");
-			System.setProperty(fingerprint + ".js", "");
 			if (STATUS_CHANGED_CALLBACK != null)
 				STATUS_CHANGED_CALLBACK.stateChanged(artifact);
 		}
 		return Status.OK_STATUS;
+	}
+
+	public String getInstanceId() {
+		return instanceId;
+	}
+
+	public void setInstanceId(String value) {
+		instanceId = value;		
+	}
+
+	public String getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
 	}
 
 }

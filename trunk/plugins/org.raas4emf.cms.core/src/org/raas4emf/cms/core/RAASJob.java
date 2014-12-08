@@ -22,14 +22,14 @@ abstract public class RAASJob extends Job {
 		return artifact;
 	}
 
-	public IProgressMonitor monitor;
+	public RAASMonitor monitor;
 
 	public IProgressMonitor getMonitor() {
 		return monitor;
 	}
 
 	public IProgressMonitor interceptMonitor(IProgressMonitor monitor) {
-		return this.monitor = new ProgressMonitorWrapper(monitor) {
+		return this.monitor = new RAASMonitor(monitor) {
 			@Override
 			public void worked(int work) {
 				_worked += work;
