@@ -125,18 +125,20 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				File commandsTemplate = new File(new File(key).getParentFile(), "commands_template.sh");
 
 				String commands = "~/bin/localifc2jshttp.sh '%FINGERPRINT%' '%IFCURL%' '%JSURL%' '%IFCSIZE%'"; // TransformationUtils.stringFromFile(commandsTemplate);
+				
+				String sshCommand;
+				if (isWindows)
+					sshCommand = "plink.exe -batch -i %SSHKEYFILE% -P 22 -ssh ubuntu@%REMOTE_BLENDER_URL% -m \"%EXTERNALCOMMANDFILE%\"";
+				else
+					sshCommand = "ssh -o StrictHostKeyChecking=no -i %SSHKEYFILE% ubuntu@%REMOTE_BLENDER_URL% "+System.getProperty("SSH_LAST", commands);
+
 				commands = commands.replace("%IFCURL%", ifcUrl);
 				commands = commands.replace("%JSURL%", jsUrl);
 				commands = commands.replace("%FINGERPRINT%", fingerprint);
 				commands = commands.replace("%IFCSIZE%", "" + artifact.getFileContent().getSize());
 				if (isWindows)
 					TransformationUtils.stringToFile(commandsTemplate, commands);
-				String sshCommand;
-				if (isWindows)
-					sshCommand = "plink.exe -batch -i %SSHKEYFILE% -P 22 -ssh ubuntu@%REMOTE_BLENDER_URL% -m \"%EXTERNALCOMMANDFILE%\"";
-				else
-					sshCommand = "ssh -o StrictHostKeyChecking=no -i %SSHKEYFILE% ubuntu@%REMOTE_BLENDER_URL% \"~/bin/localifc2jshttp.sh '%FINGERPRINT%' '%IFCURL%' '%JSURL%' '%IFCSIZE%'\"";
-
+				
 				try {
 					if (RAASUtils.getRAASProp("BLENDER_SSH_COMMAND") != null)
 						sshCommand = RAASUtils.getRAASProp("BLENDER_SSH_COMMAND");
