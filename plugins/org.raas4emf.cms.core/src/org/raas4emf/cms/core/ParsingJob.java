@@ -24,7 +24,7 @@ public class ParsingJob extends RAASJob {
 	public ParsingJob(Artifact artifact, boolean treeMvd) {
 		super("Parsing " + artifact.getName(), artifact);
 		this.treeMvd = treeMvd;
-		this.setRule(new RAASSchedulingRule());
+		this.setRule(new RAASSchedulingRule(Integer.parseInt(System.getProperty("PARALLEL_PARSING", "1")), "PARSE"));
 	}
 
 	public ParsingJob(Artifact artifact, boolean treeMvd, boolean treeMvdAssociationClasses) {
