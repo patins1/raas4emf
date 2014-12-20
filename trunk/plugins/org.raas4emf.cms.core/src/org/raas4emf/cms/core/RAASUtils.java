@@ -191,7 +191,7 @@ public class RAASUtils {
 				} else
 					throw e;
 			}
-			removeLegacyContent(res);
+//			removeLegacyContent(res);
 			Collection<EObject> contentsToAdd = new ArrayList<EObject>();
 			for (EObject eObject : res.getContents()) {
 				if (eObject.eClass().getName().equals("DocumentRoot")) {

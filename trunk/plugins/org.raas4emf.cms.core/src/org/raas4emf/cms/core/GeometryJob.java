@@ -27,7 +27,7 @@ public class GeometryJob extends RAASJob {
 		ifcUrl = Activator.getSessionInstance().createFullDownloadUrl(artifact);
 		fingerprint = artifact.getFingerPrint();
 		jsUrl = ifcUrl.substring(0, ifcUrl.indexOf("downloadServiceHandler")) + "embeddedapi&request=GeometryUploadRequest&UUID=" + folder.getName();
-		this.setRule(new RAASSchedulingRule(10));
+		this.setRule(new RAASSchedulingRule(Integer.parseInt(System.getProperty("PARALLEL_GEOMETRY", "10")), "GEOMETRY"));
 	}
 
 	public GeometryJob(Artifact artifact, String sceneName) {
