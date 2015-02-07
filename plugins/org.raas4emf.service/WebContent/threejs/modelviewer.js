@@ -4188,8 +4188,8 @@ function setupColors(g_client,updateVisibilityArray) {
 		        }
 		        if (material) {
 					child.material = material;
-			        if (child.uuid && child.uuid.indexOf("_",1)>=2) {
-			        	var materialName2 = child.uuid.substring(child.uuid.indexOf("_",1));
+			        if (child.uuid && child.uuid.indexOf("_",22)!=-1) {
+			        	var materialName2 = child.uuid.substring(child.uuid.indexOf("_",22));
 			        	var material2 = g_client.g_colors[materialName2];
 			        	if (material2 && material2!=material) {
 			        		material2.baseMaterialName = child.material.name;
