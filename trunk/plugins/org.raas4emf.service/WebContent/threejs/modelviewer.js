@@ -3713,12 +3713,8 @@ function automaticUnwrapping(geometry,deltaX,deltaY) {
 
 	var uvs = null;
 	if (geometry instanceof THREE.BufferGeometry) {
-		geometry.attributes.uv = {
-			itemSize: 2,
-			array: new Float32Array( vertices.length * 2 )
-		};
-	
-		uvs = geometry.attributes.uv.array;
+		uvs = new Float32Array( vertices.length * 2 );
+		geometry.addAttribute( 'uv', new THREE.BufferAttribute( uvs, 2 ) );
 	}
 	
 	for ( var f = 0; f <vertices.length; f += 3 ) {
@@ -4122,7 +4118,7 @@ function setupColors(g_client,updateVisibilityArray) {
 		} else {
 			if (materialColor.map.indexOf("http:")==-1)
 				materialColor.map = g_path.substring(0,g_path.indexOf("&filename=")) + "&filename=" + materialColor.map;
-    		var texture = THREE.ImageUtils.loadTexture( materialColor.map, function() {alert("Could not load texture of material!");}, updateClients );
+    		var texture = THREE.ImageUtils.loadTexture( materialColor.map, undefined, updateClients, function() {alert("Could not load texture of material!");} );
     		texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     		materialColor = g_colors[m] = new THREE.MeshPhongMaterial({map: texture });
 		}
