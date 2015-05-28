@@ -179,22 +179,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 		for (Object object : array) {
 			if (object instanceof Folder) {
 				Folder folder = (Folder) object;
-				boolean isGeometryModel = false;
-				for (Artifact artifact : folder.getArtifacts()) {
-					if (isGeometryModel(Arrays.asList(artifact)) && artifact.getName().startsWith("index.")) {
-						candWebGL.add(artifact);
-						isGeometryModel = true;
-						break;
-					}
-				}
-				if (!isGeometryModel) {
-					for (Artifact artifact : folder.getArtifacts()) {
-						if (isGeometryModel(Arrays.asList(artifact))) {
-							candWebGL.add(artifact);
-							break;
-						}
-					}
-				}
+				collectGeometryModels(candWebGL, folder);
 				boolean isImageModel = false;
 				for (Artifact artifact : folder.getArtifacts()) {
 					if (isImage(artifact)) {
@@ -249,6 +234,25 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			}
 		}
 		return selectShape(roots, modelArtifact);
+	}
+
+	public static void collectGeometryModels(List<Artifact> candWebGL, Folder folder) {
+		boolean isGeometryModel = false;
+		for (Artifact artifact : folder.getArtifacts()) {
+			if (isGeometryModel(Arrays.asList(artifact)) && artifact.getName().startsWith("index.")) {
+				candWebGL.add(artifact);
+				isGeometryModel = true;
+				break;
+			}
+		}
+		if (!isGeometryModel) {
+			for (Artifact artifact : folder.getArtifacts()) {
+				if (isGeometryModel(Arrays.asList(artifact))) {
+					candWebGL.add(artifact);
+					break;
+				}
+			}
+		}
 	}
 
 	public boolean selectShape(Collection<? extends EObject> roots, Artifact modelArtifact) {

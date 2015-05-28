@@ -5,19 +5,19 @@ import java.io.InputStream;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.raas4emf.cms.core.webgl.IfcToThreejsTranformator;
 
 import raascms.Artifact;
 import raascms.Folder;
 
 public class GeometryJob extends RAASJob {
 
-	private String sceneName;
+	protected String sceneName;
 	private String fingerprint;
 	private String ifcUrl;
 	private String jsUrl;
 	private String instanceId;
 	private String ipAddress;
+	public boolean isInDB;
 	public static StatusChangeCallback STATUS_CHANGED_CALLBACK;
 
 	public GeometryJob(Artifact artifact) {
@@ -41,10 +41,13 @@ public class GeometryJob extends RAASJob {
 			this.monitor.setProperty("ifc", ifcUrl);
 			this.monitor.setProperty("js", jsUrl);
 			this.monitor.setProperty("job", this);
-			InputStream is = artifact.asFile(sceneName, monitor);
-			if (is == null)
+			Object fs = artifact.getFileOrStream(sceneName, monitor);
+			if (fs == null)
 				return Status.CANCEL_STATUS;
-			is.close();
+			if (fs instanceof InputStream) {
+				((InputStream)fs).close();
+				isInDB = true;
+			}
 			if (monitor.isCanceled())
 				return Status.CANCEL_STATUS;
 		} catch (final Exception e) {

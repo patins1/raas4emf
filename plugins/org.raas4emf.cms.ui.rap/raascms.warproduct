@@ -19,6 +19,7 @@
       <plugin id="org.apache.commons.io"/>
       <plugin id="org.apache.commons.logging"/>
       <plugin id="org.apache.derby"/>
+      <plugin id="org.apache.derby.jdbc_1091.fragment" fragment="true"/>
       <plugin id="org.apache.log4j"/>
       <plugin id="org.eclipse.core.commands"/>
       <plugin id="org.eclipse.core.contenttype"/>
@@ -60,6 +61,8 @@
       <plugin id="org.eclipse.net4j"/>
       <plugin id="org.eclipse.net4j.db"/>
       <plugin id="org.eclipse.net4j.db.h2"/>
+      <plugin id="org.eclipse.net4j.db.jdbc"/>
+      <plugin id="org.eclipse.net4j.db.postgresql"/>
       <plugin id="org.eclipse.net4j.jvm"/>
       <plugin id="org.eclipse.net4j.tcp"/>
       <plugin id="org.eclipse.net4j.util"/>
@@ -67,7 +70,10 @@
       <plugin id="org.eclipse.ocl.common"/>
       <plugin id="org.eclipse.ocl.ecore"/>
       <plugin id="org.eclipse.osgi"/>
+      <plugin id="org.eclipse.osgi.compatibility.state" fragment="true"/>
       <plugin id="org.eclipse.osgi.services"/>
+      <plugin id="org.eclipse.rap.addons.filedialog"/>
+      <plugin id="org.eclipse.rap.addons.fileupload"/>
       <plugin id="org.eclipse.rap.design.example"/>
       <plugin id="org.eclipse.rap.jface"/>
       <plugin id="org.eclipse.rap.jface.databinding"/>
@@ -90,6 +96,7 @@
       <plugin id="org.ifc4emf.metamodel.modelblob"/>
       <plugin id="org.ifc4emf.metamodel.trace"/>
       <plugin id="org.ifc4emf.part21"/>
+      <plugin id="org.postgresql"/>
       <plugin id="org.raas4emf.cms.core"/>
       <plugin id="org.raas4emf.cms.transformation"/>
       <plugin id="org.raas4emf.cms.ui"/>
@@ -97,12 +104,14 @@
       <plugin id="org.raas4emf.cms.ui.rap"/>
       <plugin id="org.raas4emf.metamodel.raascms"/>
       <plugin id="org.raas4emf.server"/>
+      <plugin id="org.raas4emf.service"/>
       <plugin id="osgi.enterprise"/>
    </plugins>
 
    <configurations>
       <plugin id="com.google.guava" autoStart="true" startLevel="0" />
       <plugin id="com.google.inject" autoStart="true" startLevel="0" />
+      <plugin id="com.google.inject.assistedinject" autoStart="true" startLevel="0" />
       <plugin id="com.ibm.icu" autoStart="true" startLevel="0" />
       <plugin id="com.ibm.icu.base" autoStart="true" startLevel="0" />
       <plugin id="javax.inject" autoStart="true" startLevel="0" />
@@ -154,6 +163,8 @@
       <plugin id="org.eclipse.net4j" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.net4j.db" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.net4j.db.h2" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.net4j.db.jdbc" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.net4j.db.postgresql" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.net4j.jvm" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.net4j.tcp" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.net4j.util" autoStart="true" startLevel="0" />
@@ -162,6 +173,8 @@
       <plugin id="org.eclipse.ocl.ecore" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi.services" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.rap.addons.filedialog" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.rap.addons.fileupload" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.design.example" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.jface" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.jface.databinding" autoStart="true" startLevel="0" />
@@ -183,6 +196,7 @@
       <plugin id="org.ifc4emf.metamodel.modelblob" autoStart="true" startLevel="0" />
       <plugin id="org.ifc4emf.metamodel.trace" autoStart="true" startLevel="0" />
       <plugin id="org.ifc4emf.part21" autoStart="true" startLevel="0" />
+      <plugin id="org.postgresql" autoStart="true" startLevel="0" />
       <plugin id="org.raas4emf.cms.core" autoStart="true" startLevel="0" />
       <plugin id="org.raas4emf.cms.transformation" autoStart="true" startLevel="0" />
       <plugin id="org.raas4emf.cms.ui" autoStart="true" startLevel="0" />
@@ -190,12 +204,13 @@
       <plugin id="org.raas4emf.cms.ui.rap" autoStart="true" startLevel="0" />
       <plugin id="org.raas4emf.metamodel.raascms" autoStart="true" startLevel="0" />
       <plugin id="org.raas4emf.server" autoStart="true" startLevel="0" />
+      <plugin id="org.raas4emf.service" autoStart="true" startLevel="0" />
       <plugin id="osgi.enterprise" autoStart="true" startLevel="0" />
    </configurations>
 
    <warConfiguration webXml="/org.raas4emf.cms.ui.rap/WEB-INF/web.xml" launchIni="/org.raas4emf.cms.ui.rap/WEB-INF/launch.ini">
    <libraries>
-      <library path="org.eclipse.equinox.servletbridge_1.2.300.v20130508-1243.jar" fromTarget="true"/>
+      <library path="org.eclipse.equinox.servletbridge_1.3.0.v20140430-1556.jar" fromTarget="true"/>
    </libraries>
    </warConfiguration>
 </product>

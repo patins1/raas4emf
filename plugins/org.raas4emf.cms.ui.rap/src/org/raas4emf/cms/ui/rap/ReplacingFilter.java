@@ -15,6 +15,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.raas4emf.cms.core.DownloadServiceHandler;
+
 public final class ReplacingFilter implements Filter {
 	private String from = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">";
 	// private String to = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">";
@@ -38,6 +40,21 @@ public final class ReplacingFilter implements Filter {
 		// ((HttpServletResponse) response).addHeader("Access-Control-Allow-Origin", "null");
 		((HttpServletResponse) response).addHeader("Access-Control-Allow-Origin", "*");
 		((HttpServletResponse) response).addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		String uri = httpRequest.getRequestURI();
+		if (uri.startsWith(httpRequest.getContextPath()))
+			uri = uri.substring(httpRequest.getContextPath().length());
+		String querySuffix = httpRequest.getQueryString() != null ? "&" + httpRequest.getQueryString() : "";
+
+		if (uri.contains("/RepositoryRoot/")) {
+			String path = uri.substring(uri.indexOf("RepositoryRoot/"));
+			String filename = path.substring(path.lastIndexOf('/')+1);
+			String url = uri.substring(0,uri.indexOf("/RepositoryRoot/"))+"?servicehandler=downloadServiceHandler&filename="+filename+"&artifact=" + path + querySuffix;
+			System.out.println("Get "+url);
+			request.getRequestDispatcher(url).forward(request, response);
+			return;
+		}
 
 		HttpServletRequest hr = (HttpServletRequest) request;
 		if (true || !"GET".equals(hr.getMethod()) || hr.getParameterMap().containsKey("servicehandler") || hr.getPathInfo() != null) {
