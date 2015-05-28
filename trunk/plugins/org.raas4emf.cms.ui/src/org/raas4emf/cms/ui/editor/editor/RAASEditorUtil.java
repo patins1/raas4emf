@@ -8,13 +8,19 @@ import java.util.List;
 
 import org.eclipse.emf.cdo.CDOObject;
 import org.eclipse.emf.cdo.view.CDOView;
+import org.eclipse.emf.common.ui.URIEditorInput;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.edit.ui.util.EditUIUtil;
 import org.eclipse.net4j.util.ObjectUtil;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.raas4emf.cms.ui.CMSActivator;
 
 public final class RAASEditorUtil {
 
@@ -24,8 +30,26 @@ public final class RAASEditorUtil {
 	 * @param modelElement
 	 * @param persistent
 	 */
-	public static RAASEditorInput createCDOEditorInput(CDOView view, String resourcePath, CDOObject modelElement, boolean persistent) {
+	public static IEditorInput createCDOEditorInput(CDOView view, String resourcePath, CDOObject modelElement, boolean persistent) {
 		return new RAASEditorInputImpl(view, resourcePath, modelElement, persistent);
+	}
+	
+
+	public static IWorkbenchPage openURIEditor(String resourcePath) throws PartInitException {
+		IEditorDescriptor ed = EditUIUtil.getDefaultEditor(resourcePath);
+		if (ed==null)
+			return null;
+		String query = "";
+		for (String name:org.raas4emf.cms.ui.CMSActivator.getSessionInstance().getParameters().keySet()) {
+			query=query+"&"+name+"="+org.raas4emf.cms.ui.CMSActivator.getSessionInstance().getParameter(name);
+		}
+		if (query.startsWith("&"))
+			query="?"+query.substring(1);
+		String g_path = CMSActivator.getSessionInstance().createFullDownloadUrl(null) ;							
+		URI uri = URI.createURI(g_path.substring(0, g_path.indexOf("?"))+"/"+resourcePath+query);
+		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(new URIEditorInput(uri), ed.getId(), true);
+		IWorkbenchPage page = editor.getEditorSite().getPage();
+		return page;
 	}
 
 	/**
@@ -45,7 +69,10 @@ public final class RAASEditorUtil {
 		display.asyncExec(new Runnable() {
 			public void run() {
 				try {
-					RAASEditorInput input = RAASEditorUtil.createCDOEditorInput(view, resourcePath, modelElement, persistent);
+					if (openURIEditor(resourcePath)!=null) {
+						return;
+					}
+					IEditorInput input = RAASEditorUtil.createCDOEditorInput(view, resourcePath, modelElement, persistent);
 					IEditorReference[] references = findEditor(page, input);
 					if (references.length != 0) {
 						if (activate) {
@@ -70,7 +97,7 @@ public final class RAASEditorUtil {
 	 * @param input
 	 *            The editors are editing the CDOResource specified with this path
 	 */
-	public static IEditorReference[] findEditor(IWorkbenchPage page, RAASEditorInput input) {
+	public static IEditorReference[] findEditor(IWorkbenchPage page, IEditorInput input) {
 		List<IEditorReference> result = new ArrayList<IEditorReference>();
 		IEditorReference[] editorReferences = page.getEditorReferences();
 		for (IEditorReference editorReference : editorReferences) {

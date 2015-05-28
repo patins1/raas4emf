@@ -139,6 +139,10 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
+            id="org.raas4emf.cms.ui.actions.BuildWebGLCommand"
+            name="Build WebGL Representations In (Sub)Folder(s)">
+      </command>
+      <command
             id="org.raas4emf.cms.ui.actions.BuildModelCommand"
             name="Build Models In (Sub)Folder(s) Command">
       </command>
@@ -405,6 +409,25 @@
       <handler
             class="org.raas4emf.cms.ui.actions.BuildModelAction"
             commandId="org.raas4emf.cms.ui.actions.BuildModelCommand">
+         <enabledWhen>
+            <with
+                  variable="selection">
+               <iterate
+                     operator="or">
+                  <or>
+                     <instanceof
+                           value="raascms.Folder">
+                     </instanceof>
+                     <test
+                           property="org.raas4emf.cms.ui.isModelComplete">
+                     </test></or>
+               </iterate>
+            </with>
+         </enabledWhen>
+      </handler>
+      <handler
+            class="org.raas4emf.cms.ui.actions.BuildWebGLAction"
+            commandId="org.raas4emf.cms.ui.actions.BuildWebGLCommand">
          <enabledWhen>
             <with
                   variable="selection">
@@ -1083,6 +1106,11 @@
          </menu>
          <menu
                label="Misc">
+            <command
+                  commandId="org.raas4emf.cms.ui.actions.BuildWebGLCommand"
+                  label="Build WebGL Representations In (Sub)Folder(s)"
+                  style="push">
+            </command>
             <command
                   commandId="org.raas4emf.cms.ui.actions.BuildModelCommand"
                   label="Build Models"

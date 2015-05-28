@@ -9,19 +9,25 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
+import org.eclipse.ui.internal.WorkbenchPage;
 import org.eclipse.ui.internal.WorkbenchWindow;
 import org.eclipse.ui.internal.WorkbenchWindowConfigurer;
 import org.eclipse.ui.internal.layout.ITrimManager;
 import org.eclipse.ui.internal.progress.ProgressRegion;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.actions.IsolateAction;
+import org.raas4emf.cms.ui.editor.editor.RAASEditorUtil;
 import org.raas4emf.cms.ui.views.DirectoryView;
 import org.raas4emf.cms.ui.views.FilesView;
 import org.raas4emf.cms.ui.views.PreviewView;
+
+import raascms.Artifact;
 
 @SuppressWarnings("restriction")
 public class DemoWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
@@ -36,11 +42,12 @@ public class DemoWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	public void preWindowOpen() {
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-		configurer.setShowCoolBar(true);
+		String loadPath = org.raas4emf.cms.ui.CMSActivator.getSessionInstance().getParameter("path");
+		configurer.setShowCoolBar(loadPath==null);
 		configurer.setShowPerspectiveBar(false);
 		configurer.setTitle("RAAS CMS");
 		configurer.setShellStyle(SWT.TITLE | SWT.MAX | SWT.RESIZE | SWT.NO_TRIM);
-		configurer.setShowProgressIndicator(true);
+		configurer.setShowProgressIndicator(loadPath==null);
 		configurer.setShowStatusLine(false); // otherwise editor-save causes internal Eclipse bug
 		configurer.setShowMenuBar(false);
 	}
@@ -91,6 +98,17 @@ public class DemoWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	}
 
 	public static void displayIfcModel(EObject artifact, Runnable attachedOnLoad2) {
+		
+		if (artifact instanceof Artifact) {
+				Artifact artifact2 = (Artifact) artifact;
+				try {
+					IWorkbenchPage page = RAASEditorUtil.openURIEditor(RAASUtils.getPath(artifact2));
+					if (page!=null)
+						page.setPartState(page.getActivePartReference(), WorkbenchPage.STATE_MAXIMIZED);
+				} catch (PartInitException e) {
+					e.printStackTrace();
+				}
+		}
 
 		if (artifact == null)
 			return;
@@ -106,6 +124,8 @@ public class DemoWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 					attachedOnLoad2.run();
 				// view.attachedOnLoad += "effectController.panning_mode=true;";
 				view.selectionChanged(null, new StructuredSelection(artifact));
+				IWorkbenchPage page = view.getViewSite().getPage();
+				page.setPartState(page.getActivePartReference(), WorkbenchPage.STATE_MAXIMIZED);
 			} finally {
 				view.attachedOnLoad = null;
 				view.attachedImmediately = null;

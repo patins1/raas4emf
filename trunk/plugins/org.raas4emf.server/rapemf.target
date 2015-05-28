@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="EMF + RAP" sequenceNumber="278">
+<?pde version="3.8"?><target name="EMF + RAP" sequenceNumber="293">
 <locations>
 <location path="${eclipse_home}" type="Profile"/>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
@@ -12,6 +12,18 @@
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.rap.fileupload.feature.feature.group" version="2.3.0.20140611-1558"/>
 <repository location="http://download.eclipse.org/rt/rap/incubator/2.3/fileupload/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.rap.tabbed-properties.feature.feature.group" version="0.1.0.20140426-0943"/>
+<repository location="http://download.eclipse.org/rt/rap/incubator/nightly/tabbed-properties/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.rap.cnf.feature.feature.group" version="0.1.0.20140425-1557"/>
+<repository location="http://download.eclipse.org/rt/rap/incubator/nightly/cnf/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.rap.nebula-grid.feature.feature.group" version="0.2.0.20140611-1600"/>
+<repository location="http://download.eclipse.org/rt/rap/incubator/2.3/nebula-grid/"/>
 </location>
 </locations>
 </target>

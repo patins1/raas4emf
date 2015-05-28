@@ -146,18 +146,26 @@ public class RAASSessionSingleton {
 		url.append(":");
 		url.append(RWT.getRequest().getServerPort());
 		url.append(RWT.getServiceManager().getServiceHandlerUrl("downloadServiceHandler"));
-		url.append("&artifact=");
-		url.append(artifact.cdoID().toURIFragment());
-		url.append("&filename=");
-		url.append(artifact.getName());
+		if (artifact!=null) {			
+			url.append("&artifact=");
+			url.append(artifact.cdoID().toURIFragment());
+			url.append("&filename=");
+			url.append(artifact.getName());
+		}
 		String result = RWT.getResponse().encodeURL(url.toString());
 		return removeCid(result);
 	}
 
-	private String removeCid(String result) {
-		if (result.indexOf("cid=") != -1)
-			return result.substring(0, result.indexOf("cid=")) + result.substring(result.indexOf("artifact="));
-		return result;
+	private String removeCid(String url) {
+		int cid = url.indexOf("&cid=");
+		if (cid != -1) {
+			String result = url.substring(0, cid);
+			int nextParam = url.indexOf("&",cid+1);
+			if (nextParam!=-1)
+				return result+ url.substring(nextParam);
+			return result;
+		}
+		return url;
 	}
 
 	public int getBrowserType() {
