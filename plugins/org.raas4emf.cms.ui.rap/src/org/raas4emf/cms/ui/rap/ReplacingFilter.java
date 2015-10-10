@@ -47,10 +47,11 @@ public final class ReplacingFilter implements Filter {
 			uri = uri.substring(httpRequest.getContextPath().length());
 		String querySuffix = httpRequest.getQueryString() != null ? "&" + httpRequest.getQueryString() : "";
 
-		if (uri.contains("/RepositoryRoot/")) {
-			String path = uri.substring(uri.indexOf("RepositoryRoot/"));
+		for (String token: new String[] {"/RepositoryRoot/","/WebContent/"})
+		if (uri.contains(token)) {
+			String path = uri.substring(uri.indexOf(token)+1);
 			String filename = path.substring(path.lastIndexOf('/')+1);
-			String url = uri.substring(0,uri.indexOf("/RepositoryRoot/"))+"?servicehandler=downloadServiceHandler&filename="+filename+"&artifact=" + path + querySuffix;
+			String url = uri.substring(0,uri.indexOf(token))+"?servicehandler=downloadServiceHandler&filename="+filename+"&artifact=" + path + querySuffix;
 			System.out.println("Get "+url);
 			request.getRequestDispatcher(url).forward(request, response);
 			return;

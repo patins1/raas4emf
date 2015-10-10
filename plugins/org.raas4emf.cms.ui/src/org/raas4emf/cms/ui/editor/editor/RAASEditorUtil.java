@@ -39,7 +39,14 @@ public final class RAASEditorUtil {
 		IEditorDescriptor ed = EditUIUtil.getDefaultEditor(resourcePath);
 		if (ed==null)
 			return null;
-		String query = "";
+		URI uri = createRestURI(resourcePath,"");
+		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(new URIEditorInput(uri), ed.getId(), true);
+		IWorkbenchPage page = editor.getEditorSite().getPage();
+		return page;
+	}
+
+
+	public static URI createRestURI(String resourcePath, String query) {
 		for (String name:org.raas4emf.cms.ui.CMSActivator.getSessionInstance().getParameters().keySet()) {
 			query=query+"&"+name+"="+org.raas4emf.cms.ui.CMSActivator.getSessionInstance().getParameter(name);
 		}
@@ -47,9 +54,7 @@ public final class RAASEditorUtil {
 			query="?"+query.substring(1);
 		String g_path = CMSActivator.getSessionInstance().createFullDownloadUrl(null) ;							
 		URI uri = URI.createURI(g_path.substring(0, g_path.indexOf("?"))+"/"+resourcePath+query);
-		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(new URIEditorInput(uri), ed.getId(), true);
-		IWorkbenchPage page = editor.getEditorSite().getPage();
-		return page;
+		return uri;
 	}
 
 	/**

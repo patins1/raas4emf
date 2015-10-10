@@ -44,6 +44,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.browser.Browser;
@@ -462,6 +463,13 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
+			
+			String base = "<base href=\"";
+			String contextPath = CMSActivator.getSessionInstance().getParameter("ContextPath");
+			int iBase = text.indexOf(base);
+			if (iBase!=-1 && contextPath!=null && !text.startsWith(contextPath, iBase+base.length()))
+				text=text.substring(0, iBase+base.length()) + contextPath + (!contextPath.endsWith("/")&&!text.startsWith("/", iBase+base.length())?"/":"")+ text.substring(iBase+base.length());
+			
 			int index = text.indexOf(marker);
 			if (attachedImmediately != null)
 				immediately += attachedImmediately;

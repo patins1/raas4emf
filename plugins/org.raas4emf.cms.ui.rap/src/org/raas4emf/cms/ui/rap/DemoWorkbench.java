@@ -39,6 +39,7 @@ public class DemoWorkbench implements EntryPoint {
 		for (String name : RWT.getRequest().getParameterMap().keySet()) {
 			CMSActivator.getSessionInstance().setParameter(name, RWT.getRequest().getParameter(name));
 		}
+		CMSActivator.getSessionInstance().setParameter("ContextPath", RWT.getRequest().getContextPath());
 
 		boolean autoLogin = "true".equals(RWT.getRequest().getParameter("autologin")) || doAlwaysAutoLogin();
 		DemoWorkbench.fixBug347967();
