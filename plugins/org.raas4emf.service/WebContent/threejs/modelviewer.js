@@ -73,7 +73,7 @@ var distanceBetweenRemotePoints_times_distanceToScreen_eye = null;
 //threejs specific global initializations
 var g_oldWorldPosition;
 var g_dir;
-if (g_dir == null) g_dir = "";
+if (g_dir == null) g_dir = "ui/WebContent/threejs/";
 var g_renderer;
 if (g_renderer == null) g_renderer = getParameterByName(document.URL,"renderer") || "webgl"; 
 var doCollada= document.evaluate!=undefined && g_renderer!="svg";
@@ -301,7 +301,7 @@ function locate(transforms,g_client,steps) {
 		setEyeAndTarget(eye,target,g_client);
 		var raycaster = getRaycaster(new THREE.Vector2(),g_client);
 		var intersects = raycaster.intersectObjects( g_client.objects );
-		g_client.g_camera = g_client.controls.object = s_camera;
+		g_client.g_camera = g_client.controls.constraint.object = s_camera;
 	
 		if (intersects)
 	    for (var tt = 0; tt < intersects.length; tt++) {	
@@ -320,7 +320,7 @@ function locate(transforms,g_client,steps) {
 
 function isIntersectedObjectVisible(object, g_client) {
 	var material = g_client.g_colors[object.material.name];
-	return (object.visible || g_client.additionalObjectsToSelect.indexOf(object)>=0) && material && material.opacity != 0 && material.visible;
+	return (object.visible || g_client.additionalObjectsToSelect.indexOf(object)>=0) && (material && material.opacity != 0 && material.visible || object.material);
 }
 
 function getParameterByName(url,name)
@@ -521,27 +521,35 @@ function locateShape(id, artifactId) {
 
 function calcPaths() {
 	if (!g_path) g_path = window.location.href;
+    var filename = getParameterByName(g_path,'filename'); 
 	if (!g_path || g_path.lastIndexOf("threejs/modelviewer.html?artifact=")!=-1) {
 	    var index = g_path.lastIndexOf('/threejs');
 	    // Point at the parent directory's assets directory for the moment
 	    g_ids = getParameterByName(g_path,'artifact').split(","); 
-	    var filename = getParameterByName(g_path,'filename'); 
 	  	g_num_clients = g_ids.length;
 	    for (var ii = 0; ii < g_num_clients; ii++) 
 	        g_paths[ii] = g_path.substring(0, index)+'/services/Artifact/GetArtifact/'+g_ids[ii]+'/'+filename;
+	} else if (!getParameterByName(g_path,'artifact')) {
+	    g_ids = "1".split(","); 
+	    resturl = g_path.substring(0, g_path.indexOf('?'));
+	  	g_num_clients = g_ids.length;
+	    for (var ii = 0; ii < g_num_clients; ii++) 
+	        g_paths[ii] = resturl + (filename ? "?filename="+filename : "");
+	    if (!filename)
+	    	filename = resturl.substring(resturl.lastIndexOf('/')+1);
 	} else {
 	    var index2 = g_path.lastIndexOf('artifact=');
 	    g_ids = getParameterByName(g_path,'artifact').split(","); 
-	    var filename = getParameterByName(g_path,'filename'); 
 	  	g_num_clients = g_ids.length;
 	    for (var ii = 0; ii < g_num_clients; ii++) 
 	        g_paths[ii] = g_path.substring(0, index2+'artifact='.length)+g_ids[ii]+"&filename="+filename;
 	}
-    var filename = getParameterByName(g_path,'filename'); 
     var ext = filename.substring(filename.lastIndexOf("."));
     doJsonLoader = (ext == ".js");
     doCollada = (ext == ".dae");
     doGLTF = (ext == ".json");
+    if (doCollada && overrideSettings.quickmode==null) effectController.quickmode = false;  
+    if (doCollada && overrideSettings.vertexnormals==null) effectController.vertexnormals = true;  
 	
 }
 
@@ -918,7 +926,7 @@ function getPos(eye,target,px,py,g_client) {
 	plane.updateMatrixWorld();
 	
 	var intersects = raycaster.intersectObject( plane );
-	g_client.g_camera = g_client.controls.object = s_camera;
+	g_client.g_camera = g_client.controls.constraint.object = s_camera;
 	if (intersects.length > 0) {
 		var intersectPoint = intersects[ 0 ].point;		
 		return new THREE.Vector3(-intersectPoint.x,intersectPoint.y,-intersectPoint.z);
@@ -1502,8 +1510,8 @@ function changePosition(deltaX,deltaY,g_client) {
     var axisY = eye;//eye.clone().cross(axisX);
     axisY.y = 0;
     axisY = axisY.normalize();
-    axisX = axisX.multiplyScalar(deltaX);
-    axisY = axisY.multiplyScalar(deltaY);
+    axisX = axisX.multiplyScalar(deltaX/10);
+    axisY = axisY.multiplyScalar(deltaY/10);
     var axis = axisY.add(axisX);
 	g_camera.target = g_camera.target.add(axis);   
 	g_camera.eye =  g_camera.eye.add(axis);
@@ -1511,8 +1519,8 @@ function changePosition(deltaX,deltaY,g_client) {
 
 function changeRotation(deltaX,deltaY,freehand,g_client) {
 	enableOrbit(true, g_client);
-	g_client.controls.rotateLeft(-deltaX);
-	g_client.controls.rotateUp(-deltaY);
+	g_client.controls.constraint.rotateLeft(-deltaX);
+	g_client.controls.constraint.rotateUp(-deltaY);
 	g_client.controls.update();
 }
 
@@ -2365,7 +2373,7 @@ function generateGui() {
 		settingsChanged();
 	});
 	misc.add( effectController, 'select_by_dblclick', false );
-	if (!effectController.vertexnormals && overrideSettings.vertexnormals!=false) {
+	if (false && !effectController.vertexnormals && overrideSettings.vertexnormals!=false) {
 		var g_client = g_clients[0];
 		var geometryCount = 0;
 		g_client.root.traverse(function (mesh) {
@@ -2390,7 +2398,8 @@ function generateGui() {
 			settingsChanged();
 		}); 
 	});	
-	misc.add( effectController, 'vertexnormals' ).onChange( function() {
+	var vertexnormalsChanged;
+	misc.add( effectController, 'vertexnormals' ).onChange(vertexnormalsChanged = function() {
 		var g_client = g_clients[0];
 		g_client.root.traverse(function (mesh) {
 			var geometry = mesh.geometry;
@@ -2401,13 +2410,13 @@ function generateGui() {
 					if (effectController.vertexnormals) {
 						var faceGeometry = THREE.BufferGeometry.assureNoBufferGeometry(geometry);
 						faceGeometry.computeFaceNormals();
-						faceGeometry.computeVertexNormals(true);	
+						faceGeometry.computeVertexNormals(effectController.areaweighted);	
 						var bufferGeometry = THREE.BufferGeometry.assureBufferGeometry(faceGeometry);
 						geometry.attributes.normal.array.set(bufferGeometry.attributes.normal.array);
 						geometry.normalsNeedUpdate = true;
 					}
 				} else if (effectController.vertexnormals) {
-					geometry.computeVertexNormals(true);	
+					geometry.computeVertexNormals(effectController.areaweighted);	
 					geometry.normalsNeedUpdate = true;
 				} else {
 					for ( f = 0, fl = geometry.faces.length; f < fl; f ++ ) {
@@ -2425,6 +2434,7 @@ function generateGui() {
 		}
 		settingsChanged();
 	} );
+	misc.add( effectController, 'areaweighted' ).onChange(vertexnormalsChanged);
 	
 	
 
@@ -2595,6 +2605,8 @@ var g_emptyDoubleArray = [[]];
 var g_emptyColor;
 
 function optArray(ar) {
+	if (!ar)
+		return ar;
 	if (ar.length == 0)
 		return g_emptyArray;
 	return ar;
@@ -2743,6 +2755,8 @@ function melt(g_client) {
 //			}
 
 			faceCopy.materialIndex = face.materialIndex + materialIndexOffset;
+			if (faceCopy.materialIndex<0)
+				alert("Unknown material2 of "+materialIndexOffset);
 
 			faces1.push( faceCopy );
 
@@ -2912,7 +2926,7 @@ function melt(g_client) {
 	});
 	g_client.root.traverse(function (mesh) {
 		if (mesh.geometry && mesh.material) {
-			var materialIndex = materials.indexOf(mesh.baseMaterial || mesh.material);
+			var materialIndex = materials.indexOf(mesh.baseMaterial || (mesh.material.materials ? mesh.material.materials[0] : mesh.material));
 			if (materialIndex<0)
 				alert("Unknown material of "+mesh.name);
 		    THREE.GeometryUtils.merge( cityGeometry, mesh, materialIndex );
@@ -2994,9 +3008,9 @@ function getVerticesOfFaces(geometry) {
 	var vertices = [];
 	for ( var f = 0; f <geometry.faces.length; f ++ ) {
 		var face = geometry.faces[f];
-		vertices.push(geometry.vertices[face.a]);
-		vertices.push(geometry.vertices[face.b]);
-		vertices.push(geometry.vertices[face.c]);
+		if (geometry.vertices[face.a]) vertices.push(geometry.vertices[face.a]);
+		if (geometry.vertices[face.b]) vertices.push(geometry.vertices[face.b]);
+		if (geometry.vertices[face.c]) vertices.push(geometry.vertices[face.c]);
 	}
 	return vertices;
 }
@@ -3142,7 +3156,7 @@ function paintBendPoints() {
 
 			if (shapes.length>0) {
 				var geometry = new THREE.ExtrudeGeometry(shapes, extrudeSettings);// this, options ) shape.extrude( extrudeSettings );	
-				if (effectController.vertexnormals) geometry.computeVertexNormals(true);
+				if (effectController.vertexnormals) geometry.computeVertexNormals(effectController.areaweighted);
 				var mesh = new THREE.Mesh( geometry, child.material );				
 //				mesh.position = child.position.clone();
 //				mesh.rotation = child.rotation.clone();
@@ -3173,7 +3187,7 @@ function paintBendPoints() {
 					rectShape.lineTo( -rectLength/2, -rectLength/2 );
 					
 					geometry = rectShape.extrude( { amount: -effectController["suspension_length"]/ww,  bevelEnabled: false, bevelSegments: 2, steps: 1 } );	
-					if (effectController.vertexnormals) geometry.computeVertexNormals(true);
+					if (effectController.vertexnormals) geometry.computeVertexNormals(effectController.areaweighted);
 					mesh = new THREE.Mesh( geometry, child.material );				
 //					mesh.position = child.position.clone();
 //					mesh.rotation = child.rotation.clone();
@@ -3262,6 +3276,7 @@ function start() {
 			quickmode: true,
 			antialias: true,
 			vertexnormals: false,
+			areaweighted: true,
 			select_face: false,
 			opencontrols: true,
 			opencontrolsWidth:275,
@@ -3551,7 +3566,7 @@ var initStatics = function() {
 		result.faces = faces;
 		result.computeFaceNormals();
 		if (effectController.vertexnormals)
-			result.computeVertexNormals(true);
+			result.computeVertexNormals(effectController.areaweighted);
 		
 		return result; 
 		
@@ -3673,7 +3688,15 @@ function load2(ii) {
     	var loader = new THREE.ColladaLoader();
     	loader.options.convertUpAxis = true;
     	loader.load( g_paths[ii], function ( result ) {
-    		var root = result.scene.children[result.scene.children.length-1];
+    		var root = result.scene;    	
+    		if (effectController.vertexnormals)
+			root.traverse(function (mesh) {
+				var geometry = mesh.geometry;
+	        	if (geometry) {
+	        		geometry.computeFaceNormals();
+	        		geometry.computeVertexNormals(effectController.areaweighted);
+	        	}
+	        });        		
     		afterLoad(root,g_clients[ii]);
     	} );
 	} else 
@@ -3927,7 +3950,7 @@ function init(root,g_client) {
     g_client.controls = new THREE.OrbitControls( new THREE.PerspectiveCamera( 90, 1, 0.01, 2000000 ), g_client );
     g_client.controls.oriUpdate = g_client.controls.update;
     g_client.controls.update = function () {if (this.active) this.oriUpdate(); };
-    g_client.controls.noPan = true;
+    g_client.controls.enablePan = false;
     g_client.controls.active = true;
     g_client.additionalObjectsToSelect = [];
 	}
@@ -4057,9 +4080,7 @@ function init(root,g_client) {
 
 	var plane = g_client.plane = new THREE.Mesh( new THREE.PlaneGeometry( 1000000, 1000000, 1, 1 ), new THREE.MeshBasicMaterial( { color: 0x000000, opacity: 0.25, transparent: true, side: THREE.DoubleSide} ) );
 	plane.name = "intersection plane";
-	plane.visible = false;
 	plane.lookAt( up );
-	//scene.add( plane );
 	
 	if (!hasSomething)
 		 console.log("Found no solid geometry");
@@ -4376,13 +4397,13 @@ function unSelectRecursive(transform) {
 
 function getScene(scene) {
 	
-	while ( scene.parent !== undefined ) {
+	while ( scene.parent ) {
 
 		scene = scene.parent;
 
 	}
 
-	if ( scene !== undefined && scene instanceof THREE.Scene )  {
+	if ( scene instanceof THREE.Scene )  {
 
 		return scene;
 
@@ -4999,9 +5020,9 @@ function getOnlyUsedVertices(geometry) {
 		var result = [];
 		for ( i = 0, il = faces.length; i < il; i ++ ) {
 			var face = faces[ i ];
-			result.push(vertices[face.a]);
-			result.push(vertices[face.b]);
-			result.push(vertices[face.c]);		
+			if (vertices[face.a]) result.push(vertices[face.a]);
+			if (vertices[face.b]) result.push(vertices[face.b]);
+			if (vertices[face.c]) result.push(vertices[face.c]);		
 		}
 		return result;
 	}
@@ -5045,9 +5066,10 @@ function setEyeAndTarget(eye,target,g_client,_up) {
 	} else {
 		camera = new THREE.PerspectiveCamera( g_angle, aspect, 0.01, 2000000 );
 	}
-	g_client.g_camera = g_client.controls.object = camera;
+	g_client.g_camera = g_client.controls.constraint.object = camera;
 	camera.eye = camera.position.copy(eye);	
-	camera.target = g_client.controls.target = target;	
+	g_client.controls.target.copy(target);
+	camera.target = target;
 	if (g_mapenabled)
 		camera.up.set(0,0,1); else
 		camera.up.copy(_up!=null?_up:up);

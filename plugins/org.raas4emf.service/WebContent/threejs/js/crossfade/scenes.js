@@ -1,4 +1,4 @@
-function generateGeometry(objectType, numObjects) {
+function generateGeometry( objectType, numObjects ) {
 
 	var geometry = new THREE.Geometry();
 
@@ -8,7 +8,7 @@ function generateGeometry(objectType, numObjects) {
 
 			var n = ( f instanceof THREE.Face3 ) ? 3 : 4;
 
-			for( var j = 0; j < n; j ++ ) {
+			for ( var j = 0; j < n; j ++ ) {
 
 				f.vertexColors[ j ] = c;
 
@@ -38,18 +38,19 @@ function generateGeometry(objectType, numObjects) {
 
 		scale.x = Math.random() * 200 + 100;
 
-		if ( objectType == "cube" )
-		{
+		if ( objectType == "cube" ) {
+
 			geom = new THREE.BoxGeometry( 1, 1, 1 );
 			scale.y = Math.random() * 200 + 100;
 			scale.z = Math.random() * 200 + 100;
-			color.setRGB( 0, 0, Math.random()+0.1 );
-		}
-		else if ( objectType == "sphere" )
-		{
-			geom = new THREE.IcosahedronGeometry( 1, 1 )
+			color.setRGB( 0, 0, Math.random() + 0.1 );
+
+		} else if ( objectType == "sphere" ) {
+
+			geom = new THREE.IcosahedronGeometry( 1, 1 );
 			scale.y = scale.z = scale.x;
-			color.setRGB( Math.random()+0.1, 0, 0 );
+			color.setRGB( Math.random() + 0.1, 0, 0 );
+
 		}
 
 		// give the geom's vertices a random color, to be displayed
@@ -85,7 +86,7 @@ function Scene ( type, numObjects, cameraZ, fov, rotationSpeed, clearColor ) {
 	this.scene.add( light );
 
 	this.rotationSpeed = rotationSpeed;
-	defaultMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors	} );
+	defaultMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, vertexColors: THREE.VertexColors	} );
 	this.mesh = new THREE.Mesh( generateGeometry( type, numObjects ), defaultMaterial );
 	this.scene.add( this.mesh );
 
@@ -94,16 +95,17 @@ function Scene ( type, numObjects, cameraZ, fov, rotationSpeed, clearColor ) {
 
 	this.render = function( delta, rtt ) {
 
-		this.mesh.rotation.x += delta*this.rotationSpeed.x;
-		this.mesh.rotation.y += delta*this.rotationSpeed.y;
-		this.mesh.rotation.z += delta*this.rotationSpeed.z;
+		this.mesh.rotation.x += delta * this.rotationSpeed.x;
+		this.mesh.rotation.y += delta * this.rotationSpeed.y;
+		this.mesh.rotation.z += delta * this.rotationSpeed.z;
 
 		renderer.setClearColor( this.clearColor );
 
-		if (rtt)
+		if ( rtt )
 			renderer.render( this.scene, this.camera, this.fbo, true );
 		else
 			renderer.render( this.scene, this.camera );
 
 	};
+
 }
