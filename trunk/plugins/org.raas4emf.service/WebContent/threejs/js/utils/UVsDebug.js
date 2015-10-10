@@ -6,114 +6,118 @@
  * geometries UV mapping
  *
  * Sample usage:
- *	document.body.appendChild(
- *		THREE.UVsDebug(
- *			new THREE.SphereGeometry(10,10,10,10));
+ *	document.body.appendChild( THREE.UVsDebug( new THREE.SphereGeometry( 10, 10, 10, 10 ) );
  *
  */
  
 THREE.UVsDebug = function( geometry, size ) {
 
-    // handles wrapping of uv.x > 1 only
+	// handles wrapping of uv.x > 1 only
     
-    var abc = 'abcd';
+	var abc = 'abc';
 
-    var uv, u, ax, ay;
-    var i, il, j, jl;
-    var vnum;
+	var uv, u, ax, ay;
+	var i, il, j, jl;
+	var vnum;
 
-    var a = new THREE.Vector2();
-    var b = new THREE.Vector2();
+	var a = new THREE.Vector2();
+	var b = new THREE.Vector2();
 
-    var faces = geometry.faces;
-    var uvs = geometry.faceVertexUvs[ 0 ];
+	var geo = ( geometry instanceof THREE.BufferGeometry ) ? new THREE.Geometry().fromBufferGeometry( geometry ) : geometry;
 
-    var canvas = document.createElement( 'canvas' );
-    var width = size || 1024;   // power of 2 required for wrapping
-    var height = size || 1024;
-    canvas.width = width;
-    canvas.height = height;
+	var faces = geo.faces;
+	var uvs = geo.faceVertexUvs[ 0 ];
 
-    var ctx = canvas.getContext( '2d' );
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'rgba( 0, 0, 0, 1.0 )';
-    ctx.textAlign = 'center';
+	var canvas = document.createElement( 'canvas' );
+	var width = size || 1024;   // power of 2 required for wrapping
+	var height = size || 1024;
+	canvas.width = width;
+	canvas.height = height;
 
-    // paint background white
+	var ctx = canvas.getContext( '2d' );
+	ctx.lineWidth = 2;
+	ctx.strokeStyle = 'rgba( 0, 0, 0, 1.0 )';
+	ctx.textAlign = 'center';
 
-    ctx.fillStyle = 'rgba( 255, 255, 255, 1.0 )';
-    ctx.fillRect( 0, 0, width, height );
+	// paint background white
 
-    for ( i = 0, il = uvs.length; i < il; i++ ) {
+	ctx.fillStyle = 'rgba( 255, 255, 255, 1.0 )';
+	ctx.fillRect( 0, 0, width, height );
 
-        uv = uvs[ i ];
+	for ( i = 0, il = uvs.length; i < il; i ++ ) {
 
-        // draw lines
+		uv = uvs[ i ];
 
-        ctx.beginPath();
+		// draw lines
 
-        a.set( 0, 0 );
+		ctx.beginPath();
 
-        for ( j = 0, jl = uv.length; j < jl; j++ ) {
+		a.set( 0, 0 );
 
-            u = uv[ j ];
+		for ( j = 0, jl = uv.length; j < jl; j ++ ) {
 
-            a.x += u.x;
-            a.y += u.y;
+			u = uv[ j ];
 
-            if ( j == 0 ) {
+			a.x += u.x;
+			a.y += u.y;
 
-                ctx.moveTo( u.x * width, ( 1 - u.y ) * height );
+			if ( j == 0 ) {
 
-            } else {
+				ctx.moveTo( u.x * width, ( 1 - u.y ) * height );
 
-                ctx.lineTo( u.x * width, ( 1 - u.y ) * height );
+			} else {
 
-            }
+				ctx.lineTo( u.x * width, ( 1 - u.y ) * height );
 
-        }
+			}
 
-        ctx.closePath();
-        ctx.stroke();
+		}
 
-        a.divideScalar( jl );
+		ctx.closePath();
+		ctx.stroke();
 
-        // label the face number
+		a.divideScalar( jl );
 
-        ctx.font = "12pt Arial bold";
-        ctx.fillStyle = 'rgba( 0, 0, 0, 1.0 )';
-        ctx.fillText( i, a.x * width, ( 1 - a.y ) * height );
+		// label the face number
 
-        if ( a.x > 0.95 ) { // wrap x // 0.95 is arbitrary
+		ctx.font = "12pt Arial bold";
+		ctx.fillStyle = 'rgba( 0, 0, 0, 1.0 )';
+		ctx.fillText( i, a.x * width, ( 1 - a.y ) * height );
 
-            ctx.fillText( i, ( a.x % 1 ) * width, ( 1 - a.y ) * height );
+		if ( a.x > 0.95 ) {
 
-        }
+			// wrap x // 0.95 is arbitrary
 
-        ctx.font = "8pt Arial bold";
-        ctx.fillStyle = 'rgba( 0, 0, 0, 1.0 )';
+			ctx.fillText( i, ( a.x % 1 ) * width, ( 1 - a.y ) * height );
 
-        // label uv edge orders
+		}
 
-        for ( j = 0, jl = uv.length; j < jl; j++ ) {
+		ctx.font = "8pt Arial bold";
+		ctx.fillStyle = 'rgba( 0, 0, 0, 1.0 )';
 
-            u = uv[ j ];
-            b.addVectors( a, u ).divideScalar( 2 );
+		// label uv edge orders
 
-            vnum = faces[ i ][ abc[ j ] ];
-            ctx.fillText( abc[ j ] + vnum, b.x * width, ( 1 - b.y ) * height );
+		for ( j = 0, jl = uv.length; j < jl; j ++ ) {
 
-            if ( b.x > 0.95 ) {  // wrap x
+			u = uv[ j ];
+			b.addVectors( a, u ).divideScalar( 2 );
 
-                ctx.fillText( abc[ j ] + vnum, ( b.x % 1 ) * width, ( 1 - b.y ) * height );
+			vnum = faces[ i ][ abc[ j ] ];
+			ctx.fillText( abc[ j ] + vnum, b.x * width, ( 1 - b.y ) * height );
 
-            }
+			if ( b.x > 0.95 ) {
 
-        }
+				// wrap x
 
-    }
+				ctx.fillText( abc[ j ] + vnum, ( b.x % 1 ) * width, ( 1 - b.y ) * height );
 
-    return canvas;
+			}
 
-}
+		}
+
+	}
+
+	return canvas;
+
+};
 
