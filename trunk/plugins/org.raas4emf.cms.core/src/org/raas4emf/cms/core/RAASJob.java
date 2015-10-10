@@ -8,7 +8,7 @@ import raascms.Artifact;
 
 abstract public class RAASJob extends Job {
 
-	final protected Artifact artifact;
+	public final Artifact artifact;
 
 	int _worked;
 	int _totalWork;

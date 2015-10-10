@@ -27,6 +27,8 @@ import org.eclipse.ui.part.ViewPart;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.transformation.TransformationUtils;
 import org.raas4emf.cms.ui.CMSActivator;
+import org.raas4emf.cms.ui.RAASUIUtils;
+import org.raas4emf.cms.ui.editor.editor.RAASEditorUtil;
 
 import raascms.Artifact;
 import raascms.Folder;
@@ -155,7 +157,7 @@ public class LinksView extends ViewPart implements ISelectionListener {
 			if (PreviewView.isWebGL(Arrays.asList(artifact)) || PreviewView.isCollada(Arrays.asList(artifact)) || PreviewView.isGeometryModel(Arrays.asList(artifact))) {
 				String renderer = CMSActivator.getSessionInstance().getRenderer().toLowerCase();
 				// String webglUri = RAASUtils.getRAASProp("RAASSERVICEURL") + "threejs/modelviewer.html?artifact=" + artifact.cdoID().toURIFragment();
-				String webglUri = CMSActivator.getSessionInstance().createFullDownloadUrl(artifact) + "&viewer=WebContent/threejs/modelviewer.html";
+				String webglUri = "&viewer=WebContent/threejs/modelviewer.html";
 				if (renderer.contains("canvas"))
 					webglUri += "&renderer=canvas";
 				if (renderer.contains("svg"))
@@ -163,7 +165,9 @@ public class LinksView extends ViewPart implements ISelectionListener {
 				if (renderer.contains("software"))
 					webglUri += "&renderer=software";
 				final String filename = PreviewView.getScene3dName();
-				webglUri = webglUri.replace("&filename=" + artifact.getName(), "&filename=" + filename);
+				if (!RAASUtils.hasExtension(artifact,".dae"))
+					webglUri +=  "&filename=" + filename;
+				webglUri=RAASEditorUtil.createRestURI(RAASUIUtils.getPath(artifact),webglUri).toString();
 				html.append("<br>");
 				html.append("<a href=\"");
 				html.append(webglUri);
