@@ -90,6 +90,10 @@ public class JQVTJavaValidator extends AbstractJQVTJavaValidator {
 					error("Incompatible RHS value of property template item. Expected " + getNameOfTypes(expectedTypeLight) + " but was " + canonicalName(actualType), ot, XbasePackage.eINSTANCE.getXVariableDeclaration_Type(), ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);
 			} else {
 				LightweightTypeReference actualType = getActualType(value);
+				if (jQVTUtils.isMany(expectedType,item.getReferredProperty()) && jQVTUtils.isMany(actualType,value)) {
+					expectedType = jQVTUtils.getComponentType(expectedType);
+					actualType = jQVTUtils.getComponentType(actualType,value);
+				}
 				LightweightTypeReference expectedTypeLight = toLightweightTypeReference(expectedType);
 				if (!(actualType!=null && expectedType!=null && actualType.isAssignableFrom(expectedTypeLight) || actualType!=null && expectedTypeLight!=null && expectedTypeLight.isAssignableFrom(actualType)))
 					error("Incompatible RHS value of property template item. Expected " + getNameOfTypes(expectedTypeLight) + " but was " + canonicalName(actualType), value, null, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);

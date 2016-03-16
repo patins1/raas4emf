@@ -280,6 +280,27 @@
 	        <filter name="projectNature" value="org.eclipse.xtext.ui.shared.xtextNature"/>
         </page>
     </extension>
+    <extension point="org.eclipse.ui.menus">
+		<menuContribution locationURI="popup:#TextEditorContext?after=xtext.ui.openDeclaration">
+			<command
+				commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand"
+				id="org.eclipse.jqvt.JQVT.OpenGeneratedCode"
+				style="push">
+					<visibleWhen checkEnabled="false">
+						<reference definitionId="org.eclipse.jqvt.JQVT.Editor.opened" />
+					</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="org.eclipse.jqvt.ui.JQVTExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
+			commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand">
+				<activeWhen>
+					<reference definitionId="org.eclipse.jqvt.JQVT.Editor.opened" />
+				</activeWhen>
+		</handler>
+	</extension>
 
 	<!-- Quick Outline -->
 	<extension
@@ -398,8 +419,30 @@
 				</reference>
 			</activeWhen>
 		</handler>
+		<handler
+            class="org.eclipse.jqvt.ui.JQVTExecutableExtensionFactory:org.eclipse.xtext.xbase.ui.imports.OrganizeImportsHandler"
+            commandId="org.eclipse.xtext.xbase.ui.organizeImports">
+           	<activeWhen>
+				<reference
+					definitionId="org.eclipse.jqvt.JQVT.Editor.opened">
+				</reference>
+			</activeWhen>
+        </handler>
 	</extension>
 	<extension point="org.eclipse.ui.menus">
+	    <menuContribution
+            locationURI="popup:#TextEditorContext?after=group.edit">
+             <command
+                 commandId="org.eclipse.xtext.xbase.ui.organizeImports"
+                 style="push"
+                 tooltip="Organize Imports">
+                <visibleWhen checkEnabled="false">
+                    <reference
+                        definitionId="org.eclipse.jqvt.JQVT.Editor.opened">
+                    </reference>
+                </visibleWhen>
+            </command>  
+        </menuContribution>
 		<menuContribution
 			locationURI="popup:#TextEditorContext?after=group.open">
 			<command commandId="org.eclipse.xtext.xbase.ui.hierarchy.OpenTypeHierarchy"
@@ -456,7 +499,7 @@
    </extension>
    <extension point="org.eclipse.ui.editorActions">
       <editorContribution targetID="org.eclipse.jqvt.JQVT" 
-                          id="org.eclipse.jqvt.JQVT.ide.rulerActions">
+                          id="org.eclipse.jqvt.JQVT.rulerActions">
 	     <action
 	             label="Not Used"
 	             class="org.eclipse.jqvt.ui.JQVTExecutableExtensionFactory:org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
@@ -467,26 +510,26 @@
    </extension>
    <extension point="org.eclipse.ui.popupMenus">
       <viewerContribution
-         targetID="org.eclipse.jqvt.JQVT.ide.rulerContextMenu"
-         id="org.eclipse.jqvt.JQVT.ide.RulerPopupActions">
+         targetID="org.eclipse.jqvt.JQVT.RulerContext"
+         id="org.eclipse.jqvt.JQVT.RulerPopupActions">
          <action
             label="Toggle Breakpoint"
             class="org.eclipse.jqvt.ui.JQVTExecutableExtensionFactory:org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
             menubarPath="debug"
-            id="org.eclipse.jqvt.JQVT.ide.rulerContextMenu.toggleBreakpointAction">
+            id="org.eclipse.jqvt.JQVT.rulerContextMenu.toggleBreakpointAction">
          </action>
          <action
             label="Not used"
             class="org.eclipse.jqvt.ui.JQVTExecutableExtensionFactory:org.eclipse.debug.ui.actions.RulerEnableDisableBreakpointActionDelegate"
             menubarPath="debug"
-            id="org.eclipse.jqvt.JQVT.ide.rulerContextMenu.enableDisableBreakpointAction">
+            id="org.eclipse.jqvt.JQVT.rulerContextMenu.enableDisableBreakpointAction">
          </action>
          <action
            label="Breakpoint Properties"
            helpContextId="breakpoint_properties_action_context"
            class="org.eclipse.jqvt.ui.JQVTExecutableExtensionFactory:org.eclipse.jdt.debug.ui.actions.JavaBreakpointPropertiesRulerActionDelegate"
            menubarPath="group.properties"
-           id="org.eclipse.jqvt.JQVT.ide.rulerContextMenu.openBreapointPropertiesAction">
+           id="org.eclipse.jqvt.JQVT.rulerContextMenu.openBreapointPropertiesAction">
          </action>
       </viewerContribution>
    </extension>
@@ -557,6 +600,12 @@
             class="org.eclipse.jqvt.ui.JQVTExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
             extensions="jqvt">
     </provider>
+  </extension>
+  <extension point="org.eclipse.team.core.fileTypes">
+    <fileTypes
+            extension="jqvt"
+            type="text">
+    </fileTypes>
   </extension>
 
 </plugin>

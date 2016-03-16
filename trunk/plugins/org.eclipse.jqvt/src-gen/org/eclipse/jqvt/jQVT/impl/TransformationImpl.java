@@ -30,13 +30,13 @@ import org.eclipse.jqvt.jQVT.Transformation;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.TransformationImpl#getTransformationName <em>Transformation Name</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.TransformationImpl#getDirections <em>Directions</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.TransformationImpl#getRules <em>Rules</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.TransformationImpl#getQueries <em>Queries</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

@@ -23,11 +23,11 @@ import org.eclipse.xtext.xbase.XVariableDeclaration;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.RelationDomainImpl#getDirection <em>Direction</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.RelationDomainImpl#getRootTemplate <em>Root Template</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

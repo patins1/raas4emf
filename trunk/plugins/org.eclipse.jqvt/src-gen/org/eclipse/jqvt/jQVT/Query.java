@@ -18,13 +18,13 @@ import org.eclipse.xtext.xbase.XExpression;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.jqvt.jQVT.Query#getName <em>Name</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.Query#getParams <em>Params</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.Query#getType <em>Type</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.Query#getBody <em>Body</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.jqvt.jQVT.JQVTPackage#getQuery()
  * @model

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.eclipse.jqvt.ui
 Bundle-Vendor: My Company
-Bundle-Version: 2.0.0
+Bundle-Version: 14.0.0
 Bundle-SymbolicName: org.eclipse.jqvt.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.jqvt;visibility:=reexport,
@@ -24,5 +24,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.eclipse.jqvt.ui.contentassist,
  org.eclipse.jqvt.ui.contentassist.antlr,
  org.eclipse.jqvt.ui.internal,
- org.eclipse.jqvt.ui.quickfix
+ org.eclipse.jqvt.ui.quickfix,
+ org.eclipse.jqvt.ui.contentassist.antlr.internal
 Bundle-Activator: org.eclipse.jqvt.ui.internal.JQVTActivator

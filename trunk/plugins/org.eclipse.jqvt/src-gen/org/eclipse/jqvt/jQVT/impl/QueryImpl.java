@@ -32,13 +32,13 @@ import org.eclipse.xtext.xbase.XExpression;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.QueryImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.QueryImpl#getParams <em>Params</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.QueryImpl#getType <em>Type</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.QueryImpl#getBody <em>Body</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

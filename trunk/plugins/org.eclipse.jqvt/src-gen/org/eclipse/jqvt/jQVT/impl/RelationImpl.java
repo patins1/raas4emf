@@ -31,6 +31,7 @@ import org.eclipse.xtext.xbase.XVariableDeclaration;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.RelationImpl#isTopRelation <em>Top Relation</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.RelationImpl#getName <em>Name</em>}</li>
@@ -39,7 +40,6 @@ import org.eclipse.xtext.xbase.XVariableDeclaration;
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.RelationImpl#getWhen <em>When</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.RelationImpl#getWhere <em>Where</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

@@ -24,11 +24,11 @@ import org.eclipse.xtext.xbase.XExpression;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.PropertyTemplateItemImpl#getReferredProperty <em>Referred Property</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.PropertyTemplateItemImpl#getValue <em>Value</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

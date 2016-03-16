@@ -4,7 +4,6 @@
 package org.eclipse.jqvt.util
 
 import com.google.inject.Inject
-import com.google.inject.Provider
 import java.util.HashSet
 import java.util.List
 import org.eclipse.emf.ecore.EObject
@@ -22,7 +21,6 @@ import org.eclipse.xtext.common.types.JvmOperation
 import org.eclipse.xtext.common.types.JvmParameterizedTypeReference
 import org.eclipse.xtext.common.types.JvmTypeReference
 import org.eclipse.xtext.common.types.JvmVisibility
-import org.eclipse.xtext.common.types.util.TypeReferences
 import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.xbase.XAbstractFeatureCall
 import org.eclipse.xtext.xbase.XAssignment
@@ -34,6 +32,8 @@ import org.eclipse.xtext.xbase.jvmmodel.JvmTypeReferenceBuilder
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
 import org.eclipse.xtext.xbase.typesystem.IBatchTypeResolver
 import org.eclipse.xtext.xbase.typesystem.conformance.TypeConformanceComputationArgument
+import org.eclipse.xtext.xbase.typesystem.references.CompoundTypeReference
+import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference
 import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReferenceFactory
 import org.eclipse.xtext.xbase.typesystem.references.StandardTypeReferenceOwner
 import org.eclipse.xtext.xbase.typesystem.util.CommonTypeComputationServices
@@ -156,8 +156,16 @@ class JQVTUtils {
 		if (type instanceof JvmParameterizedTypeReference && (type as JvmParameterizedTypeReference).arguments.length!=0) (type as JvmParameterizedTypeReference).arguments.get(0) else type.newTypeRef(typeof(Object));
 	}
 	
+	def getComponentType(LightweightTypeReference type, EObject context) {
+		if (type instanceof CompoundTypeReference && (type as CompoundTypeReference).multiTypeComponents.length!=0) (type as CompoundTypeReference).multiTypeComponents.get(0) else context.newTypeRef(typeof(Object)).toLightweightTypeReference(context);
+	}
+	
 	def boolean isMany(JvmTypeReference type, EObject context) {		
 		isConformantRawTypes(context.newTypeRef(typeof(List)),type,context) || type instanceof JvmGenericArrayTypeReference || type.type instanceof JvmArrayType
+	}
+	
+	def boolean isMany(LightweightTypeReference type, EObject context) {		
+		isConformantRawTypes(context.newTypeRef(typeof(List)).toLightweightTypeReference(context),type) || type instanceof JvmGenericArrayTypeReference || type.type instanceof JvmArrayType
 	}
 	
 	def static String toQVT(EObject clause) {
@@ -195,11 +203,19 @@ class JQVTUtils {
 	}
 	
 	def isConformant(JvmTypeReference t1, JvmTypeReference t2, EObject context) {
-		t1.toLightweightTypeReference(context).isAssignableFrom(t2.toLightweightTypeReference(context))
+		try{
+			t1.toLightweightTypeReference(context).isAssignableFrom(t2.toLightweightTypeReference(context))
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	
 	def isConformantRawTypes(JvmTypeReference t1, JvmTypeReference t2, EObject context) {
 		t1.toLightweightTypeReference(context).isAssignableFrom(t2.toLightweightTypeReference(context), new TypeConformanceComputationArgument(!false, false, true, true, false, true))
+	}
+
+	def isConformantRawTypes(LightweightTypeReference t1, LightweightTypeReference t2) {
+		t1.isAssignableFrom(t2, new TypeConformanceComputationArgument(!false, false, true, true, false, true))
 	}
 
 	def toLightweightTypeReference(JvmTypeReference typeRef, EObject context) {

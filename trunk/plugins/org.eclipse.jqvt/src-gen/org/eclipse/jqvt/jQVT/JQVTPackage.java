@@ -78,13 +78,13 @@ public interface JQVTPackage extends EPackage
   int PACKAGE_DECLARATION__NAME = 0;
 
   /**
-   * The feature id for the '<em><b>Imports</b></em>' containment reference list.
+   * The feature id for the '<em><b>Import Section</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int PACKAGE_DECLARATION__IMPORTS = 1;
+  int PACKAGE_DECLARATION__IMPORT_SECTION = 1;
 
   /**
    * The feature id for the '<em><b>Transformation</b></em>' containment reference.
@@ -105,34 +105,6 @@ public interface JQVTPackage extends EPackage
   int PACKAGE_DECLARATION_FEATURE_COUNT = 3;
 
   /**
-   * The meta object id for the '{@link org.eclipse.jqvt.jQVT.impl.ImportImpl <em>Import</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see org.eclipse.jqvt.jQVT.impl.ImportImpl
-   * @see org.eclipse.jqvt.jQVT.impl.JQVTPackageImpl#getImport()
-   * @generated
-   */
-  int IMPORT = 1;
-
-  /**
-   * The feature id for the '<em><b>Imported Namespace</b></em>' attribute.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int IMPORT__IMPORTED_NAMESPACE = 0;
-
-  /**
-   * The number of structural features of the '<em>Import</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int IMPORT_FEATURE_COUNT = 1;
-
-  /**
    * The meta object id for the '{@link org.eclipse.jqvt.jQVT.impl.TransformationImpl <em>Transformation</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -140,7 +112,7 @@ public interface JQVTPackage extends EPackage
    * @see org.eclipse.jqvt.jQVT.impl.JQVTPackageImpl#getTransformation()
    * @generated
    */
-  int TRANSFORMATION = 2;
+  int TRANSFORMATION = 1;
 
   /**
    * The feature id for the '<em><b>Transformation Name</b></em>' attribute.
@@ -195,7 +167,7 @@ public interface JQVTPackage extends EPackage
    * @see org.eclipse.jqvt.jQVT.impl.JQVTPackageImpl#getQuery()
    * @generated
    */
-  int QUERY = 3;
+  int QUERY = 2;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -250,7 +222,7 @@ public interface JQVTPackage extends EPackage
    * @see org.eclipse.jqvt.jQVT.impl.JQVTPackageImpl#getDirection()
    * @generated
    */
-  int DIRECTION = 4;
+  int DIRECTION = 3;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -287,7 +259,7 @@ public interface JQVTPackage extends EPackage
    * @see org.eclipse.jqvt.jQVT.impl.JQVTPackageImpl#getRelation()
    * @generated
    */
-  int RELATION = 5;
+  int RELATION = 4;
 
   /**
    * The feature id for the '<em><b>Top Relation</b></em>' attribute.
@@ -360,7 +332,7 @@ public interface JQVTPackage extends EPackage
    * @see org.eclipse.jqvt.jQVT.impl.JQVTPackageImpl#getRelationDomain()
    * @generated
    */
-  int RELATION_DOMAIN = 6;
+  int RELATION_DOMAIN = 5;
 
   /**
    * The feature id for the '<em><b>Direction</b></em>' reference.
@@ -397,7 +369,7 @@ public interface JQVTPackage extends EPackage
    * @see org.eclipse.jqvt.jQVT.impl.JQVTPackageImpl#getPropertyTemplateItem()
    * @generated
    */
-  int PROPERTY_TEMPLATE_ITEM = 7;
+  int PROPERTY_TEMPLATE_ITEM = 6;
 
   /**
    * The feature id for the '<em><b>Referred Property</b></em>' reference.
@@ -434,7 +406,7 @@ public interface JQVTPackage extends EPackage
    * @see org.eclipse.jqvt.jQVT.impl.JQVTPackageImpl#getObjectTemplate()
    * @generated
    */
-  int OBJECT_TEMPLATE = 8;
+  int OBJECT_TEMPLATE = 7;
 
   /**
    * The feature id for the '<em><b>Type</b></em>' containment reference.
@@ -513,15 +485,15 @@ public interface JQVTPackage extends EPackage
   EAttribute getPackageDeclaration_Name();
 
   /**
-   * Returns the meta object for the containment reference list '{@link org.eclipse.jqvt.jQVT.PackageDeclaration#getImports <em>Imports</em>}'.
+   * Returns the meta object for the containment reference '{@link org.eclipse.jqvt.jQVT.PackageDeclaration#getImportSection <em>Import Section</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Imports</em>'.
-   * @see org.eclipse.jqvt.jQVT.PackageDeclaration#getImports()
+   * @return the meta object for the containment reference '<em>Import Section</em>'.
+   * @see org.eclipse.jqvt.jQVT.PackageDeclaration#getImportSection()
    * @see #getPackageDeclaration()
    * @generated
    */
-  EReference getPackageDeclaration_Imports();
+  EReference getPackageDeclaration_ImportSection();
 
   /**
    * Returns the meta object for the containment reference '{@link org.eclipse.jqvt.jQVT.PackageDeclaration#getTransformation <em>Transformation</em>}'.
@@ -533,27 +505,6 @@ public interface JQVTPackage extends EPackage
    * @generated
    */
   EReference getPackageDeclaration_Transformation();
-
-  /**
-   * Returns the meta object for class '{@link org.eclipse.jqvt.jQVT.Import <em>Import</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Import</em>'.
-   * @see org.eclipse.jqvt.jQVT.Import
-   * @generated
-   */
-  EClass getImport();
-
-  /**
-   * Returns the meta object for the attribute '{@link org.eclipse.jqvt.jQVT.Import#getImportedNamespace <em>Imported Namespace</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Imported Namespace</em>'.
-   * @see org.eclipse.jqvt.jQVT.Import#getImportedNamespace()
-   * @see #getImport()
-   * @generated
-   */
-  EAttribute getImport_ImportedNamespace();
 
   /**
    * Returns the meta object for class '{@link org.eclipse.jqvt.jQVT.Transformation <em>Transformation</em>}'.
@@ -898,12 +849,12 @@ public interface JQVTPackage extends EPackage
     EAttribute PACKAGE_DECLARATION__NAME = eINSTANCE.getPackageDeclaration_Name();
 
     /**
-     * The meta object literal for the '<em><b>Imports</b></em>' containment reference list feature.
+     * The meta object literal for the '<em><b>Import Section</b></em>' containment reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference PACKAGE_DECLARATION__IMPORTS = eINSTANCE.getPackageDeclaration_Imports();
+    EReference PACKAGE_DECLARATION__IMPORT_SECTION = eINSTANCE.getPackageDeclaration_ImportSection();
 
     /**
      * The meta object literal for the '<em><b>Transformation</b></em>' containment reference feature.
@@ -912,24 +863,6 @@ public interface JQVTPackage extends EPackage
      * @generated
      */
     EReference PACKAGE_DECLARATION__TRANSFORMATION = eINSTANCE.getPackageDeclaration_Transformation();
-
-    /**
-     * The meta object literal for the '{@link org.eclipse.jqvt.jQVT.impl.ImportImpl <em>Import</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see org.eclipse.jqvt.jQVT.impl.ImportImpl
-     * @see org.eclipse.jqvt.jQVT.impl.JQVTPackageImpl#getImport()
-     * @generated
-     */
-    EClass IMPORT = eINSTANCE.getImport();
-
-    /**
-     * The meta object literal for the '<em><b>Imported Namespace</b></em>' attribute feature.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    EAttribute IMPORT__IMPORTED_NAMESPACE = eINSTANCE.getImport_ImportedNamespace();
 
     /**
      * The meta object literal for the '{@link org.eclipse.jqvt.jQVT.impl.TransformationImpl <em>Transformation</em>}' class.

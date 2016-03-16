@@ -13,11 +13,11 @@ import org.eclipse.xtext.xbase.XVariableDeclaration;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.jqvt.jQVT.RelationDomain#getDirection <em>Direction</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.RelationDomain#getRootTemplate <em>Root Template</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.jqvt.jQVT.JQVTPackage#getRelationDomain()
  * @model
