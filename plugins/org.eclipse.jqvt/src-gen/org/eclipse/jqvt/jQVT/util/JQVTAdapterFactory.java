@@ -85,11 +85,6 @@ public class JQVTAdapterFactory extends AdapterFactoryImpl
         return createPackageDeclarationAdapter();
       }
       @Override
-      public Adapter caseImport(Import object)
-      {
-        return createImportAdapter();
-      }
-      @Override
       public Adapter caseTransformation(Transformation object)
       {
         return createTransformationAdapter();
@@ -172,21 +167,6 @@ public class JQVTAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createPackageDeclarationAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link org.eclipse.jqvt.jQVT.Import <em>Import</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see org.eclipse.jqvt.jQVT.Import
-   * @generated
-   */
-  public Adapter createImportAdapter()
   {
     return null;
   }

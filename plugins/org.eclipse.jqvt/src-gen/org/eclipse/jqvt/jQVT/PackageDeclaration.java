@@ -2,9 +2,9 @@
  */
 package org.eclipse.jqvt.jQVT;
 
-import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EObject;
+
+import org.eclipse.xtext.xtype.XImportSection;
 
 /**
  * <!-- begin-user-doc -->
@@ -13,12 +13,12 @@ import org.eclipse.emf.ecore.EObject;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.jqvt.jQVT.PackageDeclaration#getName <em>Name</em>}</li>
- *   <li>{@link org.eclipse.jqvt.jQVT.PackageDeclaration#getImports <em>Imports</em>}</li>
+ *   <li>{@link org.eclipse.jqvt.jQVT.PackageDeclaration#getImportSection <em>Import Section</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.PackageDeclaration#getTransformation <em>Transformation</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.jqvt.jQVT.JQVTPackage#getPackageDeclaration()
  * @model
@@ -53,20 +53,30 @@ public interface PackageDeclaration extends EObject
   void setName(String value);
 
   /**
-   * Returns the value of the '<em><b>Imports</b></em>' containment reference list.
-   * The list contents are of type {@link org.eclipse.jqvt.jQVT.Import}.
+   * Returns the value of the '<em><b>Import Section</b></em>' containment reference.
    * <!-- begin-user-doc -->
    * <p>
-   * If the meaning of the '<em>Imports</em>' containment reference list isn't clear,
+   * If the meaning of the '<em>Import Section</em>' containment reference isn't clear,
    * there really should be more of a description here...
    * </p>
    * <!-- end-user-doc -->
-   * @return the value of the '<em>Imports</em>' containment reference list.
-   * @see org.eclipse.jqvt.jQVT.JQVTPackage#getPackageDeclaration_Imports()
+   * @return the value of the '<em>Import Section</em>' containment reference.
+   * @see #setImportSection(XImportSection)
+   * @see org.eclipse.jqvt.jQVT.JQVTPackage#getPackageDeclaration_ImportSection()
    * @model containment="true"
    * @generated
    */
-  EList<Import> getImports();
+  XImportSection getImportSection();
+
+  /**
+   * Sets the value of the '{@link org.eclipse.jqvt.jQVT.PackageDeclaration#getImportSection <em>Import Section</em>}' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Import Section</em>' containment reference.
+   * @see #getImportSection()
+   * @generated
+   */
+  void setImportSection(XImportSection value);
 
   /**
    * Returns the value of the '<em><b>Transformation</b></em>' containment reference.

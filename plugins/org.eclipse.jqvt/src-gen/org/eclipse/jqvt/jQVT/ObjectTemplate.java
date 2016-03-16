@@ -13,10 +13,10 @@ import org.eclipse.xtext.xbase.XVariableDeclaration;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.jqvt.jQVT.ObjectTemplate#getPart <em>Part</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.jqvt.jQVT.JQVTPackage#getObjectTemplate()
  * @model

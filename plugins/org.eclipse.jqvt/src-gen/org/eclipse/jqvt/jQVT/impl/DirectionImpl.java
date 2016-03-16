@@ -18,11 +18,11 @@ import org.eclipse.jqvt.jQVT.JQVTPackage;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.DirectionImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.impl.DirectionImpl#getImp <em>Imp</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

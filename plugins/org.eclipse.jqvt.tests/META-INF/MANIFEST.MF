@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.eclipse.jqvt.tests
 Bundle-Vendor: My Company
-Bundle-Version: 1.0.0
+Bundle-Version: 14.0.0
 Bundle-SymbolicName: org.eclipse.jqvt.tests; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.jqvt,
@@ -10,9 +10,9 @@ Require-Bundle: org.eclipse.jqvt,
  org.eclipse.core.runtime,
  org.eclipse.xtext,
  org.eclipse.xtext.junit4,
- org.eclipse.xtext.ui.junit,
  org.eclipse.ui.workbench;resolution:=optional,
- org.objectweb.asm;resolution:=optional
+ org.objectweb.asm;resolution:=optional,
+ org.eclipse.xtext.xbase.lib
 Import-Package: org.apache.log4j,
  org.apache.commons.logging,
  org.junit.runner;version="4.5.0",

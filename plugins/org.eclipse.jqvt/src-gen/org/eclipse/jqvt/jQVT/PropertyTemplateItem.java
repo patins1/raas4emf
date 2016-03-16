@@ -15,11 +15,11 @@ import org.eclipse.xtext.xbase.XExpression;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.eclipse.jqvt.jQVT.PropertyTemplateItem#getReferredProperty <em>Referred Property</em>}</li>
  *   <li>{@link org.eclipse.jqvt.jQVT.PropertyTemplateItem#getValue <em>Value</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.eclipse.jqvt.jQVT.JQVTPackage#getPropertyTemplateItem()
  * @model

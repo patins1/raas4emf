@@ -234,7 +234,7 @@ return true;'''
 										rhsExp = clause.value.asVar.name;
 									} else {
 										rhsExp = "evaluateExpression" + i + "()";
-										c.members += relation.toMethod("evaluateExpression"+i, field.returnType) [	
+										c.members += relation.toMethod("evaluateExpression"+i, clause.value.type) [	
 											body = clause.value
 										]
 									} 
@@ -281,7 +281,7 @@ return true;'''
 «rhs.name» = «IF !conformant»(«rhs.simpleTypeName»)«ENDIF» «objectTemplate.name».«getter»();
 			''')
 										} else 
-												mapMethod.append('''if («objectTemplate.name».«getter»() == null ? «rhsExp» != null : !«objectTemplate.name».«getter»().equals(«rhsExp»)) {«printFailure»«stopTuple»}«printSuccess»
+												mapMethod.append('''«IF field.returnType.type instanceof JvmPrimitiveType»if («objectTemplate.name».«getter»() != «rhsExp»)«ELSE»if («objectTemplate.name».«getter»() == null ? «rhsExp» != null : !«objectTemplate.name».«getter»().equals(«rhsExp»))«ENDIF» {«printFailure»«stopTuple»}«printSuccess»
 			''')										
 									}
 								

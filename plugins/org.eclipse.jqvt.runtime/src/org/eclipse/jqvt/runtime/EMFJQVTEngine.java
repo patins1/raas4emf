@@ -134,4 +134,8 @@ public class EMFJQVTEngine extends JQVTEngine {
 		return (List<T>) cached;
 	}
 
+	public List<Object> getCreatedElements() {
+		return createdElements;
+	}
+
 }

@@ -10,7 +10,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
 import org.eclipse.jqvt.jQVT.Direction;
-import org.eclipse.jqvt.jQVT.Import;
 import org.eclipse.jqvt.jQVT.JQVTFactory;
 import org.eclipse.jqvt.jQVT.JQVTPackage;
 import org.eclipse.jqvt.jQVT.ObjectTemplate;
@@ -24,6 +23,8 @@ import org.eclipse.jqvt.jQVT.Transformation;
 import org.eclipse.xtext.common.types.TypesPackage;
 
 import org.eclipse.xtext.xbase.XbasePackage;
+
+import org.eclipse.xtext.xtype.XtypePackage;
 
 /**
  * <!-- begin-user-doc -->
@@ -39,13 +40,6 @@ public class JQVTPackageImpl extends EPackageImpl implements JQVTPackage
    * @generated
    */
   private EClass packageDeclarationEClass = null;
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  private EClass importEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -146,6 +140,7 @@ public class JQVTPackageImpl extends EPackageImpl implements JQVTPackage
 
     // Initialize simple dependencies
     XbasePackage.eINSTANCE.eClass();
+    XtypePackage.eINSTANCE.eClass();
 
     // Create package meta-data objects
     theJQVTPackage.createPackageContents();
@@ -187,7 +182,7 @@ public class JQVTPackageImpl extends EPackageImpl implements JQVTPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  public EReference getPackageDeclaration_Imports()
+  public EReference getPackageDeclaration_ImportSection()
   {
     return (EReference)packageDeclarationEClass.getEStructuralFeatures().get(1);
   }
@@ -200,26 +195,6 @@ public class JQVTPackageImpl extends EPackageImpl implements JQVTPackage
   public EReference getPackageDeclaration_Transformation()
   {
     return (EReference)packageDeclarationEClass.getEStructuralFeatures().get(2);
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EClass getImport()
-  {
-    return importEClass;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public EAttribute getImport_ImportedNamespace()
-  {
-    return (EAttribute)importEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -534,11 +509,8 @@ public class JQVTPackageImpl extends EPackageImpl implements JQVTPackage
     // Create classes and their features
     packageDeclarationEClass = createEClass(PACKAGE_DECLARATION);
     createEAttribute(packageDeclarationEClass, PACKAGE_DECLARATION__NAME);
-    createEReference(packageDeclarationEClass, PACKAGE_DECLARATION__IMPORTS);
+    createEReference(packageDeclarationEClass, PACKAGE_DECLARATION__IMPORT_SECTION);
     createEReference(packageDeclarationEClass, PACKAGE_DECLARATION__TRANSFORMATION);
-
-    importEClass = createEClass(IMPORT);
-    createEAttribute(importEClass, IMPORT__IMPORTED_NAMESPACE);
 
     transformationEClass = createEClass(TRANSFORMATION);
     createEAttribute(transformationEClass, TRANSFORMATION__TRANSFORMATION_NAME);
@@ -601,6 +573,7 @@ public class JQVTPackageImpl extends EPackageImpl implements JQVTPackage
     setNsURI(eNS_URI);
 
     // Obtain other dependent packages
+    XtypePackage theXtypePackage = (XtypePackage)EPackage.Registry.INSTANCE.getEPackage(XtypePackage.eNS_URI);
     TypesPackage theTypesPackage = (TypesPackage)EPackage.Registry.INSTANCE.getEPackage(TypesPackage.eNS_URI);
     XbasePackage theXbasePackage = (XbasePackage)EPackage.Registry.INSTANCE.getEPackage(XbasePackage.eNS_URI);
 
@@ -614,11 +587,8 @@ public class JQVTPackageImpl extends EPackageImpl implements JQVTPackage
     // Initialize classes and features; add operations and parameters
     initEClass(packageDeclarationEClass, PackageDeclaration.class, "PackageDeclaration", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getPackageDeclaration_Name(), ecorePackage.getEString(), "name", null, 0, 1, PackageDeclaration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getPackageDeclaration_Imports(), this.getImport(), null, "imports", null, 0, -1, PackageDeclaration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getPackageDeclaration_ImportSection(), theXtypePackage.getXImportSection(), null, "importSection", null, 0, 1, PackageDeclaration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getPackageDeclaration_Transformation(), this.getTransformation(), null, "transformation", null, 0, 1, PackageDeclaration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-    initEClass(importEClass, Import.class, "Import", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getImport_ImportedNamespace(), ecorePackage.getEString(), "importedNamespace", null, 0, 1, Import.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(transformationEClass, Transformation.class, "Transformation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getTransformation_TransformationName(), ecorePackage.getEString(), "transformationName", null, 0, 1, Transformation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

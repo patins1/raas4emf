@@ -9,14 +9,8 @@ import "http://www.eclipse.org/xtext/xbase/Xbase" as xbase
 
 PackageDeclaration:
 	'package' name=QualifiedName ';'
-	imports+=Import*
+	importSection=XImportSection
 	transformation=Transformation;
-
-Import:
-	'import' importedNamespace=QualifiedNameWithWildCard2 ';';
-
-QualifiedNameWithWildCard2:
-	QualifiedName ('.' '*')?;
 
 Transformation:
 	'transformation' transformationName=ID '(' directions+=Direction (',' directions+=Direction)* ')' '{'
@@ -55,9 +49,6 @@ ObjectTemplate returns xbase::XVariableDeclaration:
 
 PropertyTemplateItem:
 	referredProperty=[types::JvmOperation|ValidID] '=' value= (ObjectTemplate |  XExpression);
-
-QualifiedName:
-  (ValidID (=>('.'|'::') ValidID)*);
 
 terminal SL_COMMENT : ('--'|'//') !('\n'|'\r')* ('\r'? '\n')?;
  

@@ -65,7 +65,6 @@ public class JQVTFactoryImpl extends EFactoryImpl implements JQVTFactory
     switch (eClass.getClassifierID())
     {
       case JQVTPackage.PACKAGE_DECLARATION: return createPackageDeclaration();
-      case JQVTPackage.IMPORT: return createImport();
       case JQVTPackage.TRANSFORMATION: return createTransformation();
       case JQVTPackage.QUERY: return createQuery();
       case JQVTPackage.DIRECTION: return createDirection();
@@ -87,17 +86,6 @@ public class JQVTFactoryImpl extends EFactoryImpl implements JQVTFactory
   {
     PackageDeclarationImpl packageDeclaration = new PackageDeclarationImpl();
     return packageDeclaration;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  public Import createImport()
-  {
-    ImportImpl import_ = new ImportImpl();
-    return import_;
   }
 
   /**
