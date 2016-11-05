@@ -3,6 +3,8 @@
  */
 package org.raas4emf.cms.core;
 
+import static org.eclipse.rap.rwt.internal.protocol.ClientMessageConst.CONNECTION_ID;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,6 +37,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.cxf.jaxrs.impl.MetadataMap;
@@ -80,6 +84,10 @@ import org.eclipse.net4j.util.container.IManagedContainer;
 import org.eclipse.net4j.util.om.monitor.MonitorCanceledException;
 import org.eclipse.net4j.util.security.IPasswordCredentials;
 import org.eclipse.net4j.util.security.IPasswordCredentialsProvider;
+import org.eclipse.rap.rwt.internal.service.ContextProvider;
+import org.eclipse.rap.rwt.internal.service.ServiceContext;
+import org.eclipse.rap.rwt.internal.service.UISessionBuilder;
+import org.eclipse.rap.rwt.internal.service.UISessionImpl;
 import org.ifc4emf.metamodel.ifcheader.Model;
 import org.ifc4emf.part21.loader.ContainmentTreeOrderedByNumberHelper;
 import org.ifc4emf.part21.loader.Part21ResourceImpl;
@@ -1476,7 +1484,28 @@ public class RAASUtils {
 		}
 	}
 
+	@SuppressWarnings("restriction")
 	public static void fixServiceHandlePreconditions() {
+		ServiceContext context = ContextProvider.getContext();
+		HttpServletRequest request = context.getRequest();
+	    String connectionId = request.getParameter( CONNECTION_ID );
+		if (context.getUISession() == null && connectionId==null) {
+			HttpSession httpSession = request.getSession(true);
+			UISessionImpl uiSession = UISessionImpl.getInstanceFromSession(httpSession, connectionId);
+			if (uiSession==null) {
+				// since Neon, we will always arrive here as a null connectionId would not be stored
+				for (String name : Collections.list(httpSession.getAttributeNames())) {
+					Object o = httpSession.getAttribute(name);
+					if (o instanceof UISessionImpl) {
+						uiSession = (UISessionImpl) o;
+					}
+				}
+			}
+			if (uiSession != null)
+				context.setUISession(uiSession);
+			else
+				context.setUISession(new UISessionBuilder(context).buildUISession());
+		}
 		if (fixServiceHandlePreconditionsRunnable != null)
 			fixServiceHandlePreconditionsRunnable.run();
 	}
