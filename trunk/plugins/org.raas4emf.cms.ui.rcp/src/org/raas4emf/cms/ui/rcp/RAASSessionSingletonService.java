@@ -6,9 +6,9 @@ package org.raas4emf.cms.ui.rcp;
 import java.io.File;
 
 import org.eclipse.swt.SWT;
+import org.raas4emf.cms.core.IRAASSessionSingletonService;
+import org.raas4emf.cms.core.RAASSessionSingleton;
 import org.raas4emf.cms.core.RAASUtils;
-import org.raas4emf.cms.ui.discriminator.IRAASSessionSingletonService;
-import org.raas4emf.cms.ui.discriminator.RAASSessionSingleton;
 
 import raascms.Artifact;
 
