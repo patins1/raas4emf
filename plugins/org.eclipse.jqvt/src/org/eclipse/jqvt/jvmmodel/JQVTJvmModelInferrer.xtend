@@ -27,6 +27,7 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
 
 import static org.eclipse.xtext.common.types.TypesFactory.*
+import org.eclipse.xtext.xbase.XNullLiteral
 
 /**
  * Infers a JVM model from the JQVT model.
@@ -232,6 +233,9 @@ return true;'''
 									var rhsExp = 'unknown';
 									if (clause.value.asVar!=null && !(clause.value instanceof XFeatureCall)) {
 										rhsExp = clause.value.asVar.name;
+									} else if (clause.value instanceof XNullLiteral) {
+										// don't generate a method for the "null" expression as it would have return type java.lang.Object (since Neon) that cannot be assigned the the referred property
+										rhsExp = 'null';
 									} else {
 										rhsExp = "evaluateExpression" + i + "()";
 										c.members += relation.toMethod("evaluateExpression"+i, clause.value.type) [	
