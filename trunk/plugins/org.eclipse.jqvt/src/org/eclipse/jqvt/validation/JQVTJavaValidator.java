@@ -24,6 +24,7 @@ import org.eclipse.xtext.validation.Check;
 import org.eclipse.xtext.validation.ValidationMessageAcceptor;
 import org.eclipse.xtext.xbase.XExpression;
 import org.eclipse.xtext.xbase.XFeatureCall;
+import org.eclipse.xtext.xbase.XNullLiteral;
 import org.eclipse.xtext.xbase.XVariableDeclaration;
 import org.eclipse.xtext.xbase.XbasePackage;
 import org.eclipse.xtext.xbase.typesystem.references.LightweightTypeReference;
@@ -95,7 +96,7 @@ public class JQVTJavaValidator extends AbstractJQVTJavaValidator {
 					actualType = jQVTUtils.getComponentType(actualType,value);
 				}
 				LightweightTypeReference expectedTypeLight = toLightweightTypeReference(expectedType);
-				if (!(actualType!=null && expectedType!=null && actualType.isAssignableFrom(expectedTypeLight) || actualType!=null && expectedTypeLight!=null && expectedTypeLight.isAssignableFrom(actualType)))
+				if (!(actualType!=null && expectedType!=null && actualType.isAssignableFrom(expectedTypeLight) || actualType!=null && expectedTypeLight!=null && expectedTypeLight.isAssignableFrom(actualType) || value instanceof XNullLiteral))
 					error("Incompatible RHS value of property template item. Expected " + getNameOfTypes(expectedTypeLight) + " but was " + canonicalName(actualType), value, null, ValidationMessageAcceptor.INSIGNIFICANT_INDEX, INCOMPATIBLE_TYPES);
 			}
 		}
