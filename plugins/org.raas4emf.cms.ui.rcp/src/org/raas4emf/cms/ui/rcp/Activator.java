@@ -6,7 +6,7 @@ package org.raas4emf.cms.ui.rcp;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import org.raas4emf.cms.ui.discriminator.IRAASSessionSingletonService;
+import org.raas4emf.cms.core.IRAASSessionSingletonService;
 
 /**
  * The activator class controls the plug-in life cycle
