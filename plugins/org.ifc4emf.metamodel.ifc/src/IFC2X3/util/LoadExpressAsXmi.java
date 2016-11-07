@@ -62,7 +62,7 @@ public class LoadExpressAsXmi {
 			for (EReference eRef : eObject.eClass().getEAllReferences()) {
 				if (!eRef.isContainment() && !eRef.isContainer() && !eRef.isDerived()) {
 					Object val = eObject.eGet(eRef);
-					List<EObject> list = val instanceof List ? (List) val : val != null ? Arrays.asList(val) : Arrays.asList();
+					List<EObject> list = val instanceof List ? (List) val : val != null ? Arrays.asList((EObject) val) : Arrays.asList();
 					for (EObject cross : list) {
 						if (cross.eResource() == null)
 							danglings.add(cross);
