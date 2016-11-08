@@ -14,6 +14,7 @@ import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
 
 import static org.eclipse.jqvt.util.JQVTUtilsExtended.*
+import org.eclipse.xtext.xbase.XExpression
 
 /**
  * Compiles relation calls
@@ -55,6 +56,18 @@ class JQVTCompiler extends XbaseCompiler {
 		super._toJavaStatement(expr, b, isReferenced);
 	}
    	
+	override protected internalCanCompileToJavaExpression(XExpression expression, ITreeAppendable appendable) {
+		if (expression instanceof XAbstractFeatureCall) {
+			val expr = expression as XAbstractFeatureCall;
+			val relation = expr.referredRelation;
+			if (relation != null && relation.typeForRelation!=null) {
+				// if true was returned, relation calls within boolean expressions (e.g. "r1(a,b) || r2(a,b)") would not be compiled by this compiler
+				return false;
+			}
+		}
+		super.internalCanCompileToJavaExpression(expression, appendable)
+	}
+				
 }
 
 
