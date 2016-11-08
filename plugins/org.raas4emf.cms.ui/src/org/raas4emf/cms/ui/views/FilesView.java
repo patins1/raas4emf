@@ -349,7 +349,7 @@ public class FilesView extends ViewPart implements IDoubleClickListener, ISelect
 				public void drop(DropTargetEvent event) {
 					super.drop(event);
 					if (event.data instanceof ClientFile[]) {
-						ClientFile[] clientFiles = (ClientFile[]) event.data;
+						final ClientFile[] clientFiles = (ClientFile[]) event.data;
 						
 						Folder repoRoot = (Folder) RAASUtils.findByPath("RepositoryRoot");						
 						for (Object object: RAASUIUtils.getSelection(viewer.getSelection())) {
