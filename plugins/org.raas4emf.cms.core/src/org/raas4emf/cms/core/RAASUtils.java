@@ -42,7 +42,8 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.cxf.jaxrs.impl.MetadataMap;
-import org.apache.cxf.jaxrs.provider.JSONProvider;
+import org.apache.cxf.jaxrs.provider.json.JSONProvider;
+import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -92,11 +93,6 @@ import org.ifc4emf.metamodel.ifcheader.Model;
 import org.ifc4emf.part21.loader.ContainmentTreeOrderedByNumberHelper;
 import org.ifc4emf.part21.loader.Part21ResourceImpl;
 
-import raascms.Artifact;
-import raascms.Folder;
-import raascms.RaascmsFactory;
-import raascms.RaascmsPackage;
-import raascms.impl.ArtifactImpl;
 import IFC2X3.IFC2X3Factory;
 import IFC2X3.IfcDerivedUnit;
 import IFC2X3.IfcDoor;
@@ -120,6 +116,11 @@ import IFC2X3.IfcSimpleProperty;
 import IFC2X3.IfcSpace;
 import IFC2X3.IfcUnit;
 import IFC2X3.IfcValue;
+import raascms.Artifact;
+import raascms.Folder;
+import raascms.RaascmsFactory;
+import raascms.RaascmsPackage;
+import raascms.impl.ArtifactImpl;
 
 public class RAASUtils {
 
@@ -1524,5 +1525,9 @@ public class RAASUtils {
 	
 	static public <T extends EObject> T copyContainmentOnly(T eObject) {
 		return (T) new EcoreUtil.Copier().copy(eObject);
+	}
+
+	public static String quote(String string) {
+		return JSONObject.quote(string);
 	}
 }
