@@ -8,13 +8,7 @@ Bundle-ClassPath: .,
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: raascms,
- raascms.impl,
- raascms.util,
- javax.ws.rs,
- javax.ws.rs.core,
- javax.ws.rs.ext,
- org.eclipse.emf.ecore.jaxb,
+Export-Package: org.eclipse.emf.ecore.jaxb,
  raascms,
  raascms.impl,
  raascms.jaxb,

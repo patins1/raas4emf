@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -37,9 +36,6 @@ import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.CMSActivator;
 import org.raas4emf.cms.ui.RAASUIUtils;
 
-import raascms.Artifact;
-import raascms.Folder;
-import raascms.RaascmsFactory;
 import IFC2X3.IFC2X3Factory;
 import IFC2X3.IfcColourOrFactor;
 import IFC2X3.IfcColourRgb;
@@ -60,6 +56,9 @@ import IFC2X3.IfcSurfaceStyleElementSelect;
 import IFC2X3.IfcSurfaceStyleRendering;
 import IFC2X3.IfcSurfaceStyleShading;
 import IFC2X3.IfcWall;
+import raascms.Artifact;
+import raascms.Folder;
+import raascms.RaascmsFactory;
 
 public class MaterializeIFCAction extends AbstractHandler {
 
@@ -398,7 +397,7 @@ public class MaterializeIFCAction extends AbstractHandler {
 			}
 		}
 		if (options.length() > 0) {
-			return JSONObject.quote(styleName) + ": {" + options.substring(0, options.length() - 1) + "},\n";
+			return RAASUtils.quote(styleName) + ": {" + options.substring(0, options.length() - 1) + "},\n";
 		}
 		return "";
 	}
