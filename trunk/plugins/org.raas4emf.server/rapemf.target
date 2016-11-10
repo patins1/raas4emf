@@ -1,29 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="EMF + RAP" sequenceNumber="293">
+<?pde version="3.8"?><target name="EMF + RAP" sequenceNumber="294">
 <locations>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.rap.feature.feature.group" version="3.1.1.20160831-0710"/>
+<unit id="org.eclipse.rap.sdk.feature.feature.group" version="3.1.1.20160831-0710"/>
+<unit id="org.eclipse.rap.examples.feature.feature.group" version="3.1.1.20160831-0700"/>
+<unit id="org.eclipse.rap.equinox.target.feature.feature.group" version="3.1.1.20160912-1200"/>
+<repository location="http://download.eclipse.org/rt/rap/3.1/"/>
+</location>
 <location path="${eclipse_home}" type="Profile"/>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.rap.equinox.target.feature.feature.group" version="2.3.1.20140916-0712"/>
-<unit id="org.eclipse.rap.feature.feature.group" version="2.3.1.20140909-1638"/>
-<unit id="org.eclipse.emf.rap.sdk.feature.group" version="2.10.1.v20140901-1055"/>
-<unit id="org.eclipse.rap.examples.feature.feature.group" version="2.3.1.20140819-1926"/>
-<repository location="http://download.eclipse.org/releases/luna"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.rap.fileupload.feature.feature.group" version="2.3.0.20140611-1558"/>
-<repository location="http://download.eclipse.org/rt/rap/incubator/2.3/fileupload/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.rap.tabbed-properties.feature.feature.group" version="0.1.0.20140426-0943"/>
-<repository location="http://download.eclipse.org/rt/rap/incubator/nightly/tabbed-properties/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.rap.cnf.feature.feature.group" version="0.1.0.20140425-1557"/>
-<repository location="http://download.eclipse.org/rt/rap/incubator/nightly/cnf/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.rap.nebula-grid.feature.feature.group" version="0.2.0.20140611-1600"/>
-<repository location="http://download.eclipse.org/rt/rap/incubator/2.3/nebula-grid/"/>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.rap.sdk.feature.group" version="2.12.0.v20160526-0356"/>
+<repository location="http://download.eclipse.org/releases/neon"/>
 </location>
 </locations>
 </target>

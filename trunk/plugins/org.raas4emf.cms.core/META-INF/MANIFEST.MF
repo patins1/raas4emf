@@ -5,12 +5,30 @@ Bundle-SymbolicName: org.raas4emf.cms.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Import-Package: javax.servlet,
  javax.servlet.http
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Export-Package: org.codehaus.jettison.json,
- org.raas4emf.cms.core,
- org.raas4emf.cms.core.geometry,
- org.raas4emf.cms.core.graf,
- org.raas4emf.cms.core.webgl
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: javax.ws.rs,
+ org.raas4emf.cms.core;
+  uses:="org.eclipse.emf.ecore,
+   org.raas4emf.cms.core.geometry,
+   org.eclipse.emf.cdo,
+   javax.servlet.http,
+   org.eclipse.emf.ecore.resource.impl,
+   org.eclipse.emf.cdo.view,
+   org.eclipse.emf.cdo.internal.server.bundle,
+   IFC2X3,
+   org.ifc4emf.metamodel.ifcheader,
+   org.eclipse.rap.rwt.service,
+   org.osgi.framework,
+   org.eclipse.core.runtime.jobs,
+   raascms,
+   org.eclipse.core.runtime,
+   org.eclipse.emf.common.util,
+   org.eclipse.jqvt.runtime,
+   org.eclipse.emf.cdo.net4j,
+   org.eclipse.emf.ecore.resource",
+ org.raas4emf.cms.core.geometry;uses:="org.eclipse.emf.common.util,IFC2X3",
+ org.raas4emf.cms.core.graf;uses:="org.eclipse.emf.ecore,org.raas4emf.cms.core.geometry",
+ org.raas4emf.cms.core.webgl;uses:="org.eclipse.core.runtime,org.raas4emf.cms.core,org.raas4emf.cms.transformation"
 Require-Bundle: org.raas4emf.metamodel.raascms,
  org.eclipse.emf.cdo.net4j,
  org.eclipse.net4j.tcp,
@@ -27,7 +45,9 @@ Require-Bundle: org.raas4emf.metamodel.raascms,
  org.eclipse.emf.cdo.server
 Bundle-Activator: org.raas4emf.cms.core.Activator
 Bundle-ClassPath: .,
- cxf-2.4.0.jar,
- jettison-1.3.jar,
- jsr311-api-1.1.1.jar
+ cxf-bundle-jaxrs-2.7.18.jar,
+ jettison-1.3.8.jar,
+ javax.ws.rs-api-2.0.1.jar,
+ jersey-core-1.19.3.jar,
+ jersey-client-1.19.3.jar
 Eclipse-BundleShape: dir
