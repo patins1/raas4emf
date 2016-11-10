@@ -5,21 +5,15 @@
    <plugins>
       <plugin id="com.google.guava"/>
       <plugin id="com.google.inject"/>
-      <plugin id="com.google.inject.assistedinject" fragment="true"/>
-      <plugin id="com.google.inject.multibindings" fragment="true"/>
-      <plugin id="com.ibm.icu"/>
       <plugin id="com.ibm.icu.base"/>
       <plugin id="javax.inject"/>
       <plugin id="javax.xml"/>
       <plugin id="lpg.runtime.java"/>
-      <plugin id="org.antlr.runtime" version="3.2.0.v201101311130"/>
       <plugin id="org.apache.commons.codec"/>
       <plugin id="org.apache.commons.fileupload"/>
       <plugin id="org.apache.commons.httpclient"/>
       <plugin id="org.apache.commons.io"/>
       <plugin id="org.apache.commons.logging"/>
-      <plugin id="org.apache.derby"/>
-      <plugin id="org.apache.derby.jdbc_1091.fragment" fragment="true"/>
       <plugin id="org.apache.log4j"/>
       <plugin id="org.eclipse.core.commands"/>
       <plugin id="org.eclipse.core.contenttype"/>
@@ -29,7 +23,6 @@
       <plugin id="org.eclipse.core.expressions"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.runtime"/>
-      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
       <plugin id="org.eclipse.emf.cdo"/>
       <plugin id="org.eclipse.emf.cdo.common"/>
       <plugin id="org.eclipse.emf.cdo.ecore.retrofit" fragment="true"/>
@@ -72,30 +65,28 @@
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.compatibility.state" fragment="true"/>
       <plugin id="org.eclipse.osgi.services"/>
-      <plugin id="org.eclipse.rap.addons.filedialog"/>
-      <plugin id="org.eclipse.rap.addons.fileupload"/>
       <plugin id="org.eclipse.rap.design.example"/>
+      <plugin id="org.eclipse.rap.filedialog"/>
+      <plugin id="org.eclipse.rap.fileupload"/>
       <plugin id="org.eclipse.rap.jface"/>
       <plugin id="org.eclipse.rap.jface.databinding"/>
       <plugin id="org.eclipse.rap.rwt"/>
       <plugin id="org.eclipse.rap.rwt.osgi"/>
-      <plugin id="org.eclipse.rap.rwt.supplemental.filedialog"/>
-      <plugin id="org.eclipse.rap.rwt.supplemental.fileupload"/>
+      <plugin id="org.eclipse.rap.rwt.testfixture"/>
       <plugin id="org.eclipse.rap.ui"/>
       <plugin id="org.eclipse.rap.ui.forms"/>
       <plugin id="org.eclipse.rap.ui.views"/>
       <plugin id="org.eclipse.rap.ui.workbench"/>
-      <plugin id="org.eclipse.xtext"/>
-      <plugin id="org.eclipse.xtext.logging" fragment="true"/>
-      <plugin id="org.eclipse.xtext.util"/>
       <plugin id="org.eclipse.xtext.xbase.lib"/>
       <plugin id="org.h2"/>
+      <plugin id="org.hamcrest.core"/>
       <plugin id="org.ifc4emf.metamodel.express"/>
       <plugin id="org.ifc4emf.metamodel.ifc"/>
       <plugin id="org.ifc4emf.metamodel.ifcheader"/>
       <plugin id="org.ifc4emf.metamodel.modelblob"/>
       <plugin id="org.ifc4emf.metamodel.trace"/>
       <plugin id="org.ifc4emf.part21"/>
+      <plugin id="org.junit"/>
       <plugin id="org.postgresql"/>
       <plugin id="org.raas4emf.cms.core"/>
       <plugin id="org.raas4emf.cms.transformation"/>
@@ -105,25 +96,20 @@
       <plugin id="org.raas4emf.metamodel.raascms"/>
       <plugin id="org.raas4emf.server"/>
       <plugin id="org.raas4emf.service"/>
-      <plugin id="osgi.enterprise"/>
    </plugins>
 
    <configurations>
       <plugin id="com.google.guava" autoStart="true" startLevel="0" />
       <plugin id="com.google.inject" autoStart="true" startLevel="0" />
-      <plugin id="com.google.inject.assistedinject" autoStart="true" startLevel="0" />
-      <plugin id="com.ibm.icu" autoStart="true" startLevel="0" />
       <plugin id="com.ibm.icu.base" autoStart="true" startLevel="0" />
       <plugin id="javax.inject" autoStart="true" startLevel="0" />
       <plugin id="javax.xml" autoStart="true" startLevel="0" />
       <plugin id="lpg.runtime.java" autoStart="true" startLevel="0" />
-      <plugin id="org.antlr.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.apache.commons.codec" autoStart="true" startLevel="0" />
       <plugin id="org.apache.commons.fileupload" autoStart="true" startLevel="0" />
       <plugin id="org.apache.commons.httpclient" autoStart="true" startLevel="0" />
       <plugin id="org.apache.commons.io" autoStart="true" startLevel="0" />
       <plugin id="org.apache.commons.logging" autoStart="true" startLevel="0" />
-      <plugin id="org.apache.derby" autoStart="true" startLevel="0" />
       <plugin id="org.apache.log4j" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.core.commands" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.core.contenttype" autoStart="true" startLevel="0" />
@@ -173,29 +159,28 @@
       <plugin id="org.eclipse.ocl.ecore" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.osgi.services" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.rap.addons.filedialog" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.rap.addons.fileupload" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.design.example" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.rap.filedialog" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.rap.fileupload" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.jface" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.jface.databinding" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.rwt" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.rwt.osgi" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.rap.rwt.supplemental.filedialog" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.rap.rwt.supplemental.fileupload" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.rap.rwt.testfixture" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.ui" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.ui.forms" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.ui.views" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.rap.ui.workbench" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.xtext" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.xtext.util" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.xtext.xbase.lib" autoStart="true" startLevel="0" />
       <plugin id="org.h2" autoStart="true" startLevel="0" />
+      <plugin id="org.hamcrest.core" autoStart="true" startLevel="0" />
       <plugin id="org.ifc4emf.metamodel.express" autoStart="true" startLevel="0" />
       <plugin id="org.ifc4emf.metamodel.ifc" autoStart="true" startLevel="0" />
       <plugin id="org.ifc4emf.metamodel.ifcheader" autoStart="true" startLevel="0" />
       <plugin id="org.ifc4emf.metamodel.modelblob" autoStart="true" startLevel="0" />
       <plugin id="org.ifc4emf.metamodel.trace" autoStart="true" startLevel="0" />
       <plugin id="org.ifc4emf.part21" autoStart="true" startLevel="0" />
+      <plugin id="org.junit" autoStart="true" startLevel="0" />
       <plugin id="org.postgresql" autoStart="true" startLevel="0" />
       <plugin id="org.raas4emf.cms.core" autoStart="true" startLevel="0" />
       <plugin id="org.raas4emf.cms.transformation" autoStart="true" startLevel="0" />
@@ -205,12 +190,11 @@
       <plugin id="org.raas4emf.metamodel.raascms" autoStart="true" startLevel="0" />
       <plugin id="org.raas4emf.server" autoStart="true" startLevel="0" />
       <plugin id="org.raas4emf.service" autoStart="true" startLevel="0" />
-      <plugin id="osgi.enterprise" autoStart="true" startLevel="0" />
    </configurations>
 
    <warConfiguration webXml="/org.raas4emf.cms.ui.rap/WEB-INF/web.xml" launchIni="/org.raas4emf.cms.ui.rap/WEB-INF/launch.ini">
    <libraries>
-      <library path="org.eclipse.equinox.servletbridge_1.3.0.v20140430-1556.jar" fromTarget="true"/>
+      <library path="org.eclipse.equinox.servletbridge_1.3.200.v20160128-1435.jar" fromTarget="true"/>
    </libraries>
    </warConfiguration>
 </product>
