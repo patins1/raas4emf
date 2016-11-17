@@ -1,12 +1,10 @@
 /**
  * @author arodic / https://github.com/arodic
  */
- /*jshint sub:true*/
 
 ( function () {
 
 	'use strict';
-
 
 	var GizmoMaterial = function ( parameters ) {
 
@@ -281,15 +279,15 @@
 		this.pickerGizmos = {
 
 			X: [
-				[ new THREE.Mesh( new THREE.CylinderGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0.6, 0, 0 ], [ 0, 0, - Math.PI / 2 ] ]
+				[ new THREE.Mesh( new THREE.CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0.6, 0, 0 ], [ 0, 0, - Math.PI / 2 ] ]
 			],
 
 			Y: [
-				[ new THREE.Mesh( new THREE.CylinderGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0, 0.6, 0 ] ]
+				[ new THREE.Mesh( new THREE.CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0, 0.6, 0 ] ]
 			],
 
 			Z: [
-				[ new THREE.Mesh( new THREE.CylinderGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0, 0, 0.6 ], [ Math.PI / 2, 0, 0 ] ]
+				[ new THREE.Mesh( new THREE.CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0, 0, 0.6 ], [ Math.PI / 2, 0, 0 ] ]
 			],
 
 			XYZ: [
@@ -406,23 +404,23 @@
 		this.pickerGizmos = {
 
 			X: [
-				[ new THREE.Mesh( new THREE.TorusGeometry( 1, 0.12, 4, 12, Math.PI ), pickerMaterial ), [ 0, 0, 0 ], [ 0, - Math.PI / 2, - Math.PI / 2 ] ]
+				[ new THREE.Mesh( new THREE.TorusBufferGeometry( 1, 0.12, 4, 12, Math.PI ), pickerMaterial ), [ 0, 0, 0 ], [ 0, - Math.PI / 2, - Math.PI / 2 ] ]
 			],
 
 			Y: [
-				[ new THREE.Mesh( new THREE.TorusGeometry( 1, 0.12, 4, 12, Math.PI ), pickerMaterial ), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ] ]
+				[ new THREE.Mesh( new THREE.TorusBufferGeometry( 1, 0.12, 4, 12, Math.PI ), pickerMaterial ), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ] ]
 			],
 
 			Z: [
-				[ new THREE.Mesh( new THREE.TorusGeometry( 1, 0.12, 4, 12, Math.PI ), pickerMaterial ), [ 0, 0, 0 ], [ 0, 0, - Math.PI / 2 ] ]
+				[ new THREE.Mesh( new THREE.TorusBufferGeometry( 1, 0.12, 4, 12, Math.PI ), pickerMaterial ), [ 0, 0, 0 ], [ 0, 0, - Math.PI / 2 ] ]
 			],
 
 			E: [
-				[ new THREE.Mesh( new THREE.TorusGeometry( 1.25, 0.12, 2, 24 ), pickerMaterial ) ]
+				[ new THREE.Mesh( new THREE.TorusBufferGeometry( 1.25, 0.12, 2, 24 ), pickerMaterial ) ]
 			],
 
 			XYZE: [
-				[ new THREE.Mesh( new THREE.Geometry() ) ]// TODO
+				[ new THREE.Mesh() ]// TODO
 			]
 
 		};
@@ -544,7 +542,7 @@
 			],
 
 			XYZ: [
-				[ new THREE.Mesh( new THREE.BoxGeometry( 0.125, 0.125, 0.125 ), new GizmoMaterial( { color: 0xffffff, opacity: 0.25 } ) ) ]
+				[ new THREE.Mesh( new THREE.BoxBufferGeometry( 0.125, 0.125, 0.125 ), new GizmoMaterial( { color: 0xffffff, opacity: 0.25 } ) ) ]
 			]
 
 		};
@@ -552,19 +550,19 @@
 		this.pickerGizmos = {
 
 			X: [
-				[ new THREE.Mesh( new THREE.CylinderGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0.6, 0, 0 ], [ 0, 0, - Math.PI / 2 ] ]
+				[ new THREE.Mesh( new THREE.CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0.6, 0, 0 ], [ 0, 0, - Math.PI / 2 ] ]
 			],
 
 			Y: [
-				[ new THREE.Mesh( new THREE.CylinderGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0, 0.6, 0 ] ]
+				[ new THREE.Mesh( new THREE.CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0, 0.6, 0 ] ]
 			],
 
 			Z: [
-				[ new THREE.Mesh( new THREE.CylinderGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0, 0, 0.6 ], [ Math.PI / 2, 0, 0 ] ]
+				[ new THREE.Mesh( new THREE.CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false ), pickerMaterial ), [ 0, 0, 0.6 ], [ Math.PI / 2, 0, 0 ] ]
 			],
 
 			XYZ: [
-				[ new THREE.Mesh( new THREE.BoxGeometry( 0.4, 0.4, 0.4 ), pickerMaterial ) ]
+				[ new THREE.Mesh( new THREE.BoxBufferGeometry( 0.4, 0.4, 0.4 ), pickerMaterial ) ]
 			]
 
 		};
@@ -617,7 +615,8 @@
 
 		this.object = undefined;
 		this.visible = false;
-		this.snap = null;
+		this.translationSnap = null;
+		this.rotationSnap = null;
 		this.space = "world";
 		this.size = 1;
 		this.axis = null;
@@ -737,6 +736,12 @@
 
 		};
 
+		this.getMode = function () {
+
+			return _mode;
+
+		};
+
 		this.setMode = function ( mode ) {
 
 			_mode = mode ? mode : _mode;
@@ -750,9 +755,15 @@
 
 		};
 
-		this.setSnap = function ( snap ) {
+		this.setTranslationSnap = function ( translationSnap ) {
 
-			scope.snap = snap;
+			scope.translationSnap = translationSnap;
+
+		};
+
+		this.setRotationSnap = function ( rotationSnap ) {
+
+			scope.rotationSnap = rotationSnap;
 
 		};
 
@@ -788,7 +799,15 @@
 			this.position.copy( worldPosition );
 			this.scale.set( scale, scale, scale );
 
-			eye.copy( camPosition ).sub( worldPosition ).normalize();
+			if ( camera instanceof THREE.PerspectiveCamera ) {
+
+				eye.copy( camPosition ).sub( worldPosition ).normalize();
+
+			} else if ( camera instanceof THREE.OrthographicCamera ) {
+
+				eye.copy( camPosition ).normalize();
+
+			}
 
 			if ( scope.space === "local" ) {
 
@@ -930,11 +949,23 @@
 
 				}
 
-				if ( scope.snap !== null ) {
+				if ( scope.translationSnap !== null ) {
 
-					if ( scope.axis.search( "X" ) !== - 1 ) scope.object.position.x = Math.round( scope.object.position.x / scope.snap ) * scope.snap;
-					if ( scope.axis.search( "Y" ) !== - 1 ) scope.object.position.y = Math.round( scope.object.position.y / scope.snap ) * scope.snap;
-					if ( scope.axis.search( "Z" ) !== - 1 ) scope.object.position.z = Math.round( scope.object.position.z / scope.snap ) * scope.snap;
+					if ( scope.space === "local" ) {
+
+						scope.object.position.applyMatrix4( tempMatrix.getInverse( worldRotationMatrix ) );
+
+					}
+
+					if ( scope.axis.search( "X" ) !== - 1 ) scope.object.position.x = Math.round( scope.object.position.x / scope.translationSnap ) * scope.translationSnap;
+					if ( scope.axis.search( "Y" ) !== - 1 ) scope.object.position.y = Math.round( scope.object.position.y / scope.translationSnap ) * scope.translationSnap;
+					if ( scope.axis.search( "Z" ) !== - 1 ) scope.object.position.z = Math.round( scope.object.position.z / scope.translationSnap ) * scope.translationSnap;
+
+					if ( scope.space === "local" ) {
+
+						scope.object.position.applyMatrix4( worldRotationMatrix );
+
+					}
 
 				}
 
@@ -947,7 +978,7 @@
 
 					if ( scope.axis === "XYZ" ) {
 
-						scale = 1 + ( ( point.y ) / 50 );
+						scale = 1 + ( ( point.y ) / Math.max( oldScale.x, oldScale.y, oldScale.z ) );
 
 						scope.object.scale.x = oldScale.x * scale;
 						scope.object.scale.y = oldScale.y * scale;
@@ -957,9 +988,9 @@
 
 						point.applyMatrix4( tempMatrix.getInverse( worldRotationMatrix ) );
 
-						if ( scope.axis === "X" ) scope.object.scale.x = oldScale.x * ( 1 + point.x / 50 );
-						if ( scope.axis === "Y" ) scope.object.scale.y = oldScale.y * ( 1 + point.y / 50 );
-						if ( scope.axis === "Z" ) scope.object.scale.z = oldScale.z * ( 1 + point.z / 50 );
+						if ( scope.axis === "X" ) scope.object.scale.x = oldScale.x * ( 1 + point.x / oldScale.x );
+						if ( scope.axis === "Y" ) scope.object.scale.y = oldScale.y * ( 1 + point.y / oldScale.y );
+						if ( scope.axis === "Z" ) scope.object.scale.z = oldScale.z * ( 1 + point.z / oldScale.z );
 
 					}
 
@@ -1013,9 +1044,20 @@
 					offsetRotation.set( Math.atan2( tempVector.z, tempVector.y ), Math.atan2( tempVector.x, tempVector.z ), Math.atan2( tempVector.y, tempVector.x ) );
 
 					quaternionXYZ.setFromRotationMatrix( oldRotationMatrix );
-					quaternionX.setFromAxisAngle( unitX, rotation.x - offsetRotation.x );
-					quaternionY.setFromAxisAngle( unitY, rotation.y - offsetRotation.y );
-					quaternionZ.setFromAxisAngle( unitZ, rotation.z - offsetRotation.z );
+
+					if ( scope.rotationSnap !== null ) {
+
+						quaternionX.setFromAxisAngle( unitX, Math.round( ( rotation.x - offsetRotation.x ) / scope.rotationSnap ) * scope.rotationSnap );
+						quaternionY.setFromAxisAngle( unitY, Math.round( ( rotation.y - offsetRotation.y ) / scope.rotationSnap ) * scope.rotationSnap );
+						quaternionZ.setFromAxisAngle( unitZ, Math.round( ( rotation.z - offsetRotation.z ) / scope.rotationSnap ) * scope.rotationSnap );
+
+					} else {
+
+						quaternionX.setFromAxisAngle( unitX, rotation.x - offsetRotation.x );
+						quaternionY.setFromAxisAngle( unitY, rotation.y - offsetRotation.y );
+						quaternionZ.setFromAxisAngle( unitZ, rotation.z - offsetRotation.z );
+
+					}
 
 					if ( scope.axis === "X" ) quaternionXYZ.multiplyQuaternions( quaternionXYZ, quaternionX );
 					if ( scope.axis === "Y" ) quaternionXYZ.multiplyQuaternions( quaternionXYZ, quaternionY );
@@ -1030,9 +1072,20 @@
 
 					tempQuaternion.setFromRotationMatrix( tempMatrix.getInverse( parentRotationMatrix ) );
 
-					quaternionX.setFromAxisAngle( unitX, rotation.x - offsetRotation.x );
-					quaternionY.setFromAxisAngle( unitY, rotation.y - offsetRotation.y );
-					quaternionZ.setFromAxisAngle( unitZ, rotation.z - offsetRotation.z );
+					if ( scope.rotationSnap !== null ) {
+
+						quaternionX.setFromAxisAngle( unitX, Math.round( ( rotation.x - offsetRotation.x ) / scope.rotationSnap ) * scope.rotationSnap );
+						quaternionY.setFromAxisAngle( unitY, Math.round( ( rotation.y - offsetRotation.y ) / scope.rotationSnap ) * scope.rotationSnap );
+						quaternionZ.setFromAxisAngle( unitZ, Math.round( ( rotation.z - offsetRotation.z ) / scope.rotationSnap ) * scope.rotationSnap );
+
+					} else {
+
+						quaternionX.setFromAxisAngle( unitX, rotation.x - offsetRotation.x );
+						quaternionY.setFromAxisAngle( unitY, rotation.y - offsetRotation.y );
+						quaternionZ.setFromAxisAngle( unitZ, rotation.z - offsetRotation.z );
+
+					}
+
 					quaternionXYZ.setFromRotationMatrix( worldRotationMatrix );
 
 					if ( scope.axis === "X" ) tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionX );
@@ -1055,17 +1108,32 @@
 
 		function onPointerUp( event ) {
 
+			event.preventDefault(); // Prevent MouseEvent on mobile
+
 			if ( event.button !== undefined && event.button !== 0 ) return;
 
 			if ( _dragging && ( scope.axis !== null ) ) {
 
 				mouseUpEvent.mode = _mode;
-				scope.dispatchEvent( mouseUpEvent )
+				scope.dispatchEvent( mouseUpEvent );
 
 			}
 
 			_dragging = false;
-			onPointerHover( event );
+
+			if ( 'TouchEvent' in window && event instanceof TouchEvent ) {
+
+				// Force "rollover"
+
+				scope.axis = null;
+				scope.update();
+				scope.dispatchEvent( changeEvent );
+
+			} else {
+
+				onPointerHover( event );
+
+			}
 
 		}
 

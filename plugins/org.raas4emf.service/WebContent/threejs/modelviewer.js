@@ -301,7 +301,7 @@ function locate(transforms,g_client,steps) {
 		setEyeAndTarget(eye,target,g_client);
 		var raycaster = getRaycaster(new THREE.Vector2(),g_client);
 		var intersects = raycaster.intersectObjects( g_client.objects );
-		g_client.g_camera = g_client.controls.constraint.object = s_camera;
+		g_client.g_camera = g_client.controls.object = s_camera;
 	
 		if (intersects)
 	    for (var tt = 0; tt < intersects.length; tt++) {	
@@ -622,9 +622,8 @@ function installRendererEvents(g_client) {
 	renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
 	renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
 	renderer.domElement.addEventListener( 'mouseup', onDocumentMouseUp, false );
-	renderer.domElement.addEventListener( 'mousewheel', onDocumentMouseWheel, false );
+	renderer.domElement.addEventListener( 'wheel', onDocumentMouseWheel, false );
 	renderer.domElement.addEventListener( 'dblclick', onDocumentDblClick, false );
-	renderer.domElement.addEventListener( 'DOMMouseScroll', onDocumentMouseWheel, false ); // firefox
 	renderer.domElement.addEventListener( 'touchmove', touchHandler, false );
 	renderer.domElement.addEventListener( 'touchstart', touchHandler, false );
 	renderer.domElement.addEventListener( 'touchend', touchHandler, false );
@@ -926,7 +925,7 @@ function getPos(eye,target,px,py,g_client) {
 	plane.updateMatrixWorld();
 	
 	var intersects = raycaster.intersectObject( plane );
-	g_client.g_camera = g_client.controls.constraint.object = s_camera;
+	g_client.g_camera = g_client.controls.object = s_camera;
 	if (intersects.length > 0) {
 		var intersectPoint = intersects[ 0 ].point;		
 		return new THREE.Vector3(-intersectPoint.x,intersectPoint.y,-intersectPoint.z);
@@ -1519,8 +1518,8 @@ function changePosition(deltaX,deltaY,g_client) {
 
 function changeRotation(deltaX,deltaY,freehand,g_client) {
 	enableOrbit(true, g_client);
-	g_client.controls.constraint.rotateLeft(-deltaX);
-	g_client.controls.constraint.rotateUp(-deltaY);
+	g_client.controls.rotateLeft(-deltaX);
+	g_client.controls.rotateUp(-deltaY);
 	g_client.controls.update();
 }
 
@@ -2170,7 +2169,7 @@ function generateGui() {
     g_visibility_sorted.sort();
     for (var tt = 0; tt < g_visibility_sorted.length; tt++) {
     	var m = g_visibility_sorted[tt];
-    	if (!g_colors[m].hideFromMaterialVisibility) {
+    	if (!(g_colors[m] && g_colors[m].hideFromMaterialVisibility)) {
 		var materialCtl = materialVisibilityGui.add( g_visibility, m,  g_visibility[m]).onChange(updateCol);
     	materialCtls.push(materialCtl);
     	materialCtl.neverRemove = effectController.flatten_materialvisibility;
@@ -2873,7 +2872,7 @@ function melt(g_client) {
 		materialMesh.name = "melted meshes for material "+mat+" partition "+partition;
 		myLog(materialMesh.name); 
 		if (mat=="Door" || mat=="Window")
-			materialMesh.renderDepth = -2; 
+			materialMesh.renderOrder = -2; 
 		}
 	}
 
@@ -3578,7 +3577,6 @@ var initStatics = function() {
     		var scope = this;
 
     		var loader = new THREE.XHRLoader( scope.manager );
-    		loader.setCrossOrigin( this.crossOrigin );
     		loader.load( url, function ( text ) {
     			document.getElementById('progressbar').style.display = "none";
     			drawBar(0,"Parsing Json ...");
@@ -3776,6 +3774,7 @@ function updateColors (g_client) {
 
 	for(var key in g_visibility) {
     	var material = g_client.g_colors[key];
+    	if (material)
     	material.visible = (g_visibility[key]==true) && (!material.baseMaterialName || g_visibility[material.baseMaterialName]!=false);
     }
 
@@ -4055,7 +4054,6 @@ function init(root,g_client) {
     	if (hasMaximumNameLength)
     		child.name += "..";
     });
-    if (g_customInit) g_customInit();
     defaultScheme = null;
 	for (var m in g_colors) {
 		if (g_colors[m].isDefaultColorScheme) {
@@ -4070,6 +4068,7 @@ function init(root,g_client) {
 		g_colorSchemes = { };
 		g_colorSchemes[defaultScheme] = g_colors;
 	}
+    if (g_customInit) g_customInit();
     setupColors(g_client,true);
 	g_client.root.traverse(function (child) { 
     	child.visible = true; //non-meshes are not visible by default, but required to be visible for canvas renderer
@@ -4449,7 +4448,7 @@ function switchCustomMaterial(enableCustomMaterial, g_client) {
 
 function bringIntoScene(object, g_client) {
 	if (!getScene(object)) {
-		object.renderDepth = 2; // fix for IE11
+		object.renderOrder = 2; // fix for IE11
 		object.originalParent = object.parent;
 		g_client.scene.add(object);
 	}
@@ -4680,7 +4679,7 @@ function intersectParticleSystems(raycaster,g_client) {
 		    g_client.scene2.children.forEach( function (object) {		   
 		    		//see https://github.com/mrdoob/three.js/issues/3492
 		    	
-		    	 	var vertices = object.geometry.vertices;
+		    	 	var vertices = getOnlyUsedVertices(object.geometry);
 		            var point, distance, intersect, threshold = 1;
 		            var localMatrix = new THREE.Matrix4();
 		            var localtempRay = raycaster.ray.clone();
@@ -5066,7 +5065,7 @@ function setEyeAndTarget(eye,target,g_client,_up) {
 	} else {
 		camera = new THREE.PerspectiveCamera( g_angle, aspect, 0.01, 2000000 );
 	}
-	g_client.g_camera = g_client.controls.constraint.object = camera;
+	g_client.g_camera = g_client.controls.object = camera;
 	camera.eye = camera.position.copy(eye);	
 	g_client.controls.target.copy(target);
 	camera.target = target;
