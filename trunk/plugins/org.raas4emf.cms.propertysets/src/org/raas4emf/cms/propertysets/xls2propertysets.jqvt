@@ -1,12 +1,13 @@
 package org.raas4emf.cms.propertysets;
- 
-import jxl.*;
-import psets.*;  
-import org.eclipse.emf.ecore.*;
-import bim.*;
-import org.eclipse.emf.ecore.util.EcoreUtil; 
-import org.apache.poi.hssf.usermodel.*;
-import org.ifc4emf.metamodel.ifc.samples.IFCComparer;
+
+import org.apache.poi.hssf.usermodel.HSSFRow
+import org.apache.poi.hssf.usermodel.HSSFSheet
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import org.ifc4emf.metamodel.ifc.samples.IFCComparer
+import psets.IArtifact
+import psets.IDefaultValue
+import psets.IProperty
+import psets.IPropertySet
 
 transformation xls2propertysets(source : ifc, target : bim) { 
 	
