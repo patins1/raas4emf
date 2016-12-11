@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>OCL Transformation</title>
+<link rel="stylesheet" href="ocl.css" />
+<script src="jquery-2.0.3.js"></script>
+<script src="ocl.js"></script>
+</head>
+<body>
+	<form id="translate_ocl_form">
+		<label for="packageDropDown">EPackage URI:</label> <select
+			name="packageDropDown" size="1" id="packageDropDown"><option
+				value="a">Loading package URIs from server..</option></select><br /> <label
+			for="classDropDown">Context EClass:</label><select
+			name="classDropDown" size="1" id="classDropDown"><option
+				value="a">Select package first..</option></select><br /> <label
+			for="ocl_text">Type OCL here:</label> <br />
+		<textarea id="ocl_text" type="text" rows="6"> </textarea>
+		</textarea>
+		<br /> <input id="translate" type="button" value="Translate.."
+			onclick="translateOCL()" /><br />
+	</form>
+
+	<div id="status"></div>
+
+	<table id="result_table">
+		<tr>
+			<th>Language</th>
+			<th>Code</th>
+			<th>Notes</th>
+		</tr>
+		<tr>
+			<td>Java</td>
+			<td id="java_text"></td>
+			<td>Referenced helper functions are <a
+				href="OCLTransformationHelper.java">here</a></td>
+		</tr>
+		<tr>
+			<td>C#</td>
+			<td id="csharp_text"></td>
+			<td>Referenced helper functions are <a
+				href="OCLTransformationHelper.cs">here</a></td>
+		</tr>
+		<tr>
+			<td>XPath</td>
+			<td id="xpath_text"></td>
+			<td>Assumes a proper XML serialization</a></td>
+		</tr>
+	</table>
+
+	<div>
+		<hr />
+		If present, the moodCode attribute of a StructuredBody element in a
+		CDA document must have a specific value.<input type="button"
+			value="Prefill" onclick="loadMoodCodeConstraint()" /><br />
+		<hr />
+		In the UML world, the visibility of an ElementImport is either public
+		or private.<input type="button" value="Prefill"
+			onclick="loadVisibilityConstraint()" /><br />
+		<hr />
+		The IFC (Industry Foundation Classes) metamodel captures next to
+		semantical information also a lot of geometry data. There is a
+		constraint, that the first and last point of a closed polygon must be
+		the same.<input type="button" value="Prefill"
+			onclick="loadPolyloopConstraint()" />
+		<hr />
+	</div>
+
+
+	<table id="technologies">
+		<tr>
+			<th>Technology</th>
+			<th>General</th>
+			<th>In this demo</th>
+			<th>Source location</th>
+		</tr>
+
+		<tr>
+			<td>Generic EMF model repository generator Respository as a
+				Service (RaaS)</td>
+			<td>Annotates generated EMF code to serialize/deserialise EMF
+				models as JSON/XML to be processed e.g. by HTML5/.NET/Autodesk
+				Revit... Optionally also generates a REST or SOAP web service for
+				CRUD operations on the EMF metamodel (that was a more academic
+				exercise..)</td>
+			<td>Specifies the JSON data structures sent/received by the
+				server to the web front end, see the class diagram <a
+				href="restexample_class_diagram.jpg">here</a>. This demo doesn't
+				leverage the main power of the RaaS generator, to
+				serialize/deserialise whole chunks of EMF containment trees.
+			</td>
+			<td><a href="https://sourceforge.net/projects/raas4emf/">https://sourceforge.net/projects/raas4emf/</a></td>
+		</tr>
+
+		<tr>
+			<td>jQVT</td>
+			<td>A Java implementation of a subset of the OMG's QVT
+				transformation standard. By generating Java from the QVT code and
+				using XText/XBase as query language instead of OCL, a great runtime
+				performance is ensured.</td>
+			<td>The whole server side logic is <a href="trafo.jpg">one
+					jQVT transformation</a>.
+			</td>
+			<td><a href="https://sourceforge.net/projects/raas4emf/">https://sourceforge.net/projects/raas4emf/</a></td>
+		</tr>
+
+		<tr>
+			<td>OCL transformations</td>
+			<td>In the course of work of Distributed Models for
+				NEHTA/Australia (now ADHA), OCL expressions had been generated from
+				CDA constraints, and those had been put into XPath conditions of
+				schematron files and then in an equivalent approach into .NET/Java
+				frameworks. The OCL transformations have been refactored and
+				EPL-licensed.</td>
+			<td>This demo shows that the OCL transformations cannot only be
+				used for the CDA metamodel but by their generic nature can also be
+				used for UML and even IFC constraints.</td>
+			<td>This source can only be accessed with proper credentials, we
+				are working on a solution: <a
+				href="https://stash.nehta.net.au/scm/citie/nehta-mdht-ext.git">https://stash.nehta.net.au/scm/citie/nehta-mdht-ext.git</a>
+			</td>
+		</tr>
+
+		<tr>
+			<td>IFC</td>
+			<td>We created an MOF/EMF model of IFC directly from the formal
+				buildingSmart EXPRESS specification using model transformations. The
+				IFC model is then used to generate a web-accessible BIM Repository
+				for use with Java/UML modelling tools, and Web Services applications
+				written in any framework. The IFC Repository is the core technology
+				for our BIM portfolio. It has been optimised to allow
+				multi-gigabyte-scale IFC models to be parsed with modest computing
+				resources. BIM models are stored in cloud-based, or local servers in
+				various databases through a smart-caching Object-Relational mapping.
+			</td>
+			<td>This demo just links the IFC metamodel in order to support
+				the transformation of IFC OCL constraints.</td>
+			<td><a href="https://sourceforge.net/projects/ifc4emf/">https://sourceforge.net/projects/ifc4emf/</a></td>
+		</tr>
+
+	</table>
+
+
+</body>
+</html>

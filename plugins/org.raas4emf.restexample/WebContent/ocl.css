@@ -1,0 +1,57 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	height: 100%;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 14px;
+}
+
+#translate {
+	padding: 22px;
+	margin: 10px;
+}
+
+#translate_ocl_form {
+	margin: 2px;
+	padding: 2px;
+	border: 1px black solid;
+	background-color: #EEEE00;
+}
+
+#classDropDown, #packageDropDown {
+	font-family: "Courier New";
+	margin: 10px;
+}
+
+#ocl_text {
+	font-family: "Courier New";
+	width: 96%;
+	margin: 10px;
+	margin-left:10px;
+	margin-right:3%;
+}
+
+#result_table, #technologies {
+	padding: 22px;
+	margin: 10px;
+}
+
+#java_text, #csharp_text, #xpath_text {
+	font-family: "Courier New"
+}
+
+#status {
+}
+
+tr:nth-child(odd) {
+	background-color: #eee;
+}
+
+tr:nth-child(even) {
+	background-color: #fff;
+}
+
+td {
+	padding: 10px;
+}
