@@ -1,0 +1,83 @@
+/**
+ * Copyright (c) 2015, 2016 Joerg Kiegeland, Distributed Models Pty Ltd, and others.
+ * All rights reserved.   This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.raas4emf.restexample.qvt;
+
+import au.net.electronichealth.ci.^transformation.ocl2csharp.OCL2CSharpTransformationForEcore
+import au.net.electronichealth.ci.^transformation.ocl2java.OCL2JavaTransformationForEcore
+import au.net.electronichealth.ci.^transformation.ocl2xpath.OCL2XPathTransformationForEcore
+import org.eclipse.emf.ecore.EClassifier
+import org.eclipse.emf.ecore.EPackage
+import restexample.GetAllClassesRequest
+import restexample.GetAllClassesResponse
+import restexample.GetAllPackagesRequest
+import restexample.GetAllPackagesResponse
+import restexample.TransformOCLRequest
+import restexample.TransformOCLResponse
+
+transformation restexample ( source : source , target : target ) {
+
+	top relation HandleGetAllPackagesRequest {
+
+		enforce domain source request : GetAllPackagesRequest { }
+
+		enforce domain target response : GetAllPackagesResponse {
+			packageURIs = EPackage.Registry.INSTANCE.keySet()
+		}
+
+	}
+
+	top relation HandleGetAllClassesRequest {
+
+		aPackageURI : String;
+		ePackage : EPackage;
+
+		enforce domain source request : GetAllClassesRequest {
+			packageURI = aPackageURI
+		}
+
+		enforce domain target response : GetAllClassesResponse {
+			classNames = ePackage.EClassifiers.map [ EClassifier c | c.name ]
+		}
+		
+		when {
+			ePackage = EPackage.Registry.INSTANCE.getEPackage(aPackageURI);
+			ePackage !== null;
+		}
+
+	}
+
+	top relation HandleTransformOCLRequest {
+
+		aPackageURI : String;
+		aClassName : String;
+		theOclText : String;
+		ePackage : EPackage;
+		eClass : EClassifier;
+
+		enforce domain source request : TransformOCLRequest {
+			packageURI = aPackageURI
+			className = aClassName
+			oclText = theOclText
+		}
+
+		enforce domain target response : TransformOCLResponse {
+			javaText = new OCL2JavaTransformationForEcore(eClass.eResource.resourceSet).transform(eClass , theOclText)
+			csharpText = new OCL2CSharpTransformationForEcore().transform(eClass , theOclText)
+			xpathText = new OCL2XPathTransformationForEcore().transform(eClass , theOclText)
+		}
+
+		when {
+			ePackage = EPackage.Registry.INSTANCE.getEPackage(aPackageURI);
+			ePackage !== null;
+			eClass = ePackage.getEClassifier(aClassName);
+			eClass !== null;
+		}
+
+	}
+
+}
