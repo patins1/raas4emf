@@ -4,8 +4,8 @@
 package org.eclipse.jqvt.util
 
 import com.google.inject.Inject
+import java.util.Collection
 import java.util.HashSet
-import java.util.List
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.jqvt.jQVT.Direction
 import org.eclipse.jqvt.jQVT.ObjectTemplate
@@ -161,11 +161,11 @@ class JQVTUtils {
 	}
 	
 	def boolean isMany(JvmTypeReference type, EObject context) {		
-		isConformantRawTypes(context.newTypeRef(typeof(List)),type,context) || type instanceof JvmGenericArrayTypeReference || type.type instanceof JvmArrayType
+		isConformantRawTypes(context.newTypeRef(typeof(Collection)),type,context) || type instanceof JvmGenericArrayTypeReference || type.type instanceof JvmArrayType
 	}
 	
 	def boolean isMany(LightweightTypeReference type, EObject context) {		
-		isConformantRawTypes(context.newTypeRef(typeof(List)).toLightweightTypeReference(context),type) || type instanceof JvmGenericArrayTypeReference || type.type instanceof JvmArrayType
+		isConformantRawTypes(context.newTypeRef(typeof(Collection)).toLightweightTypeReference(context),type) || type instanceof JvmGenericArrayTypeReference || type.type instanceof JvmArrayType
 	}
 	
 	def static String toQVT(EObject clause) {
