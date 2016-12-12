@@ -76,8 +76,14 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				ifcUrl = (String) raasMonitor.getProperty("ifc");
 				jsUrl = (String) raasMonitor.getProperty("js");
 				GeometryJob job = (GeometryJob) raasMonitor.getProperty("job");
-				if (IfcToThreejsTranformator.GET_REMOTE_BLENDER_URL!=null && job!=null)
-					REMOTE_BLENDER_URL = IfcToThreejsTranformator.GET_REMOTE_BLENDER_URL.get(job);
+				if (IfcToThreejsTranformator.GET_REMOTE_BLENDER_URL != null && job != null) {
+					try {
+						REMOTE_BLENDER_URL = IfcToThreejsTranformator.GET_REMOTE_BLENDER_URL.get(job);
+					} catch (Exception e) {
+						throwEx = e;
+						Activator.err("GET_REMOTE_BLENDER_URL.get() not succesfull!", e);
+					}
+				}
 			}
 
 			boolean useRemoteConversion = REMOTE_BLENDER_URL != null;

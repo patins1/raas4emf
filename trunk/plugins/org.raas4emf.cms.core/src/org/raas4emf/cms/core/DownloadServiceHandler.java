@@ -46,6 +46,8 @@ public class DownloadServiceHandler implements ServiceHandler {
 			artifactId = "platform:/plugin/org.raas4emf.service/" + artifactId;
 		if (artifactId.startsWith("/plugin/"))
 			artifactId = "platform:" + artifactId;
+		if (artifactId.startsWith("plugin/"))
+			artifactId = "platform:/" + artifactId;
 		if (artifactId.startsWith("platform:")) {
 			URL fileURL = new URL(artifactId);
 			try {

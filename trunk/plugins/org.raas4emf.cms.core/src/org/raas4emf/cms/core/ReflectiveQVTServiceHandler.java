@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.eclipse.emf.cdo.CDOObject;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
@@ -32,7 +31,6 @@ import org.eclipse.rap.rwt.service.ServiceHandler;
 
 import raascms.Artifact;
 import raascms.Folder;
-import raascms.RaascmsFactory;
 
 @SuppressWarnings("deprecation")
 public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
@@ -139,9 +137,11 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 			if (message == null)
 				message = e.toString() + "\n" + Arrays.toString(e.getStackTrace());
 			EClass eclass = findEClass("ErrorResponse");
-			EObject res = eclass.getEPackage().getEFactoryInstance().create(eclass);
-			res.eSet(eclass.getEStructuralFeature("errorMessage"), message);
-			message = new String(RAASUtils.encodeJSON(res));
+			if (eclass != null) {
+				EObject res = eclass.getEPackage().getEFactoryInstance().create(eclass);
+				res.eSet(eclass.getEStructuralFeature("errorMessage"), message);
+				message = new String(RAASUtils.encodeJSON(res));
+			}
 			response.setHeader("RAASResponseMessage", "" + message);
 			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message), response.getOutputStream());
 		}
@@ -182,13 +182,17 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 
 	abstract protected void executeSpecificQVTTransformation(final EMFJQVTEngine testTrafo, List<Object> targetModel) throws IllegalAccessException, InvocationTargetException, IOException;
 
-	abstract protected String getAPITokenFor(String requestClass);
+	protected String getAPITokenFor(String requestClass) {
+		return null;
+	}
 
-	abstract protected String getRootPathForFoldersAndArtifacts();
+	protected String getRootPathForFoldersAndArtifacts() {
+		return null;
+	}
 
 	@SuppressWarnings("unchecked")
 	protected <T> List<T> getInstancesFor(final EObject embeddedRequest, final List<Artifact> allArtifacts, final List<Folder> allFolders, Class<T> clazz) {
-		if (clazz == Folder.class) {
+		if (clazz == Folder.class && getRootPathForFoldersAndArtifacts() != null) {
 			if (!allFolders.isEmpty())
 				return (List<T>) allFolders;
 			String path = getRootPathForFoldersAndArtifacts();
