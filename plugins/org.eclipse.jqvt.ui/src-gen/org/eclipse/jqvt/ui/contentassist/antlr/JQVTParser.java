@@ -88,9 +88,9 @@ public class JQVTParser extends AbstractContentAssistParser {
 					put(grammarAccess.getDirectionAccess().getGroup(), "rule__Direction__Group__0");
 					put(grammarAccess.getRelationAccess().getGroup(), "rule__Relation__Group__0");
 					put(grammarAccess.getRelationAccess().getGroup_6(), "rule__Relation__Group_6__0");
-					put(grammarAccess.getRelationAccess().getGroup_6_1(), "rule__Relation__Group_6_1__0");
+					put(grammarAccess.getRelationAccess().getGroup_6_2(), "rule__Relation__Group_6_2__0");
 					put(grammarAccess.getRelationAccess().getGroup_7(), "rule__Relation__Group_7__0");
-					put(grammarAccess.getRelationAccess().getGroup_7_1(), "rule__Relation__Group_7_1__0");
+					put(grammarAccess.getRelationAccess().getGroup_7_2(), "rule__Relation__Group_7_2__0");
 					put(grammarAccess.getVarDeclAccess().getGroup(), "rule__VarDecl__Group__0");
 					put(grammarAccess.getRelationDomainAccess().getGroup(), "rule__RelationDomain__Group__0");
 					put(grammarAccess.getObjectTemplateAccess().getGroup(), "rule__ObjectTemplate__Group__0");
@@ -294,8 +294,8 @@ public class JQVTParser extends AbstractContentAssistParser {
 					put(grammarAccess.getRelationAccess().getNameAssignment_2(), "rule__Relation__NameAssignment_2");
 					put(grammarAccess.getRelationAccess().getVarsAssignment_4(), "rule__Relation__VarsAssignment_4");
 					put(grammarAccess.getRelationAccess().getDomainsAssignment_5(), "rule__Relation__DomainsAssignment_5");
-					put(grammarAccess.getRelationAccess().getWhenAssignment_6_1_0(), "rule__Relation__WhenAssignment_6_1_0");
-					put(grammarAccess.getRelationAccess().getWhereAssignment_7_1_0(), "rule__Relation__WhereAssignment_7_1_0");
+					put(grammarAccess.getRelationAccess().getWhenAssignment_6_2_0(), "rule__Relation__WhenAssignment_6_2_0");
+					put(grammarAccess.getRelationAccess().getWhereAssignment_7_2_0(), "rule__Relation__WhereAssignment_7_2_0");
 					put(grammarAccess.getVarDeclAccess().getNameAssignment_0(), "rule__VarDecl__NameAssignment_0");
 					put(grammarAccess.getVarDeclAccess().getTypeAssignment_2(), "rule__VarDecl__TypeAssignment_2");
 					put(grammarAccess.getVarDeclAccess().getWriteableAssignment_3(), "rule__VarDecl__WriteableAssignment_3");
