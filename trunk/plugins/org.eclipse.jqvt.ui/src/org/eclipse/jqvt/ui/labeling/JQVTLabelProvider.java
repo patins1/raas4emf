@@ -3,8 +3,13 @@
 */
 package org.eclipse.jqvt.ui.labeling;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
+import org.eclipse.jqvt.jQVT.PropertyTemplateItem;
+import org.eclipse.jqvt.util.JQVTUtils;
+import org.eclipse.xtext.common.types.JvmOperation;
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider;
+import org.eclipse.xtext.xbase.XExpression;
 
 import com.google.inject.Inject;
 
@@ -18,6 +23,25 @@ public class JQVTLabelProvider extends DefaultEObjectLabelProvider {
 	@Inject
 	public JQVTLabelProvider(AdapterFactoryLabelProvider delegate) {
 		super(delegate);
+	}
+
+	@Override
+	public Object text(Object element) {
+		if (element instanceof PropertyTemplateItem) {
+			PropertyTemplateItem propertyTemplateItem = (PropertyTemplateItem) element;
+			if (propertyTemplateItem.getReferredProperty() != null) {
+				JvmOperation prop = propertyTemplateItem.getReferredProperty();
+				XExpression val = propertyTemplateItem.getValue();
+				if (val != null) {
+					return JQVTUtils.toPropertyName(prop) + " : " + val.eClass().getName();
+				}
+			}
+		}
+		if (element instanceof EObject) {
+			EObject eObject = (EObject) element;
+			return eObject.eClass().getName();
+		}
+		return super.text(element);
 	}
 
 /*
