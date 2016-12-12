@@ -15,8 +15,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.raas4emf.cms.core.DownloadServiceHandler;
-
 public final class ReplacingFilter implements Filter {
 	private String from = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">";
 	// private String to = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">";
@@ -45,16 +43,24 @@ public final class ReplacingFilter implements Filter {
 		String uri = httpRequest.getRequestURI();
 		if (uri.startsWith(httpRequest.getContextPath()))
 			uri = uri.substring(httpRequest.getContextPath().length());
-		String querySuffix = httpRequest.getQueryString() != null ? "&" + httpRequest.getQueryString() : "";
 
-		for (String token: new String[] {"/RepositoryRoot/","/WebContent/"})
-		if (uri.contains(token)) {
-			String path = uri.substring(uri.indexOf(token)+1);
-			String filename = path.substring(path.lastIndexOf('/')+1);
-			String url = uri.substring(0,uri.indexOf(token))+"?servicehandler=downloadServiceHandler&filename="+filename+"&artifact=" + path + querySuffix;
-			System.out.println("Get "+url);
-			request.getRequestDispatcher(url).forward(request, response);
-			return;
+		for (String token : new String[] { "/RepositoryRoot/", "/plugin/", "/WebContent/" }) {
+			if (uri.contains(token)) {
+				String url = uri.substring(0, uri.indexOf(token));
+				if (httpRequest.getQueryString() != null && httpRequest.getQueryString().contains("servicehandler=")) {
+					url += "?" + httpRequest.getQueryString();
+				} else {
+					String path = uri.substring(uri.indexOf(token) + 1);
+					String filename = path.substring(path.lastIndexOf('/') + 1);
+					url = url + "?servicehandler=downloadServiceHandler&filename=" + filename + "&artifact=" + path;
+					if (httpRequest.getQueryString() != null) {
+						url += "&" + httpRequest.getQueryString();
+					}
+				}
+				System.out.println("Get " + url);
+				request.getRequestDispatcher(url).forward(request, response);
+				return;
+			}
 		}
 
 		HttpServletRequest hr = (HttpServletRequest) request;
