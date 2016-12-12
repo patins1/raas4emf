@@ -456,7 +456,7 @@ public class JQVTSemanticSequencer extends XbaseSemanticSequencer {
 				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, JQVTPackage.Literals.RELATION_DOMAIN__ROOT_TEMPLATE));
 		}
 		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getRelationDomainAccess().getDirectionDirectionIDTerminalRuleCall_2_0_1(), semanticObject.getDirection());
+		feeder.accept(grammarAccess.getRelationDomainAccess().getDirectionDirectionIDTerminalRuleCall_2_0_1(), semanticObject.eGet(JQVTPackage.Literals.RELATION_DOMAIN__DIRECTION, false));
 		feeder.accept(grammarAccess.getRelationDomainAccess().getRootTemplateObjectTemplateParserRuleCall_3_0(), semanticObject.getRootTemplate());
 		feeder.finish();
 	}
