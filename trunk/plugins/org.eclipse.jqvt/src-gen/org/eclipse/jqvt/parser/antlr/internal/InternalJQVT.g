@@ -565,69 +565,77 @@ ruleRelation returns [EObject current=null]
 	    }
 
 )
-)*(	otherlv_6='when {' 
+)*(	otherlv_6='when' 
     {
     	newLeafNode(otherlv_6, grammarAccess.getRelationAccess().getWhenKeyword_6_0());
+    }
+	otherlv_7='{' 
+    {
+    	newLeafNode(otherlv_7, grammarAccess.getRelationAccess().getLeftCurlyBracketKeyword_6_1());
     }
 ((
 (
 		{ 
-	        newCompositeNode(grammarAccess.getRelationAccess().getWhenXExpressionParserRuleCall_6_1_0_0()); 
+	        newCompositeNode(grammarAccess.getRelationAccess().getWhenXExpressionParserRuleCall_6_2_0_0()); 
 	    }
-		lv_when_7_0=ruleXExpression		{
+		lv_when_8_0=ruleXExpression		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getRelationRule());
 	        }
        		add(
        			$current, 
        			"when",
-        		lv_when_7_0, 
+        		lv_when_8_0, 
         		"org.eclipse.xtext.xbase.Xbase.XExpression");
 	        afterParserOrEnumRuleCall();
 	    }
 
 )
-)	otherlv_8=';' 
+)	otherlv_9=';' 
     {
-    	newLeafNode(otherlv_8, grammarAccess.getRelationAccess().getSemicolonKeyword_6_1_1());
+    	newLeafNode(otherlv_9, grammarAccess.getRelationAccess().getSemicolonKeyword_6_2_1());
     }
-)*	otherlv_9='}' 
+)*	otherlv_10='}' 
     {
-    	newLeafNode(otherlv_9, grammarAccess.getRelationAccess().getRightCurlyBracketKeyword_6_2());
+    	newLeafNode(otherlv_10, grammarAccess.getRelationAccess().getRightCurlyBracketKeyword_6_3());
     }
-)?(	otherlv_10='where {' 
+)?(	otherlv_11='where' 
     {
-    	newLeafNode(otherlv_10, grammarAccess.getRelationAccess().getWhereKeyword_7_0());
+    	newLeafNode(otherlv_11, grammarAccess.getRelationAccess().getWhereKeyword_7_0());
+    }
+	otherlv_12='{' 
+    {
+    	newLeafNode(otherlv_12, grammarAccess.getRelationAccess().getLeftCurlyBracketKeyword_7_1());
     }
 ((
 (
 		{ 
-	        newCompositeNode(grammarAccess.getRelationAccess().getWhereXExpressionParserRuleCall_7_1_0_0()); 
+	        newCompositeNode(grammarAccess.getRelationAccess().getWhereXExpressionParserRuleCall_7_2_0_0()); 
 	    }
-		lv_where_11_0=ruleXExpression		{
+		lv_where_13_0=ruleXExpression		{
 	        if ($current==null) {
 	            $current = createModelElementForParent(grammarAccess.getRelationRule());
 	        }
        		add(
        			$current, 
        			"where",
-        		lv_where_11_0, 
+        		lv_where_13_0, 
         		"org.eclipse.xtext.xbase.Xbase.XExpression");
 	        afterParserOrEnumRuleCall();
 	    }
 
 )
-)	otherlv_12=';' 
+)	otherlv_14=';' 
     {
-    	newLeafNode(otherlv_12, grammarAccess.getRelationAccess().getSemicolonKeyword_7_1_1());
+    	newLeafNode(otherlv_14, grammarAccess.getRelationAccess().getSemicolonKeyword_7_2_1());
     }
-)*	otherlv_13='}' 
+)*	otherlv_15='}' 
     {
-    	newLeafNode(otherlv_13, grammarAccess.getRelationAccess().getRightCurlyBracketKeyword_7_2());
+    	newLeafNode(otherlv_15, grammarAccess.getRelationAccess().getRightCurlyBracketKeyword_7_3());
     }
-)?	otherlv_14='}' 
+)?	otherlv_16='}' 
     {
-    	newLeafNode(otherlv_14, grammarAccess.getRelationAccess().getRightCurlyBracketKeyword_8());
+    	newLeafNode(otherlv_16, grammarAccess.getRelationAccess().getRightCurlyBracketKeyword_8());
     }
 )
 ;

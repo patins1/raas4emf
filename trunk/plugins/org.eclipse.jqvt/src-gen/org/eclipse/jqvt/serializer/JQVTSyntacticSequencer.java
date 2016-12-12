@@ -24,8 +24,8 @@ public class JQVTSyntacticSequencer extends AbstractSyntacticSequencer {
 	protected JQVTGrammarAccess grammarAccess;
 	protected AbstractElementAlias match_ObjectTemplate___CommaKeyword_5_1_0_or_SemicolonKeyword_5_1_1__q;
 	protected AbstractElementAlias match_RelationDomain_SemicolonKeyword_4_q;
-	protected AbstractElementAlias match_Relation___WhenKeyword_6_0_RightCurlyBracketKeyword_6_2__q;
-	protected AbstractElementAlias match_Relation___WhereKeyword_7_0_RightCurlyBracketKeyword_7_2__q;
+	protected AbstractElementAlias match_Relation___WhenKeyword_6_0_LeftCurlyBracketKeyword_6_1_RightCurlyBracketKeyword_6_3__q;
+	protected AbstractElementAlias match_Relation___WhereKeyword_7_0_LeftCurlyBracketKeyword_7_1_RightCurlyBracketKeyword_7_3__q;
 	protected AbstractElementAlias match_XBlockExpression_SemicolonKeyword_2_1_q;
 	protected AbstractElementAlias match_XExpressionInClosure_SemicolonKeyword_1_1_q;
 	protected AbstractElementAlias match_XFunctionTypeRef___LeftParenthesisKeyword_0_0_RightParenthesisKeyword_0_2__q;
@@ -38,8 +38,8 @@ public class JQVTSyntacticSequencer extends AbstractSyntacticSequencer {
 		grammarAccess = (JQVTGrammarAccess) access;
 		match_ObjectTemplate___CommaKeyword_5_1_0_or_SemicolonKeyword_5_1_1__q = new AlternativeAlias(false, true, new TokenAlias(false, false, grammarAccess.getObjectTemplateAccess().getCommaKeyword_5_1_0()), new TokenAlias(false, false, grammarAccess.getObjectTemplateAccess().getSemicolonKeyword_5_1_1()));
 		match_RelationDomain_SemicolonKeyword_4_q = new TokenAlias(false, true, grammarAccess.getRelationDomainAccess().getSemicolonKeyword_4());
-		match_Relation___WhenKeyword_6_0_RightCurlyBracketKeyword_6_2__q = new GroupAlias(false, true, new TokenAlias(false, false, grammarAccess.getRelationAccess().getWhenKeyword_6_0()), new TokenAlias(false, false, grammarAccess.getRelationAccess().getRightCurlyBracketKeyword_6_2()));
-		match_Relation___WhereKeyword_7_0_RightCurlyBracketKeyword_7_2__q = new GroupAlias(false, true, new TokenAlias(false, false, grammarAccess.getRelationAccess().getWhereKeyword_7_0()), new TokenAlias(false, false, grammarAccess.getRelationAccess().getRightCurlyBracketKeyword_7_2()));
+		match_Relation___WhenKeyword_6_0_LeftCurlyBracketKeyword_6_1_RightCurlyBracketKeyword_6_3__q = new GroupAlias(false, true, new TokenAlias(false, false, grammarAccess.getRelationAccess().getWhenKeyword_6_0()), new TokenAlias(false, false, grammarAccess.getRelationAccess().getLeftCurlyBracketKeyword_6_1()), new TokenAlias(false, false, grammarAccess.getRelationAccess().getRightCurlyBracketKeyword_6_3()));
+		match_Relation___WhereKeyword_7_0_LeftCurlyBracketKeyword_7_1_RightCurlyBracketKeyword_7_3__q = new GroupAlias(false, true, new TokenAlias(false, false, grammarAccess.getRelationAccess().getWhereKeyword_7_0()), new TokenAlias(false, false, grammarAccess.getRelationAccess().getLeftCurlyBracketKeyword_7_1()), new TokenAlias(false, false, grammarAccess.getRelationAccess().getRightCurlyBracketKeyword_7_3()));
 		match_XBlockExpression_SemicolonKeyword_2_1_q = new TokenAlias(false, true, grammarAccess.getXBlockExpressionAccess().getSemicolonKeyword_2_1());
 		match_XExpressionInClosure_SemicolonKeyword_1_1_q = new TokenAlias(false, true, grammarAccess.getXExpressionInClosureAccess().getSemicolonKeyword_1_1());
 		match_XFunctionTypeRef___LeftParenthesisKeyword_0_0_RightParenthesisKeyword_0_2__q = new GroupAlias(false, true, new TokenAlias(false, false, grammarAccess.getXFunctionTypeRefAccess().getLeftParenthesisKeyword_0_0()), new TokenAlias(false, false, grammarAccess.getXFunctionTypeRefAccess().getRightParenthesisKeyword_0_2()));
@@ -89,10 +89,10 @@ public class JQVTSyntacticSequencer extends AbstractSyntacticSequencer {
 				emit_ObjectTemplate___CommaKeyword_5_1_0_or_SemicolonKeyword_5_1_1__q(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if (match_RelationDomain_SemicolonKeyword_4_q.equals(syntax))
 				emit_RelationDomain_SemicolonKeyword_4_q(semanticObject, getLastNavigableState(), syntaxNodes);
-			else if (match_Relation___WhenKeyword_6_0_RightCurlyBracketKeyword_6_2__q.equals(syntax))
-				emit_Relation___WhenKeyword_6_0_RightCurlyBracketKeyword_6_2__q(semanticObject, getLastNavigableState(), syntaxNodes);
-			else if (match_Relation___WhereKeyword_7_0_RightCurlyBracketKeyword_7_2__q.equals(syntax))
-				emit_Relation___WhereKeyword_7_0_RightCurlyBracketKeyword_7_2__q(semanticObject, getLastNavigableState(), syntaxNodes);
+			else if (match_Relation___WhenKeyword_6_0_LeftCurlyBracketKeyword_6_1_RightCurlyBracketKeyword_6_3__q.equals(syntax))
+				emit_Relation___WhenKeyword_6_0_LeftCurlyBracketKeyword_6_1_RightCurlyBracketKeyword_6_3__q(semanticObject, getLastNavigableState(), syntaxNodes);
+			else if (match_Relation___WhereKeyword_7_0_LeftCurlyBracketKeyword_7_1_RightCurlyBracketKeyword_7_3__q.equals(syntax))
+				emit_Relation___WhereKeyword_7_0_LeftCurlyBracketKeyword_7_1_RightCurlyBracketKeyword_7_3__q(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if (match_XBlockExpression_SemicolonKeyword_2_1_q.equals(syntax))
 				emit_XBlockExpression_SemicolonKeyword_2_1_q(semanticObject, getLastNavigableState(), syntaxNodes);
 			else if (match_XExpressionInClosure_SemicolonKeyword_1_1_q.equals(syntax))
@@ -134,31 +134,31 @@ public class JQVTSyntacticSequencer extends AbstractSyntacticSequencer {
 	
 	/**
 	 * Ambiguous syntax:
-	 *     ('when {' '}')?
+	 *     ('when' '{' '}')?
 	 *
 	 * This ambiguous syntax occurs at:
-	 *     domains+=RelationDomain (ambiguity) 'where {' where+=XExpression
-	 *     domains+=RelationDomain (ambiguity) ('where {' '}')? '}' (rule end)
-	 *     name=ID '{' (ambiguity) 'where {' where+=XExpression
-	 *     name=ID '{' (ambiguity) ('where {' '}')? '}' (rule end)
-	 *     vars+=VarDecl (ambiguity) 'where {' where+=XExpression
-	 *     vars+=VarDecl (ambiguity) ('where {' '}')? '}' (rule end)
+	 *     domains+=RelationDomain (ambiguity) 'where' '{' where+=XExpression
+	 *     domains+=RelationDomain (ambiguity) ('where' '{' '}')? '}' (rule end)
+	 *     name=ID '{' (ambiguity) 'where' '{' where+=XExpression
+	 *     name=ID '{' (ambiguity) ('where' '{' '}')? '}' (rule end)
+	 *     vars+=VarDecl (ambiguity) 'where' '{' where+=XExpression
+	 *     vars+=VarDecl (ambiguity) ('where' '{' '}')? '}' (rule end)
 	 */
-	protected void emit_Relation___WhenKeyword_6_0_RightCurlyBracketKeyword_6_2__q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
+	protected void emit_Relation___WhenKeyword_6_0_LeftCurlyBracketKeyword_6_1_RightCurlyBracketKeyword_6_3__q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
 		acceptNodes(transition, nodes);
 	}
 	
 	/**
 	 * Ambiguous syntax:
-	 *     ('where {' '}')?
+	 *     ('where' '{' '}')?
 	 *
 	 * This ambiguous syntax occurs at:
-	 *     domains+=RelationDomain ('when {' '}')? (ambiguity) '}' (rule end)
-	 *     name=ID '{' ('when {' '}')? (ambiguity) '}' (rule end)
-	 *     vars+=VarDecl ('when {' '}')? (ambiguity) '}' (rule end)
+	 *     domains+=RelationDomain ('when' '{' '}')? (ambiguity) '}' (rule end)
+	 *     name=ID '{' ('when' '{' '}')? (ambiguity) '}' (rule end)
+	 *     vars+=VarDecl ('when' '{' '}')? (ambiguity) '}' (rule end)
 	 *     when+=XExpression ';' '}' (ambiguity) '}' (rule end)
 	 */
-	protected void emit_Relation___WhereKeyword_7_0_RightCurlyBracketKeyword_7_2__q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
+	protected void emit_Relation___WhereKeyword_7_0_LeftCurlyBracketKeyword_7_1_RightCurlyBracketKeyword_7_3__q(EObject semanticObject, ISynNavigable transition, List<INode> nodes) {
 		acceptNodes(transition, nodes);
 	}
 	

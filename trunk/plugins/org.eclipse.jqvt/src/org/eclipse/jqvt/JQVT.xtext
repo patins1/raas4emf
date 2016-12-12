@@ -27,10 +27,10 @@ Relation:
 	(topRelation?='top')? 'relation' name=ID '{'
 	vars+=VarDecl*
 	(domains+=RelationDomain)*
-	('when {'
+	('when' '{'
 	(when+=XExpression';')*
 	'}')?
-	('where {'
+	('where' '{'
 	(where+=XExpression';')*
 	'}')?
 	'}';
@@ -50,5 +50,6 @@ ObjectTemplate returns xbase::XVariableDeclaration:
 PropertyTemplateItem:
 	referredProperty=[types::JvmOperation|ValidID] '=' value= (ObjectTemplate |  XExpression);
 
+@Override 
 terminal SL_COMMENT : ('--'|'//') !('\n'|'\r')* ('\r'? '\n')?;
  
