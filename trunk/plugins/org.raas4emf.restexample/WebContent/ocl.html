@@ -4,21 +4,22 @@
 <title>OCL Transformation</title>
 <link rel="stylesheet" href="ocl.css" />
 <script src="jquery-2.0.3.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
 <script src="ocl.js"></script>
 </head>
-<body>
+<body ng-app="myApp" ng-controller="myCtrl" id="appId">
 	<form id="translate_ocl_form">
 		<label for="packageDropDown">EPackage URI:</label> <select
 			name="packageDropDown" size="1" id="packageDropDown"><option
-				value="a">Loading package URIs from server..</option></select><br /> <label
+				ng-repeat="x in packageURIs" value="{{x}}">{{x}}</option></select><br /> <label
 			for="classDropDown">Context EClass:</label><select
 			name="classDropDown" size="1" id="classDropDown"><option
-				value="a">Select package first..</option></select><br /> <label
+				ng-repeat="x in classNames" value="{{x}}">{{x}}</option></select><br /> <label
 			for="ocl_text">Type OCL here:</label> <br />
 		<textarea id="ocl_text" type="text" rows="6"> </textarea>
 		</textarea>
 		<br /> <input id="translate" type="button" value="Translate.."
-			onclick="translateOCL()" /><br />
+			ng-click="ngtranslateOCL()" /><br />
 	</form>
 
 	<div id="status"></div>
@@ -31,19 +32,19 @@
 		</tr>
 		<tr>
 			<td>Java</td>
-			<td id="java_text"></td>
+			<td>{{trafoResult.javaText}}</td>
 			<td>Referenced helper functions are <a
 				href="OCLTransformationHelper.java">here</a></td>
 		</tr>
 		<tr>
 			<td>C#</td>
-			<td id="csharp_text"></td>
+			<td>{{trafoResult.csharpText}}</td>
 			<td>Referenced helper functions are <a
 				href="OCLTransformationHelper.cs">here</a></td>
 		</tr>
 		<tr>
 			<td>XPath</td>
-			<td id="xpath_text"></td>
+			<td>{{trafoResult.xpathText}}</td>
 			<td>Assumes a proper XML serialization</a></td>
 		</tr>
 	</table>

@@ -3,17 +3,24 @@ var baseURL = RAASCMSURL + "?servicehandler=restexample&request=";
 
 var startRestRequest;
 
+var app = angular.module('myApp', []);
+app.controller('myCtrl', function($scope) {
+    $scope.trafoResult = {javaText:'(empty)',csharpText:'(empty)',xpathText:'(empty)'};
+    $scope.classNames = ["Select package first.."];
+    $scope.packageURIs = ["Loading package URIs from server.."];
+    $scope.ngtranslateOCL = function() {
+    	translateOCL($scope);
+    }
+});
+
 $(function () {
 
 	performRESTRequest(
 			"GetAllPackagesRequest",
 			function(data) {
-				var $select = $('#packageDropDown'); 
-				$select.find('option').remove();  
-				$.each(data.packageURIs,function(key, value) 
-				{					
-				    $select.append('<option value="' + value + '">' + value + '</option>');
-				});
+				$scope=$('#appId').scope();
+				$scope.packageURIs = data.packageURIs;
+				$scope.$digest();
 			}
 	);	
 			
@@ -27,12 +34,9 @@ function loadClassesForPackage(doAfterLoaded) {
 		performRESTRequest(
 				"GetAllClassesRequest&packageURI=" + $("#packageDropDown option:selected").text(),
 				function(data) {
-					var $select = $('#classDropDown'); 
-					$select.find('option').remove();  
-					$.each(data.classNames,function(key, value) 
-					{					
-					    $select.append('<option value="' + value + '">' + value + '</option>');
-					});	
+					$scope=$('#appId').scope();
+					$scope.classNames = data.classNames;
+					$scope.$digest();
 					if (typeof  doAfterLoaded == "function") doAfterLoaded();
 				}
 		);
@@ -60,14 +64,13 @@ function loadPolyloopConstraint() {
 	loadConstraint("http://IFC2X3.ecore","IfcPolyLoop","self.Polygon->first().Coordinates = self.Polygon->last().Coordinates");
 }
 
-function translateOCL() {
+function translateOCL($scope) {
 	
 		performRESTRequest(
 				"TransformOCLRequest&packageURI=" + $("#packageDropDown option:selected").text()+"&className=" + $("#classDropDown option:selected").text()+"&oclText=" + $("#ocl_text").val(),
 				function(data) {  
-					$('#java_text').html(data.javaText);
-					$('#csharp_text').html(data.csharpText);
-					$('#xpath_text').html(data.xpathText);	
+					$scope.trafoResult = data;
+					$scope.$digest();
 				}
 		);
 		
