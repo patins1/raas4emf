@@ -11,6 +11,7 @@ import java.util.TimeZone;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.codegen.ecore.genmodel.GenClass;
+import org.eclipse.emf.codegen.ecore.genmodel.GenClassifier;
 import org.eclipse.emf.codegen.ecore.genmodel.GenFeature;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
@@ -38,7 +39,8 @@ public class JaxbAnnosUI {
 				JaxbProposal proposal = new JaxbProposal(decl);
 				proposal.setAnnotation("javax.xml.bind.annotation.XmlRootElement");
 				proposal.setLabel("Provide an XML element name for serialization as XML root element by JAXRS");
-				proposal.put("name", genClass.getInterfaceName() + "Element");
+				proposal.put("name", genClass.getGenPackage().getNSName() + "." + genClass.getInterfaceName());
+				// proposal.put("namespace", genClass.getGenPackage().getNSURI());
 				if (proposal.isRelevant()) {
 					proposals.add(proposal);
 				}
@@ -68,6 +70,7 @@ public class JaxbAnnosUI {
 			} else {
 				proposal.setAnnotation("javax.xml.bind.annotation.XmlType");
 				proposal.put("name", genClass.getInterfaceName());
+				proposal.put("namespace", genClass.getGenPackage().getNSURI());
 				proposal.setLabel("Use the interface name as XML element name, as the class name would be used by default");
 			}
 			if (proposal.isRelevant()) {
@@ -87,7 +90,7 @@ public class JaxbAnnosUI {
 			if (eFeature == null) {
 				continue;
 			}
-			if (eFeature.getLowerBound() >= 1 || eFeature.isMany()) {
+			if ((eFeature.getLowerBound() >= 1 || eFeature.isMany()) && !"EFeatureMapEntry".equals(eFeature.getEType().getName())) {
 				JaxbProposal proposal = new JaxbProposal(mdecl);
 				if (eFeature.getLowerBound() >= 1) {
 					proposal.put("required", true);
@@ -100,6 +103,25 @@ public class JaxbAnnosUI {
 					proposals.add(proposal);
 				}
 			}
+
+			for (GenFeature f : genClass.getGenFeatures()) {
+				if (featureName.contentEquals(f.getName())) {
+					GenClassifier t = f.getTypeGenClassifier();
+					if (t instanceof GenClass) {
+						GenClass genClass2 = (GenClass) t;
+						if (MetamodelUtil.isWrappingClass(genClass2) || MetamodelUtil.isMixedClass(genClass2)) {
+							JaxbProposal proposal = new JaxbProposal(mdecl);
+							proposal.setAnnotation("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter");
+							proposal.put("value", new ClassLiteral(t.getGenPackage().getQualifiedPackageName() + ".jaxb." + t.getName() + "ImplAdapter"));
+							proposal.setLabel("Delegate to serialization of implementation class, as interfaces cannot be serialized");
+							if (proposal.isRelevant()) {
+								proposals.add(proposal);
+							}
+						}
+					}
+				}
+			}
+
 			if (eFeature instanceof EReference) {
 				EReference eReference = (EReference) eFeature;
 				if (!eReference.isContainment()) {

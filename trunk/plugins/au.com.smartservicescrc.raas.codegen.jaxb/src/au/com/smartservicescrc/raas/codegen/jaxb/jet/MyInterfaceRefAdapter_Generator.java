@@ -2,6 +2,10 @@
 package au.com.smartservicescrc.raas.codegen.jaxb.jet;
 
 import org.eclipse.emf.codegen.ecore.genmodel.GenClass;
+import org.eclipse.emf.codegen.ecore.genmodel.GenClassifier;
+import org.eclipse.emf.codegen.ecore.genmodel.GenEnum;
+import org.eclipse.emf.codegen.ecore.genmodel.GenFeature;
+
 
 public class MyInterfaceRefAdapter_Generator 
  {

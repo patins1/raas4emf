@@ -1,0 +1,32 @@
+<%@ jet package="au.com.smartservicescrc.raas.codegen.jaxb.jet" class="PrimitiveTypeImplAdapter_Generator" skeleton="jaxb.skeleton" %>
+package <%=genClass.getGenPackage().getQualifiedPackageName()%>.jaxb;
+
+<%genClass.getGenModel().markImportLocation(stringBuffer, genClass.getGenPackage());%>
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+<% GenFeature f = genClass.getGenFeatures().get(0); %>
+<% String _type = f.getType(); %>
+	<% if (_type.contains(".")) { %>
+import <%=_type%>;
+	<% } %>
+	<% String BoxedType = _type.contains(".") || _type.contains("[]") ? _type.substring(_type.lastIndexOf(".")+1) : "int".equals(_type) ? "Integer" : _type.substring(0,1).toUpperCase()+_type.substring(1); %>
+	<% GenClassifier t = f.getTypeGenClassifier(); %>
+	<% String ValueType = t instanceof GenEnum ? "String" : BoxedType; %>
+
+public class <%=genClass.getInterfaceName()%>ImplAdapter extends XmlAdapter<<%=ValueType%>, <%=genClass.getImportedInterfaceName()%>> {
+
+	@Override
+	public <%=genClass.getImportedInterfaceName()%> unmarshal(<%=ValueType%> v) throws Exception {
+		<%=genClass.getImportedInterfaceName()%> result = <%=genClass.getGenPackage().getQualifiedFactoryInstanceAccessor()%>.create<%=genClass.getInterfaceName()%>();
+		result.setValue(<% if (t instanceof GenEnum) {%><%=BoxedType%>.get(v)<% } else { %>v<% } %>);
+		return result;
+	}
+
+	@Override
+	public <%=ValueType%> marshal(<%=genClass.getImportedInterfaceName()%> v) throws Exception {
+		return v.<%=genClass.getGenFeatures().get(0).getGetAccessor()%>()<% if (t instanceof GenEnum) {%>.getLiteral()<% } %>;
+	}
+
+}
+
+<%genClass.getGenModel().emitSortedImports();%>

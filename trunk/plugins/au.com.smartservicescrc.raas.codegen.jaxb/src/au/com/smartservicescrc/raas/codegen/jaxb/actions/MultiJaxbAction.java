@@ -40,9 +40,12 @@ import org.eclipse.ui.IWorkbenchSite;
 
 import au.com.smartservicescrc.raas.codegen.jaxb.Activator;
 import au.com.smartservicescrc.raas.codegen.jaxb.classes.JaxbGenInfo;
+import au.com.smartservicescrc.raas.codegen.jaxb.jet.MixedImplAdapter_Generator;
 import au.com.smartservicescrc.raas.codegen.jaxb.jet.MyInterfaceImplAdapter_Generator;
 import au.com.smartservicescrc.raas.codegen.jaxb.jet.MyInterfaceRefAdapter_Generator;
 import au.com.smartservicescrc.raas.codegen.jaxb.jet.MyInterfaceRef_Generator;
+import au.com.smartservicescrc.raas.codegen.jaxb.jet.PrimitiveTypeImplAdapter_Generator;
+import au.com.smartservicescrc.raas.codegen.jaxb.util.MetamodelUtil;
 import au.com.smartservicescrc.raas.codegen.jaxb.util.ResourceUtil;
 import au.com.smartservicescrc.raas.codegen.jaxb.wizard.JAXBAugmentationWizard;
 
@@ -95,16 +98,22 @@ public class MultiJaxbAction extends CleanUpAction {
 							if (itftype == null) {
 								continue;
 							}
-							jaxbGenInfo.setGenClass(itftype.getElementName(), genClass);
+							jaxbGenInfo.setGenClass(itftype.getFullyQualifiedName(), genClass);
 							newSelection.add(itftype);
 							IType type = javaProject.findType(genClass.getQualifiedClassName());
 							if (type != null) {
-								jaxbGenInfo.setGenClass(type.getElementName(), genClass);
+								jaxbGenInfo.setGenClass(type.getFullyQualifiedName(), genClass);
 								newSelection.add(type);
 							}
 							String myInterface = genClass.getInterfaceName();
 							genModel.setImportManager(new ImportManager(myPackage + ".jaxb", myInterface + "ImplAdapter"));
-							ResourceUtil.copyContents(src, new MyInterfaceImplAdapter_Generator().generate(genClass, jaxbUtilPackage), myPackagePath + "/jaxb/" + myInterface + "ImplAdapter.java");
+							if (MetamodelUtil.isMixedClass(genClass)) {
+								ResourceUtil.copyContents(src, new MixedImplAdapter_Generator().generate(genClass, jaxbUtilPackage), myPackagePath + "/jaxb/" + myInterface + "ImplAdapter.java");
+							} else if (MetamodelUtil.isWrappingClass(genClass)) {
+								ResourceUtil.copyContents(src, new PrimitiveTypeImplAdapter_Generator().generate(genClass, jaxbUtilPackage), myPackagePath + "/jaxb/" + myInterface + "ImplAdapter.java");
+							} else {
+								ResourceUtil.copyContents(src, new MyInterfaceImplAdapter_Generator().generate(genClass, jaxbUtilPackage), myPackagePath + "/jaxb/" + myInterface + "ImplAdapter.java");
+							}
 							genModel.setImportManager(new ImportManager(myPackage + ".jaxb", myInterface + "Ref.java"));
 							ResourceUtil.copyContents(src, new MyInterfaceRef_Generator().generate(genClass, jaxbUtilPackage), myPackagePath + "/jaxb/" + myInterface + "Ref.java");
 							// if ((type.getFlags() & Flags.AccAbstract) == 0)

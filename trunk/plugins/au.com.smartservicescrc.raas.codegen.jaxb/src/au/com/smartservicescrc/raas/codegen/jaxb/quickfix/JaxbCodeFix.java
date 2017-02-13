@@ -132,7 +132,7 @@ public class JaxbCodeFix extends CompilationUnitRewriteOperationsFix {
 				continue;
 			}
 			TypeDeclaration decl = (TypeDeclaration) problem;
-			GenClass genClass = jaxbGenInfo.getGenClass(decl.getName().getIdentifier());
+			GenClass genClass = jaxbGenInfo.getGenClass(((CompilationUnit) decl.getParent()).getPackage().getName() + "." + decl.getName().getIdentifier());
 			if (genClass == null) {
 				continue;
 			}
