@@ -40,6 +40,9 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.apache.cxf.jaxrs.provider.json.JSONProvider;
@@ -71,9 +74,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.PackageNotFoundException;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.net4j.Net4jUtil;
 import org.eclipse.net4j.connector.IConnector;
@@ -92,6 +97,10 @@ import org.eclipse.rap.rwt.internal.service.UISessionImpl;
 import org.ifc4emf.metamodel.ifcheader.Model;
 import org.ifc4emf.part21.loader.ContainmentTreeOrderedByNumberHelper;
 import org.ifc4emf.part21.loader.Part21ResourceImpl;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import IFC2X3.IFC2X3Factory;
 import IFC2X3.IfcDerivedUnit;
@@ -174,6 +183,9 @@ public class RAASUtils {
 		uri = correctModelUri(uri);
 		artifact.setState("Intermediate model safe");
 		try {
+			// to support mixed text
+			resourceSet.getLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, Boolean.TRUE);
+
 			resourceSet.getLoadOptions().put(ArtifactImpl.OPTION_CONTENTSLIST, artifact.getContents());
 			resourceSet.getLoadOptions().put(ArtifactImpl.OPTION_SAVE_PROGRESS_MONITOR, progressMonitor);
 			Resource res = resourceSet.createResource(uri);
@@ -200,7 +212,7 @@ public class RAASUtils {
 				} else
 					throw e;
 			}
-//			removeLegacyContent(res);
+			// removeLegacyContent(res);
 			Collection<EObject> contentsToAdd = new ArrayList<EObject>();
 			for (EObject eObject : res.getContents()) {
 				if (eObject.eClass().getName().equals("DocumentRoot")) {
@@ -443,7 +455,7 @@ public class RAASUtils {
 		// Create configuration
 		CDONet4jSessionConfiguration configuration = CDONet4jUtil.createNet4jSessionConfiguration();
 		configuration.setConnector(connector);
-		configuration.setRepositoryName(repositoryName); //$NON-NLS-1$
+		configuration.setRepositoryName(repositoryName); // $NON-NLS-1$
 
 		if (userID != null && password != null) {
 			IPasswordCredentialsProvider prov = new IPasswordCredentialsProvider() {
@@ -1469,6 +1481,19 @@ public class RAASUtils {
 		}
 	}
 
+	public static void encodeJSONJackson(Object arg, OutputStream outputStream) {
+		ObjectMapper mapper = new ObjectMapper();
+		JaxbAnnotationModule module = new JaxbAnnotationModule();
+		mapper.registerModule(module);
+		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.setSerializationInclusion(Include.NON_EMPTY);
+		try {
+			mapper.writeValue(outputStream, arg);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Object decodeJSON(InputStream inputStream, EClass eClass) {
 
@@ -1485,15 +1510,31 @@ public class RAASUtils {
 		}
 	}
 
+	public static Object decodeJsonOrXml(Artifact artifact, EClass eClass) {
+		if (artifact.getName().toLowerCase().endsWith(".xml")) {
+			try {
+				Artifact a = assureModelTree(artifact);
+				return a.getContents().get(0);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		try {
+			return decodeJSON(FileUtil.inputstreamToString(artifact.getFileContent().getContents()), eClass);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@SuppressWarnings("restriction")
 	public static void fixServiceHandlePreconditions() {
 		ServiceContext context = ContextProvider.getContext();
 		HttpServletRequest request = context.getRequest();
-	    String connectionId = request.getParameter( CONNECTION_ID );
-		if (context.getUISession() == null && connectionId==null) {
+		String connectionId = request.getParameter(CONNECTION_ID);
+		if (context.getUISession() == null && connectionId == null) {
 			HttpSession httpSession = request.getSession(true);
 			UISessionImpl uiSession = UISessionImpl.getInstanceFromSession(httpSession, connectionId);
-			if (uiSession==null) {
+			if (uiSession == null) {
 				// since Neon, we will always arrive here as a null connectionId would not be stored
 				for (String name : Collections.list(httpSession.getAttributeNames())) {
 					Object o = httpSession.getAttribute(name);
@@ -1513,16 +1554,75 @@ public class RAASUtils {
 
 	static public byte[] encodeJSON(Object arg) {
 		ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
-		encodeJSON(arg, requestBody, Arrays.asList("representationItem", "innerCurves", "bounds", "sbsmBoundary", "styles", "documents", "objects", "comments"), true);
+		// encodeJSON(arg, requestBody, new ArrayList<String>(calculateJettisonArrayKeys(arg)), true);
+		encodeJSONJackson(arg, requestBody);
 		return requestBody.toByteArray();
 	}
 
-	static public Object decodeJSON(String arg, EClass eClass) {
-		arg = "{\"" + eClass.getName() + "Element\":" + arg + "}";
-		InputStream responseBody = new ByteArrayInputStream(arg.getBytes());
-		return decodeJSON(responseBody, eClass);
+	private static Set<String> calculateJettisonArrayKeys(Object arg) {
+		Set<String> s = new HashSet<String>();
+		Set<EClass> handled = new HashSet<EClass>();
+		TreeIterator<Object> it = EcoreUtil.getAllContents(Arrays.asList(arg));
+		while (it.hasNext()) {
+			Object o = it.next();
+			if (o instanceof EObject) {
+				EObject eObject = (EObject) o;
+				if (handled.add(eObject.eClass())) {
+					for (EStructuralFeature f : eObject.eClass().getEAllReferences()) {
+						if (f.isMany()) {
+							// XmlJavaTypeAdapter adapter = org.apache.cxf.jaxrs.utils.JAXBUtils.getAdapter(cls, anns);
+							// return org.apache.cxf.jaxrs.utils.JAXBUtils.useAdapter(obj, adapter, marshal);
+							if (f.getEType() instanceof EClass) {
+								EClass eClass = (EClass) f.getEType();
+								if (eClass.getEStructuralFeatures().size() == 1 && "value".equals(eClass.getEStructuralFeature(0).getName())) {
+									continue;
+								}
+							}
+							s.add(f.getName());
+						}
+					}
+				}
+			}
+		}
+		return s;
 	}
-	
+
+	static public String encodeJAXBJSON(Object arg) {
+		return new String(encodeJSON(arg));
+	}
+
+	static public String encodeJAXBXML(Object arg) {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try {
+			JAXBContext jaxbContext = JAXBContext.newInstance(arg.getClass());
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			marshaller.marshal(arg, outputStream);
+		} catch (JAXBException e1) {
+			throw new RuntimeException(e1);
+		}
+		return new String(outputStream.toByteArray());
+	}
+
+	static public String encodeEMFXML(Object x) {
+		ResourceSet resourceSet = new ResourceSetImpl();
+		resourceSet.getLoadOptions().put(XMLResource.OPTION_ROOT_OBJECTS, Arrays.asList(x));
+		Resource res = resourceSet.createResource(URI.createFileURI("/dev/sample/try.xml"));
+		try {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			res.save(outputStream, resourceSet.getLoadOptions());
+			return outputStream.toString();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	static public Object decodeJSON(String json, EClass eClass) {
+		String rootJson = "{\"" + eClass.getEPackage().getName() + "." + eClass.getName() + "\":" + json + "}";
+		InputStream inputStream = new ByteArrayInputStream(rootJson.getBytes());
+		return decodeJSON(inputStream, eClass);
+	}
+
 	static public <T extends EObject> T copyContainmentOnly(T eObject) {
 		return (T) new EcoreUtil.Copier().copy(eObject);
 	}
