@@ -1,5 +1,9 @@
 
 import org.eclipse.emf.codegen.ecore.genmodel.GenClass;
+import org.eclipse.emf.codegen.ecore.genmodel.GenClassifier;
+import org.eclipse.emf.codegen.ecore.genmodel.GenEnum;
+import org.eclipse.emf.codegen.ecore.genmodel.GenFeature;
+
 
 public class CLASS 
  {

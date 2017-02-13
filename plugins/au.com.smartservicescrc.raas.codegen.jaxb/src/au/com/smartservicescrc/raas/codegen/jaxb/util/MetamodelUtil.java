@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.emf.codegen.ecore.genmodel.GenClass;
+import org.eclipse.emf.codegen.ecore.genmodel.GenFeature;
 import org.eclipse.emf.codegen.ecore.genmodel.GenModel;
 import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
 import org.eclipse.emf.ecore.EClass;
@@ -133,5 +134,18 @@ public class MetamodelUtil {
 		int point = eClass.lastIndexOf(".");
 		return eClass.substring(0, point + 1) + "jaxb." + eClass.substring(point + 1) + "Ref";
 
+	}
+
+	public static boolean isWrappingClass(GenClass genClass) {
+		return genClass.getGenFeatures().size() == 1 && "value".equals(genClass.getGenFeatures().get(0).getName());
+	}
+
+	public static boolean isMixedClass(GenClass genClass) {
+		for (GenFeature f : genClass.getAllGenFeatures()) {
+			if ("EFeatureMapEntry".equals(f.getEcoreFeature().getEType().getName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
