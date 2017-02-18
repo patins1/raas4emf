@@ -79,6 +79,7 @@ if (g_renderer == null) g_renderer = getParameterByName(document.URL,"renderer")
 var doCollada= document.evaluate!=undefined && g_renderer!="svg";
 var doJsonLoader = true;
 var doGLTF = false;
+var doFBX = false;
 var container, stats, rendererStats;
 var mouse;
 
@@ -548,6 +549,7 @@ function calcPaths() {
     doJsonLoader = (ext == ".js");
     doCollada = (ext == ".dae");
     doGLTF = (ext == ".json");
+    doFBX = (ext == ".fbx");
     if (doCollada && overrideSettings.quickmode==null) effectController.quickmode = false;  
     if (doCollada && overrideSettings.vertexnormals==null) effectController.vertexnormals = true;  
 	
@@ -3360,7 +3362,7 @@ function start() {
     	mouse = new THREE.Vector2();
     	up = new THREE.Vector3( 0, 1, 0 );
 		
-    	var requiredThreeJS = doJsonLoader ? [] : doCollada ? [g_dir+"js/loaders/ColladaLoader.js"] : doGLTF ? [g_dir+"js/loaders/gltf/glTF-parser.js",g_dir+"js/loaders/gltf/glTFLoader.js",g_dir+"js/loaders/gltf/glTFLoaderUtils.js",g_dir+"js/loaders/gltf/glTFAnimation.js"] : [g_dir+"js/loaders/OBJLoader.js"];
+    	var requiredThreeJS = doFBX ? [g_dir+"js/loaders/FBXLoader2.js"] :  doJsonLoader ? [] : doCollada ? [g_dir+"js/loaders/ColladaLoader.js"] : doGLTF ? [g_dir+"js/loaders/gltf/glTF-parser.js",g_dir+"js/loaders/gltf/glTFLoader.js",g_dir+"js/loaders/gltf/glTFLoaderUtils.js",g_dir+"js/loaders/gltf/glTFAnimation.js"] : [g_dir+"js/loaders/OBJLoader.js"];
 //    	requiredThreeJS.push(g_dir+"js/controls/OrbitControls.js");
 //    	requiredThreeJS.push(g_dir+"js/curves/NURBSUtils.js");
 //    	requiredThreeJS.push(g_dir+"js/curves/NURBSCurve.js");
@@ -3697,7 +3699,15 @@ function load2(ii) {
 	        });        		
     		afterLoad(root,g_clients[ii]);
     	} );
-	} else 
+	} else
+	if (doFBX) {
+    	var loader = new THREE.FBXLoader();
+    	loader.load( g_paths[ii], function ( root ) {
+	        var g_client = g_clients[ii];
+    		effectController.quickmode = false; // this mode not works
+    	    afterLoad(root,g_clients[ii]);
+    	} );
+	} else
 	if (doGLTF) {
     	var loader = new THREE.glTFLoader();
     	var index = g_paths[ii].lastIndexOf("scene.");
