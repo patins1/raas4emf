@@ -593,7 +593,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 
 	static boolean isCollada(List<Artifact> artifacts) {
 		for (Artifact artifact : artifacts)
-			if (RAASUtils.hasExtension(artifact, ".dae") || RAASUtils.hasExtension(artifact, ".js"))
+			if (RAASUtils.hasExtension(artifact, ".dae") || RAASUtils.hasExtension(artifact, ".js") || RAASUtils.hasExtension(artifact, ".fbx"))
 				return true;
 		return false;
 	}
