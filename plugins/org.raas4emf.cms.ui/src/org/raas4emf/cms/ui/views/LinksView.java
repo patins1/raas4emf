@@ -165,9 +165,9 @@ public class LinksView extends ViewPart implements ISelectionListener {
 				if (renderer.contains("software"))
 					webglUri += "&renderer=software";
 				final String filename = PreviewView.getScene3dName();
-				if (!RAASUtils.hasExtension(artifact,".dae"))
-					webglUri +=  "&filename=" + filename;
-				webglUri=RAASEditorUtil.createRestURI(RAASUIUtils.getPath(artifact),webglUri).toString();
+				if (!RAASUtils.hasExtension(artifact, ".dae") && !RAASUtils.hasExtension(artifact, ".fbx"))
+					webglUri += "&filename=" + filename;
+				webglUri = RAASEditorUtil.createRestURI(RAASUIUtils.getPath(artifact), webglUri).toString();
 				html.append("<br>");
 				html.append("<a href=\"");
 				html.append(webglUri);
