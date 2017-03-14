@@ -11,6 +11,7 @@ import java.io.StringBufferInputStream;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -21,6 +22,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.emf.cdo.common.lob.CDOBlob;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.net4j.util.io.ExpectedFileInputStream;
 import org.eclipse.rap.rwt.RWT;
@@ -29,6 +31,7 @@ import org.raas4emf.cms.transformation.TransformationUtils;
 
 import raascms.Artifact;
 import raascms.Folder;
+import raascms.RaascmsFactory;
 
 public class DownloadServiceHandler implements ServiceHandler {
 
@@ -53,20 +56,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 			try {
 				URL u = FileLocator.resolve(fileURL);
 				String fileName = u.getFile();
-				if (fileName.endsWith(".js"))
-					response.setContentType("text/javascript");
-				else if (fileName.endsWith(".css"))
-					response.setContentType("text/css");
-				else if (fileName.endsWith(".png"))
-					response.setContentType("image/png");
-				else if (fileName.endsWith(".jpg"))
-					response.setContentType("image/jpg");
-				else if (fileName.endsWith(".gif"))
-					response.setContentType("image/gif");
-				else if (fileName.endsWith(".html"))
-					response.setContentType("text/html");
-				else
-					Activator.err("unknown content:" + fileName);
+				guessContentType(response, fileName);
 				File fileForLastModified;
 				if (fileName.lastIndexOf("!") != -1) {
 					fileForLastModified = new File(fileName.substring(0, fileName.lastIndexOf("!")));
@@ -131,12 +121,17 @@ public class DownloadServiceHandler implements ServiceHandler {
 				response.addHeader("Access-Control-Allow-Origin", "*");
 				response.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 				// Send the file in the response
-				response.setContentType("application/octet-stream");
 
 				String filename = RWT.getRequest().getParameter("filename");
 				if (filename == null)
 					throw new RuntimeException("No filename provided when requesting " + artifactId + "!");
-				response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+				String download = RWT.getRequest().getParameter("download");
+				if (!(download != null && "yes".equals(download))) {
+					guessContentType(response, filename);
+				} else {
+					response.setContentType("application/octet-stream");
+					response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+				}
 
 				Object fileObject = null;
 				Artifact artifact = null;
@@ -159,6 +154,38 @@ public class DownloadServiceHandler implements ServiceHandler {
 				} else {
 					artifact = (Artifact) RAASUtils.findObjectById(artifactId);
 					fileObject = artifact.getFileOrStream(filename, new NullProgressMonitor());
+				}
+				String downloadurl = RWT.getRequest().getParameter("downloadurl");
+				if (downloadurl != null && fileObject == null) {
+
+					String name = RWT.getRequest().getParameter("name");
+					if (name == null) {
+						throw new RuntimeException("No name provided for downloadurl " + downloadurl + " !");
+					}
+
+					// File file = new File("c:/dev/try.txt");
+					// org.apache.commons.io.FileUtils.copyURLToFile(new URL(artifactId), file);
+					// FileInputStream ins = new FileInputStream(file);
+
+					URL myurl = new URL(downloadurl);
+					URLConnection con = myurl.openConnection();
+					InputStream ins = con.getInputStream();
+
+					artifact = RaascmsFactory.eINSTANCE.createArtifact();
+					artifact.setName(name);
+					artifact.setFileContent(new CDOBlob(ins));
+
+					fileObject = artifact.getFileOrStream(filename, new NullProgressMonitor());
+
+					// // Send the file in the response
+					// response.setContentType("application/octet-stream");
+					// // response.setContentLength((int) file.length());
+					// try {
+					// TransformationUtils.inputstreamToOutputstream(ins, response.getOutputStream(), Integer.MAX_VALUE);
+					// } catch (IOException ioe) {
+					// throw new RuntimeException(ioe);
+					// }
+
 				}
 
 				InputStream inputStream;
@@ -221,6 +248,23 @@ public class DownloadServiceHandler implements ServiceHandler {
 				throw new RuntimeException(ioe);
 			}
 		}
+	}
+
+	private void guessContentType(final HttpServletResponse response, String fileName) {
+		if (fileName.endsWith(".js"))
+			response.setContentType("text/javascript");
+		else if (fileName.endsWith(".css"))
+			response.setContentType("text/css");
+		else if (fileName.endsWith(".png"))
+			response.setContentType("image/png");
+		else if (fileName.endsWith(".jpg"))
+			response.setContentType("image/jpg");
+		else if (fileName.endsWith(".gif"))
+			response.setContentType("image/gif");
+		else if (fileName.endsWith(".html"))
+			response.setContentType("text/html");
+		else
+			response.setContentType("application/octet-stream");
 	}
 
 	private boolean isModified(final HttpServletResponse response, File file, File fileForLastModified) {

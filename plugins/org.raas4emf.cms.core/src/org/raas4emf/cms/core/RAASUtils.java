@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.WeakHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -74,9 +75,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.Resource.IOWrappedException;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.FeatureNotFoundException;
 import org.eclipse.emf.ecore.xmi.PackageNotFoundException;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
@@ -98,9 +101,23 @@ import org.ifc4emf.metamodel.ifcheader.Model;
 import org.ifc4emf.part21.loader.ContainmentTreeOrderedByNumberHelper;
 import org.ifc4emf.part21.loader.Part21ResourceImpl;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
+import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
+import com.fasterxml.jackson.dataformat.smile.SmileFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 import IFC2X3.IFC2X3Factory;
 import IFC2X3.IfcDerivedUnit;
@@ -125,6 +142,7 @@ import IFC2X3.IfcSimpleProperty;
 import IFC2X3.IfcSpace;
 import IFC2X3.IfcUnit;
 import IFC2X3.IfcValue;
+import de.undercouch.bson4jackson.BsonFactory;
 import raascms.Artifact;
 import raascms.Folder;
 import raascms.RaascmsFactory;
@@ -148,6 +166,7 @@ public class RAASUtils {
 	public static Collection<String> otherSearchStrings = new ArrayList<String>();
 
 	static public CDOServerApplication dbapp;
+	private static Map<Class<? extends JsonFactory>, ObjectMapper> MAPPINGS = new WeakHashMap<Class<? extends JsonFactory>, ObjectMapper>();
 
 	public static EObject findObjectById(String id) {
 		CDOView trans = Activator.getSessionInstance().openView();
@@ -213,13 +232,7 @@ public class RAASUtils {
 					throw e;
 			}
 			// removeLegacyContent(res);
-			Collection<EObject> contentsToAdd = new ArrayList<EObject>();
-			for (EObject eObject : res.getContents()) {
-				if (eObject.eClass().getName().equals("DocumentRoot")) {
-					contentsToAdd.addAll(eObject.eContents());
-				} else
-					contentsToAdd.add(eObject);
-			}
+			Collection<EObject> contentsToAdd = getRealContent(res);
 			artifact.getContents().addAll(contentsToAdd);
 			// truncateStringsTo255Length(artifact);
 			artifact.setState(null);
@@ -230,6 +243,17 @@ public class RAASUtils {
 				throw new IOException(e);
 		}
 		doSave(artifact, "saveAtCompletion");
+	}
+
+	private static List<EObject> getRealContent(Resource res) {
+		List<EObject> contentsToAdd = new ArrayList<EObject>();
+		for (EObject eObject : res.getContents()) {
+			if (eObject.eClass().getName().equals("DocumentRoot")) {
+				contentsToAdd.addAll(eObject.eContents());
+			} else
+				contentsToAdd.add(eObject);
+		}
+		return contentsToAdd;
 	}
 
 	protected static void truncateStringsTo255Length(Artifact artifact) {
@@ -1481,21 +1505,166 @@ public class RAASUtils {
 		}
 	}
 
-	public static void encodeJSONJackson(Object arg, OutputStream outputStream) {
-		ObjectMapper mapper = new ObjectMapper();
-		JaxbAnnotationModule module = new JaxbAnnotationModule();
-		mapper.registerModule(module);
+	public static ObjectMapper configureJackson(ObjectMapper mapper) {
+		ObjectMapper result = MAPPINGS.get(mapper.getFactory().getClass());
+		if (result != null) {
+			return result;
+		}
+		MAPPINGS.put(mapper.getFactory().getClass(), mapper);
+
+		JaxbAnnotationIntrospector intro1 = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
+		JacksonAnnotationIntrospector intro2 = new JacksonAnnotationIntrospector();
+		AnnotationIntrospector intro = AnnotationIntrospector.pair(intro2, intro1);
+		mapper.setAnnotationIntrospector(intro);
+		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.setSerializationInclusion(Include.NON_EMPTY);
+
+		mapper.setVisibility(PropertyAccessor.GETTER, Visibility.PUBLIC_ONLY);
+		mapper.setVisibility(PropertyAccessor.SETTER, Visibility.PUBLIC_ONLY);
+		mapper.setVisibility(PropertyAccessor.FIELD, Visibility.NONE);
+
+		mapper.disable(MapperFeature.AUTO_DETECT_FIELDS);
+		mapper.enable(MapperFeature.AUTO_DETECT_SETTERS);
+		mapper.enable(MapperFeature.AUTO_DETECT_GETTERS);
+		mapper.enable(MapperFeature.AUTO_DETECT_IS_GETTERS);
+		mapper.enable(MapperFeature.USE_GETTERS_AS_SETTERS);
+		mapper.enable(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS);
+
+		// SimpleModule module = new SimpleModule();
+		// module.addDeserializer(EList.class, new ItemDeserializer());
+		// mapper.registerModule(module);
+
+		return mapper;
+
+	}
+
+	public static String encodeJSONJackson(Object arg) {
 		try {
-			mapper.writeValue(outputStream, arg);
+			ObjectMapper mapper = configureJackson(new ObjectMapper());
+			return mapper.writeValueAsString(arg);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static String encodeJavaPropsJackson(Object arg) throws JsonProcessingException {
+		return configureJackson(new JavaPropsMapper()).writeValueAsString(arg);
+	}
+
+	static public Object decodeJavaPropsJackson(String json, EClass eClass) {
+		ObjectMapper mapper = new JavaPropsMapper();
+		return decodeJackson(json, eClass, mapper);
+	}
+
+	static public Object decodeYALMJackson(String json, EClass eClass) {
+		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+		return decodeJackson(json, eClass, mapper);
+	}
+
+	public static String encodeYALMJackson(Object arg) throws JsonProcessingException {
+		return configureJackson(new ObjectMapper(new YAMLFactory())).writeValueAsString(arg);
+	}
+
+	public static File encodeBSONJackson(Object arg, String filename) throws IOException {
+		ObjectMapper mapper = new ObjectMapper(new BsonFactory());
+		return encodeJackson(arg, filename, mapper);
+	}
+
+	private static File encodeJackson(Object arg, String filename, ObjectMapper mapper) throws IOException, JsonGenerationException, JsonMappingException {
+		File file = new File(new File(System.getProperty("java.io.tmpdir")), filename);
+		configureJackson(mapper).writeValue(file, arg);
+		return file;
+	}
+
+	public static File encodeCBORJackson(Object arg, String filename) throws IOException {
+		ObjectMapper mapper = new ObjectMapper(new CBORFactory());
+		return encodeJackson(arg, filename, mapper);
+	}
+
+	// public static File encodeAvroJackson(Object arg, String filename) throws IOException {
+	// File file = new File("c:/dev/converts/" + filename);
+	// AvroSchemaGenerator generator = new AvroSchemaGenerator();
+	// AvroMapper mapper = new AvroMapper();
+	// configureJackson(mapper).writeValue(file, arg);
+	// mapper.acceptJsonFormatVisitor(arg.getClass(), generator);
+	// AvroSchema schema = generator.getGeneratedSchema();
+	// try {
+	// mapper.writer(schema).writeValue(file, arg);
+	// } catch (JsonProcessingException e) {
+	// throw new RuntimeException(e);
+	// }
+	// return file;
+	// }
+
+	// public static File encodeProtobufJackson(Object arg, String filename) throws IOException {
+	// File file = new File("c:/dev/converts/" + filename);
+	// ProtobufMapper mapper = new ProtobufMapper();
+	// configureJackson(mapper);
+	// ProtobufSchema schema = mapper.generateSchemaFor(arg.getClass());
+	// mapper.writer(schema).writeValue(file, arg);
+	// return file;
+	// }
+
+	public static File encodeSMILEJackson(Object arg, String filename) throws IOException {
+		ObjectMapper mapper = new ObjectMapper(new SmileFactory());
+		return encodeJackson(arg, filename, mapper);
+	}
+
+	static public Object decodeSMILEJackson(InputStream file, EClass eClass) {
+		ObjectMapper mapper = new ObjectMapper(new SmileFactory());
+		return decodeJackson(file, eClass, mapper);
+	}
+
+	private static Object decodeJackson(InputStream file, EClass eClass, ObjectMapper mapper) {
+		mapper = configureJackson(mapper);
+
+		try {
+			EObject impl = EcoreUtil.create(eClass);
+			return mapper.readValue(file, impl.getClass());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	static public Object decodeBSONJackson(InputStream file, EClass eClass) {
+		ObjectMapper mapper = new ObjectMapper(new BsonFactory());
+		return decodeJackson(file, eClass, mapper);
+	}
+
+	static public Object decodeCBORJackson(InputStream file, EClass eClass) {
+		ObjectMapper mapper = new ObjectMapper(new CBORFactory());
+		return decodeJackson(file, eClass, mapper);
+	}
+
+	static public Object decodeJSON(String json, EClass eClass) {
+
+		boolean useJettison = false;
+		if (useJettison) {
+			json = json.replace("resouceType", "@xsi.type");
+			return decodeJSONJettison(json, eClass);
+		}
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		return decodeJackson(json, eClass, mapper);
+
+	}
+
+	static public Object decodeJackson(String json, EClass eClass, ObjectMapper mapper) {
+
+		mapper = configureJackson(mapper);
+
+		try {
+			EObject impl = EcoreUtil.create(eClass);
+			return mapper.readValue(json, impl.getClass());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static Object decodeJSON(InputStream inputStream, EClass eClass) {
+	public static Object decodeJSONJettison(InputStream inputStream, EClass eClass) {
 
 		JSONProvider reader = new JSONProvider();
 
@@ -1505,22 +1674,6 @@ public class RAASUtils {
 		Class targetType = eClass.getInstanceClass();
 		try {
 			return reader.readFrom(targetType, targetType, new Annotation[] {}, MediaType.APPLICATION_JSON_TYPE, new MetadataMap<String, String>(), inputStream);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static Object decodeJsonOrXml(Artifact artifact, EClass eClass) {
-		if (artifact.getName().toLowerCase().endsWith(".xml")) {
-			try {
-				Artifact a = assureModelTree(artifact);
-				return a.getContents().get(0);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		try {
-			return decodeJSON(FileUtil.inputstreamToString(artifact.getFileContent().getContents()), eClass);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -1552,11 +1705,11 @@ public class RAASUtils {
 			fixServiceHandlePreconditionsRunnable.run();
 	}
 
-	static public byte[] encodeJSON(Object arg) {
-		ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
+	static public String encodeJSON(Object arg) {
+		// ByteArrayOutputStream requestBody = new ByteArrayOutputStream();
 		// encodeJSON(arg, requestBody, new ArrayList<String>(calculateJettisonArrayKeys(arg)), true);
-		encodeJSONJackson(arg, requestBody);
-		return requestBody.toByteArray();
+		// return new String(requestBody.toByteArray());
+		return encodeJSONJackson(arg);
 	}
 
 	private static Set<String> calculateJettisonArrayKeys(Object arg) {
@@ -1607,6 +1760,8 @@ public class RAASUtils {
 	static public String encodeEMFXML(Object x) {
 		ResourceSet resourceSet = new ResourceSetImpl();
 		resourceSet.getLoadOptions().put(XMLResource.OPTION_ROOT_OBJECTS, Arrays.asList(x));
+		// resourceSet.getLoadOptions().put(XMLResource.OPTION_FORMATTED, false);
+		resourceSet.getLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, true);
 		Resource res = resourceSet.createResource(URI.createFileURI("/dev/sample/try.xml"));
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -1617,10 +1772,34 @@ public class RAASUtils {
 		}
 	}
 
-	static public Object decodeJSON(String json, EClass eClass) {
+	public static Object decodeEMFXML(String content) {
+		try {
+			ResourceSet resourceSet = new ResourceSetImpl();
+			resourceSet.getLoadOptions().put(XMLResource.OPTION_EXTENDED_META_DATA, Boolean.TRUE);
+			Resource res = resourceSet.createResource(URI.createFileURI("/dev/sample/try.xml"));
+			InputStream is = new ByteArrayInputStream(content.getBytes());
+			res.load(is, resourceSet.getLoadOptions());
+			return getRealContent(res).get(0);
+
+		} catch (IOException e) {
+			if (e.getCause() instanceof IOWrappedException) {
+				e = (IOWrappedException) e.getCause();
+			}
+			if (e.getCause() instanceof FeatureNotFoundException) {
+				FeatureNotFoundException featureNotFoundException = (FeatureNotFoundException) e.getCause();
+				EObject eObject = featureNotFoundException.getObject();
+				Resource res = eObject.eResource();
+				return getRealContent(res).get(0);
+			}
+
+			throw new RuntimeException(e);
+		}
+	}
+
+	static public Object decodeJSONJettison(String json, EClass eClass) {
 		String rootJson = "{\"" + eClass.getEPackage().getName() + "." + eClass.getName() + "\":" + json + "}";
 		InputStream inputStream = new ByteArrayInputStream(rootJson.getBytes());
-		return decodeJSON(inputStream, eClass);
+		return decodeJSONJettison(inputStream, eClass);
 	}
 
 	static public <T extends EObject> T copyContainmentOnly(T eObject) {
