@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="bson4jackson-2.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="snakeyaml-1.18.jar"/>
+	<classpathentry exported="true" kind="lib" path="jackson-dataformat-cbor-2.8.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="jackson-dataformat-csv-2.8.6.jar" sourcepath="C:/Users/Joe/git/jackson-dataformat-csv/src/main/java"/>
+	<classpathentry exported="true" kind="lib" path="jackson-dataformat-smile-2.8.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="jackson-dataformat-yaml-2.8.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="javax.ws.rs-api-2.0.1.jar" sourcepath="C:/Program Files/Java/jdk1.8.0_25/src.zip"/>
 	<classpathentry exported="true" kind="lib" path="jersey-core-1.19.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="jersey-client-1.19.3.jar"/>
 	<classpathentry kind="lib" path="cxf-rt-frontend-jaxrs-3.1.10.jar" sourcepath="C:/Users/Joe/Downloads/apache-cxf-3.1.10-src/rt/frontend/jaxrs/src/main/java/"/>
 	<classpathentry kind="lib" path="cxf-rt-rs-extension-providers-3.1.10.jar" sourcepath="C:/Users/Joe/Downloads/apache-cxf-3.1.10-src/rt/rs/extensions/providers/src/main/java"/>
 	<classpathentry kind="lib" path="cxf-core-3.1.10.jar"/>
-	<classpathentry kind="lib" path="jackson-core-2.8.6.jar"/>
-	<classpathentry kind="lib" path="jackson-module-jaxb-annotations-2.8.6.jar"/>
-	<classpathentry kind="lib" path="jackson-annotations-2.8.6.jar"/>
-	<classpathentry kind="lib" path="jackson-databind-2.8.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="jackson-core-2.8.6.jar" sourcepath="C:/Users/Joe/git/jackson-core/src/main/java"/>
+	<classpathentry exported="true" kind="lib" path="jackson-module-jaxb-annotations-2.8.6.jar" sourcepath="C:/Users/Joe/git/jackson-module-jaxb-annotations/src/main/java"/>
+	<classpathentry exported="true" kind="lib" path="jackson-annotations-2.8.6.jar" sourcepath="C:/Users/Joe/git/jackson-annotations/src/main/java"/>
+	<classpathentry exported="true" kind="lib" path="jackson-databind-2.8.6.jar" sourcepath="C:/Users/Joe/git/jackson-databind/src/main/java/"/>
+	<classpathentry kind="lib" path="jackson-dataformat-properties-2.8.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins">
+	<classpathentry exported="true" kind="con" path="org.eclipse.pde.core.requiredPlugins">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>

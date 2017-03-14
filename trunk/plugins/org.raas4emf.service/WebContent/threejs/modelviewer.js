@@ -530,6 +530,9 @@ function calcPaths() {
 	  	g_num_clients = g_ids.length;
 	    for (var ii = 0; ii < g_num_clients; ii++) 
 	        g_paths[ii] = g_path.substring(0, index)+'/services/Artifact/GetArtifact/'+g_ids[ii]+'/'+filename;
+	} else if (g_paths.length>0) {
+		filename="scene.js";
+		//do nothing
 	} else if (!getParameterByName(g_path,'artifact')) {
 	    g_ids = "1".split(","); 
 	    resturl = g_path.substring(0, g_path.indexOf('?'));
@@ -543,7 +546,7 @@ function calcPaths() {
 	    g_ids = getParameterByName(g_path,'artifact').split(","); 
 	  	g_num_clients = g_ids.length;
 	    for (var ii = 0; ii < g_num_clients; ii++) 
-	        g_paths[ii] = g_path.substring(0, index2+'artifact='.length)+g_ids[ii]+"&filename="+filename;
+	        g_paths[ii] = g_path.substring(0, index2+'artifact='.length)+encodeURIComponent(g_ids[ii])+"&filename="+filename;
 	}
     var ext = filename.substring(filename.lastIndexOf("."));
     doJsonLoader = (ext == ".js");

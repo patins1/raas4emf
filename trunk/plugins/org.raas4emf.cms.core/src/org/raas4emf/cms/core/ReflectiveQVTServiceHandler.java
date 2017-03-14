@@ -10,7 +10,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -38,7 +37,6 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 	synchronized public void service(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 		RAASUtils.fixServiceHandlePreconditions();
 
-		response.setContentType("application/json");
 		response.setHeader("Cache-Control", "no-store");
 		String message = null;
 		List<Runnable> inits = new ArrayList<Runnable>();
@@ -126,12 +124,24 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 				}
 			}
 
-			String result = processRequest(embeddedRequest, inits);
+			Object result = processRequest(embeddedRequest, inits);
 
-			response.setHeader("RAASResponseMessage", "" + message);
-			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(result), response.getOutputStream());
-
+			if (result instanceof String) {
+				response.setContentType("application/json");
+				FileUtil.inputstreamToOutputstream(new StringBufferInputStream((String) result), response.getOutputStream());
+			} else {
+				File file = (File) result;
+				response.setContentType("application/octet-stream");
+				response.setHeader("Expires", "-1");
+				response.setHeader("Cache-Control", "must-revalidate, private");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+				response.setContentLength((int) file.length());
+				FileUtil.inputstreamToOutputstream(new FileInputStream(file), response.getOutputStream());
+			}
 		} catch (Throwable e) {
+			response.setStatus(422);
+			response.setContentType("application/json");
+			e.printStackTrace();
 			e = getLastCause(e);
 			message = e.getMessage();
 			if (message == null)
@@ -150,8 +160,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 
 	}
 
-	public String processRequest(final EObject embeddedRequest, List<Runnable> inits) throws IllegalAccessException, InvocationTargetException, IOException, Exception {
-		Date startDate = new Date();
+	public Object processRequest(final EObject embeddedRequest, List<Runnable> inits) throws IllegalAccessException, InvocationTargetException, IOException, Exception {
 		final List<Artifact> allArtifacts = new ArrayList<Artifact>();
 		final List<Folder> allFolders = new ArrayList<Folder>();
 		final EMFJQVTEngine testTrafo = new EMFJQVTEngine() {
@@ -167,8 +176,18 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 
 		if (testTrafo.createdElements.size() == 0)
 			throw new Exception("Could not produce response for request " + embeddedRequest.eClass().getName());
-		Activator.log("Produced " + testTrafo.createdElements.get(0).getClass());
-		String result = new String(RAASUtils.encodeJSON(testTrafo.createdElements.get(0)));
+		Object response = testTrafo.createdElements.get(0);
+		Activator.log("Produced " + response.getClass());
+		if (response instanceof EObject) {
+			EObject eObject = (EObject) response;
+			for (EStructuralFeature feature : eObject.eClass().getEAllStructuralFeatures()) {
+				Object file = eObject.eGet(feature);
+				if (file instanceof File) {
+					return file;
+				}
+			}
+		}
+		String result = new String(RAASUtils.encodeJSON(response));
 		return result;
 	}
 

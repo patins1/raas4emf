@@ -28,7 +28,8 @@ Export-Package: javax.ws.rs,
    org.eclipse.emf.ecore.resource",
  org.raas4emf.cms.core.geometry;uses:="org.eclipse.emf.common.util,IFC2X3",
  org.raas4emf.cms.core.graf;uses:="org.eclipse.emf.ecore,org.raas4emf.cms.core.geometry",
- org.raas4emf.cms.core.webgl;uses:="org.eclipse.core.runtime,org.raas4emf.cms.core,org.raas4emf.cms.transformation"
+ org.raas4emf.cms.core.webgl;uses:="org.eclipse.core.runtime,org.raas4emf.cms.core,org.raas4emf.cms.transformation",
+ com.fasterxml.jackson.annotation
 Require-Bundle: org.raas4emf.metamodel.raascms,
  org.eclipse.emf.cdo.net4j,
  org.eclipse.net4j.tcp,
@@ -55,5 +56,12 @@ Bundle-ClassPath: .,
  jackson-core-2.8.6.jar,
  jackson-databind-2.8.6.jar,
  jackson-module-jaxb-annotations-2.8.6.jar,
- jackson-annotations-2.8.6.jar
+ jackson-annotations-2.8.6.jar,
+ jackson-dataformat-cbor-2.8.6.jar,
+ jackson-dataformat-csv-2.8.6.jar,
+ jackson-dataformat-smile-2.8.6.jar,
+ jackson-dataformat-yaml-2.8.6.jar,
+ jackson-dataformat-properties-2.8.6.jar,
+ snakeyaml-1.18.jar,
+ bson4jackson-2.7.0.jar
 Eclipse-BundleShape: dir
