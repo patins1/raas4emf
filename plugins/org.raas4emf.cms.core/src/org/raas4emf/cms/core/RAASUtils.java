@@ -1648,6 +1648,11 @@ public class RAASUtils {
 		return decodeJackson(file, eClass, mapper);
 	}
 
+	static public Object decodeJSON(InputStream json, EClass eClass) {
+		ObjectMapper mapper = new ObjectMapper();
+		return decodeJackson(json, eClass, mapper);
+	}
+
 	static public Object decodeJSON(String json, EClass eClass) {
 
 		boolean useJettison = false;
