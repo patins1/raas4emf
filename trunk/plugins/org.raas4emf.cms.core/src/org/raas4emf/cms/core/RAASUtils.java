@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.io.StringBufferInputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -66,6 +67,7 @@ import org.eclipse.emf.cdo.session.CDOSession;
 import org.eclipse.emf.cdo.transaction.CDOTransaction;
 import org.eclipse.emf.cdo.view.CDOQuery;
 import org.eclipse.emf.cdo.view.CDOView;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
@@ -112,6 +114,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.deser.BasicDeserializerFactory;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
@@ -1531,9 +1534,17 @@ public class RAASUtils {
 		mapper.enable(MapperFeature.USE_GETTERS_AS_SETTERS);
 		mapper.enable(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS);
 
-		// SimpleModule module = new SimpleModule();
-		// module.addDeserializer(EList.class, new ItemDeserializer());
-		// mapper.registerModule(module);
+		for (Field f : BasicDeserializerFactory.class.getDeclaredFields()) {
+			if ("_collectionFallbacks".equals(f.getName())) {
+				f.setAccessible(true);
+				try {
+					HashMap<String, Class<? extends Collection>> _collectionFallbacks = (HashMap<String, Class<? extends Collection>>) f.get(null);
+					_collectionFallbacks.put(EList.class.getName(), BasicEList.class);
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
 
 		return mapper;
 
