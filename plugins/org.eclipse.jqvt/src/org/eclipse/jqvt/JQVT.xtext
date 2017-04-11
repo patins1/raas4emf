@@ -49,7 +49,6 @@ ObjectTemplate returns xbase::XVariableDeclaration:
 
 PropertyTemplateItem:
 	referredProperty=[types::JvmOperation|ValidID] '=' value= (ObjectTemplate |  XExpression);
-
-@Override 
+ 
 terminal SL_COMMENT : ('--'|'//') !('\n'|'\r')* ('\r'? '\n')?;
  
