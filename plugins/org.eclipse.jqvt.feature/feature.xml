@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.jqvt.feature"
       label="org.eclipse.jqvt.feature"
-      version="14.0.0">
+      version="1.0.0.qualifier">
 
    <description url="https://sourceforge.net/projects/jqvt/">
       A QVT engine targeting Java
@@ -131,5 +131,11 @@ This Agreement is governed by the laws of the State of New York and the intellec
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="au.com.smartservicescrc.raas.codegen.jaxb"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>

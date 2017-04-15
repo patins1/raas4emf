@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.jqvt.feature_14.0.0.jar" id="org.eclipse.jqvt.feature" version="14.0.0">
+   <feature url="features/org.eclipse.jqvt.feature_1.0.0.201704112156.jar" id="org.eclipse.jqvt.feature" version="1.0.0.201704112156">
       <category name="org.eclipse.jqvt.category"/>
    </feature>
    <category-def name="org.eclipse.jqvt.category" label="JQVT"/>

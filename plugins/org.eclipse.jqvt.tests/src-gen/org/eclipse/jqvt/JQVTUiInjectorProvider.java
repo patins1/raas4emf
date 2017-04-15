@@ -8,10 +8,10 @@ import org.eclipse.xtext.junit4.IInjectorProvider;
 import com.google.inject.Injector;
 
 public class JQVTUiInjectorProvider implements IInjectorProvider {
-	
+
 	@Override
 	public Injector getInjector() {
 		return org.eclipse.jqvt.ui.internal.JQVTActivator.getInstance().getInjector("org.eclipse.jqvt.JQVT");
 	}
-	
+
 }

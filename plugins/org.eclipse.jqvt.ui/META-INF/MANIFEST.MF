@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.eclipse.jqvt.ui
 Bundle-Vendor: My Company
-Bundle-Version: 14.0.0
+Bundle-Version: 1.0.0.qualifier
 Bundle-SymbolicName: org.eclipse.jqvt.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.jqvt;visibility:=reexport,

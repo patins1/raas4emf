@@ -21,7 +21,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jqvt.runtime,
  org.eclipse.emf.cdo.server,
  org.apache.commons.fileupload,
- org.raas4emf.metamodel.markup,
  org.ifc4emf.metamodel.ifcheader,
  org.eclipse.rap.rwt,
  org.apache.commons.logging,
@@ -32,8 +31,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.uml2.uml,
  au.net.electronichealth.ci.transformation.ocl2java,
  au.net.electronichealth.ci.transformation.ocl2csharp,
- au.net.electronichealth.ci.transformation.ocl2xpath,
- org.eclipse.mdht.uml.cda
+ au.net.electronichealth.ci.transformation.ocl2xpath
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.raas4emf.restexample
