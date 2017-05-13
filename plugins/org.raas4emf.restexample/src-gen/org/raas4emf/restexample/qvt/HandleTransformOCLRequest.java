@@ -1,11 +1,11 @@
 package org.raas4emf.restexample.qvt;
 
-import au.net.electronichealth.ci.transformation.ocl2csharp.OCL2CSharpTransformationForEcore;
-import au.net.electronichealth.ci.transformation.ocl2java.OCL2JavaTransformationForEcore;
-import au.net.electronichealth.ci.transformation.ocl2xpath.OCL2XPathTransformationForEcore;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.mdht.transformation.ocl2csharp.OCL2CSharpTransformationForEcore;
+import org.eclipse.mdht.transformation.ocl2java.OCL2JavaTransformationForEcore;
+import org.eclipse.mdht.transformation.ocl2xpath.OCL2XPathTransformationForEcore;
 import org.raas4emf.restexample.qvt.Transformation;
 import restexample.TransformOCLRequest;
 import restexample.TransformOCLResponse;

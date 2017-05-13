@@ -108,17 +108,27 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.deser.BasicDeserializerFactory;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.introspect.POJOPropertyBuilder;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
@@ -160,6 +170,7 @@ public class RAASUtils {
 	public static String ROOTPATH = "/bim/NOLServer";
 	public static final String repositoryName = "bim";
 	public static final String ROOT_RESOURCE_NAME = "bim";
+	public static final Map<Class<?>, Class<?>> SOURCE_MIXINS = new HashMap<Class<?>, Class<?>>();
 	public static Runnable fixServiceHandlePreconditionsRunnable = null;
 
 	public static String KEY0 = "KEY";
@@ -1515,8 +1526,38 @@ public class RAASUtils {
 		}
 		MAPPINGS.put(mapper.getFactory().getClass(), mapper);
 
+		mapper.setMixIns(SOURCE_MIXINS);
+
 		JaxbAnnotationIntrospector intro1 = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
-		JacksonAnnotationIntrospector intro2 = new JacksonAnnotationIntrospector();
+
+		JacksonAnnotationIntrospector intro2 = new JacksonAnnotationIntrospector() {
+
+			// prevent unnecessary check resulting in an exception
+			public JavaType refineDeserializationType(final MapperConfig<?> config, final Annotated a, final JavaType baseType) throws JsonMappingException {
+				try {
+					return super.refineDeserializationType(config, a, baseType);
+				} catch (JsonMappingException e) {
+					// case the refined type is not compatible with the baseType
+
+					JavaType type = baseType;
+					final TypeFactory tf = config.getTypeFactory();
+
+					JavaType contentType = type.getContentType();
+					if (contentType != null) {
+						Class<?> contentClass = findDeserializationContentType(a, contentType);
+						if (contentClass != null) {
+							// don't use constructSpecializedType() to prevent class type check
+							contentType = tf.constructType(contentClass);
+							type = type.withContentType(contentType);
+						}
+					}
+					return type;
+				}
+
+			}
+		}
+
+		;
 		AnnotationIntrospector intro = AnnotationIntrospector.pair(intro2, intro1);
 		mapper.setAnnotationIntrospector(intro);
 		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -1534,6 +1575,9 @@ public class RAASUtils {
 		mapper.enable(MapperFeature.USE_GETTERS_AS_SETTERS);
 		mapper.enable(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS);
 
+		/**
+		 * Support for the EList type !
+		 */
 		for (Field f : BasicDeserializerFactory.class.getDeclaredFields()) {
 			if ("_collectionFallbacks".equals(f.getName())) {
 				f.setAccessible(true);
@@ -1545,6 +1589,40 @@ public class RAASUtils {
 				}
 			}
 		}
+
+		/**
+		 * forget about fields, only getters/setters
+		 */
+		mapper.registerModule(new SimpleModule() {
+
+			@Override
+			public void setupModule(SetupContext context) {
+				super.setupModule(context);
+
+				context.addBeanDeserializerModifier(new BeanDeserializerModifier() {
+
+					@Override
+					public List<BeanPropertyDefinition> updateProperties(DeserializationConfig config, BeanDescription beanDesc, List<BeanPropertyDefinition> propDefs) {
+						for (BeanPropertyDefinition propDef : propDefs) {
+							if (propDef instanceof POJOPropertyBuilder) {
+								POJOPropertyBuilder pojoPropertyBuilder = (POJOPropertyBuilder) propDef;
+								try {
+									Field _fields = pojoPropertyBuilder.getClass().getDeclaredField("_fields");
+									_fields.setAccessible(true);
+									// so pojoPropertyBuilder.hasField() returns false !
+									_fields.set(pojoPropertyBuilder, null);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}
+						return super.updateProperties(config, beanDesc, propDefs);
+					}
+
+				});
+			}
+
+		});
 
 		return mapper;
 
@@ -1559,7 +1637,13 @@ public class RAASUtils {
 		}
 	}
 
-	public static String encodeJavaPropsJackson(Object arg) throws JsonProcessingException {
+	public static String encodeXMLJackson(Object arg) throws IOException {
+		ObjectMapper mapper = new XmlMapper();
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		return configureJackson(mapper).writeValueAsString(arg);
+	}
+
+	public static String encodeJavaPropsJackson(Object arg) throws IOException {
 		return configureJackson(new JavaPropsMapper()).writeValueAsString(arg);
 	}
 
@@ -1568,12 +1652,17 @@ public class RAASUtils {
 		return decodeJackson(json, eClass, mapper);
 	}
 
+	static public Object decodeXMLJackson(String json, EClass eClass) {
+		ObjectMapper mapper = new XmlMapper();
+		return decodeJackson(json, eClass, mapper);
+	}
+
 	static public Object decodeYALMJackson(String json, EClass eClass) {
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 		return decodeJackson(json, eClass, mapper);
 	}
 
-	public static String encodeYALMJackson(Object arg) throws JsonProcessingException {
+	public static String encodeYALMJackson(Object arg) throws IOException {
 		return configureJackson(new ObjectMapper(new YAMLFactory())).writeValueAsString(arg);
 	}
 
@@ -1602,7 +1691,7 @@ public class RAASUtils {
 	// AvroSchema schema = generator.getGeneratedSchema();
 	// try {
 	// mapper.writer(schema).writeValue(file, arg);
-	// } catch (JsonProcessingException e) {
+	// } catch (IOException e) {
 	// throw new RuntimeException(e);
 	// }
 	// return file;

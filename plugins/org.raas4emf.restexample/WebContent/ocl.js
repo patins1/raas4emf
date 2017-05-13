@@ -64,6 +64,14 @@ function loadPolyloopConstraint() {
 	loadConstraint("http://IFC2X3.ecore","IfcPolyLoop","self.Polygon->first().Coordinates = self.Polygon->last().Coordinates");
 }
 
+function loadFHIRConstraintSDF14() {
+	loadConstraint("http://hl7.org/fhir","ElementDefinition","not self.id.oclIsUndefined()");
+}
+
+function loadFHIRConstraintSDF20() {
+	loadConstraint("http://hl7.org/fhir","StructureDefinition","self.differential.element->first().slicing->isEmpty()");
+}
+
 function translateOCL($scope) {
 	
 		performRESTRequest(

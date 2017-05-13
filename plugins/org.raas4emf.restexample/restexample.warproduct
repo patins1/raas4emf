@@ -3,10 +3,6 @@
 
 <product useFeatures="false" includeLaunchers="false">
    <plugins>
-      <plugin id="au.net.electronichealth.ci.transformation.ocl"/>
-      <plugin id="au.net.electronichealth.ci.transformation.ocl2csharp"/>
-      <plugin id="au.net.electronichealth.ci.transformation.ocl2java"/>
-      <plugin id="au.net.electronichealth.ci.transformation.ocl2xpath"/>
       <plugin id="com.google.guava"/>
       <plugin id="com.ibm.icu"/>
       <plugin id="com.ibm.icu.base"/>
@@ -58,6 +54,16 @@
       <plugin id="org.eclipse.equinox.util"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.jqvt.runtime"/>
+      <plugin id="org.eclipse.mdht.emf.runtime"/>
+      <plugin id="org.eclipse.mdht.fhir.xsd"/>
+      <plugin id="org.eclipse.mdht.transformation.ocl"/>
+      <plugin id="org.eclipse.mdht.transformation.ocl2csharp"/>
+      <plugin id="org.eclipse.mdht.transformation.ocl2java"/>
+      <plugin id="org.eclipse.mdht.transformation.ocl2xpath"/>
+      <plugin id="org.eclipse.mdht.uml.cda"/>
+      <plugin id="org.eclipse.mdht.uml.hl7.datatypes"/>
+      <plugin id="org.eclipse.mdht.uml.hl7.rim"/>
+      <plugin id="org.eclipse.mdht.uml.hl7.vocab"/>
       <plugin id="org.eclipse.net4j"/>
       <plugin id="org.eclipse.net4j.db"/>
       <plugin id="org.eclipse.net4j.db.h2"/>
@@ -89,6 +95,7 @@
       <plugin id="org.eclipse.uml2.uml"/>
       <plugin id="org.eclipse.uml2.uml.profile.standard"/>
       <plugin id="org.eclipse.uml2.uml.resources"/>
+      <plugin id="org.eclipse.wst.jsdt.nashorn.extension" fragment="true"/>
       <plugin id="org.eclipse.xtext.logging" fragment="true"/>
       <plugin id="org.eclipse.xtext.xbase.lib"/>
       <plugin id="org.h2"/>
@@ -112,10 +119,6 @@
    </plugins>
 
    <configurations>
-      <plugin id="au.net.electronichealth.ci.transformation.ocl" autoStart="true" startLevel="0" />
-      <plugin id="au.net.electronichealth.ci.transformation.ocl2csharp" autoStart="true" startLevel="0" />
-      <plugin id="au.net.electronichealth.ci.transformation.ocl2java" autoStart="true" startLevel="0" />
-      <plugin id="au.net.electronichealth.ci.transformation.ocl2xpath" autoStart="true" startLevel="0" />
       <plugin id="com.google.guava" autoStart="true" startLevel="0" />
       <plugin id="com.ibm.icu" autoStart="true" startLevel="0" />
       <plugin id="com.ibm.icu.base" autoStart="true" startLevel="0" />
@@ -166,6 +169,16 @@
       <plugin id="org.eclipse.equinox.util" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.help" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.jqvt.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.mdht.emf.runtime" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.mdht.fhir.xsd" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.mdht.transformation.ocl" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.mdht.transformation.ocl2csharp" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.mdht.transformation.ocl2java" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.mdht.transformation.ocl2xpath" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.mdht.uml.cda" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.mdht.uml.hl7.datatypes" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.mdht.uml.hl7.rim" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.mdht.uml.hl7.vocab" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.net4j" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.net4j.db" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.net4j.db.h2" autoStart="true" startLevel="0" />

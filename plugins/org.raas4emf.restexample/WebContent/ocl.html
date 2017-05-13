@@ -65,6 +65,12 @@
 		the same.<input type="button" value="Prefill"
 			onclick="loadPolyloopConstraint()" />
 		<hr />
+		FHIR constraint sdf-14: All element definitions must have an id.<input type="button" value="Prefill"
+			onclick="loadFHIRConstraintSDF14()" />
+		<hr />
+		FHIR constraint sdf-20: On StructureDefinition.differential: No slicing on the root element.<input type="button" value="Prefill"
+			onclick="loadFHIRConstraintSDF20()" />
+		<hr />
 	</div>
 
 
@@ -90,7 +96,7 @@
 				leverage the main power of the RaaS generator, to
 				serialize/deserialise whole chunks of EMF containment trees.
 			</td>
-			<td><a href="https://sourceforge.net/projects/raas4emf/">https://sourceforge.net/projects/raas4emf/</a></td>
+			<td><a href="https://github.com/patins1/raas4emf">https://github.com/patins1/raas4emf</a></td>
 		</tr>
 
 		<tr>
@@ -102,7 +108,7 @@
 			<td>The whole server side logic is <a href="trafo.jpg">one
 					jQVT transformation</a>.
 			</td>
-			<td><a href="https://sourceforge.net/projects/raas4emf/">https://sourceforge.net/projects/raas4emf/</a></td>
+			<td><a href="https://github.com/patins1/raas4emf">https://github.com/patins1/raas4emf</a></td>
 		</tr>
 
 		<tr>
@@ -116,14 +122,11 @@
 			<td>This demo shows that the OCL transformations cannot only be
 				used for the CDA metamodel but by their generic nature can also be
 				used for UML and even IFC constraints.</td>
-			<td>This source can only be accessed with proper credentials, we
-				are working on a solution: <a
-				href="https://stash.nehta.net.au/scm/citie/nehta-mdht-ext.git">https://stash.nehta.net.au/scm/citie/nehta-mdht-ext.git</a>
-			</td>
+			<td><a href="https://git.eclipse.org/r/mdht/org.eclipse.mdht">https://git.eclipse.org/r/mdht/org.eclipse.mdht</a></td>
 		</tr>
 
 		<tr>
-			<td>IFC</td>
+			<td>IFC metamodel</td>
 			<td>We created an MOF/EMF model of IFC directly from the formal
 				buildingSmart EXPRESS specification using model transformations. The
 				IFC model is then used to generate a web-accessible BIM Repository
@@ -136,7 +139,23 @@
 			</td>
 			<td>This demo just links the IFC metamodel in order to support
 				the transformation of IFC OCL constraints.</td>
-			<td><a href="https://sourceforge.net/projects/ifc4emf/">https://sourceforge.net/projects/ifc4emf/</a></td>
+			<td><a href="https://github.com/patins1/ifc4emf">https://github.com/patins1/ifc4emf</a></td>
+		</tr>
+		
+		<tr>
+			<td>CDA metamodel</td>
+			<td>The CDA metamodel was the business use case to develop the OCL transformations.
+			</td>
+			<td>See the first Prefill.</td>
+			<td><a href="https://git.eclipse.org/r/mdht/org.eclipse.mdht">https://git.eclipse.org/r/mdht/org.eclipse.mdht</a></td>
+		</tr>
+		
+		<tr>
+			<td>FHIR metamodel</td>
+			<td>The FHIR metamodel is an Ecore model derived from the STU3 XSD augmented with JAXB annotations by the RaaS Generator.
+			</td>
+			<td>See the forth/fifth Prefill.</td>
+			<td><a href="https://git.eclipse.org/r/mdht/org.eclipse.mdht">https://git.eclipse.org/r/mdht/org.eclipse.mdht</a></td>
 		</tr>
 
 	</table>

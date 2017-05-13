@@ -17,6 +17,9 @@
 	<classpathentry exported="true" kind="lib" path="jackson-annotations-2.8.6.jar" sourcepath="C:/Users/Joe/git/jackson-annotations/src/main/java"/>
 	<classpathentry exported="true" kind="lib" path="jackson-databind-2.8.6.jar" sourcepath="C:/Users/Joe/git/jackson-databind/src/main/java/"/>
 	<classpathentry kind="lib" path="jackson-dataformat-properties-2.8.6.jar"/>
+	<classpathentry kind="lib" path="jackson-dataformat-xml-2.8.6.jar"/>
+	<classpathentry kind="lib" path="aalto-xml-1.0.0.jar"/>
+	<classpathentry kind="lib" path="stax2-api-4.0.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.pde.core.requiredPlugins">
 		<attributes>

@@ -29,9 +29,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.raas4emf.service,
  com.ibm.icu.base,
  org.eclipse.uml2.uml,
- au.net.electronichealth.ci.transformation.ocl2java,
- au.net.electronichealth.ci.transformation.ocl2csharp,
- au.net.electronichealth.ci.transformation.ocl2xpath
+ org.eclipse.mdht.transformation.ocl2java,
+ org.eclipse.mdht.transformation.ocl2csharp,
+ org.eclipse.mdht.transformation.ocl2xpath,
+ org.eclipse.mdht.uml.cda,
+ org.eclipse.mdht.fhir.xsd
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.raas4emf.restexample

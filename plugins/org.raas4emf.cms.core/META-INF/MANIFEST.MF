@@ -6,7 +6,19 @@ Bundle-Version: 1.0.0.qualifier
 Import-Package: javax.servlet,
  javax.servlet.http
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: javax.ws.rs,
+Export-Package: com.fasterxml.jackson.annotation,
+ com.fasterxml.jackson.databind,
+ com.fasterxml.jackson.databind.annotation,
+ com.fasterxml.jackson.databind.cfg,
+ com.fasterxml.jackson.databind.deser,
+ com.fasterxml.jackson.databind.deser.std,
+ com.fasterxml.jackson.databind.introspect,
+ com.fasterxml.jackson.databind.jsontype,
+ com.fasterxml.jackson.databind.ser,
+ com.fasterxml.jackson.databind.ser.std,
+ com.fasterxml.jackson.databind.type,
+ com.fasterxml.jackson.databind.util,
+ javax.ws.rs,
  org.raas4emf.cms.core;
   uses:="org.eclipse.emf.ecore,
    org.raas4emf.cms.core.geometry,
@@ -28,8 +40,7 @@ Export-Package: javax.ws.rs,
    org.eclipse.emf.ecore.resource",
  org.raas4emf.cms.core.geometry;uses:="org.eclipse.emf.common.util,IFC2X3",
  org.raas4emf.cms.core.graf;uses:="org.eclipse.emf.ecore,org.raas4emf.cms.core.geometry",
- org.raas4emf.cms.core.webgl;uses:="org.eclipse.core.runtime,org.raas4emf.cms.core,org.raas4emf.cms.transformation",
- com.fasterxml.jackson.annotation
+ org.raas4emf.cms.core.webgl;uses:="org.eclipse.core.runtime,org.raas4emf.cms.core,org.raas4emf.cms.transformation"
 Require-Bundle: org.raas4emf.metamodel.raascms,
  org.eclipse.emf.cdo.net4j,
  org.eclipse.net4j.tcp,
@@ -63,5 +74,8 @@ Bundle-ClassPath: .,
  jackson-dataformat-yaml-2.8.6.jar,
  jackson-dataformat-properties-2.8.6.jar,
  snakeyaml-1.18.jar,
- bson4jackson-2.7.0.jar
+ bson4jackson-2.7.0.jar,
+ jackson-dataformat-xml-2.8.6.jar,
+ aalto-xml-1.0.0.jar,
+ stax2-api-4.0.0.jar
 Eclipse-BundleShape: dir
