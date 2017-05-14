@@ -1561,6 +1561,9 @@ public class RAASUtils {
 		AnnotationIntrospector intro = AnnotationIntrospector.pair(intro2, intro1);
 		mapper.setAnnotationIntrospector(intro);
 		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
+		// sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		mapper.setDateFormat(dateFormat);
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.setSerializationInclusion(Include.NON_EMPTY);
 
