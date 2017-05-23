@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.jqvt.feature"
-      label="jQVT"
+      id="org.raas4emf.raasgenerator.feature"
+      label="RaaS Generator"
       version="1.0.0.qualifier">
 
    <description url="https://github.com/patins1/raas4emf/">
-      This feature provides the jQVT engine, the jQVT runtime and the jQVT editor.
+      This feature provides the RaaS Generator wizard which annotates generated EMF Java code with JAXB annotations.
    </description>
 
-   <copyright url="https://sourceforge.net/projects/jqvt/">
-      Copyright 2013 Smart Services CRC Pty Ltd
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
    </copyright>
 
-   <license url="http://www.eclipse.org/legal/epl-v10.html">
+   <license url="http://www.example.com/license">
       Eclipse Foundation Software User Agreement
 April 9, 2014
 
@@ -139,52 +139,24 @@ Java and all Java-based trademarks are trademarks of Oracle Corporation in the U
    </license>
 
    <requires>
-      <import plugin="org.eclipse.xtext" version="2.9.1" match="greaterOrEqual"/>
-      <import plugin="org.apache.log4j" version="1.2.15" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.xtext.util"/>
-      <import plugin="org.eclipse.emf.ecore"/>
-      <import plugin="org.eclipse.emf.common"/>
-      <import plugin="org.antlr.runtime"/>
-      <import plugin="org.eclipse.xtext.common.types"/>
-      <import plugin="org.eclipse.xtext.xbase"/>
-      <import plugin="org.eclipse.xtext.xbase.lib"/>
-      <import plugin="org.apache.commons.logging"/>
-      <import plugin="org.eclipse.xtext.ui"/>
-      <import plugin="org.eclipse.ui.editors" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.ide" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.xtext.ui.shared"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.xtext.builder"/>
-      <import plugin="org.eclipse.xtext.common.types.ui"/>
-      <import plugin="org.eclipse.xtext.xbase.ui"/>
-      <import plugin="org.eclipse.xtext.ui.codetemplates.ui"/>
-      <import plugin="org.eclipse.compare"/>
       <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.emf.ecore" version="2.6.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
-      <import plugin="org.eclipse.xtend.lib"/>
-      <import plugin="org.eclipse.equinox.common"/>
-      <import plugin="org.eclipse.jdt.debug.ui"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.ltk.core.refactoring" version="3.5.100" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.jdt.core.manipulation" version="1.3.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ltk.ui.refactoring" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.emf.codegen.ecore" version="2.6.1" match="greaterOrEqual"/>
    </requires>
 
    <plugin
-         id="org.eclipse.jqvt"
+         id="au.com.smartservicescrc.raas.codegen.jaxb"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.jqvt.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.jqvt.runtime"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
 </feature>

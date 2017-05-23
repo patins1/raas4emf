@@ -39,7 +39,7 @@ public class JaxbAnnosUI {
 				JaxbProposal proposal = new JaxbProposal(decl);
 				proposal.setAnnotation("javax.xml.bind.annotation.XmlRootElement");
 				proposal.setLabel("Provide an XML element name for serialization as XML root element by JAXRS");
-				proposal.put("name", genClass.getGenPackage().getNSName() + "." + genClass.getInterfaceName());
+				proposal.put("name", genClass.getInterfaceName());
 				// proposal.put("namespace", genClass.getGenPackage().getNSURI());
 				if (proposal.isRelevant()) {
 					proposals.add(proposal);

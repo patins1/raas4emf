@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.jqvt.feature_1.0.0.201704112156.jar" id="org.eclipse.jqvt.feature" version="1.0.0.201704112156">
+   <feature url="features/org.eclipse.jqvt.feature_1.0.0.201705240121.jar" id="org.eclipse.jqvt.feature" version="1.0.0.201705240121">
       <category name="org.eclipse.jqvt.category"/>
    </feature>
-   <category-def name="org.eclipse.jqvt.category" label="JQVT"/>
+   <feature url="features/org.raas4emf.raasgenerator.feature_1.0.0.201705240121.jar" id="org.raas4emf.raasgenerator.feature" version="1.0.0.201705240121">
+      <category name="org.eclipse.jqvt.category"/>
+   </feature>
+   <category-def name="org.eclipse.jqvt.category" label="raas4emf"/>
 </site>
