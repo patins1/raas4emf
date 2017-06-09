@@ -18,6 +18,7 @@ package compressionFilters;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -49,7 +50,7 @@ public class CompressionFilter implements Filter {
     /**
      * Minimal reasonable threshold.
      */
-    private int minThreshold = 128;
+    private final int minThreshold = 128;
 
     /**
      * The threshold number to compress.
@@ -59,7 +60,7 @@ public class CompressionFilter implements Filter {
     /**
      * Minimal reasonable buffer.
      */
-    private int minBuffer = 8192;  // 8KB is what tomcat would use by default anyway
+    private final int minBuffer = 8192;  // 8KB is what tomcat would use by default anyway
 
     /**
      * The compression buffer size to avoid chunking.
@@ -117,7 +118,7 @@ public class CompressionFilter implements Filter {
 
             str = filterConfig.getInitParameter("compressionMimeTypes");
             if (str!=null) {
-                List<String> values = new ArrayList<String>();
+                List<String> values = new ArrayList<>();
                 StringTokenizer st = new StringTokenizer(str, ",");
 
                 while (st.hasMoreTokens()) {
@@ -135,7 +136,8 @@ public class CompressionFilter implements Filter {
                 }
 
                 if (debug > 0) {
-                    System.out.println("compressionMimeTypes set to " + compressionMimeTypes);
+                    System.out.println("compressionMimeTypes set to " +
+                            Arrays.toString(compressionMimeTypes));
                 }
             }
         }

@@ -33,6 +33,7 @@ import math
 import operator
 import random
 import json
+import hashlib
 
 # #####################################################
 # Configuration
@@ -279,6 +280,8 @@ TEMPLATE_VERTEX_TRUNCATE = "%d,%d,%d"
 TEMPLATE_N = "%g,%g,%g"
 TEMPLATE_UV = "%g,%g"
 TEMPLATE_C = "%d"
+
+hashname = {}
 
 # #####################################################
 # Utils
@@ -1595,7 +1598,7 @@ def generate_hex(number):
     return TEMPLATE_HEX % number
 
 def generate_string(s):
-    return TEMPLATE_STRING % s
+    return json.dumps(s)
 
 def generate_string_list(src_list):
     return ", ".join(generate_string(item) for item in src_list)
@@ -1654,7 +1657,7 @@ def generate_objects(data, children = None):
             #if len(obj.modifiers) > 0:
             #    geo_name = obj.name
             #else:
-            geo_name = obj.data.name
+            geo_name = hashname[obj.data.name]
 
             geometry_id = "geo_%s" % geo_name
 
@@ -1753,7 +1756,7 @@ def generate_geometries(data):
             #if len(obj.modifiers) > 0:
             #    name = obj.name
             #else:
-            name = obj.data.name
+            name = hashname[obj.data.name]
 
             if name not in geo_set:
 
@@ -2170,7 +2173,7 @@ def generate_embeds(data):
 
         for e in data["embeds"]:
 
-            embed = '"emb_%s": {%s}' % (e, data["embeds"][e])
+            embed = '%s: {%s}' % (generate_string("emb_%s" % e), data["embeds"][e])
             chunks.append(embed)
 
         return ",\n\n".join(chunks)
@@ -2384,7 +2387,9 @@ def save(operator, context, filepath = "",
                                                         option_animation_skeletal,
                                                         option_frame_step)
 
-                        embeds[object.data.name] = model_string
+                        hashname[object.data.name] = hashlib.md5(model_string.encode("utf8")).hexdigest();
+
+                        embeds[hashname[object.data.name]] = model_string
 
                     else:
 
@@ -2410,6 +2415,8 @@ def save(operator, context, filepath = "",
                                     option_frame_step)
 
                     geo_set.add(name)
+
+        print(" #objects=" + str(len(objects)) + " #hashname="+str(len(hashname)) + " #embeds="+str(len(embeds)) );
 
         export_scene(scene, filepath,
                      option_flip_yz,

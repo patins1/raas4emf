@@ -14,9 +14,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-/* $Id: RequestInfoExample.java 1337742 2012-05-12 23:58:37Z kkolinko $
- *
- */
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -47,10 +44,12 @@ public class RequestInfoExample extends HttpServlet {
         throws IOException, ServletException
     {
         response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
 
         PrintWriter out = response.getWriter();
-        out.println("<html>");
+        out.println("<!DOCTYPE html><html>");
         out.println("<head>");
+        out.println("<meta charset=\"UTF-8\" />");
 
         String title = RB.getString("requestinfo.title");
         out.println("<title>" + title + "</title>");

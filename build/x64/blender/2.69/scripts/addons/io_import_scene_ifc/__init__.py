@@ -46,6 +46,7 @@ if "bpy" in locals():
 
 import bpy
 import mathutils
+import hashlib
 from bpy.props import StringProperty, IntProperty, BoolProperty
 from bpy_extras.io_utils import ImportHelper
 
@@ -75,6 +76,9 @@ def import_ifc(filename, use_names, process_relations):
     id_to_matrix = {}
     old_progress = -1
     print("Creating geometry...")
+    hashmesh = {}
+    reusedMeshes = 0
+    newMeshes = 0
     while True:
         ob = IfcImport.Get()
  
@@ -82,21 +86,38 @@ def import_ifc(filename, use_names, process_relations):
         v = ob.mesh.verts
         m = ob.matrix
         t = ob.type[0:21]
-        nm = ob.name if len(ob.name) and use_names else ob.guid
+        nm = ob.name if len(ob.name) and use_names else (ob.guid + "," + ob.name)
 
-        verts = [[v[i], v[i + 1], v[i + 2]] \
-            for i in range(0, len(v), 3)]
-        faces = [[f[i], f[i + 1], f[i + 2]] \
-            for i in range(0, len(f), 3)]
+        hasher = hashlib.md5();
+        for i in range(0, len(v), 1):
+            hasher.update(str(v[i]).encode("utf8"));
+        for i in range(0, len(f), 1):
+            hasher.update(str(f[i]).encode("utf8"));
+        hasher.update(t.encode("utf8"));
+        hash = "h"+hasher.hexdigest();
 
-        me = bpy.data.meshes.new('mesh%d' % ob.mesh.id)
-        me.from_pydata(verts, [], faces)
-        if t in bpy.data.materials:
-            mat = bpy.data.materials[t]
-            mat.use_fake_user = True
+        isNewMesh = True
+        if hash in hashmesh:
+            me = hashmesh[hash]
+            reusedMeshes += 1
+            isNewMesh = False
         else:
-            mat = bpy.data.materials.new(t)
-        me.materials.append(mat)
+            verts = [[v[i], v[i + 1], v[i + 2]] \
+                for i in range(0, len(v), 3)]
+            faces = [[f[i], f[i + 1], f[i + 2]] \
+                for i in range(0, len(f), 3)]
+
+            me = bpy.data.meshes.new('mesh%d' % ob.mesh.id)
+            me.from_pydata(verts, [], faces)
+            if t in bpy.data.materials:
+                mat = bpy.data.materials[t]
+                mat.use_fake_user = True
+            else:
+                mat = bpy.data.materials.new(t)
+            me.materials.append(mat)
+            hashmesh[hash] = me
+            newMeshes += 1
+
 
         bob = bpy.data.objects.new(nm, me)
         mat = mathutils.Matrix(([m[0], m[1], m[2], 0],
@@ -111,10 +132,11 @@ def import_ifc(filename, use_names, process_relations):
             bob.matrix_world = mat
         bpy.context.scene.objects.link(bob)
 
-        bpy.context.scene.objects.active = bob
-        bpy.ops.object.mode_set(mode='EDIT')
-        bpy.ops.mesh.normals_make_consistent()
-        bpy.ops.object.mode_set(mode='OBJECT')
+        if isNewMesh:
+            bpy.context.scene.objects.active = bob
+            bpy.ops.object.mode_set(mode='EDIT')
+            bpy.ops.mesh.normals_make_consistent()
+            bpy.ops.object.mode_set(mode='OBJECT')
 
         bob.ifc_id, bob.ifc_guid, bob.ifc_name, bob.ifc_type = \
             ob.id, ob.guid, ob.name, ob.type
@@ -135,6 +157,8 @@ def import_ifc(filename, use_names, process_relations):
         if not IfcImport.Next():
             break
 
+    print("\r#new=" + str(newMeshes)+" #reused=" + str(reusedMeshes))
+
     print("\rDone creating geometry" + " " * 30)
 
     id_to_parent_temp = dict(id_to_parent)
@@ -154,7 +178,7 @@ def import_ifc(filename, use_names, process_relations):
             else:
                 m = parent_ob.matrix
                 nm = parent_ob.name if len(parent_ob.name) and use_names \
-                    else parent_ob.guid
+                    else (parent_ob.guid + "," + parent_ob.type[0:21] + "," + parent_ob.name)
                 bob = bpy.data.objects.new(nm, None)
                 
                 mat = mathutils.Matrix((

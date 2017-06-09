@@ -10,5 +10,5 @@ Following steps must be done to access the object Library in a browser:
 
 Following steps must be done to use the local server for Revit and Archicad:
 1. Read the instructions at C:\bim\NOLClient\readme.txt
-2. In file C:\bim\NOLClient\config.ini, change the following key value pair:
-   BIMUIURL = http://localhost:80/raascms/nol
+2. The local server is picked up automatically as C:\bim\NOLServer\config.ini redefines the RAASCMSURL setting to
+   RAASCMSURL = http://localhost:80/raascms/nol

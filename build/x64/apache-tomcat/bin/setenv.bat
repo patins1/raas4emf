@@ -1,1 +1,1 @@
-set JAVA_OPTS=%JAVA_OPTS% -Xms256m -Xmx2812m -XX:MaxPermSize=256m -Dh2.lobInDatabase=false
+set JAVA_OPTS=%JAVA_OPTS% -Xms256m -Xmx2812m -XX:MaxPermSize=256m -Dh2.lobInDatabase=false "-DJDBC_CONNECTION_STRING=jdbc:h2:/bim/NOLServer/db/bimdb"
