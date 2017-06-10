@@ -36,6 +36,11 @@ if obj_file_out == file_out:
 else:
 	if json_file_out == file_out:
 		io_mesh_threejs.export_threejs.save(None, bpy.context, filepath=json_file_out,  option_export_scene=True,  option_flip_yz=False, option_materials=False, option_normals=False)
+		# in order to use the io_three, comment the line one above and uncomment the following lines: 
+		#from io_three import constants		
+		#from io_three import exporter
+		#constants.EXPORT_OPTIONS[constants.LOGGING] = constants.WARNING
+		#exporter.export_scene(json_file_out,  constants.EXPORT_OPTIONS )
 	else:
 		bpy.ops.wm.collada_export(filepath=file_out)
 print(str(datetime.datetime.now())+" FINISHED")
