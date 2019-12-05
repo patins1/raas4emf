@@ -18,6 +18,7 @@ import java.io.StringBufferInputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -67,7 +68,6 @@ import org.eclipse.emf.cdo.session.CDOSession;
 import org.eclipse.emf.cdo.transaction.CDOTransaction;
 import org.eclipse.emf.cdo.view.CDOQuery;
 import org.eclipse.emf.cdo.view.CDOView;
-import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
@@ -85,6 +85,7 @@ import org.eclipse.emf.ecore.xmi.FeatureNotFoundException;
 import org.eclipse.emf.ecore.xmi.PackageNotFoundException;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.internal.cdo.CDOObjectImpl;
 import org.eclipse.net4j.Net4jUtil;
 import org.eclipse.net4j.connector.IConnector;
 import org.eclipse.net4j.internal.util.bundle.AbstractPlatform;
@@ -117,14 +118,15 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
-import com.fasterxml.jackson.databind.deser.BasicDeserializerFactory;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.introspect.POJOPropertyBuilder;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.type.TypeModifier;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
@@ -1526,7 +1528,12 @@ public class RAASUtils {
 		}
 		MAPPINGS.put(mapper.getFactory().getClass(), mapper);
 
-		mapper.setMixIns(SOURCE_MIXINS);
+//		mapper.setMixIns(SOURCE_MIXINS);
+
+//		mapper.addMixIn(IfcRepresentationItemImpl.class, MixinResourceImpl.class);
+		mapper.addMixIn(CDOObject.class, MixinResourceImpl.class);
+//		mapper.addMixIn(IfcCurve.class, MixinResourceImpl.class);
+
 
 		JaxbAnnotationIntrospector intro1 = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
 
@@ -1578,30 +1585,32 @@ public class RAASUtils {
 		mapper.enable(MapperFeature.USE_GETTERS_AS_SETTERS);
 		mapper.enable(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS);
 
-		/**
-		 * Support for the EList type !
-		 */
-		for (Field f : BasicDeserializerFactory.class.getDeclaredFields()) {
-			if ("_collectionFallbacks".equals(f.getName())) {
-				f.setAccessible(true);
-				try {
-					HashMap<String, Class<? extends Collection>> _collectionFallbacks = (HashMap<String, Class<? extends Collection>>) f.get(null);
-					_collectionFallbacks.put(EList.class.getName(), BasicEList.class);
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		}
-
-		/**
-		 * forget about fields, only getters/setters
-		 */
 		mapper.registerModule(new SimpleModule() {
 
 			@Override
 			public void setupModule(SetupContext context) {
 				super.setupModule(context);
 
+				/**
+				 * Don't deal with EList etc, as they never need to be
+				 * instantiated (there are no setter methods for multivalued
+				 * properties in EMF!)
+				 */
+				context.addTypeModifier(new TypeModifier() {
+
+					@Override
+					public JavaType modifyType(JavaType type, Type jdkType, TypeBindings context, TypeFactory typeFactory) {
+						if (type.getContentType() != null && jdkType.getTypeName().startsWith("org.eclipse.emf")) {
+							return typeFactory.constructCollectionType(Collection.class, type.getContentType());
+						}
+						return type;
+					}
+
+				});
+
+				/**
+				 * forget about fields, only getters/setters
+				 */
 				context.addBeanDeserializerModifier(new BeanDeserializerModifier() {
 
 					@Override

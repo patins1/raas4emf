@@ -74,7 +74,7 @@ public class RAASSessionSingletonService implements IRAASSessionSingletonService
 			if (result != null) {
 				return result;
 			}
-			return ".js - three.js internal JSON format";
+			return super.get3dFormat();
 		}
 
 		@Override

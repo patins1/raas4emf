@@ -434,8 +434,8 @@ function doSetCamera(eye,target,angle,ortho,steps,g_client) {
 	}
 	var oldEye = g_camera.eye.clone();
 	var oldTarget = g_camera.target.clone();
-	var oldUp = new THREE.Vector3().setFromMatrixColumn(1,new THREE.Matrix4().getInverse(new THREE.Matrix4().lookAt(g_camera.eye, g_camera.target, up)).transpose());
-	var newUp = new THREE.Vector3().setFromMatrixColumn(1,new THREE.Matrix4().getInverse(new THREE.Matrix4().lookAt(eye, target, up)).transpose());
+	var oldUp = new THREE.Vector3().setFromMatrixColumn(new THREE.Matrix4().getInverse(new THREE.Matrix4().lookAt(g_camera.eye, g_camera.target, up)).transpose(),1);
+	var newUp = new THREE.Vector3().setFromMatrixColumn(new THREE.Matrix4().getInverse(new THREE.Matrix4().lookAt(eye, target, up)).transpose(),1);
 	var oriUp = up.clone();
 	var oldAngle = g_angle;
 	g_cameraHistory.push([oldEye,oldTarget,g_angle,oldOrtho,steps,g_client]);
@@ -551,7 +551,7 @@ function calcPaths() {
     var ext = filename.substring(filename.lastIndexOf("."));
     doJsonLoader = (ext == ".js");
     doCollada = (ext == ".dae");
-    doGLTF = (ext == ".json");
+    doGLTF = (ext == ".gltf") || (ext == ".glb");
     doFBX = (ext == ".fbx");
     if (doCollada && overrideSettings.quickmode==null) effectController.quickmode = false;  
     if (doCollada && overrideSettings.vertexnormals==null) effectController.vertexnormals = true;  
@@ -886,7 +886,7 @@ function placeInto(px,py,width,height,tilt45,ox,oy) {
 				var shape = arcShape;
 
 
-				var extrudeSettings = { amount: 2000 }; // bevelSegments: 2, steps: 2 , bevelSegments: 5, bevelSize: 8, bevelThickness:5
+				var extrudeSettings = { depth: 2000 }; // bevelSegments: 2, steps: 2 , bevelSegments: 5, bevelSize: 8, bevelThickness:5
 				extrudeSettings.bevelEnabled = true;
 				extrudeSettings.bevelSegments = 10;
 				extrudeSettings.steps = 2;
@@ -1362,7 +1362,7 @@ function printLines(lines, artifactId, prefix, message) {
 //		var shape = arcShape;
 //	
 //	
-//		var extrudeSettings = { amount: 200 }; // bevelSegments: 2, steps: 2 , bevelSegments: 5, bevelSize: 8, bevelThickness:5
+//		var extrudeSettings = { depth: 200 }; // bevelSegments: 2, steps: 2 , bevelSegments: 5, bevelSize: 8, bevelThickness:5
 //		extrudeSettings.bevelEnabled = true;
 //		extrudeSettings.bevelSegments = 10;
 //		extrudeSettings.steps = 2;
@@ -1595,6 +1595,7 @@ function getTruncatedIfcClass(node) {
 }
 
 function truncatedMaterialName(name) {
+	name = name.replace("-fx", "")
 	if (name.indexOf("Ifc")==0) {
 		return name.substring(3);
 	}
@@ -2205,6 +2206,8 @@ function generateGui() {
 	selectionInfoGui.add( effectController, "id");
 	effectController.material = "";
 	selectionInfoGui.add( effectController, "material");
+	effectController.geometry = "";
+	selectionInfoGui.add( effectController, "geometry");
 	effectController.distance = 0.1;
 	selectionInfoGui.add( effectController, "distance");
 	selectionInfoGui.add( effectController, 'select_face' );	
@@ -2235,6 +2238,13 @@ function generateGui() {
 		
 	};
 	selectionInfoGui.add( effectController, "select parent object" );
+	
+
+	effectController[ "use identiy matrix" ] = function () {
+		resetLocalCoordinateSystems(false,g_clients[0],g_selectedInfo[0]);
+		updateClient(g_clients[0]);		
+	};
+	selectionInfoGui.add( effectController, "use identiy matrix" );
 
 	effectController[ "show_bounding_box" ] = function () {
 		if (g_selectedInfo.length==0 && !oldBBbox) {
@@ -2640,10 +2650,27 @@ function optimizeMem(g_client) {
     });
 }
 
-function resetLocalCoordinateSystems(SAVEMEM,g_client) {
-	
+function resetLocalCoordinateSystems(SAVEMEM,g_client,root) {
+	var alwaysClone = root;
+	var makeAbsolute = !root;
+	root = root || g_client.root;
+	root.traverse(function (mesh) {
+		if (mesh.geometry && mesh.material) {
+			if (mesh.geometry.taken || alwaysClone) {
+				mesh.geometry = mesh.geometry.clone();
+			} else {
+				mesh.geometry.taken = true;
+			}
+		}
+	});
+	root.traverse(function (mesh) {
+		if (mesh.geometry && mesh.material) {
+			mesh.geometry.taken = false;
+			mesh.geometry.applyMatrix(makeAbsolute ? mesh.matrixWorld : mesh.matrix);	
+		}
+	});
 
-	g_client.root.traverse(function (mesh) {
+	root.traverse(function (mesh) {
 		if (mesh.position) {	
 			if (SAVEMEM) {
 				mesh.position = g_client.scene.position;
@@ -2797,20 +2824,6 @@ function melt(g_client) {
 	
 	if (meltIntoBufferGeometry) {
 
-	g_client.root.traverse(function (mesh) {
-		if (mesh.geometry && mesh.material) {
-			if (mesh.geometry.taken) {
-				mesh.geometry = mesh.geometry.clone();
-			} else {
-				mesh.geometry.taken = true;
-			}
-		}
-	});
-	g_client.root.traverse(function (mesh) {
-		if (mesh.geometry && mesh.material) {
-			mesh.geometry.applyMatrix(mesh.matrixWorld);	
-		}
-	});
 	resetLocalCoordinateSystems(false,g_client);
 	
 	var geometriesOfMaterial = {};
@@ -2832,53 +2845,16 @@ function melt(g_client) {
 	
 	for (var mat in geometriesOfMaterial) {
 		var geometries = geometriesOfMaterial[mat];
-		var tt = 0;
-		var partition = 0;
-
-		while (tt<geometries.length) {
-		partition += 1; 
-			
-		var ttt = tt;
-		var vertexCountOfMaterial = 0;
-		while (ttt<geometries.length && vertexCountOfMaterial+getCoordinateCount(geometries[ttt])<1048576*9) {
-			vertexCountOfMaterial+=getCoordinateCount(geometries[ttt]);
-			ttt += 1;
-		}
-
-		var meltedGeometry = new THREE.BufferGeometry();
-
-		var positionBuffer = new ArrayBuffer(vertexCountOfMaterial*4);
-		meltedGeometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array( positionBuffer ), 3 ) );
-		var normalBuffer = new ArrayBuffer(vertexCountOfMaterial*4);
-		meltedGeometry.addAttribute( 'normal', new THREE.BufferAttribute( new Float32Array( normalBuffer ), 3 ) );
-
-		var g = 0;
-		while (tt<ttt) {
-			var geometry = geometries[tt];
-			geometries[tt] = null;
-			geometry = THREE.BufferGeometry.assureBufferGeometry( geometry );
-			if (!hasVertexNormals(geometry)) geometry.computeVertexNormals();
-			var position = geometry.attributes.position;
-			var positions2 = position.array;
-			position.array = new Float32Array( positionBuffer, g*4, positions2.length );
-			position.array.set(positions2);
-			var normal = geometry.attributes.normal;
-			var normals2 = normal.array;
-			normal.array = new Float32Array( normalBuffer, g*4, normals2.length );
-			normal.array.set(normals2);
-			g += positions2.length;
-			tt += 1;
-		}
+		var meltedGeometry = THREE.BufferGeometryUtils.mergeBufferGeometries( geometries, true );
 
 		g_client.g_colors[mat].meltedGeometry = meltedGeometry;
 		var materialMesh = new THREE.Mesh(meltedGeometry, g_client.g_colors[mat] );
 	    setupUVs(materialMesh);
 		cityMesh.add( materialMesh );
-		materialMesh.name = "melted meshes for material "+mat+" partition "+partition;
+		materialMesh.name = "melted meshes for material "+mat;
 		myLog(materialMesh.name); 
 		if (mat=="Door" || mat=="Window")
 			materialMesh.renderOrder = -2; 
-		}
 	}
 
 	g_client.root.traverse(function (mesh) { 		
@@ -3052,7 +3028,7 @@ function paintBendPoints() {
 		g_client.root.traverse(function (child) {
 			var geometry = child.geometry;
 		    if (geometry && child.material && g_profile.length==0) {
-		    	g_profile = [child];
+		    	g_profile = [THREE.BufferGeometry.assureMeshWithNoBufferGeometry(child)];
 		    }
 	    });
 		
@@ -3081,14 +3057,24 @@ function paintBendPoints() {
 
 	var sampleClosedSpline = new THREE.NURBSCurve(nurbsDegree, nurbsKnots, nurbsControlPoints);
 
-
+	var point = sampleClosedSpline.controlPoints[sampleClosedSpline.controlPoints.length-1];
+	var points = [new THREE.Vector3(point.x,point.y,point.z)];
 	var addedAngles = 0;
 	for ( var i = 0; i <effectController.bendPointCount; i ++ ) {	
 		var bend = "angle "+(i+1);	
 		var line ="line "+(i+1);
-		t = sampleClosedSpline.addArcAndLine(t,effectController[bend]/90,effectController[line]/ww,effectController["bend radius"]/ww);	
+		var lineLength = effectController[line]/ww;
+		t = sampleClosedSpline.addArcAndLine(t,effectController[bend]/90,lineLength,effectController["bend radius"]/ww);	
 		addedAngles+=effectController[bend];
+		point = point.clone().add(t.clone().multiplyScalar(lineLength));
+		points.push(new THREE.Vector3(point.x,point.y,point.z));
 	}
+	
+	if (points.length>=2) {
+		// fix bug for getPointAt()
+    	points.push(points[points.length-1].clone());
+	}
+	sampleClosedSpline = new THREE.SplineCurve3(points);
 	
 	effectController["extrusion_length"] = ""+(sampleClosedSpline.getLength()*ww);
 	updateGuiControl(extrusionLengthGui);
@@ -3159,7 +3145,7 @@ function paintBendPoints() {
 			}				
 
 			if (shapes.length>0) {
-				var geometry = new THREE.ExtrudeGeometry(shapes, extrudeSettings);// this, options ) shape.extrude( extrudeSettings );	
+				var geometry = new THREE.ExtrudeGeometry(shapes, extrudeSettings);	
 				if (effectController.vertexnormals) geometry.computeVertexNormals(effectController.areaweighted);
 				var mesh = new THREE.Mesh( geometry, child.material );				
 //				mesh.position = child.position.clone();
@@ -3190,7 +3176,7 @@ function paintBendPoints() {
 					rectShape.lineTo( rectLength/2, -rectLength/2 );
 					rectShape.lineTo( -rectLength/2, -rectLength/2 );
 					
-					geometry = rectShape.extrude( { amount: -effectController["suspension_length"]/ww,  bevelEnabled: false, bevelSegments: 2, steps: 1 } );	
+					geometry = new THREE.ExtrudeGeometry(rectShape, { depth: -effectController["suspension_length"]/ww,  bevelEnabled: false, bevelSegments: 2, steps: 1 } );	
 					if (effectController.vertexnormals) geometry.computeVertexNormals(effectController.areaweighted);
 					mesh = new THREE.Mesh( geometry, child.material );				
 //					mesh.position = child.position.clone();
@@ -3212,7 +3198,7 @@ function paintBendPoints() {
     	g_client.scene.remove(g_client.root);
     	g_client.root=parent;
     	parent.updateMatrixWorld();
-	    if (initialExtrusion) {
+	    if (effectController.bendPointCount==1) {
 	    	locate(parent,g_client,10);
 	    }
     } else 
@@ -3359,13 +3345,13 @@ function start() {
 	
 	container = document.getElementById('clients');
 	
-	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); return; }
+	if ( ! THREE.WEBGL.isWebGLAvailable() ) { document.body.appendChild(THREE.WEBGL.getWebGLErrorMessage()); return; }
 
     	window.addEventListener( 'resize', onWindowResize, false );
     	mouse = new THREE.Vector2();
     	up = new THREE.Vector3( 0, 1, 0 );
 		
-    	var requiredThreeJS = doFBX ? [g_dir+"js/loaders/FBXLoader2.js"] :  doJsonLoader ? [] : doCollada ? [g_dir+"js/loaders/ColladaLoader.js"] : doGLTF ? [g_dir+"js/loaders/gltf/glTF-parser.js",g_dir+"js/loaders/gltf/glTFLoader.js",g_dir+"js/loaders/gltf/glTFLoaderUtils.js",g_dir+"js/loaders/gltf/glTFAnimation.js"] : [g_dir+"js/loaders/OBJLoader.js"];
+    	var requiredThreeJS = doFBX ? [g_dir+"js/loaders/FBXLoader2.js"] :  doJsonLoader ? [] : doCollada ? [g_dir+"js/loaders/ColladaLoader.js"] : doGLTF ? [g_dir+"js/loaders/glTFLoader.js"] : [g_dir+"js/loaders/OBJLoader.js"];
 //    	requiredThreeJS.push(g_dir+"js/controls/OrbitControls.js");
 //    	requiredThreeJS.push(g_dir+"js/curves/NURBSUtils.js");
 //    	requiredThreeJS.push(g_dir+"js/curves/NURBSCurve.js");
@@ -3515,11 +3501,11 @@ var initStatics = function() {
 
 		}
 		
-		mesh = mesh.clone();
-		mesh.matrix.copy(mesh.matrixWorld); // has no parents
-		mesh.geometry = THREE.BufferGeometry.assureNoBufferGeometry(mesh.geometry);
-		
-		return mesh;
+		var mesh2 = new THREE.Mesh(new THREE.Geometry().fromBufferGeometry( mesh.geometry ), mesh.material);
+		mesh2.matrix.copy(mesh.matrixWorld); // has no parents
+		mesh2.matrixAutoUpdate = false;
+		mesh2.matrixWorldNeedsUpdate = true;
+		return mesh2;
 	};
 	
 	function addVertex(vertices, vertex) {
@@ -3538,70 +3524,15 @@ var initStatics = function() {
 			return geometry;
 
 		}
-		
-		if (geometry.faces.length==0) {
-			var bufferGeometry = new THREE.BufferGeometry();
-			bufferGeometry.addAttribute( 'position', new THREE.BufferAttribute( new Float32Array(0), 3 ) );
-			bufferGeometry.addAttribute( 'normal', new THREE.BufferAttribute( new Float32Array(0), 3 ) );
-			return bufferGeometry;
-		}
-		
 		return new THREE.BufferGeometry().fromGeometry(geometry);
 		
 	}
 
 	THREE.BufferGeometry.assureNoBufferGeometry = function ( geometry ) {
-
-		if ( geometry instanceof THREE.Geometry ) {
-
-			return geometry;
-
-		}
-
-    	var faces = [];
-
-		var vertices = getOnlyUsedVertices(geometry);
-		var result = new THREE.Geometry();
-
-		for ( var i = 0, il = vertices.length; i < il; i += 3 ) {	
-			faces.push(new THREE.Face3(addVertex(result.vertices, vertices[i]), addVertex(result.vertices, vertices[i+1]), addVertex(result.vertices, vertices[i+2])));			
-		}
-		
-		result.faces = faces;
-		result.computeFaceNormals();
-		if (effectController.vertexnormals)
-			result.computeVertexNormals(effectController.areaweighted);
-		
-		return result; 
-		
+		return new THREE.Geometry().fromBufferGeometry( geometry );		
 	};
 
-	
-    THREE.SceneLoader.prototype.load2 = function ( url, onLoad, onProgress, onError ) {
-
-    		var scope = this;
-
-    		var loader = new THREE.XHRLoader( scope.manager );
-    		loader.load( url, function ( text ) {
-    			document.getElementById('progressbar').style.display = "none";
-    			drawBar(0,"Parsing Json ...");
-        		setTimeout(function(){
-    			var json = JSON.parse( text );
-    			if (json.errorMessage) {
-    				$("#progress").html(json.errorMessage);
-    				return;
-    			}
-    			drawBar(0,"Building Scene ...");
-        		setTimeout(function(){
-    			allGeometries = json.metadata.geometries;
-    			scope.parse( json, onLoad, url );
-        		},waitForBar);
-        		},waitForBar);
-    		}, onProgress/*!!*/, onError );
-
-    };
-
-    THREE.JSONLoader2 = function ( showStatus ) {
+    THREE.JSONLoader2 = function ( showStatus ) { 
 
     	THREE.JSONLoader.call( this, showStatus );
     	
@@ -3677,10 +3608,10 @@ function load2(ii) {
     if (doJsonLoader) {
 		document.getElementById('progress').style.display = "block";
 		drawBar(0,"Start");	
-    	var loader = new THREE.SceneLoader();
-    	loader.addGeometryHandler( "ascii", THREE.JSONLoader2 );
-    	loader.load2( g_paths[ii], function ( result ) {
-    		afterLoad(result.scene,g_clients[ii]);
+    	var loader = new THREE.JSONLoader();
+    	//loader.addGeometryHandler( "ascii", THREE.JSONLoader2 );
+    	loader.load( g_paths[ii], function ( result ) {
+    		afterLoad(result,g_clients[ii]);
     	}, function ( event ) {
 			drawBar(event.total ? event.loaded / event.total : 0, "Loading ..." );
     	}, function ( event ) { 
@@ -3712,13 +3643,19 @@ function load2(ii) {
     	} );
 	} else
 	if (doGLTF) {
-    	var loader = new THREE.glTFLoader();
-    	var index = g_paths[ii].lastIndexOf("scene.");
-    	loader.load( g_paths[ii].substring(0,index)+"/"+g_paths[ii].substr(index), function ( result ) {
+    	var loader = new THREE.GLTFLoader();
+    	var path = g_paths[ii]
+    	var index = path.lastIndexOf("scene.");
+    	if (index!=-1) path = path.substring(0,index)+"/"+path.substr(index);    	
+    	loader.load( path, function ( result ) {
     		var root = result.scene.children[result.scene.children.length-1];
-    	    root.rotation.x += -Math.PI/2 ;
-    	    root.updateMatrix();
     		effectController.quickmode = false; // this mode not works
+    		root.traverse(function (mesh) {
+				var geometry = mesh.geometry;
+	        	if (geometry && !hasVertexNormals(geometry)) {
+	        		geometry.computeVertexNormals();
+	        	}
+	        });
     	    afterLoad(root,g_clients[ii]);
     	} );
 	} else {
@@ -3962,7 +3899,8 @@ function init(root,g_client) {
     g_client.controls = new THREE.OrbitControls( new THREE.PerspectiveCamera( 90, 1, 0.01, 2000000 ), g_client );
     g_client.controls.oriUpdate = g_client.controls.update;
     g_client.controls.update = function () {if (this.active) this.oriUpdate(); };
-    g_client.controls.enablePan = false;
+    g_client.controls.enablePan  = false;
+    g_client.controls.enableZoom = false;
     g_client.controls.active = true;
     g_client.additionalObjectsToSelect = [];
 	}
@@ -4047,6 +3985,7 @@ function init(root,g_client) {
 
     g_finished = true;  // for selenium
 	g_client.root.traverse(function (child) { 
+		if (!child.name) return;
     	var comps = child.name.split(",");
     	var hasMaximumNameLength = child.name.length == 63;
     	if (comps.length==3) {
@@ -4121,7 +4060,7 @@ function setupUVs(mesh) {
 		if (!hasTexture) return;
 		if (!(geometry.faceVertexUvs && geometry.faceVertexUvs[0].length>0 || geometry.attributes && geometry.attributes.uv))
 			automaticUnwrapping(geometry,0.1*1,0.1*1);
-//							if (geometry.faceVertexUvs[0].length==0 && geometry.boundingBox && !geometry.boundingBox.empty() && materialColor.map.image.width!=null &&  materialColor.map.image.width>0 )
+//							if (geometry.faceVertexUvs[0].length==0 && geometry.boundingBox && !geometry.boundingBox.isEmpty() && materialColor.map.image.width!=null &&  materialColor.map.image.width>0 )
 //								automaticUnwrapping(geometry,0.1*1,0.1*materialColor.map.image.height/materialColor.map.image.width);
 		geometry.buffersNeedUpdate = true;
 		geometry.uvsNeedUpdate = true;							
@@ -4501,6 +4440,7 @@ function select(newSelection,g_client) {
 	    effectController.id = g_selectedInfo[0].uuid;
 	    var material = g_selectedInfo[0].originalMaterial || g_selectedInfo[0].material;
 	    effectController.material = material ? material.name : "none";
+	    effectController.geometry = g_selectedInfo[0].geometry ? g_selectedInfo[0].geometry.id : "none";
 	    if (g_oldWorldPosition!=null && g_worldPosition) {
 	    	effectController.distance = g_oldWorldPosition.distanceTo(g_worldPosition);
 	    }
@@ -4677,7 +4617,6 @@ function getRaycaster(mouse,g_client) {
 	}
 	return raycaster;
 }
-
 var g_line;
 
 
@@ -4994,7 +4933,7 @@ function onDocumentMouseUp(e) {
 }
 
 function onDocumentMouseWheel(e) {
-	var delta = e.wheelDelta || - e.detail;
+	var delta = e.wheelDelta || - e.detail || -e.deltaY;
 	if (delta) {
 		if (g_mapenabled) {
 			g_mapsteps = 3;
@@ -5002,7 +4941,18 @@ function onDocumentMouseWheel(e) {
 			return;
 		}
 		var g_client = e.target;
+		var raycaster = getRaycaster(mouse,g_client);
+		var vector = raycaster.ray.direction.normalize();
+		var oldLength = g_client.g_camera.position.distanceTo(g_client.g_camera.target);
+		var factor = oldLength/20*(delta > 0 ? 1 : -1);
+		var newPosition = g_client.g_camera.position.clone().add(vector.setLength(factor));
+		var positionOffset = newPosition.clone().sub(g_client.g_camera.position);
+		var oldDirection = g_client.g_camera.target.clone().sub(g_client.g_camera.position).normalize();
+		var proj = positionOffset.dot(oldDirection);		
+		setEyeAndTarget(newPosition,newPosition.clone().add(oldDirection.setLength(oldLength - proj)),g_client);
+		
 		updateClient(g_client);
+		e.preventDefault();
 	}
 }
 
@@ -5028,13 +4978,13 @@ function getOnlyUsedVertices(geometry) {
 	}
 	var faces = geometry.faces;
 	var vertices = geometry.vertices;
-	if (faces && vertices && faces.length*3<vertices.length) {		
+	if (faces && vertices) {		
 		var result = [];
 		for ( i = 0, il = faces.length; i < il; i ++ ) {
 			var face = faces[ i ];
-			if (vertices[face.a]) result.push(vertices[face.a]);
-			if (vertices[face.b]) result.push(vertices[face.b]);
-			if (vertices[face.c]) result.push(vertices[face.c]);		
+			if (vertices[face.a]) result.push(vertices[face.a]); else return vertices;
+			if (vertices[face.b]) result.push(vertices[face.b]); else return vertices;
+			if (vertices[face.c]) result.push(vertices[face.c]); else return vertices;		
 		}
 		return result;
 	}
@@ -5056,7 +5006,7 @@ function getBoundingBoxOfTree(object3Ds) {
 			});
 	    });
     }
-    if (box.empty()) return null;
+    if (box.isEmpty()) return null;
     return box;
 }
 
@@ -5275,7 +5225,7 @@ function printIncidents(lines, artifactId) {
 
 	if (!hasFire) {
 		var requiredThreeJS = [];
-		requiredThreeJS.push(g_dir+"fonts/helvetiker_regular.typeface.js"); 
+		requiredThreeJS.push(g_dir+"fonts/helvetiker_regular.typeface.json"); 
 ////		requiredThreeJS.push(g_dir+"fire/js/SpriteParticleSystem.js");  
 ////	
 //////		requiredThreeJS.push(g_dir+"fire/signals.js");

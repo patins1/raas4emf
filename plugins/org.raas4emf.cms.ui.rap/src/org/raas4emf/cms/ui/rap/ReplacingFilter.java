@@ -52,9 +52,12 @@ public final class ReplacingFilter implements Filter {
 				} else {
 					String path = uri.substring(uri.indexOf(token) + 1);
 					String filename = path.substring(path.lastIndexOf('/') + 1);
-					url = url + "?servicehandler=downloadServiceHandler&filename=" + filename + "&artifact=" + path;
+					url = url + "?servicehandler=downloadServiceHandler&artifact=" + path;
 					if (httpRequest.getQueryString() != null) {
 						url += "&" + httpRequest.getQueryString();
+					}
+					if (!url.contains("&filename=")) {
+						url += "&filename=" + filename;
 					}
 				}
 				System.out.println("Get " + url);

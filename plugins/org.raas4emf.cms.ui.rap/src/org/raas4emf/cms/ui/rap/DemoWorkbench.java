@@ -4,6 +4,7 @@
 package org.raas4emf.cms.ui.rap;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -12,6 +13,7 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.EntryPoint;
+import org.eclipse.rap.rwt.client.service.StartupParameters;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.WorkbenchAdvisor;
@@ -24,26 +26,30 @@ import org.raas4emf.cms.ui.DemoWorkbenchAdvisor;
 import org.raas4emf.cms.ui.LoginDialog;
 import org.raas4emf.cms.ui.views.PreviewView;
 
+import raascms.Artifact;
+
 public class DemoWorkbench implements EntryPoint {
 
 	public DemoWorkbench() {
 	}
 
 	public int createUI() {
+		StartupParameters startupParameters = RWT.getClient().getService(StartupParameters.class);
 		String remoteAddr = RWT.getRequest().getRemoteAddr();
-		String osversion = RWT.getRequest().getParameter("osversion");
-		String ieversion = RWT.getRequest().getParameter("ieversion");
-		String username = RWT.getRequest().getParameter("username");
-		String cadtool = RWT.getRequest().getParameter("cadtool");
-		String ownversion = RWT.getRequest().getParameter("ownversion");
-		for (String name : RWT.getRequest().getParameterMap().keySet()) {
-			CMSActivator.getSessionInstance().setParameter(name, RWT.getRequest().getParameter(name));
+		String osversion = startupParameters.getParameter("osversion");
+		String ieversion = startupParameters.getParameter("ieversion");
+		String username = startupParameters.getParameter("username");
+		String cadtool = startupParameters.getParameter("cadtool");
+		String ownversion = startupParameters.getParameter("ownversion");
+		for (String name : startupParameters.getParameterNames()) {
+			CMSActivator.getSessionInstance().setParameter(name, startupParameters.getParameter(name));
 		}
 		CMSActivator.getSessionInstance().setParameter("ContextPath", RWT.getRequest().getContextPath());
 
-		boolean autoLogin = "true".equals(RWT.getRequest().getParameter("autologin")) || doAlwaysAutoLogin();
+		boolean autoLogin = "true".equals(startupParameters.getParameter("autologin")) || doAlwaysAutoLogin();
 		DemoWorkbench.fixBug347967();
-		Activator.log("remoteaddr=" + remoteAddr + " osversion=" + osversion + " ieversion=" + ieversion + " username=" + username + " cadtool=" + cadtool + " ownversion=" + ownversion);
+		Activator.log("remoteaddr=" + remoteAddr + " osversion=" + osversion + " ieversion=" + ieversion + " username="
+				+ username + " cadtool=" + cadtool + " ownversion=" + ownversion);
 		Display display = PlatformUI.createDisplay();
 		display.disposeExec(new Runnable() {
 			@Override
@@ -52,13 +58,18 @@ public class DemoWorkbench implements EntryPoint {
 			}
 		});
 
-		// JSExecutor.executeJS(" if (parent) {parent.raasSessionId=rwt.remote.Server.getInstance().getConnectionId(); alert('for parent='+rwt.remote.Server.getInstance().getConnectionId());}");
+		// JSExecutor.executeJS(" if (parent)
+		// {parent.raasSessionId=rwt.remote.Server.getInstance().getConnectionId();
+		// alert('for parent='+rwt.remote.Server.getInstance().getConnectionId());}");
 
-		// JSExecutor.executeJS(" window.parent.postMessage({'raasSessionId':rwt.remote.Server.getInstance().getConnectionId()},'*'); ");
-		String g_path = CMSActivator.getSessionInstance().createDownloadUrl("REPLACEHERE") + "&filename=" + PreviewView.getScene3dName();
+		// JSExecutor.executeJS("
+		// window.parent.postMessage({'raasSessionId':rwt.remote.Server.getInstance().getConnectionId()},'*');
+		// ");
+		String g_path = CMSActivator.getSessionInstance().createDownloadUrl("REPLACEHERE") + "&filename="
+				+ PreviewView.getScene3dName(new ArrayList<Artifact>());
 		g_path = "'" + g_path.replace("REPLACEHERE", "'+event.data.loadPath+'") + "'";
-		JSExecutor
-				.executeJS("window.addEventListener('message', function (event) { if (event.data.select3d) Array.prototype.slice.call(document.getElementsByTagName('iframe')).forEach(function(iframe) { iframe.contentWindow.postMessage(event.data, '*');   console.log('select3d='+event.data.select3d); }); else if (event.data.loadPath) document.getElementsByTagName('iframe')[0].contentWindow.postMessage({'g_path':"
+		JSExecutor.executeJS(
+				"window.addEventListener('message', function (event) { if (event.data.select3d) Array.prototype.slice.call(document.getElementsByTagName('iframe')).forEach(function(iframe) { iframe.contentWindow.postMessage(event.data, '*');   console.log('select3d='+event.data.select3d); }); else if (event.data.loadPath) document.getElementsByTagName('iframe')[0].contentWindow.postMessage({'g_path':"
 						+ g_path + "}, '*'); }, false); ");
 
 		// String dir = RAASUtils.getRAASProp("RAASSERVICEURL") + "threejs/";
@@ -68,7 +79,8 @@ public class DemoWorkbench implements EntryPoint {
 		// Display login dialog until logged in
 		while (true) {
 			String message = "Please sign in with your username and password:";
-			final LoginDialog loginDialog = autoLogin ? null : new LoginDialog(display.getActiveShell(), "Login", message, "Architect", "Librarian", "Operator");
+			final LoginDialog loginDialog = autoLogin ? null
+					: new LoginDialog(display.getActiveShell(), "Login", message, "Architect", "Librarian", "Operator");
 			int returnCode = autoLogin ? Window.OK : loginDialog.open();
 			if (returnCode == Window.OK && checkAdditionalConditions(display)) {
 				String userID = autoLogin ? getAutoLoginID() : loginDialog.getUsername();
@@ -85,10 +97,12 @@ public class DemoWorkbench implements EntryPoint {
 				} catch (Exception e) {
 					IStatus status = new Status(IStatus.ERROR, "org.raas4emf.cms.ui", e.getMessage(), e);
 					if (!retry) {
-						ErrorDialog.openError(display.getActiveShell(), "Error", "DB Login was not successful!", status);
+						ErrorDialog.openError(display.getActiveShell(), "Error", "DB Login was not successful!",
+								status);
 						break;
 					}
-					if (ErrorDialog.openError(display.getActiveShell(), "Error", "DB Login was not successful! Continue without DB connection?", status) != Dialog.OK) {
+					if (ErrorDialog.openError(display.getActiveShell(), "Error",
+							"DB Login was not successful! Continue without DB connection?", status) != Dialog.OK) {
 						break;
 					}
 				}

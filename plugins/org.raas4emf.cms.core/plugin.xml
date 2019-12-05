@@ -14,7 +14,19 @@
             class="org.raas4emf.cms.core.webgl.ColladaToGLTFTranformator"
             description="GLTF"
             sourceFileExtension="dae"
-            targetFileExtension="json">
+            targetFileExtension="gltf">
+      </transformator>
+      <transformator
+            class="org.raas4emf.cms.core.webgl.ColladaToGLBTranformator"
+            description="GLB"
+            sourceFileExtension="dae"
+            targetFileExtension="glb">
+      </transformator>
+      <transformator
+            class="org.raas4emf.cms.core.webgl.IfcToColladaTranformator"
+            description="Collada"
+            sourceFileExtension="ifc"
+            targetFileExtension="dae">
       </transformator>
    </extension>
    

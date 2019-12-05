@@ -29,16 +29,17 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.core.geometry.XYZ;
 import org.raas4emf.cms.ui.CMSActivator;
+import org.raas4emf.cms.ui.RAASProgressMonitorDialog;
 import org.raas4emf.cms.ui.RAASUIUtils;
 import org.raas4emf.cms.ui.views.PreviewView;
 
-import raascms.Artifact;
 import IFC2X3.IFC2X3Factory;
 import IFC2X3.IfcCartesianPoint;
 import IFC2X3.IfcFace;
 import IFC2X3.IfcFaceOuterBound;
 import IFC2X3.IfcObject;
 import IFC2X3.IfcPolyLoop;
+import raascms.Artifact;
 
 public class BakeAction extends AbstractHandler {
 
@@ -61,14 +62,7 @@ public class BakeAction extends AbstractHandler {
 				};
 				shell.getDisplay().readAndDispatch();
 				try {
-					ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(shell) {
-
-						protected void configureShell(final Shell shell) {
-							super.configureShell(shell);
-							shell.setText("Baking Parametric Design...");
-						}
-
-					};
+					RAASProgressMonitorDialog progressMonitorDialog = new RAASProgressMonitorDialog("Baking Parametric Design...", shell);
 					progressMonitorDialog.run(false, true, op);
 				} catch (Exception e) {
 					throw new RuntimeException(e);

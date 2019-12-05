@@ -116,4 +116,9 @@ public class TransformatorElement implements IConfigurationElement {
 		throw new RuntimeException("NOT IMPLEMENTED");
 	}
 
+	@Override
+	public int getHandleId() {
+		return className.hashCode();
+	}
+
 }

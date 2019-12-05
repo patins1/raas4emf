@@ -879,6 +879,7 @@
             locationURI="popup:org.raas4emf.cms.ui.views.DirectoryView?after=org.raas4emf.cms.ui.moreadd">
             
          <menu
+               id="org.raas4emf.cms.ui.ifc"
                label="IFC">
             <command
                   commandId="org.raas4emf.cms.ui.actions.BakeCommand"
@@ -1105,6 +1106,7 @@
             </command>
          </menu>
          <menu
+               id="org.raas4emf.cms.ui.misc"
                label="Misc">
             <command
                   commandId="org.raas4emf.cms.ui.actions.BuildWebGLCommand"

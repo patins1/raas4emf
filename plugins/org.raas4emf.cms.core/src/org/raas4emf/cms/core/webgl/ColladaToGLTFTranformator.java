@@ -13,7 +13,7 @@ import org.raas4emf.cms.transformation.TransformationUtils;
 
 public class ColladaToGLTFTranformator implements ITranformator {
 
-	static File DEFAULT_CONVERTER_LOCATION = new File("C:\\bim\\NOLServer\\gltf\\collada2gltf.exe");
+	static File DEFAULT_CONVERTER_LOCATION = new File("C:\\bim\\NOLServer\\gltf\\COLLADA2GLTF-bin.exe");
 
 	public ColladaToGLTFTranformator() {
 		// nothing to do
@@ -25,7 +25,7 @@ public class ColladaToGLTFTranformator implements ITranformator {
 		if (DEFAULT_CONVERTER_LOCATION == null)
 			DEFAULT_CONVERTER_LOCATION = new File(RAASUtils.getRAASProp("GLTFCONVERTER"));
 		File sceneFile = getTargetFile(dir, pureFilename);
-		String cmd = TransformationUtils.quote(DEFAULT_CONVERTER_LOCATION) + " -p -f " + TransformationUtils.quote(daeFile) + " -o " + TransformationUtils.quote(sceneFile);
+		String cmd = TransformationUtils.quote(DEFAULT_CONVERTER_LOCATION) + (isBinary() ? " -b" : "") + " -i " + TransformationUtils.quote(daeFile) + " -o " + TransformationUtils.quote(sceneFile);
 		System.out.println("Executing " + cmd);
 		try {
 			Process process = Runtime.getRuntime().exec(cmd, null, DEFAULT_CONVERTER_LOCATION.getParentFile());
@@ -44,6 +44,10 @@ public class ColladaToGLTFTranformator implements ITranformator {
 		return sceneFile;
 	}
 
+	protected boolean isBinary() {
+		return false;
+	}
+
 	@Override
 	public File transform(InputStream inputStream, File dir, String pureFilename, IProgressMonitor monitor) throws IOException {
 		File sourceFile = new File(dir, pureFilename + ".dae");
@@ -53,7 +57,7 @@ public class ColladaToGLTFTranformator implements ITranformator {
 
 	@Override
 	public File getTargetFile(File dir, String pureFilename) {
-		return new File(dir, "scene.json");
+		return new File(dir, "scene.gltf");
 	}
 
 	@Override

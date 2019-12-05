@@ -41,7 +41,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 		String message = null;
 		List<Runnable> inits = new ArrayList<Runnable>();
 
-		String requestClass = RWT.getRequest().getParameter("request");
+		String requestClass = request.getParameter("request");
 		try {
 			EClass eclass = findEClass(requestClass);
 			if (eclass == null) {
@@ -53,9 +53,9 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 
 			String token = null;
 			final EObject embeddedRequest = eclass.getEPackage().getEFactoryInstance().create(eclass);
-			for (String paramName : RWT.getRequest().getParameterMap().keySet()) {
+			for (String paramName : request.getParameterMap().keySet()) {
 				if ("token".equals(paramName)) {
-					token = RWT.getRequest().getParameter(paramName);
+					token = request.getParameter(paramName);
 					continue;
 				}
 				if ("servicehandler".equals(paramName) || "request".equals(paramName) || "cid".equals(paramName))
@@ -65,7 +65,7 @@ public abstract class ReflectiveQVTServiceHandler implements ServiceHandler {
 					response.setStatus(400);
 					throw new Exception("Unknown parameter: " + paramName);
 				}
-				embeddedRequest.eSet(feature, EcoreUtil.createFromString((EDataType) feature.getEType(), RWT.getRequest().getParameter(paramName)));
+				embeddedRequest.eSet(feature, EcoreUtil.createFromString((EDataType) feature.getEType(), request.getParameter(paramName)));
 			}
 			if (ServletFileUpload.isMultipartContent(request)) {
 				ServletFileUpload fileUpload = new ServletFileUpload();

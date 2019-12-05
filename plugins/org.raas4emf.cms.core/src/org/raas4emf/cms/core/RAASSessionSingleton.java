@@ -146,11 +146,11 @@ public class RAASSessionSingleton {
 		url.append(":");
 		url.append(RWT.getRequest().getServerPort());
 		url.append(RWT.getServiceManager().getServiceHandlerUrl("downloadServiceHandler"));
-		if (artifact!=null) {			
+		if (artifact != null) {
 			url.append("&artifact=");
 			url.append(artifact.cdoID().toURIFragment());
 			url.append("&filename=");
-			url.append(artifact.getName());
+			url.append(RWT.getRequest().getParameter("filename") != null ? RWT.getRequest().getParameter("filename") : artifact.getName());
 		}
 		String result = RWT.getResponse().encodeURL(url.toString());
 		return removeCid(result);
@@ -160,9 +160,9 @@ public class RAASSessionSingleton {
 		int cid = url.indexOf("&cid=");
 		if (cid != -1) {
 			String result = url.substring(0, cid);
-			int nextParam = url.indexOf("&",cid+1);
-			if (nextParam!=-1)
-				return result+ url.substring(nextParam);
+			int nextParam = url.indexOf("&", cid + 1);
+			if (nextParam != -1)
+				return result + url.substring(nextParam);
 			return result;
 		}
 		return url;
@@ -242,7 +242,7 @@ public class RAASSessionSingleton {
 	public String get3dFormat() {
 		if (g_format != null)
 			return g_format;
-		return "three.js - WebGL";
+		return ".gltf - glTF";
 	}
 
 	public void set3dFormat(String g_format) {

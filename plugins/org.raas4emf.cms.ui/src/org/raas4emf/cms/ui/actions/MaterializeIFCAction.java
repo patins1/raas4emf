@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.ui.CMSActivator;
+import org.raas4emf.cms.ui.RAASProgressMonitorDialog;
 import org.raas4emf.cms.ui.RAASUIUtils;
 
 import IFC2X3.IFC2X3Factory;
@@ -418,14 +419,7 @@ public class MaterializeIFCAction extends AbstractHandler {
 		};
 		shell.getDisplay().readAndDispatch();
 		try {
-			ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(shell) {
-
-				protected void configureShell(final Shell shell) {
-					super.configureShell(shell);
-					shell.setText("Separating materials");
-				}
-
-			};
+			RAASProgressMonitorDialog progressMonitorDialog = new RAASProgressMonitorDialog("Separating materials", shell);
 			progressMonitorDialog.run(true, true, op);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

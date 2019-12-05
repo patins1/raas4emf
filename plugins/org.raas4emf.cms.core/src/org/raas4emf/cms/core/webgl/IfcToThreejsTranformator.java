@@ -5,7 +5,6 @@ package org.raas4emf.cms.core.webgl;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,8 +32,6 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 	public static RemoteGeometryStorage REMOTE_STORAGE = null;
 	public static GetRemoteBlenderUrl GET_REMOTE_BLENDER_URL = null;
 	static File DEFAULT_BLENDER_LOCATION = null;
-	private int worked;
-	private String errorMessages = "";
 
 	public IfcToThreejsTranformator() {
 		// nothing to do
@@ -44,7 +41,6 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 		Exception throwEx = null;
 		Artifact artifact = (Artifact) oArtifact;
 		Activator.log("Start transforming " + pureFilename);
-		worked = 0;
 		Date started = new Date();
 		monitor.subTask("Prepare IFC file");
 		File targetFile = new File(dir, pureFilename + getExportExt());
@@ -131,12 +127,12 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				File commandsTemplate = new File(new File(key).getParentFile(), "commands_template.sh");
 
 				String commands = "~/bin/localifc2jshttp.sh '%FINGERPRINT%' '%IFCURL%' '%JSURL%' '%IFCSIZE%'"; // TransformationUtils.stringFromFile(commandsTemplate);
-				
+
 				String sshCommand;
 				if (isWindows)
 					sshCommand = "plink.exe -batch -i %SSHKEYFILE% -P 22 -ssh ubuntu@%REMOTE_BLENDER_URL% -m \"%EXTERNALCOMMANDFILE%\"";
 				else
-					sshCommand = "ssh -o StrictHostKeyChecking=no -i %SSHKEYFILE% ubuntu@%REMOTE_BLENDER_URL% "+System.getProperty("SSH_LAST", commands);
+					sshCommand = "ssh -o StrictHostKeyChecking=no -i %SSHKEYFILE% ubuntu@%REMOTE_BLENDER_URL% " + System.getProperty("SSH_LAST", commands);
 
 				commands = commands.replace("%IFCURL%", ifcUrl);
 				commands = commands.replace("%JSURL%", jsUrl);
@@ -144,7 +140,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				commands = commands.replace("%IFCSIZE%", "" + artifact.getFileContent().getSize());
 				if (isWindows)
 					TransformationUtils.stringToFile(commandsTemplate, commands);
-				
+
 				try {
 					if (RAASUtils.getRAASProp("BLENDER_SSH_COMMAND") != null)
 						sshCommand = RAASUtils.getRAASProp("BLENDER_SSH_COMMAND");
@@ -166,12 +162,12 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 				sshCommand = sshCommand.replace("%JSURL%", jsUrl);
 				sshCommand = sshCommand.replace("%FINGERPRINT%", fingerprint);
 				sshCommand = sshCommand.replace("%IFCSIZE%", "" + artifact.getFileContent().getSize());
-				
+
 				if (isWindows) {
 					String subsetPlink = sshCommand;
-					subsetPlink=subsetPlink.replace("-batch", "");
-					subsetPlink=subsetPlink.substring(0, subsetPlink.indexOf("-m"));
-					subsetPlink = subsetPlink+" exit";
+					subsetPlink = subsetPlink.replace("-batch", "");
+					subsetPlink = subsetPlink.substring(0, subsetPlink.indexOf("-m"));
+					subsetPlink = subsetPlink + " exit";
 					try {
 						Process process = Runtime.getRuntime().exec(subsetPlink, null);
 						StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR");
@@ -203,67 +199,20 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 			if (System.getProperty("LD_LIBRARY_PATH") != null)
 				envp = new String[] { "LD_LIBRARY_PATH=" + System.getProperty("LD_LIBRARY_PATH") };
 			Process process = Runtime.getRuntime().exec(cmd, envp);
+			final OutputStreamGobbler outputGobbler = new OutputStreamGobbler(process.getInputStream(), "OUTPUT", monitor, errorFile);
 			StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR") {
 
 				@Override
 				protected void println(String line) {
 					super.println(line);
-					errorMessages += "ERROR" + ">" + line + "\n";
+					outputGobbler.errorMessages += "ERROR" + ">" + line + "\n";
 					try {
-						FileUtil.inputstreamToOutputstream(new StringBufferInputStream("(In Progress)" + "\n" + errorMessages), new FileOutputStream(errorFile));
+						FileUtil.inputstreamToOutputstream(new StringBufferInputStream("(In Progress)" + "\n" + outputGobbler.errorMessages), new FileOutputStream(errorFile));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 
-			};
-			StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT") {
-				@Override
-				protected void println(String line) {
-					super.println(line);
-					errorMessages += "OUTPUT" + ">" + line + "\n";
-					if (line.startsWith("[")) {
-						int routes = 0;
-						for (int i = 0; i < line.length(); i++) {
-							if (line.charAt(i) == '#') {
-								routes++;
-							}
-						}
-						monitor.worked(routes - worked);
-						worked = routes;
-					}
-					if (line.contains("Done creating geometry")) {
-						monitor.worked(50 - worked);
-					}
-					if (line.contains("Processing relations")) {
-						monitor.subTask("Building hierarchy");
-					}
-					if (line.contains("Done processing relations")) {
-						monitor.worked(1);
-						monitor.subTask("Finishing model import");
-					}
-					if (line.contains("RENAME")) {
-						monitor.worked(1);
-						monitor.subTask("Renaming objects");
-					}
-					if (line.contains("SAVEASBLEND")) {
-						monitor.worked(1);
-						monitor.subTask("Saving Blender file");
-					}
-					if (line.contains("EXPORT")) {
-						monitor.worked(1);
-						monitor.subTask("Exporting to 3D format");
-					}
-					if (line.contains("FINISHED")) {
-						monitor.worked(1);
-						monitor.subTask("Finishing Blender execution");
-					}
-					try {
-						FileUtil.inputstreamToOutputstream(new StringBufferInputStream("(In Progress)" + "\n" + errorMessages), new FileOutputStream(errorFile));
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
 			};
 			errorGobbler.start();
 			outputGobbler.start();
@@ -271,8 +220,8 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 			Activator.log("Exit value=" + exitValue);
 			Activator.log("Written to " + targetFile);
 			if (exitValue != 0 || !targetFile.exists()) {
-				Activator.err("IFC transformation error:\n" + errorMessages);
-				FileUtil.inputstreamToOutputstream(new StringBufferInputStream("Exit value = " + exitValue + "\n" + errorMessages), new FileOutputStream(errorFile));
+				Activator.err("IFC transformation error:\n" + outputGobbler.errorMessages);
+				FileUtil.inputstreamToOutputstream(new StringBufferInputStream("Exit value = " + exitValue + "\n" + outputGobbler.errorMessages), new FileOutputStream(errorFile));
 			} else {
 				if (errorFile.exists())
 					errorFile.delete();
@@ -288,7 +237,7 @@ public class IfcToThreejsTranformator implements IArtifactTransformator, ITranfo
 			if (throwEx != null)
 				throw (RuntimeException) throwEx;
 			String message = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
-			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message + "\n" + errorMessages), new FileOutputStream(errorFile));
+			FileUtil.inputstreamToOutputstream(new StringBufferInputStream(message), new FileOutputStream(errorFile));
 			Activator.err("Stopped conversion with message: " + message, e);
 		}
 		return targetFile;

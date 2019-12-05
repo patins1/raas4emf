@@ -3,9 +3,28 @@
 
 <product useFeatures="false" includeLaunchers="false">
    <plugins>
+      <plugin id="qut.bim.nol.core"/>
+      <plugin id="qut.bim.nol.ui"/>
+      <plugin id="qut.bim.transformation.ifc2gdl"/>
+      <plugin id="qut.gdlparser"/>
+      <plugin id="qut.metamodel.bimprotocol"/>
+      <plugin id="qut.metamodel.gdl"/>
+      <plugin id="qut.metamodel.psd"/>
+      <plugin id="qut.transformation.jqvt"/>
+      <plugin id="qut.transformation.webgl"/>
+      <plugin id="org.raas4emf.metamodel.propertysets"/>
+      <plugin id="org.raas4emf.cms.propertysets"/>
+      <plugin id="org.eclipse.xtext"/>
+      <plugin id="org.eclipse.xtext.util"/>
+      <plugin id="org.eclipse.xtend.lib"/>
+      <plugin id="org.eclipse.xtend.lib.macro"/>
+      <plugin id="org.antlr.runtime"/>
+      
       <plugin id="com.google.guava"/>
       <plugin id="com.google.inject"/>
-      <plugin id="com.ibm.icu.base"/>
+      <plugin id="com.ibm.icu"/>
+      <plugin id="org.eclipse.osgi.util"/>
+      <plugin id="org.apache.felix.scr"/>
       <plugin id="javax.inject"/>
       <plugin id="javax.xml"/>
       <plugin id="lpg.runtime.java"/>
@@ -72,7 +91,6 @@
       <plugin id="org.eclipse.rap.jface.databinding"/>
       <plugin id="org.eclipse.rap.rwt"/>
       <plugin id="org.eclipse.rap.rwt.osgi"/>
-      <plugin id="org.eclipse.rap.rwt.testfixture"/>
       <plugin id="org.eclipse.rap.ui"/>
       <plugin id="org.eclipse.rap.ui.forms"/>
       <plugin id="org.eclipse.rap.ui.views"/>
@@ -194,7 +212,7 @@
 
    <warConfiguration webXml="/org.raas4emf.cms.ui.rap/WEB-INF/web.xml" launchIni="/org.raas4emf.cms.ui.rap/WEB-INF/launch.ini">
    <libraries>
-      <library path="org.eclipse.equinox.servletbridge_1.3.200.v20160128-1435.jar" fromTarget="true"/>
+      <library path="org.eclipse.equinox.servletbridge_1.4.200.v20181008-1820.jar" fromTarget="true"/>
    </libraries>
    </warConfiguration>
 </product>

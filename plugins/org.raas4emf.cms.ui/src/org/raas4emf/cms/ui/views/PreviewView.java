@@ -44,7 +44,6 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.browser.Browser;
@@ -422,7 +421,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				ids += "," + artifact.cdoID().toURIFragment();
 			}
 			final String fids = ids.substring(1);
-			String g_path = CMSActivator.getSessionInstance().createDownloadUrl(fids) + "&filename=" + getScene3dName();
+			String g_path = CMSActivator.getSessionInstance().createDownloadUrl(fids) + "&filename=" + getScene3dName(artifacts);
 			// scroll bar for safari & chrome
 
 			String colors = CMSActivator.getSessionInstance().getColors();
@@ -436,7 +435,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 
 			if (colors != null)
 				attachedOnLoad += "var o_colors=" + colors + ";\n for (var m in o_colors) g_colors[m] = o_colors[m];\n";
-			// text += "		<script src=\"" + dir + "touchgen.js\"></script>";
+			// text += " <script src=\"" + dir + "touchgen.js\"></script>";
 			String immediately = "";
 			immediately += "var g_ortho=" + CMSActivator.getSessionInstance().getOrtho() + ";\n";
 			immediately += "g_dir=\"" + dir + "\";\n";
@@ -463,13 +462,13 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
-			
+
 			String base = "<base href=\"";
 			String contextPath = CMSActivator.getSessionInstance().getParameter("ContextPath");
 			int iBase = text.indexOf(base);
-			if (iBase!=-1 && contextPath!=null && !text.startsWith(contextPath, iBase+base.length()))
-				text=text.substring(0, iBase+base.length()) + contextPath + (!contextPath.endsWith("/")&&!text.startsWith("/", iBase+base.length())?"/":"")+ text.substring(iBase+base.length());
-			
+			if (iBase != -1 && contextPath != null && !text.startsWith(contextPath, iBase + base.length()))
+				text = text.substring(0, iBase + base.length()) + contextPath + (!contextPath.endsWith("/") && !text.startsWith("/", iBase + base.length()) ? "/" : "") + text.substring(iBase + base.length());
+
 			int index = text.indexOf(marker);
 			if (attachedImmediately != null)
 				immediately += attachedImmediately;
@@ -493,7 +492,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 			artifactsToProcess = artifacts.size();
 			for (final Artifact artifact : artifacts) {
 				// if (JobManager.getInstance().find(artifact))
-				Job job = new GeometryJob(artifact, getScene3dName()) {
+				Job job = new GeometryJob(artifact, getScene3dName(artifacts)) {
 
 					protected IStatus run(final IProgressMonitor monitor) {
 						final IStatus status = super.run(monitor);
@@ -569,7 +568,9 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 		return false;
 	}
 
-	public static String getScene3dName() {
+	public static String getScene3dName(List<Artifact> artifacts) {
+		if (artifacts.size() == 1 && isCollada(artifacts))
+			return artifacts.get(0).getName();
 		return "scene" + CMSActivator.getSessionInstance().get3dFormat().substring(0, CMSActivator.getSessionInstance().get3dFormat().indexOf(" "));
 	}
 
@@ -579,7 +580,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 
 	static boolean isWebGL(List<Artifact> artifacts) {
 		for (Artifact artifact : artifacts)
-			if (RAASUtils.hasExtension(artifact, ".json"))
+			if (RAASUtils.hasExtension(artifact, ".gltf"))
 				return true;
 		return false;
 	}
@@ -593,7 +594,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 
 	static boolean isCollada(List<Artifact> artifacts) {
 		for (Artifact artifact : artifacts)
-			if (RAASUtils.hasExtension(artifact, ".dae") || RAASUtils.hasExtension(artifact, ".js") || RAASUtils.hasExtension(artifact, ".fbx"))
+			if (RAASUtils.hasExtension(artifact, ".dae") || RAASUtils.hasExtension(artifact, ".fbx") || RAASUtils.hasExtension(artifact, ".gltf") || RAASUtils.hasExtension(artifact, ".glb"))
 				return true;
 		return false;
 	}
@@ -898,7 +899,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				js += "var g_client = resolveArtifact(artifactId);";
 				js += "var g_camera = g_client.g_camera;";
 				js += "var target =  [" + RAASUtils.pruneLastChar(point.toMeters()) + "];";
-				// js += "g_camera.eye =  [" + point.X / 1000 + "," + point.Y / 1000 + "," + (point.Z + 1000 * 10) / 1000 + "];";
+				// js += "g_camera.eye = [" + point.X / 1000 + "," + point.Y / 1000 + "," + (point.Z + 1000 * 10) / 1000 + "];";
 				js += "doSetCamera(g_camera.eye,target,g_angle,null,20,g_client);";
 				browser.evaluate(js);
 			}

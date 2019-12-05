@@ -15,3 +15,6 @@ The RAP interface is here: http://custom-env-1.prh6d53tf2.ap-southeast-2.elastic
 The OCL demo is here: http://custom-env-1.prh6d53tf2.ap-southeast-2.elasticbeanstalk.com/restexample/plugin/org.raas4emf.restexample/WebContent/ocl.html
 
 The FHIR demo is here: http://custom-env-1.prh6d53tf2.ap-southeast-2.elasticbeanstalk.com/fhirrest/plugin/org.fhir4emf.rest/WebContent/fhirtransform.html
+
+The IFC domain with its huge model / metamodel sizes was the main trigger for the jQVT project:
+![alt text](documentation/raas-service-generation/jQVT-in-action.png)

@@ -41,8 +41,8 @@ public class DownloadServiceHandler implements ServiceHandler {
 	public void service(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
 		RAASUtils.fixServiceHandlePreconditions();
 
-		String artifactId = RWT.getRequest().getParameter("artifact");
-		String viewer = RWT.getRequest().getParameter("viewer");
+		String artifactId = request.getParameter("artifact");
+		String viewer = request.getParameter("viewer");
 		if (viewer != null)
 			artifactId = viewer;
 		if (artifactId.startsWith("WebContent/"))
@@ -63,7 +63,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 				} else {
 					fileForLastModified = new File(u.toURI());
 				}
-				if (fileForLastModified.exists() && !isModified(response, null, fileForLastModified)) {
+				if (fileForLastModified.exists() && !isModified(request, response, null, fileForLastModified)) {
 					return;
 				}
 				TransformationUtils.inputstreamToOutputstream(u.openStream(), response.getOutputStream(), Integer.MAX_VALUE);
@@ -122,10 +122,10 @@ public class DownloadServiceHandler implements ServiceHandler {
 				response.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 				// Send the file in the response
 
-				String filename = RWT.getRequest().getParameter("filename");
+				String filename = request.getParameter("filename");
 				if (filename == null)
 					throw new RuntimeException("No filename provided when requesting " + artifactId + "!");
-				String download = RWT.getRequest().getParameter("download");
+				String download = request.getParameter("download");
 				if (!(download != null && "yes".equals(download))) {
 					guessContentType(response, filename);
 				} else {
@@ -155,10 +155,10 @@ public class DownloadServiceHandler implements ServiceHandler {
 					artifact = (Artifact) RAASUtils.findObjectById(artifactId);
 					fileObject = artifact.getFileOrStream(filename, new NullProgressMonitor());
 				}
-				String downloadurl = RWT.getRequest().getParameter("downloadurl");
+				String downloadurl = request.getParameter("downloadurl");
 				if (downloadurl != null && fileObject == null) {
 
-					String name = RWT.getRequest().getParameter("name");
+					String name = request.getParameter("name");
 					if (name == null) {
 						throw new RuntimeException("No name provided for downloadurl " + downloadurl + " !");
 					}
@@ -191,7 +191,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 				InputStream inputStream;
 				if (fileObject instanceof File) {
 					File file = (File) fileObject;
-					if (!isModified(response, file, file))
+					if (!isModified(request, response, file, file))
 						return;
 					inputStream = new FileInputStream(file);
 				} else {
@@ -202,7 +202,7 @@ public class DownloadServiceHandler implements ServiceHandler {
 							Field f = expectedFileInputStream.getClass().getDeclaredField("file");
 							f.setAccessible(true);
 							File file = (File) f.get(expectedFileInputStream);
-							if (!isModified(response, file, file))
+							if (!isModified(request, response, file, file))
 								return;
 						} catch (Exception e) {
 							Activator.err(e.getMessage());
@@ -267,9 +267,9 @@ public class DownloadServiceHandler implements ServiceHandler {
 			response.setContentType("application/octet-stream");
 	}
 
-	private boolean isModified(final HttpServletResponse response, File file, File fileForLastModified) {
+	private boolean isModified(final HttpServletRequest request, final HttpServletResponse response, File file, File fileForLastModified) {
 		Date lastModified = new Date(fileForLastModified.lastModified());
-		String sIfModifiedSince = RWT.getRequest().getHeader("If-Modified-Since");
+		String sIfModifiedSince = request.getHeader("If-Modified-Since");
 		if (sIfModifiedSince != null) {
 			// resetting milliseconds for Date.after() to work
 			lastModified = new Date(lastModified.toGMTString());
