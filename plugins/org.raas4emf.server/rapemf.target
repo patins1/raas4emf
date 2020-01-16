@@ -1,16 +1,18 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="EMF + RAP" sequenceNumber="338">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="EMF + RAP" sequenceNumber="338">
 <locations>
 <location path="${eclipse_home}" type="Profile"/>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<unit id="org.eclipse.emf.rap.sdk.feature.group" version="2.16.0.v20181124-0637"/>
-		<repository location="http://download.eclipse.org/releases/2018-12"/>
+		<repository location="http://download.eclipse.org/releases/2019-12"/>
+		<unit id="org.eclipse.emf.rap.sdk.feature.group" version="2.20.0.v20190920-0401"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<unit id="org.eclipse.rap.equinox.target.feature.feature.group" version="3.7.0.20181212-1338"/>
-		<unit id="org.eclipse.rap.examples.feature.feature.group" version="3.7.0.20180926-0748"/>
-		<unit id="org.eclipse.rap.feature.feature.group" version="3.7.0.20181127-1118"/>
-		<unit id="org.eclipse.rap.sdk.feature.feature.group" version="3.7.0.20181127-1118"/>
-		<repository location="https://download.eclipse.org/rt/rap/3.7"/>
+		<repository location="https://download.eclipse.org/rt/rap/3.11"/>
+		<unit id="org.eclipse.rap.equinox.target.feature.feature.group" version="3.11.0.20191211-1200"/>
+		<unit id="org.eclipse.rap.examples.feature.feature.group" version="3.11.0.20191204-1038"/>
+		<unit id="org.eclipse.rap.feature.feature.group" version="3.11.0.20191127-1205"/>
+		<unit id="org.eclipse.rap.sdk.feature.feature.group" version="3.11.0.20191127-1205"/>
 	</location>
 </locations>
 </target>

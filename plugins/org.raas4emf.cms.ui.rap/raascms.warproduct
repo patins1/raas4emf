@@ -212,7 +212,7 @@
 
    <warConfiguration webXml="/org.raas4emf.cms.ui.rap/WEB-INF/web.xml" launchIni="/org.raas4emf.cms.ui.rap/WEB-INF/launch.ini">
    <libraries>
-      <library path="org.eclipse.equinox.servletbridge_1.4.200.v20181008-1820.jar" fromTarget="true"/>
+      <library path="org.eclipse.equinox.servletbridge_1.5.200.v20191003-0536.jar" fromTarget="true"/>
    </libraries>
    </warConfiguration>
 </product>
