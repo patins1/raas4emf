@@ -66,13 +66,8 @@ public class AddArtifactAction extends AbstractHandler {
 			return;
 		final String[] fileNames = fileDialog.getFileNames();
 		String desc = "Add file(s)";
-		int i = 0;
 		for (String f : fileNames) {
-			if (!new File(f).exists()) {
-				fileNames[i] = f = new File(new File(fileDialog.getFilterPath()), f).toString();
-			}
 			desc += " " + removeTempFileNamePart(new File(f).getName());
-			i++;
 		}
 
 		final boolean unzip = fileNames.length == 1 && (fileNames[0].toLowerCase().endsWith(".zip") || fileNames[0].toLowerCase().endsWith(".kmz")) && (unzipWithoutAsking || MessageDialog.openQuestion(shell, "Unzipping Contents", "Do you want to unzip the zipped file instead of uploading it?"));

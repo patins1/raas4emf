@@ -37,19 +37,14 @@
 <booleanAttribute key="pde.generated.config" value="true"/>
 <stringAttribute key="pde.version" value="3.3"/>
 <setAttribute key="selected_target_bundles">
-<setEntry value="com.google.guava*21.0.0.v20170206-1425@default:default"/>
-<setEntry value="com.google.guava*27.1.0.v20190517-1946@default:default"/>
+<setEntry value="com.google.guava@default:default"/>
 <setEntry value="com.google.inject@default:default"/>
 <setEntry value="com.ibm.icu@default:default"/>
-<setEntry value="javax.annotation@default:default"/>
 <setEntry value="javax.inject@default:default"/>
 <setEntry value="javax.servlet@default:default"/>
 <setEntry value="javax.xml@default:default"/>
 <setEntry value="lpg.runtime.java@default:default"/>
 <setEntry value="org.antlr.runtime@default:default"/>
-<setEntry value="org.apache.batik.css*1.6.0.v201011041432@default:default"/>
-<setEntry value="org.apache.batik.util*1.6.0.v201011041432@default:default"/>
-<setEntry value="org.apache.batik.util.gui@default:default"/>
 <setEntry value="org.apache.commons.codec@default:default"/>
 <setEntry value="org.apache.commons.fileupload@default:default"/>
 <setEntry value="org.apache.commons.httpclient@default:default"/>
@@ -61,14 +56,12 @@
 <setEntry value="org.apache.felix.gogo.shell@default:default"/>
 <setEntry value="org.apache.felix.scr@1:true"/>
 <setEntry value="org.apache.log4j@default:default"/>
-<setEntry value="org.eclipse.compare.core@default:default"/>
 <setEntry value="org.eclipse.core.commands@default:default"/>
 <setEntry value="org.eclipse.core.contenttype@default:default"/>
 <setEntry value="org.eclipse.core.databinding.observable@default:default"/>
 <setEntry value="org.eclipse.core.databinding.property@default:default"/>
 <setEntry value="org.eclipse.core.databinding@default:default"/>
 <setEntry value="org.eclipse.core.expressions@default:default"/>
-<setEntry value="org.eclipse.core.filesystem@default:default"/>
 <setEntry value="org.eclipse.core.jobs@default:default"/>
 <setEntry value="org.eclipse.core.runtime@default:true"/>
 <setEntry value="org.eclipse.emf.cdo.common@default:default"/>
@@ -85,8 +78,6 @@
 <setEntry value="org.eclipse.emf.ecore.xmi@default:default"/>
 <setEntry value="org.eclipse.emf.ecore@default:default"/>
 <setEntry value="org.eclipse.emf.edit@default:default"/>
-<setEntry value="org.eclipse.emf.mapping.ecore2xml@default:default"/>
-<setEntry value="org.eclipse.emf.mapping@default:default"/>
 <setEntry value="org.eclipse.emf.rap.common.ui@default:default"/>
 <setEntry value="org.eclipse.emf.rap.edit.ui@default:default"/>
 <setEntry value="org.eclipse.emf.rap@default:default"/>
@@ -98,7 +89,6 @@
 <setEntry value="org.eclipse.equinox.http.servlet@default:default"/>
 <setEntry value="org.eclipse.equinox.preferences@default:default"/>
 <setEntry value="org.eclipse.equinox.registry@default:default"/>
-<setEntry value="org.eclipse.gmf.runtime.notation@default:default"/>
 <setEntry value="org.eclipse.help@default:default"/>
 <setEntry value="org.eclipse.jetty.continuation@default:default"/>
 <setEntry value="org.eclipse.jetty.http@default:default"/>
@@ -117,7 +107,6 @@
 <setEntry value="org.eclipse.net4j@default:default"/>
 <setEntry value="org.eclipse.ocl.common@default:default"/>
 <setEntry value="org.eclipse.ocl.ecore@default:default"/>
-<setEntry value="org.eclipse.ocl.uml@default:default"/>
 <setEntry value="org.eclipse.ocl@default:default"/>
 <setEntry value="org.eclipse.osgi.services@default:default"/>
 <setEntry value="org.eclipse.osgi.util@default:default"/>
@@ -133,14 +122,6 @@
 <setEntry value="org.eclipse.rap.ui.views@default:default"/>
 <setEntry value="org.eclipse.rap.ui.workbench@default:default"/>
 <setEntry value="org.eclipse.rap.ui@default:default"/>
-<setEntry value="org.eclipse.swt@default:default"/>
-<setEntry value="org.eclipse.uml2.common.edit@default:default"/>
-<setEntry value="org.eclipse.uml2.common@default:default"/>
-<setEntry value="org.eclipse.uml2.types@default:default"/>
-<setEntry value="org.eclipse.uml2.uml.edit@default:default"/>
-<setEntry value="org.eclipse.uml2.uml.profile.standard@default:default"/>
-<setEntry value="org.eclipse.uml2.uml.resources@default:default"/>
-<setEntry value="org.eclipse.uml2.uml@default:default"/>
 <setEntry value="org.eclipse.xtend.lib.macro@default:default"/>
 <setEntry value="org.eclipse.xtend.lib@default:default"/>
 <setEntry value="org.eclipse.xtext.util@default:default"/>
@@ -148,10 +129,6 @@
 <setEntry value="org.eclipse.xtext@default:default"/>
 <setEntry value="org.h2@default:default"/>
 <setEntry value="org.postgresql@default:default"/>
-<setEntry value="org.w3c.css.sac@default:default"/>
-<setEntry value="org.w3c.dom.events@default:default"/>
-<setEntry value="org.w3c.dom.smil@default:default"/>
-<setEntry value="org.w3c.dom.svg@default:default"/>
 </setAttribute>
 <setAttribute key="selected_workspace_bundles">
 <setEntry value="org.eclipse.jqvt.runtime@default:default"/>

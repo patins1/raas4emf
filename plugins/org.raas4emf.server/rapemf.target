@@ -2,17 +2,26 @@
 <?pde version="3.8"?>
 <target name="EMF + RAP" sequenceNumber="338">
 <locations>
-<location path="${eclipse_home}" type="Profile"/>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/releases/2019-12"/>
+		<unit id="org.eclipse.xtext.sdk.feature.group" version="2.20.0.v20191202-1256"/>
 		<unit id="org.eclipse.emf.rap.sdk.feature.group" version="2.20.0.v20190920-0401"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/rt/rap/3.11"/>
+		<unit id="org.eclipse.equinox.sdk.feature.group" version="3.20.0.v20191122-2104"/>
 		<unit id="org.eclipse.rap.equinox.target.feature.feature.group" version="3.11.0.20191211-1200"/>
 		<unit id="org.eclipse.rap.examples.feature.feature.group" version="3.11.0.20191204-1038"/>
 		<unit id="org.eclipse.rap.feature.feature.group" version="3.11.0.20191127-1205"/>
 		<unit id="org.eclipse.rap.sdk.feature.feature.group" version="3.11.0.20191127-1205"/>
+		<unit id="org.eclipse.emf.cdo.epp.feature.group" version="4.8.0.v20191209-1916"/>
+		<unit id="org.eclipse.ocl.all.sdk.feature.group" version="5.10.1.v20191209-1145"/>
 	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="http://www.elver.org/eclipse/2.2.0/update"/>
+		<unit id="org.postgresql.feature.group" version="9.2.1003"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="http://download.eclipse.org/modeling/emf/cdo/updates/releases/4.7"/>
+		<unit id="org.eclipse.net4j.db.postgresql.feature.group" version="4.2.500.v20180529-1130"/>
+	</location>
+	<location path="C:\bim\required_raas_plugins" type="Directory"/>
 </locations>
 </target>

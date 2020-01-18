@@ -333,13 +333,6 @@ public class DemoActionBarAdvisor extends ActionBarAdvisor {
 							if (fileDialog.open() == null)
 								return;
 							final String[] fileNames = fileDialog.getFileNames();
-							int i = 0;
-							for (String f : fileNames) {
-								if (!new File(f).exists()) {
-									fileNames[i] = f = new File(new File(fileDialog.getFilterPath()), f).toString();
-								}
-								i++;
-							}
 							for (String f : fileNames) {
 								File file = new File(f);
 								File targetFile = new File(Platform.getLocation().toFile(), file.getName());

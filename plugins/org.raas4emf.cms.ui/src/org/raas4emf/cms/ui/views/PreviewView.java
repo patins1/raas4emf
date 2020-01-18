@@ -529,11 +529,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 										if (fileDialog.open() == null)
 											return;
 										final String[] fileNames = fileDialog.getFileNames();
-										int i = 0;
 										for (String f : fileNames) {
-											if (!new File(f).exists()) {
-												fileNames[i] = f = new File(new File(fileDialog.getFilterPath()), f).toString();
-											}
 											try {
 												FileUtil.inputstreamToOutputstream(new FileInputStream(new File(f)), new FileOutputStream(new File(artifact.getTransformationsDirectory(), "scene.js")));
 												File errorFile = new File(artifact.getTransformationsDirectory(), "scene.js.error");
@@ -545,7 +541,6 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 												CMSActivator.err(e);
 												ErrorDialog.openError(getSite().getShell(), "Error copying uploaded geometry file", e.getMessage(), new Status(IStatus.ERROR, CMSActivator.PLUGIN_ID, "Error copying uploaded geometry file", e));
 											}
-											i++;
 										}
 									}
 								});
