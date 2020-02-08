@@ -5,32 +5,18 @@
    <extension
          point="org.raas4emf.cms.transformation.transformator">
       <transformator
-            class="org.raas4emf.cms.core.webgl.IfcToThreejsTranformator"
-            description="three.js JSON"
-            sourceFileExtension="ifc"
-            targetFileExtension="js">
-      </transformator>
-      <transformator
-            class="org.raas4emf.cms.core.webgl.ColladaToGLTFTranformator"
-            description="GLTF"
-            sourceFileExtension="dae"
-            targetFileExtension="gltf">
-      </transformator>
-      <transformator
-            class="org.raas4emf.cms.core.webgl.ColladaToGLBTranformator"
-            description="GLB"
-            sourceFileExtension="dae"
-            targetFileExtension="glb">
-      </transformator>
-      <transformator
             class="org.raas4emf.cms.core.webgl.IfcToColladaTranformator"
             description="Collada"
             sourceFileExtension="ifc"
             targetFileExtension="dae">
       </transformator>
+      <transformator
+            class="org.raas4emf.cms.core.webgl.IfcToGLBTranformator"
+            description="GLB"
+            sourceFileExtension="ifc"
+            targetFileExtension="glb">
+      </transformator>
    </extension>
-   
-   
    <extension
          point="org.eclipse.rap.ui.serviceHandler">
       <serviceHandler

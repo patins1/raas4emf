@@ -19,7 +19,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Declipse.ignoreApp=true -Dosgi.noShutdown=true&#13;&#10;-Dorg.eclipse.jetty.server.Request.maxFormContentSize=200000000&#13;&#10;-Dorg.eclipse.jetty.server.Request.maxFormKeys=10000&#13;&#10;-Dh2.lobInDatabase=FALSE&#13;&#10; -Xms440m -Xmx3500m  -XX:MaxPermSize=556m&#13;&#10;-DJDBC_CONNECTION_STRING2=jdbc:postgresql://localhost:5432/cdo?user=postgres&amp;password=iijdf8Jfds3&#13;&#10;-DJDBC_CONNECTION_STRING=jdbc:h2:/bim/NOLServer/db/bimdb&#13;&#10;-DawsAccessKey=AKIAIIZTIANAV4BO6RRQ -DawsSecretAccessKey=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 -DREMOTE_BLENDER_URL2=ubuntu@ec2-54-253-165-249.ap-southeast-2.compute.amazonaws.com"/>
 <stringAttribute key="org.eclipse.rap.launch.browserMode" value="EXTERNAL"/>
-<stringAttribute key="org.eclipse.rap.launch.contextpath" value="/raascms"/>
+<stringAttribute key="org.eclipse.rap.launch.contextpath" value="/"/>
 <stringAttribute key="org.eclipse.rap.launch.dataLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.rap.tools.launch/raascms"/>
 <booleanAttribute key="org.eclipse.rap.launch.developmentMode" value="false"/>
 <stringAttribute key="org.eclipse.rap.launch.entryPoint" value=""/>

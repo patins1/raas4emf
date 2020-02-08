@@ -4,16 +4,20 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Collections;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.raas4emf.cms.core.Activator;
 import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.transformation.ITranformator;
 import org.raas4emf.cms.transformation.StreamGobbler;
 import org.raas4emf.cms.transformation.TransformationUtils;
 
 public class IfcToColladaTranformator implements ITranformator {
-
-	static File DEFAULT_CONVERTER_LOCATION = new File("C:\\bim\\NOLServer\\IfcConvert\\IfcConvert.exe");
 
 	public IfcToColladaTranformator() {
 		// nothing to do
@@ -22,12 +26,22 @@ public class IfcToColladaTranformator implements ITranformator {
 	@Override
 	public File transform(File ifcName, File dir, String pureFilename, IProgressMonitor monitor) throws IOException {
 		monitor.subTask("Transform IFC to Collada");
-		if (DEFAULT_CONVERTER_LOCATION == null)
-			DEFAULT_CONVERTER_LOCATION = new File(RAASUtils.getRAASProp("COLLADACONVERTER"));
 		File sceneFile = getTargetFile(dir, pureFilename);
-		String cmd = TransformationUtils.quote(DEFAULT_CONVERTER_LOCATION) + " --sew-shells --weld-vertices --use-element-hierarchy --use-element-types " + TransformationUtils.quote(ifcName) + " " + TransformationUtils.quote(sceneFile);
+		boolean isWindows = System.getProperty("os.name").contains("Windows");
+
+		File DEFAULT_CONVERTER_LOCATION = new File(
+				FileLocator.resolve(new URL("platform:/plugin/org.raas4emf.cms.core/binaries/ifcconvert/"
+						+ (isWindows ? "windows/IfcConvert.exe" : "linux/IfcConvert"))).getFile());
+		try {
+			Files.setPosixFilePermissions( DEFAULT_CONVERTER_LOCATION.toPath(), Collections.singleton(PosixFilePermission.OWNER_EXECUTE));
+		} catch (Exception e) {
+			// Ignore.. permission bit tested below
+		}
+		Activator.log("DEFAULT_CONVERTER_LOCATION=" + DEFAULT_CONVERTER_LOCATION+" canExecute="+DEFAULT_CONVERTER_LOCATION.canExecute());
+
+		String cmd = TransformationUtils.quote(DEFAULT_CONVERTER_LOCATION)	+ " --weld-vertices" + getOptions() + " --use-element-types " + TransformationUtils.quote(ifcName) + " " + TransformationUtils.quote(sceneFile);
 		final File errorFile = new File(dir, pureFilename + getExportExt() + ".error");
-		System.out.println("Executing " + cmd);
+		Activator.log("Executing " + cmd);
 		try {
 			if (errorFile.exists())
 				errorFile.delete();
@@ -37,14 +51,18 @@ public class IfcToColladaTranformator implements ITranformator {
 			errorGobbler.start();
 			outputGobbler.start();
 			process.waitFor();
-			System.out.println("Exit value=" + process.exitValue());
-			System.out.println("Written to " + sceneFile);
+			Activator.log("Exit value=" + process.exitValue());
+			Activator.log("Written to " + sceneFile);
 		} catch (Exception e) {
-			System.out.println("Stopped conversion with message: " + e.getMessage());
+			Activator.log("Stopped conversion with message: " + e.getMessage());
 			e.printStackTrace();
 		}
 		monitor.worked(1);
 		return sceneFile;
+	}
+
+	private String getOptions() {
+		return " --use-element-hierarchy";
 	}
 
 	@Override
