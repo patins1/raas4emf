@@ -12,16 +12,11 @@ import java.util.Collections;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.raas4emf.cms.core.Activator;
-import org.raas4emf.cms.core.RAASUtils;
 import org.raas4emf.cms.transformation.ITranformator;
 import org.raas4emf.cms.transformation.StreamGobbler;
 import org.raas4emf.cms.transformation.TransformationUtils;
 
 public class IfcToColladaTranformator implements ITranformator {
-
-	public IfcToColladaTranformator() {
-		// nothing to do
-	}
 
 	@Override
 	public File transform(File ifcName, File dir, String pureFilename, IProgressMonitor monitor) throws IOException {
@@ -61,7 +56,7 @@ public class IfcToColladaTranformator implements ITranformator {
 		return sceneFile;
 	}
 
-	private String getOptions() {
+	protected String getOptions() {
 		return " --use-element-hierarchy";
 	}
 

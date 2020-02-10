@@ -4,7 +4,7 @@ import java.io.File;
 
 public class IfcToGLBTranformator extends IfcToColladaTranformator{
 
-	private String getOptions() {
+	protected String getOptions() {
 		return "";
 	}
 

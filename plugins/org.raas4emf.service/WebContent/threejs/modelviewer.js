@@ -3351,7 +3351,7 @@ function start() {
     	mouse = new THREE.Vector2();
     	up = new THREE.Vector3( 0, 1, 0 );
 		
-    	var requiredThreeJS = doFBX ? [g_dir+"js/loaders/FBXLoader2.js"] :  doJsonLoader ? [] : doCollada ? [g_dir+"js/loaders/ColladaLoader.js"] : doGLTF ? [g_dir+"js/loaders/glTFLoader.js"] : [g_dir+"js/loaders/OBJLoader.js"];
+    	var requiredThreeJS = doFBX ? [g_dir+"js/loaders/FBXLoader2.js"] :  doJsonLoader ? [] : doCollada ? [g_dir+"js/loaders/ColladaLoader.js"] : doGLTF ? [g_dir+"js/loaders/GLTFLoader.js"] : [g_dir+"js/loaders/OBJLoader.js"];
 //    	requiredThreeJS.push(g_dir+"js/controls/OrbitControls.js");
 //    	requiredThreeJS.push(g_dir+"js/curves/NURBSUtils.js");
 //    	requiredThreeJS.push(g_dir+"js/curves/NURBSCurve.js");

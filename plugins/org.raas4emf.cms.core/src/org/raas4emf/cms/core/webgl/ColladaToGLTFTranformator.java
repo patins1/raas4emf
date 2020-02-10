@@ -4,40 +4,52 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Collections;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.raas4emf.cms.core.RAASUtils;
+import org.raas4emf.cms.core.Activator;
 import org.raas4emf.cms.transformation.ITranformator;
 import org.raas4emf.cms.transformation.StreamGobbler;
 import org.raas4emf.cms.transformation.TransformationUtils;
 
 public class ColladaToGLTFTranformator implements ITranformator {
 
-	static File DEFAULT_CONVERTER_LOCATION = new File("C:\\bim\\NOLServer\\gltf\\COLLADA2GLTF-bin.exe");
-
-	public ColladaToGLTFTranformator() {
-		// nothing to do
-	}
-
 	@Override
 	public File transform(File daeFile, File dir, String pureFilename, IProgressMonitor monitor) throws IOException {
-		monitor.subTask("Transform Collada to WebGL");
-		if (DEFAULT_CONVERTER_LOCATION == null)
-			DEFAULT_CONVERTER_LOCATION = new File(RAASUtils.getRAASProp("GLTFCONVERTER"));
+		monitor.subTask("Transform Collada to glTF");
 		File sceneFile = getTargetFile(dir, pureFilename);
-		String cmd = TransformationUtils.quote(DEFAULT_CONVERTER_LOCATION) + (isBinary() ? " -b" : "") + " -i " + TransformationUtils.quote(daeFile) + " -o " + TransformationUtils.quote(sceneFile);
-		System.out.println("Executing " + cmd);
+		boolean isWindows = System.getProperty("os.name").contains("Windows");
+
+		File DEFAULT_CONVERTER_LOCATION = new File(
+				FileLocator.resolve(new URL("platform:/plugin/org.raas4emf.cms.core/binaries/collada2gltf/"
+						+ (isWindows ? "windows/COLLADA2GLTF-bin.exe" : "linux/COLLADA2GLTF-bin"))).getFile());
 		try {
+			Files.setPosixFilePermissions( DEFAULT_CONVERTER_LOCATION.toPath(), Collections.singleton(PosixFilePermission.OWNER_EXECUTE));
+		} catch (Exception e) {
+			// Ignore.. permission bit tested below
+		}
+		Activator.log("DEFAULT_CONVERTER_LOCATION=" + DEFAULT_CONVERTER_LOCATION+" canExecute="+DEFAULT_CONVERTER_LOCATION.canExecute());		
+		
+		String cmd = TransformationUtils.quote(DEFAULT_CONVERTER_LOCATION) + (isBinary() ? " -b" : "") + " -i " + TransformationUtils.quote(daeFile) + " -o " + TransformationUtils.quote(sceneFile);
+
+		Activator.log("Executing " + cmd);
+		try {
+
+
 			Process process = Runtime.getRuntime().exec(cmd, null, DEFAULT_CONVERTER_LOCATION.getParentFile());
 			StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR"); //$NON-NLS-1$
 			StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT"); //$NON-NLS-1$
 			errorGobbler.start();
 			outputGobbler.start();
 			process.waitFor();
-			System.out.println("Exit value=" + process.exitValue());
-			System.out.println("Written to " + sceneFile);
+			Activator.log("Exit value=" + process.exitValue());
+			Activator.log("Written to " + sceneFile);
 		} catch (Exception e) {
-			System.out.println("Stopped conversion with message: " + e.getMessage());
+			Activator.log("Stopped conversion with message: " + e.getMessage());
 			e.printStackTrace();
 		}
 		monitor.worked(1);

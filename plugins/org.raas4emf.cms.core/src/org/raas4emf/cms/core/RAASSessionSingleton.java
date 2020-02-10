@@ -242,8 +242,7 @@ public class RAASSessionSingleton {
 	public String get3dFormat() {
 		if (g_format != null)
 			return g_format;
-		//return ".glb - binary glTF";
-		return ".dae - COLLADA";
+		return ".gltf - glTF";
 	}
 
 	public void set3dFormat(String g_format) {
