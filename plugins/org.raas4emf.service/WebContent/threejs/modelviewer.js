@@ -3074,7 +3074,7 @@ function paintBendPoints() {
 		// fix bug for getPointAt()
     	points.push(points[points.length-1].clone());
 	}
-	sampleClosedSpline = new THREE.SplineCurve3(points);
+	sampleClosedSpline.endKnot = sampleClosedSpline.knots.length - 1;
 	
 	effectController["extrusion_length"] = ""+(sampleClosedSpline.getLength()*ww);
 	updateGuiControl(extrusionLengthGui);
