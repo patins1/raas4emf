@@ -15,10 +15,6 @@
 		<unit id="org.eclipse.ocl.all.sdk.feature.group" version="5.10.1.v20191209-1145"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
-		<repository location="http://www.elver.org/eclipse/2.2.0/update"/>
-		<unit id="org.postgresql.feature.group" version="9.2.1003"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/modeling/emf/cdo/updates/releases/4.7"/>
 		<unit id="org.eclipse.net4j.db.postgresql.feature.group" version="4.2.500.v20180529-1130"/>
 	</location>
