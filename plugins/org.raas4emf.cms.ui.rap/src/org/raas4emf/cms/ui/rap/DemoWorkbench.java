@@ -72,10 +72,6 @@ public class DemoWorkbench implements EntryPoint {
 				"window.addEventListener('message', function (event) { if (event.data.select3d) Array.prototype.slice.call(document.getElementsByTagName('iframe')).forEach(function(iframe) { iframe.contentWindow.postMessage(event.data, '*');   console.log('select3d='+event.data.select3d); }); else if (event.data.loadPath) document.getElementsByTagName('iframe')[0].contentWindow.postMessage({'g_path':"
 						+ g_path + "}, '*'); }, false); ");
 
-		// String dir = RAASUtils.getRAASProp("RAASSERVICEURL") + "threejs/";
-		// JavaScriptLoader loader = RWT.getClient().getService(JavaScriptLoader.class);
-		// loader.require(dir + "touchgen.js");
-
 		// Display login dialog until logged in
 		while (true) {
 			String message = "Please sign in with your username and password:";

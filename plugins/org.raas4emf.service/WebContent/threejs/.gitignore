@@ -1,0 +1,4 @@
+/node_modules/
+/jsm/
+package-lock.json
+modelviewer.js

@@ -429,31 +429,29 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				Folder folder = (Folder) artifacts.get(0).eContainer();
 				colors = RAASUtils.getDefaultConfig(folder, "default.colorscheme");
 			}
+			if (colors != null) {
+				colors = colors.replace("};", "}");
+			}
 
 			if (attachedOnLoad == null)
 				attachedOnLoad = "";
 
-			if (colors != null)
-				attachedOnLoad += "var o_colors=" + colors + ";\n for (var m in o_colors) g_colors[m] = o_colors[m];\n";
-			// text += " <script src=\"" + dir + "touchgen.js\"></script>";
-			String immediately = "";
-			immediately += "var g_ortho=" + CMSActivator.getSessionInstance().getOrtho() + ";\n";
-			immediately += "g_dir=\"" + dir + "\";\n";
-			immediately += "g_path=\"" + g_path + "\";\n";
-			if (renderer.contains("canvas"))
-				immediately += "var g_renderer=\"canvas\";\n";
-			if (renderer.contains("svg"))
-				immediately += "var g_renderer=\"svg\";\n";
-			if (renderer.contains("software"))
-				immediately += "var g_renderer=\"software\";\n";
-
 			String overrideSettings = "";
+			if (colors != null)
+				overrideSettings += "'g_colors':"+colors.replace("\"","'")+",\n";
+			String immediately = "";
+			overrideSettings += "'orthographic':'" + CMSActivator.getSessionInstance().getOrtho() + "',";
+			overrideSettings += "'g_dir':'" + dir + "',";
+			overrideSettings += "'g_path':'" + g_path + "',";
+			if (renderer.contains("canvas"))
+				overrideSettings += "'g_renderer':'canvas',\n";
+			if (renderer.contains("svg"))
+				overrideSettings += "'g_renderer':'svg',\n";
+			if (renderer.contains("software"))
+				overrideSettings += "'g_renderer':'software',\n";
 			for (Map.Entry<String, String> entry : CMSActivator.getSessionInstance().getParameters().entrySet()) {
-				overrideSettings += "\"" + entry.getKey() + "\"" + ":" + "\"" + entry.getValue() + "\"" + ",";
+				overrideSettings += "'" + entry.getKey() + "'" + ":" + "'" + entry.getValue() + "'" + ",";
 			}
-			if (!"".equals(overrideSettings))
-				immediately += "var overrideSettings={" + overrideSettings.substring(0, overrideSettings.length() - 1) + "};\n";
-
 			String marker = "var g_customInit = function() {";
 			String text;
 			try {
@@ -462,6 +460,7 @@ public class PreviewView extends ViewPart implements ISelectionProvider, ISelect
 				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
+			text=text.replace("startModelViewer({})","startModelViewer({"+overrideSettings.substring(0, overrideSettings.trim().length() - 1)+"})");
 
 			String base = "<base href=\"";
 			String contextPath = CMSActivator.getSessionInstance().getParameter("ContextPath");
