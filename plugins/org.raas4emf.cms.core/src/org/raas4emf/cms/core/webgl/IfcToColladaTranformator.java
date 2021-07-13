@@ -34,7 +34,7 @@ public class IfcToColladaTranformator implements ITranformator {
 		}
 		Activator.log("DEFAULT_CONVERTER_LOCATION=" + DEFAULT_CONVERTER_LOCATION+" canExecute="+DEFAULT_CONVERTER_LOCATION.canExecute());
 
-		String cmd = TransformationUtils.quote(DEFAULT_CONVERTER_LOCATION)	+ " --weld-vertices" + getOptions() + " --use-element-types " + TransformationUtils.quote(ifcName) + " " + TransformationUtils.quote(sceneFile);
+		String cmd = TransformationUtils.quote(DEFAULT_CONVERTER_LOCATION)	+ " --weld-vertices" + getOptions() + " --use-element-types --orient-shells " + TransformationUtils.quote(ifcName) + " " + TransformationUtils.quote(sceneFile);
 		final File errorFile = new File(dir, pureFilename + getExportExt() + ".error");
 		Activator.log("Executing " + cmd);
 		try {

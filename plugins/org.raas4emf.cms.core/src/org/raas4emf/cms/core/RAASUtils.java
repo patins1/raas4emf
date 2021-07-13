@@ -51,8 +51,10 @@ import org.apache.cxf.jaxrs.impl.MetadataMap;
 import org.apache.cxf.jaxrs.provider.json.JSONProvider;
 import org.codehaus.jettison.json.JSONObject;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.cdo.CDOObject;
 import org.eclipse.emf.cdo.common.CDOCommonRepository;
 import org.eclipse.emf.cdo.common.id.CDOID;
@@ -1425,9 +1427,15 @@ public class RAASUtils {
 			if (hostname != null)
 				jdbc = "jdbc:postgresql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
 		}
-		if (jdbc == null)
-			jdbc = "jdbc:hsqldb:mem:repo1";
+		if (jdbc == null || "".equals(jdbc)) {
+			IPath location = Platform.getLocation();
+			String path = location.toPortableString();
+			if (location.getDevice() != null && path.startsWith(location.getDevice()))
+				path = path.substring(location.getDevice().length());
+			jdbc = "jdbc:h2:" + path + "/db/bimdb";
+		}
 		Activator.log("JDBC_CONNECTION_STRING=" + jdbc);
+		System.out.println("JDBC_CONNECTION_STRING=" + jdbc);
 
 		for (String db : new String[] { "h2", "hsqldb", "postgresql" }) {
 			if (jdbc.contains(db)) {
