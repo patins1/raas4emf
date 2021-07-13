@@ -1,166 +1,168 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.rap.ui.launch.RAPLauncher">
-<booleanAttribute key="append.args" value="true"/>
-<booleanAttribute key="askclear" value="false"/>
-<booleanAttribute key="automaticAdd" value="false"/>
-<booleanAttribute key="automaticValidate" value="false"/>
-<stringAttribute key="bootstrap" value=""/>
-<stringAttribute key="checked" value="[NONE]"/>
-<booleanAttribute key="clearConfig" value="true"/>
-<booleanAttribute key="clearws" value="true"/>
-<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/raascms"/>
-<booleanAttribute key="default" value="true"/>
-<booleanAttribute key="default_auto_start" value="true"/>
-<intAttribute key="default_start_level" value="4"/>
-<setAttribute key="deselected_workspace_bundles"/>
-<booleanAttribute key="includeOptional" value="false"/>
-<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
-<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Declipse.ignoreApp=true -Dosgi.noShutdown=true&#13;&#10;-Dorg.eclipse.jetty.server.Request.maxFormContentSize=200000000&#13;&#10;-Dorg.eclipse.jetty.server.Request.maxFormKeys=10000&#13;&#10;-Dh2.lobInDatabase=FALSE&#13;&#10; -Xms440m -Xmx3500m  -XX:MaxPermSize=556m&#13;&#10;-DJDBC_CONNECTION_STRING2=jdbc:postgresql://localhost:5432/cdo?user=postgres&amp;password=iijdf8Jfds3&#13;&#10;-DJDBC_CONNECTION_STRING=jdbc:h2:/bim/NOLServer/db/bimdb&#13;&#10;-DawsAccessKey=AKIAIIZTIANAV4BO6RRQ -DawsSecretAccessKey=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 -DREMOTE_BLENDER_URL2=ubuntu@ec2-54-253-165-249.ap-southeast-2.compute.amazonaws.com"/>
-<stringAttribute key="org.eclipse.rap.launch.browserMode" value="EXTERNAL"/>
-<stringAttribute key="org.eclipse.rap.launch.contextpath" value="/"/>
-<stringAttribute key="org.eclipse.rap.launch.dataLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.rap.tools.launch/raascms"/>
-<booleanAttribute key="org.eclipse.rap.launch.developmentMode" value="false"/>
-<stringAttribute key="org.eclipse.rap.launch.entryPoint" value=""/>
-<stringAttribute key="org.eclipse.rap.launch.libraryVariant" value="STANDARD"/>
-<booleanAttribute key="org.eclipse.rap.launch.openBrowser" value="true"/>
-<intAttribute key="org.eclipse.rap.launch.port" value="8123"/>
-<stringAttribute key="org.eclipse.rap.launch.servletName" value="bim"/>
-<stringAttribute key="org.eclipse.rap.launch.servletPath" value="/ui"/>
-<intAttribute key="org.eclipse.rap.launch.sessionTimeout" value="0"/>
-<booleanAttribute key="org.eclipse.rap.launch.terminatePrevious" value="true"/>
-<booleanAttribute key="org.eclipse.rap.launch.useDefaultDataLocation" value="true"/>
-<booleanAttribute key="org.eclipse.rap.launch.useManualContextPath" value="true"/>
-<booleanAttribute key="org.eclipse.rap.launch.useManualPort" value="true"/>
-<booleanAttribute key="org.eclipse.rap.launch.useSessionTimeout" value="false"/>
-<booleanAttribute key="pde.generated.config" value="true"/>
-<stringAttribute key="pde.version" value="3.3"/>
-<setAttribute key="selected_target_bundles">
-<setEntry value="com.google.guava@default:default"/>
-<setEntry value="com.google.inject@default:default"/>
-<setEntry value="com.ibm.icu@default:default"/>
-<setEntry value="javax.inject@default:default"/>
-<setEntry value="javax.servlet@default:default"/>
-<setEntry value="javax.xml@default:default"/>
-<setEntry value="lpg.runtime.java@default:default"/>
-<setEntry value="org.antlr.runtime@default:default"/>
-<setEntry value="org.apache.commons.codec@default:default"/>
-<setEntry value="org.apache.commons.fileupload@default:default"/>
-<setEntry value="org.apache.commons.httpclient@default:default"/>
-<setEntry value="org.apache.commons.io@default:default"/>
-<setEntry value="org.apache.commons.lang@default:default"/>
-<setEntry value="org.apache.commons.logging@default:default"/>
-<setEntry value="org.apache.felix.gogo.command@default:default"/>
-<setEntry value="org.apache.felix.gogo.runtime@default:default"/>
-<setEntry value="org.apache.felix.gogo.shell@default:default"/>
-<setEntry value="org.apache.felix.scr@1:true"/>
-<setEntry value="org.apache.log4j@default:default"/>
-<setEntry value="org.eclipse.core.commands@default:default"/>
-<setEntry value="org.eclipse.core.contenttype@default:default"/>
-<setEntry value="org.eclipse.core.databinding.observable@default:default"/>
-<setEntry value="org.eclipse.core.databinding.property@default:default"/>
-<setEntry value="org.eclipse.core.databinding@default:default"/>
-<setEntry value="org.eclipse.core.expressions@default:default"/>
-<setEntry value="org.eclipse.core.jobs@default:default"/>
-<setEntry value="org.eclipse.core.runtime@default:true"/>
-<setEntry value="org.eclipse.emf.cdo.common@default:default"/>
-<setEntry value="org.eclipse.emf.cdo.edit@default:default"/>
-<setEntry value="org.eclipse.emf.cdo.net4j@default:default"/>
-<setEntry value="org.eclipse.emf.cdo.server.db@default:default"/>
-<setEntry value="org.eclipse.emf.cdo.server.net4j@default:default"/>
-<setEntry value="org.eclipse.emf.cdo.server.ocl@default:default"/>
-<setEntry value="org.eclipse.emf.cdo.server@default:default"/>
-<setEntry value="org.eclipse.emf.cdo@default:default"/>
-<setEntry value="org.eclipse.emf.common@default:default"/>
-<setEntry value="org.eclipse.emf.ecore.change@default:default"/>
-<setEntry value="org.eclipse.emf.ecore.edit@default:default"/>
-<setEntry value="org.eclipse.emf.ecore.xmi@default:default"/>
-<setEntry value="org.eclipse.emf.ecore@default:default"/>
-<setEntry value="org.eclipse.emf.edit@default:default"/>
-<setEntry value="org.eclipse.emf.rap.common.ui@default:default"/>
-<setEntry value="org.eclipse.emf.rap.edit.ui@default:default"/>
-<setEntry value="org.eclipse.emf.rap@default:default"/>
-<setEntry value="org.eclipse.equinox.app@default:default"/>
-<setEntry value="org.eclipse.equinox.common@2:true"/>
-<setEntry value="org.eclipse.equinox.event@default:default"/>
-<setEntry value="org.eclipse.equinox.http.jetty@default:default"/>
-<setEntry value="org.eclipse.equinox.http.registry@default:default"/>
-<setEntry value="org.eclipse.equinox.http.servlet@default:default"/>
-<setEntry value="org.eclipse.equinox.preferences@default:default"/>
-<setEntry value="org.eclipse.equinox.registry@default:default"/>
-<setEntry value="org.eclipse.help@default:default"/>
-<setEntry value="org.eclipse.jetty.continuation@default:default"/>
-<setEntry value="org.eclipse.jetty.http@default:default"/>
-<setEntry value="org.eclipse.jetty.io@default:default"/>
-<setEntry value="org.eclipse.jetty.security@default:default"/>
-<setEntry value="org.eclipse.jetty.server@default:default"/>
-<setEntry value="org.eclipse.jetty.servlet@default:default"/>
-<setEntry value="org.eclipse.jetty.util@default:default"/>
-<setEntry value="org.eclipse.net4j.db.h2@default:default"/>
-<setEntry value="org.eclipse.net4j.db.jdbc@default:default"/>
-<setEntry value="org.eclipse.net4j.db.postgresql@default:default"/>
-<setEntry value="org.eclipse.net4j.db@default:default"/>
-<setEntry value="org.eclipse.net4j.jvm@default:default"/>
-<setEntry value="org.eclipse.net4j.tcp@default:default"/>
-<setEntry value="org.eclipse.net4j.util@default:default"/>
-<setEntry value="org.eclipse.net4j@default:default"/>
-<setEntry value="org.eclipse.ocl.common@default:default"/>
-<setEntry value="org.eclipse.ocl.ecore@default:default"/>
-<setEntry value="org.eclipse.ocl@default:default"/>
-<setEntry value="org.eclipse.osgi.services@default:default"/>
-<setEntry value="org.eclipse.osgi.util@default:default"/>
-<setEntry value="org.eclipse.osgi@-1:true"/>
-<setEntry value="org.eclipse.rap.design.example@default:default"/>
-<setEntry value="org.eclipse.rap.filedialog@default:default"/>
-<setEntry value="org.eclipse.rap.fileupload@default:default"/>
-<setEntry value="org.eclipse.rap.jface.databinding@default:default"/>
-<setEntry value="org.eclipse.rap.jface@default:default"/>
-<setEntry value="org.eclipse.rap.rwt.osgi@default:default"/>
-<setEntry value="org.eclipse.rap.rwt@default:default"/>
-<setEntry value="org.eclipse.rap.ui.forms@default:default"/>
-<setEntry value="org.eclipse.rap.ui.views@default:default"/>
-<setEntry value="org.eclipse.rap.ui.workbench@default:default"/>
-<setEntry value="org.eclipse.rap.ui@default:default"/>
-<setEntry value="org.eclipse.xtend.lib.macro@default:default"/>
-<setEntry value="org.eclipse.xtend.lib@default:default"/>
-<setEntry value="org.eclipse.xtext.util@default:default"/>
-<setEntry value="org.eclipse.xtext.xbase.lib@default:default"/>
-<setEntry value="org.eclipse.xtext@default:default"/>
-<setEntry value="org.h2@default:default"/>
-<setEntry value="org.postgresql@default:default"/>
-</setAttribute>
-<setAttribute key="selected_workspace_bundles">
-<setEntry value="org.eclipse.jqvt.runtime@default:default"/>
-<setEntry value="org.ifc4emf.metamodel.express@default:default"/>
-<setEntry value="org.ifc4emf.metamodel.ifc@default:default"/>
-<setEntry value="org.ifc4emf.metamodel.ifcheader@default:default"/>
-<setEntry value="org.ifc4emf.metamodel.modelblob@default:default"/>
-<setEntry value="org.ifc4emf.metamodel.trace@default:default"/>
-<setEntry value="org.ifc4emf.part21@default:default"/>
-<setEntry value="org.raas4emf.cms.core@default:default"/>
-<setEntry value="org.raas4emf.cms.propertysets@default:default"/>
-<setEntry value="org.raas4emf.cms.transformation@default:default"/>
-<setEntry value="org.raas4emf.cms.ui.discriminator@default:default"/>
-<setEntry value="org.raas4emf.cms.ui.rap@default:default"/>
-<setEntry value="org.raas4emf.cms.ui@default:default"/>
-<setEntry value="org.raas4emf.metamodel.propertysets@default:default"/>
-<setEntry value="org.raas4emf.metamodel.raascms.edit@default:default"/>
-<setEntry value="org.raas4emf.metamodel.raascms@default:default"/>
-<setEntry value="org.raas4emf.server@default:default"/>
-<setEntry value="org.raas4emf.service@default:default"/>
-<setEntry value="qut.bim.nol.core@default:default"/>
-<setEntry value="qut.bim.nol.ui@default:default"/>
-<setEntry value="qut.bim.transformation.ifc2gdl@default:default"/>
-<setEntry value="qut.gdlparser@default:default"/>
-<setEntry value="qut.metamodel.bimprotocol@default:default"/>
-<setEntry value="qut.metamodel.gdl@default:default"/>
-<setEntry value="qut.metamodel.psd@default:default"/>
-<setEntry value="qut.transformation.jqvt@default:default"/>
-<setEntry value="qut.transformation.webgl@default:default"/>
-</setAttribute>
-<booleanAttribute key="show_selected_only" value="false"/>
-<booleanAttribute key="tracing" value="false"/>
-<booleanAttribute key="useCustomFeatures" value="false"/>
-<booleanAttribute key="useDefaultConfigArea" value="true"/>
+    <booleanAttribute key="append.args" value="true"/>
+    <booleanAttribute key="askclear" value="false"/>
+    <booleanAttribute key="automaticAdd" value="false"/>
+    <booleanAttribute key="automaticValidate" value="false"/>
+    <stringAttribute key="bootstrap" value=""/>
+    <stringAttribute key="checked" value="[NONE]"/>
+    <booleanAttribute key="clearConfig" value="true"/>
+    <booleanAttribute key="clearws" value="true"/>
+    <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/raascms"/>
+    <booleanAttribute key="default" value="true"/>
+    <booleanAttribute key="default_auto_start" value="true"/>
+    <intAttribute key="default_start_level" value="4"/>
+    <setAttribute key="deselected_workspace_bundles"/>
+    <booleanAttribute key="includeOptional" value="false"/>
+    <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog -console"/>
+    <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Declipse.ignoreApp=true -Dosgi.noShutdown=true&#13;&#10;-Dorg.eclipse.jetty.server.Request.maxFormContentSize=200000000&#13;&#10;-Dorg.eclipse.jetty.server.Request.maxFormKeys=10000&#13;&#10;-Dh2.lobInDatabase=FALSE&#13;&#10; -Xms440m -Xmx3500m  -XX:MaxPermSize=556m&#13;&#10;-DJDBC_CONNECTION_STRING2=jdbc:postgresql://localhost:5432/cdo?user=postgres&amp;password=iijdf8Jfds3&#13;&#10;-DJDBC_CONNECTION_STRING=jdbc:h2:/bim/NOLServer/db/bimdb&#13;&#10;-DawsAccessKey=AKIAIIZTIANAV4BO6RRQ -DawsSecretAccessKey=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 -DREMOTE_BLENDER_URL2=ubuntu@ec2-54-253-165-249.ap-southeast-2.compute.amazonaws.com"/>
+    <stringAttribute key="org.eclipse.rap.launch.browserMode" value="EXTERNAL"/>
+    <stringAttribute key="org.eclipse.rap.launch.contextpath" value="/"/>
+    <stringAttribute key="org.eclipse.rap.launch.dataLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.rap.tools.launch/raascms"/>
+    <booleanAttribute key="org.eclipse.rap.launch.developmentMode" value="false"/>
+    <stringAttribute key="org.eclipse.rap.launch.entryPoint" value=""/>
+    <stringAttribute key="org.eclipse.rap.launch.libraryVariant" value="STANDARD"/>
+    <booleanAttribute key="org.eclipse.rap.launch.openBrowser" value="true"/>
+    <intAttribute key="org.eclipse.rap.launch.port" value="8123"/>
+    <stringAttribute key="org.eclipse.rap.launch.servletName" value="bim"/>
+    <stringAttribute key="org.eclipse.rap.launch.servletPath" value="/ui"/>
+    <intAttribute key="org.eclipse.rap.launch.sessionTimeout" value="0"/>
+    <booleanAttribute key="org.eclipse.rap.launch.terminatePrevious" value="true"/>
+    <booleanAttribute key="org.eclipse.rap.launch.useDefaultDataLocation" value="true"/>
+    <booleanAttribute key="org.eclipse.rap.launch.useManualContextPath" value="true"/>
+    <booleanAttribute key="org.eclipse.rap.launch.useManualPort" value="true"/>
+    <booleanAttribute key="org.eclipse.rap.launch.useSessionTimeout" value="false"/>
+    <booleanAttribute key="pde.generated.config" value="true"/>
+    <stringAttribute key="pde.version" value="3.3"/>
+    <setAttribute key="selected_target_bundles">
+        <setEntry value="com.google.guava@default:default"/>
+        <setEntry value="com.google.inject@default:default"/>
+        <setEntry value="com.ibm.icu@default:default"/>
+        <setEntry value="javax.activation@default:default"/>
+        <setEntry value="javax.inject@default:default"/>
+        <setEntry value="javax.servlet@default:default"/>
+        <setEntry value="javax.xml.bind@default:default"/>
+        <setEntry value="javax.xml@default:default"/>
+        <setEntry value="lpg.runtime.java@default:default"/>
+        <setEntry value="org.antlr.runtime@default:default"/>
+        <setEntry value="org.apache.commons.codec@default:default"/>
+        <setEntry value="org.apache.commons.fileupload@default:default"/>
+        <setEntry value="org.apache.commons.httpclient@default:default"/>
+        <setEntry value="org.apache.commons.io@default:default"/>
+        <setEntry value="org.apache.commons.lang@default:default"/>
+        <setEntry value="org.apache.commons.logging@default:default"/>
+        <setEntry value="org.apache.felix.gogo.command@default:default"/>
+        <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
+        <setEntry value="org.apache.felix.gogo.shell@default:default"/>
+        <setEntry value="org.apache.felix.scr@1:true"/>
+        <setEntry value="org.apache.log4j@default:default"/>
+        <setEntry value="org.eclipse.core.commands@default:default"/>
+        <setEntry value="org.eclipse.core.contenttype@default:default"/>
+        <setEntry value="org.eclipse.core.databinding.observable@default:default"/>
+        <setEntry value="org.eclipse.core.databinding.property@default:default"/>
+        <setEntry value="org.eclipse.core.databinding@default:default"/>
+        <setEntry value="org.eclipse.core.expressions@default:default"/>
+        <setEntry value="org.eclipse.core.jobs@default:default"/>
+        <setEntry value="org.eclipse.core.runtime@default:true"/>
+        <setEntry value="org.eclipse.emf.cdo.common@default:default"/>
+        <setEntry value="org.eclipse.emf.cdo.edit@default:default"/>
+        <setEntry value="org.eclipse.emf.cdo.net4j@default:default"/>
+        <setEntry value="org.eclipse.emf.cdo.server.db@default:default"/>
+        <setEntry value="org.eclipse.emf.cdo.server.net4j@default:default"/>
+        <setEntry value="org.eclipse.emf.cdo.server.ocl@default:default"/>
+        <setEntry value="org.eclipse.emf.cdo.server@default:default"/>
+        <setEntry value="org.eclipse.emf.cdo@default:default"/>
+        <setEntry value="org.eclipse.emf.common@default:default"/>
+        <setEntry value="org.eclipse.emf.ecore.change@default:default"/>
+        <setEntry value="org.eclipse.emf.ecore.edit@default:default"/>
+        <setEntry value="org.eclipse.emf.ecore.xmi@default:default"/>
+        <setEntry value="org.eclipse.emf.ecore@default:default"/>
+        <setEntry value="org.eclipse.emf.edit@default:default"/>
+        <setEntry value="org.eclipse.emf.rap.common.ui@default:default"/>
+        <setEntry value="org.eclipse.emf.rap.edit.ui@default:default"/>
+        <setEntry value="org.eclipse.emf.rap@default:default"/>
+        <setEntry value="org.eclipse.equinox.app@default:default"/>
+        <setEntry value="org.eclipse.equinox.common@2:true"/>
+        <setEntry value="org.eclipse.equinox.event@default:default"/>
+        <setEntry value="org.eclipse.equinox.http.jetty@default:default"/>
+        <setEntry value="org.eclipse.equinox.http.registry@default:default"/>
+        <setEntry value="org.eclipse.equinox.http.servlet@default:default"/>
+        <setEntry value="org.eclipse.equinox.preferences@default:default"/>
+        <setEntry value="org.eclipse.equinox.registry@default:default"/>
+        <setEntry value="org.eclipse.help@default:default"/>
+        <setEntry value="org.eclipse.jetty.continuation@default:default"/>
+        <setEntry value="org.eclipse.jetty.http@default:default"/>
+        <setEntry value="org.eclipse.jetty.io@default:default"/>
+        <setEntry value="org.eclipse.jetty.security@default:default"/>
+        <setEntry value="org.eclipse.jetty.server@default:default"/>
+        <setEntry value="org.eclipse.jetty.servlet@default:default"/>
+        <setEntry value="org.eclipse.jetty.util@default:default"/>
+        <setEntry value="org.eclipse.net4j.db.h2@default:default"/>
+        <setEntry value="org.eclipse.net4j.db.jdbc@default:default"/>
+        <setEntry value="org.eclipse.net4j.db.postgresql@default:default"/>
+        <setEntry value="org.eclipse.net4j.db@default:default"/>
+        <setEntry value="org.eclipse.net4j.jvm@default:default"/>
+        <setEntry value="org.eclipse.net4j.tcp@default:default"/>
+        <setEntry value="org.eclipse.net4j.util@default:default"/>
+        <setEntry value="org.eclipse.net4j@default:default"/>
+        <setEntry value="org.eclipse.ocl.common@default:default"/>
+        <setEntry value="org.eclipse.ocl.ecore@default:default"/>
+        <setEntry value="org.eclipse.ocl@default:default"/>
+        <setEntry value="org.eclipse.osgi.services@default:default"/>
+        <setEntry value="org.eclipse.osgi.util@default:default"/>
+        <setEntry value="org.eclipse.osgi@-1:true"/>
+        <setEntry value="org.eclipse.rap.design.example@default:default"/>
+        <setEntry value="org.eclipse.rap.filedialog@default:default"/>
+        <setEntry value="org.eclipse.rap.fileupload@default:default"/>
+        <setEntry value="org.eclipse.rap.jface.databinding@default:default"/>
+        <setEntry value="org.eclipse.rap.jface@default:default"/>
+        <setEntry value="org.eclipse.rap.rwt.osgi@default:default"/>
+        <setEntry value="org.eclipse.rap.rwt@default:default"/>
+        <setEntry value="org.eclipse.rap.ui.forms@default:default"/>
+        <setEntry value="org.eclipse.rap.ui.views@default:default"/>
+        <setEntry value="org.eclipse.rap.ui.workbench@default:default"/>
+        <setEntry value="org.eclipse.rap.ui@default:default"/>
+        <setEntry value="org.eclipse.xtend.lib.macro@default:default"/>
+        <setEntry value="org.eclipse.xtend.lib@default:default"/>
+        <setEntry value="org.eclipse.xtext.util@default:default"/>
+        <setEntry value="org.eclipse.xtext.xbase.lib@default:default"/>
+        <setEntry value="org.eclipse.xtext@default:default"/>
+        <setEntry value="org.h2@default:default"/>
+        <setEntry value="org.postgresql@default:default"/>
+    </setAttribute>
+    <setAttribute key="selected_workspace_bundles">
+        <setEntry value="org.eclipse.jqvt.runtime@default:default"/>
+        <setEntry value="org.ifc4emf.metamodel.express@default:default"/>
+        <setEntry value="org.ifc4emf.metamodel.ifc@default:default"/>
+        <setEntry value="org.ifc4emf.metamodel.ifcheader@default:default"/>
+        <setEntry value="org.ifc4emf.metamodel.modelblob@default:default"/>
+        <setEntry value="org.ifc4emf.metamodel.trace@default:default"/>
+        <setEntry value="org.ifc4emf.part21@default:default"/>
+        <setEntry value="org.raas4emf.cms.core@default:default"/>
+        <setEntry value="org.raas4emf.cms.propertysets@default:default"/>
+        <setEntry value="org.raas4emf.cms.transformation@default:default"/>
+        <setEntry value="org.raas4emf.cms.ui.discriminator@default:default"/>
+        <setEntry value="org.raas4emf.cms.ui.rap@default:default"/>
+        <setEntry value="org.raas4emf.cms.ui@default:default"/>
+        <setEntry value="org.raas4emf.metamodel.propertysets@default:default"/>
+        <setEntry value="org.raas4emf.metamodel.raascms.edit@default:default"/>
+        <setEntry value="org.raas4emf.metamodel.raascms@default:default"/>
+        <setEntry value="org.raas4emf.server@default:default"/>
+        <setEntry value="org.raas4emf.service@default:default"/>
+        <setEntry value="qut.bim.nol.core@default:default"/>
+        <setEntry value="qut.bim.nol.ui@default:default"/>
+        <setEntry value="qut.bim.transformation.ifc2gdl@default:default"/>
+        <setEntry value="qut.gdlparser@default:default"/>
+        <setEntry value="qut.metamodel.bimprotocol@default:default"/>
+        <setEntry value="qut.metamodel.gdl@default:default"/>
+        <setEntry value="qut.metamodel.psd@default:default"/>
+        <setEntry value="qut.transformation.jqvt@default:default"/>
+        <setEntry value="qut.transformation.webgl@default:default"/>
+    </setAttribute>
+    <booleanAttribute key="show_selected_only" value="false"/>
+    <booleanAttribute key="tracing" value="false"/>
+    <booleanAttribute key="useCustomFeatures" value="false"/>
+    <booleanAttribute key="useDefaultConfigArea" value="true"/>
 </launchConfiguration>

@@ -22,6 +22,13 @@
 		<repository location="http://download.eclipse.org/modeling/emf/cdo/updates/releases/4.7"/>
 		<unit id="org.eclipse.net4j.db.postgresql.feature.group" version="4.2.500.v20180529-1130"/>
 	</location>
-	<location path="C:\bim\required_raas_plugins" type="Directory"/>
+	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20191126223242/repository/"/>
+		<unit id="javax.inject" version="1.0.0.v20091030"/>
+		<unit id="com.google.guava" version="27.1.0.v20190517-1946"/>
+		<unit id="com.google.inject" version="3.0.0.v201605172100"/>
+		<unit id="javax.xml.bind" version="2.2.0.v201105210648"/>
+		<unit id="javax.activation" version="1.1.0.v201211130549"/>
+	</location>
 </locations>
 </target>

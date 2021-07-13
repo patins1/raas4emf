@@ -12,10 +12,11 @@ Export-Package: org.eclipse.emf.ecore.jaxb,
  raascms,
  raascms.impl,
  raascms.jaxb,
- raascms.jaxws,
  raascms.util
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  org.eclipse.emf.cdo;visibility:=reexport,
- org.raas4emf.cms.transformation
+ org.raas4emf.cms.transformation,
+ javax.xml.bind,
+ javax.activation
 Bundle-ActivationPolicy: lazy

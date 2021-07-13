@@ -21,6 +21,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.ifc4emf.metamodel.trace,
  org.ifc4emf.metamodel.express,
  org.eclipse.emf.cdo;visibility:=reexport,
- org.ifc4emf.metamodel.ifcheader
+ org.ifc4emf.metamodel.ifcheader,
+ javax.xml.bind
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: IFC2X3.util.IfcPlugin
