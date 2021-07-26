@@ -6,7 +6,7 @@ import {
 	DoubleSide, SmoothShading, RGBFormat, BackSide, FrontSide, RepeatWrapping, MixOperation, FlatShading, MultiplyOperation,
 	SphereGeometry, ExtrudeGeometryOptions, ExtrudeGeometry, TubeGeometry, PlaneGeometry, OctahedronGeometry, TextGeometry, MathUtils, Shape,
 	Path, LineBasicMaterial, Line, ImageUtils, ShaderLib, MeshBasicMaterial, Sprite, Matrix4,
-	OrthographicCamera, PerspectiveCamera, UniformsUtils, Matrix3, MeshLambertMaterial
+	OrthographicCamera, PerspectiveCamera, UniformsUtils, Matrix3, MeshLambertMaterial, Group, MeshPhongMaterialParameters, CubeRefractionMapping
 } from "three";
 
 import { Face3 } from "three/examples/jsm/deprecated/Geometry";
@@ -46,7 +46,8 @@ interface TClient extends HTMLCanvasElement {
 	circleShape: Object3D;
 	controls: OrbitControls;
 	invalidated: boolean;
-	me: SkinnedMesh & { shiftUp: number };
+	me: SkinnedMesh<BufferGeometry, Material[]>;
+    me_shiftUp: number;
 	hideModel: boolean;
 	hideDoors: boolean;
 	hideWalls: boolean;
@@ -152,7 +153,7 @@ var useOctree = false, octree: any;
 
 var g_angle = 45;
 var g_cameraHistory: any[5][] = [];
-var g_selectedInfo: Object3D[] = [];
+var g_selectedInfo: Mesh<BufferGeometry, Material>[] = [];
 //multiple extension
 var g_paths: string[] = [];
 var g_num_clients: number;
@@ -225,7 +226,7 @@ var light: DirectionalLight, pointLight: PointLight, ambientLight: AmbientLight;
 var updateMaterials: () => void;
 var sceneCube: Scene | null, envCube: Texture | null;
 var clock: Clock | null;
-var tubeGeometry: Geometry | null;
+var tubeGeometry: TubeGeometry | null;
 var tubeGeometryPointAt: number;
 var animateTube = false;
 var hasFire = false;
@@ -333,7 +334,7 @@ function paintBoundingBox(bbox: Box3 | null, g_client: TClient): void {
 	var min = bbox.min;
 	var max = bbox.max;
 
-	var geometry = new BoxGeometry(max.x - min.x, max.y - min.y, max.z - min.z);
+	let geometry = new BoxGeometry(max.x - min.x, max.y - min.y, max.z - min.z);
 
 	var material = new MeshLambertMaterial({
 		color: Math.random() * 0xffffff,
@@ -362,7 +363,7 @@ function paintBoundingSphere(bsphere: Sphere | undefined, g_client: TClient): vo
 	}
 	oldBBSphere = bsphere;
 
-	var geometry = new SphereGeometry(bsphere.radius, 32, 32);
+	let geometry = new SphereGeometry(bsphere.radius, 32, 32);
 
 	var material = new MeshLambertMaterial({
 		color: Math.random() * 0xffffff,
@@ -893,7 +894,7 @@ function getObjectsWithSplittings(name: string[], g_client?: TClient): Object3D[
 		};
 		traverseAllObjects(f, g_client);
 	}
-	return found as Object3D[];
+	return found;
 }
 
 function getObjectsWithIDs(name: number[], g_client?: TClient): Object3D[] {
@@ -910,7 +911,7 @@ function getObjectsWithIDs(name: number[], g_client?: TClient): Object3D[] {
 		f(g_client.scene);
 		if (g_client.originalRoot) f(g_client.originalRoot);
 	}
-	return found as Object3D[];
+	return found;
 }
 
 function asArray(x: any): any[] {
@@ -1014,7 +1015,7 @@ function placeInto(px: number, py: number, width: number, height: number, tilt45
 				extrudeSettings.bevelSegments = 10;
 				extrudeSettings.steps = 2;
 
-				var geometry = new ExtrudeGeometry(shape, extrudeSettings);
+				let geometry = new ExtrudeGeometry(shape, extrudeSettings);
 				var mesh = SceneUtils.createMultiMaterialObject(geometry, [new MeshLambertMaterial({ color: 0x00ff11, transparent: true, opacity: 0.3 }), new MeshBasicMaterial({ color: 0x00000055, transparent: true, opacity: 0.3 })]);
 
 				g_client.scene.add(mesh);
@@ -1311,11 +1312,12 @@ function printLines(lines: number[], artifactId: string, prefix: string, message
 
 			}
 
-			var geometry: Geometry;
+			let geometry: BufferGeometry;
+            var tubeMesh: Group;
 			if (!useTube) {
 
-				geometry = new Geometry();
-				geometry.vertices = curve.getPoints(points.length * 5);
+				geometry = new BufferGeometry();
+				geometry.setFromPoints(curve.getPoints(points.length * 5));
 				var nurbsMaterial = new LineBasicMaterial({ linewidth: 1000, color: 0x333333 });
 
 				var nurbsLine = new Line(geometry, nurbsMaterial);
@@ -1331,18 +1333,18 @@ function printLines(lines: number[], artifactId: string, prefix: string, message
 				//			scene.add( nurbsControlPointsLine );
 				//			g_pathTransforms.push(nurbsControlPointsLine);
 
-				tubeMesh = nurbsLine;
-				geometry.path = curve;
+			    tubeMesh = nurbsLine as unknown as Group;
+				(geometry as any).parameters = {path: curve};
 
 			} else {
 
 				geometry = new TubeGeometry(curve, points.length * 10, 0.2, 4, false);
 				var color = segments == 0 ? 0xff00ff : Math.random() * 0xffffff;
 
-				var tubeMesh = SceneUtils.createMultiMaterialObject(geometry, [
+				tubeMesh = SceneUtils.createMultiMaterialObject(geometry, [
 					new MeshLambertMaterial({
 						color: color,
-						opacity: geometry.debug ? 0.2 : 0.8,
+						opacity: 0.8,
 						transparent: true
 					}),
 					new MeshBasicMaterial({
@@ -1372,7 +1374,7 @@ function printLines(lines: number[], artifactId: string, prefix: string, message
 			if (myPosition == null)
 				myPosition = points[points.length - 1];
 
-			tubeGeometry = geometry;
+			tubeGeometry = geometry as TubeGeometry;
 			tubeGeometryPointAt = 0;
 			points = [];
 			costInfo = "";
@@ -1453,12 +1455,12 @@ function printLines(lines: number[], artifactId: string, prefix: string, message
 					mesh.scale.copy(new Vector3(0.8, 0.8, 0.8));
 
 					g_client.scene.add(mesh);
-					g_client.me = mesh as any;
-					g_client.me.shiftUp = 1.7;
+					g_client.me = mesh;
+					g_client.me_shiftUp = 1.7;
 					//			addSelectableObjects(g_client,mesh);
 
 					g_client.me.position.copy(lastAnimationPos = myPosition!);
-					g_client.me.position.y = g_client.me.position.y + g_client.me.shiftUp;
+					g_client.me.position.y = g_client.me.position.y + g_client.me_shiftUp;
 					g_client.me.updateMatrixWorld();
 
 					updateClient(g_client);
@@ -1483,17 +1485,17 @@ function printLines(lines: number[], artifactId: string, prefix: string, message
 			//		extrudeSettings.bevelSegments = 10;
 			//		extrudeSettings.steps = 2;
 			//	
-			//		var geometry = new ExtrudeGeometry( shape, extrudeSettings );
+			//		let geometry = new ExtrudeGeometry( shape, extrudeSettings );
 			//		var mesh = SceneUtils.createMultiMaterialObject( geometry, [ new MeshLambertMaterial( { color: 0x00ff11 } ), new MeshBasicMaterial( { color: 0x000000, wireframe: false, transparent: true } ) ] );
 			//		mesh.scale = new Vector3(0.01,0.01,0.01);
 			//		mesh.rotation = new Vector3(MathUtils.degToRad(270),MathUtils.degToRad(0),MathUtils.degToRad(0));
 
-			g_client.scene.add(mesh);
-			g_client.me = mesh;
-			g_client.me.shiftUp = 0;
+			// g_client.scene.add(mesh);
+			// g_client.me = mesh;
+			// g_client.me_shiftUp = 0;
 		}
 		g_client.me.position.copy(lastAnimationPos = myPosition);
-		g_client.me.position.y = g_client.me.position.y + g_client.me.shiftUp;
+		g_client.me.position.y = g_client.me.position.y + g_client.me_shiftUp;
 		g_client.me.updateMatrixWorld();
 	}
 
@@ -1552,7 +1554,7 @@ function motionByKeys(g_client: TClient): void {
 					g_client.me.updateMatrixWorld();
 
 					if (g_updateMe == null)
-						g_updateMe = setTimeout(function () { try { theJavaFunction("", "", g_client.id, g_client.me.position.x, -g_client.me.position.z, g_client.me.position.y - g_client.me.shiftUp, "StartPointMoved"); } catch (e2) { } g_updateMe = null; }, 1000);
+						g_updateMe = setTimeout(function () { try { theJavaFunction("", "", g_client.id, g_client.me.position.x, -g_client.me.position.z, g_client.me.position.y - g_client.me_shiftUp, "StartPointMoved"); } catch (e2) { } g_updateMe = null; }, 1000);
 
 					tubeGeometry = null;
 				} else
@@ -1564,18 +1566,18 @@ function motionByKeys(g_client: TClient): void {
 							changeRotation(-_deltaX / 20, deltaY / 20, keyIsDown[KEY.CTRL], g_client);
 							lazy = true;
 						} else
-							if (animateTube && tubeGeometry && g_client.me && tubeGeometry.path.getLength() > 0) {
+							if (animateTube && tubeGeometry && g_client.me && tubeGeometry.parameters.path.getLength() > 0) {
 								if (clock == null)
 									clock = new Clock();
 								var delta = clock.getDelta();
 								delta = delta * 10;
 
 								tubeGeometryPointAt = tubeGeometryPointAt + delta;
-								var ratio = tubeGeometryPointAt / tubeGeometry.path.getLength();
+								var ratio = tubeGeometryPointAt / tubeGeometry.parameters.path.getLength();
 								if (ratio >= 1) {
 									ratio = 1;
 								}
-								var pos = tubeGeometry.path.getPointAt(1 - ratio);
+								var pos = tubeGeometry.parameters.path.getPointAt(1 - ratio);
 								pos.y = g_client.me.position.y;
 
 								var alpha = Math.acos((pos.x - g_client.me.position.x) / pos.distanceTo(g_client.me.position));
@@ -1858,7 +1860,7 @@ function generateGui(): void {
 
 		if (!current_material) return;
 
-		var refractionCube = envCube && effectController.refraction ? new Texture(envCube.image, new CubeRefractionMapping()) : null;
+		var refractionCube = envCube && effectController.refraction ? new Texture(envCube.image, CubeRefractionMapping) : null;
 
 		g_clients.forEach(function (g_client: TClient) {
 			g_client.root.traverse(function (effect) {
@@ -2345,7 +2347,7 @@ function generateGui(): void {
 			alert("no parent object available!");
 			return;
 		}
-		select([parent as Object3D], g_clients[0]);
+		select([parent as Mesh<BufferGeometry, Material>], g_clients[0]);
 		updateClient(g_clients[0]);
 
 	};
@@ -2353,7 +2355,7 @@ function generateGui(): void {
 
 
 	effectController["use identiy matrix"] = function () {
-		resetLocalCoordinateSystems(false, g_clients[0], g_selectedInfo[0]);
+		resetLocalCoordinateSystems(g_clients[0], g_selectedInfo[0]);
 		updateClient(g_clients[0]);
 	};
 	selectionInfoGui.add(effectController, "use identiy matrix");
@@ -2396,7 +2398,7 @@ function generateGui(): void {
 			return;
 		}
 		var object = g_selectedInfo[0];
-		var geometry = object.geometry as unknown as BufferGeometry;
+		let geometry = object.geometry;
 		if (geometry.isBufferGeometry) {
 			var array = geometry.attributes.position.array;
 			for (var i = 0; i < array.length; i += 9) {
@@ -2429,8 +2431,8 @@ function generateGui(): void {
 			return;
 		}
 		var object = g_selectedInfo[0];
-		var geometry = object.geometry as unknown as BufferGeometry;
-		if (geometry.isBufferGeometry) {
+		let geometry = object.geometry;
+		if (geometry.isBufferGeometry && geometry.attributes.position) {
 			var array = geometry.attributes.position.array;
 			var vA = new Vector3();
 			var vB = new Vector3();
@@ -2528,29 +2530,17 @@ function generateGui(): void {
 	misc.add(effectController, 'vertexnormals').onChange(vertexnormalsChanged = function () {
 		var g_client = g_clients[0];
 		g_client.root.traverse(function (mesh) {
-			var geometry = mesh.geometry as unknown as BufferGeometry;
+			let geometry = mesh.geometry;
 			if (geometry) {
-				if (geometry.isBufferGeometry) {
-					geometry.computeVertexNormals();
-					geometry.attributes.normal.needsUpdate = true;
-					if (effectController.vertexnormals) {
-						var faceGeometry = assureNoBufferGeometry(geometry);
-						faceGeometry.computeFaceNormals();
-						faceGeometry.computeVertexNormals(effectController.areaweighted);
-						var bufferGeometry = assureBufferGeometry(faceGeometry);
-						geometry.attributes.normal.array.set(bufferGeometry.attributes.normal.array);
-						geometry.normalsNeedUpdate = true;
-					}
-				} else if (effectController.vertexnormals) {
-					geometry.computeVertexNormals(effectController.areaweighted);
-					geometry.normalsNeedUpdate = true;
-				} else {
-					for (f = 0, fl = geometry.faces.length; f < fl; f++) {
-						geometry.faces[f].vertexNormals = g_emptyArray;
-					}
-					geometry.__tmpVertices = undefined;
-					geometry.normalsNeedUpdate = true;
-				}
+                geometry.computeVertexNormals();
+                geometry.attributes.normal.needsUpdate = true;
+                if (effectController.vertexnormals) {
+                    var faceGeometry = assureNoBufferGeometry(geometry);
+                    faceGeometry.computeFaceNormals();
+                    faceGeometry.computeVertexNormals(true);
+                    mesh.geometry = assureBufferGeometry(faceGeometry);
+                    geometry.attributes.normal.needsUpdate = true;
+                }
 			}
 		});
 		if (meshWithVisualizedNormals) {
@@ -2560,7 +2550,6 @@ function generateGui(): void {
 		}
 		settingsChanged();
 	});
-	misc.add(effectController, 'areaweighted').onChange(vertexnormalsChanged);
 
 
 
@@ -2736,25 +2725,7 @@ function optThree(obj: Color, emptyObj: Color): Color {
 	return obj;
 }
 
-
-function optimizeMem(g_client: TClient): void {
-	g_emptyColor = new Color();
-	g_client.scene.traverse(function (mesh) {
-		var geometry = mesh.geometry;
-		if (geometry) {
-			if (geometry.faces)
-				for (var f = 0, fl = geometry.faces.length; f < fl; f++) {
-					var face = geometry.faces[f];
-					face.color = optThree(face.color, g_emptyColor);
-					face.vertexColors = optArray(face.vertexColors);
-					face.vertexNormals = optArray(face.vertexNormals);
-					face.vertexTangents = optArray(face.vertexTangents);
-				}
-		}
-	});
-}
-
-function resetLocalCoordinateSystems(SAVEMEM: boolean, g_client: TClient, root?: Object3D): void {
+function resetLocalCoordinateSystems(g_client: TClient, root?: Object3D): void {
 	var alwaysClone = root;
 	var makeAbsolute = !root;
 	root = root || g_client.root;
@@ -2770,26 +2741,16 @@ function resetLocalCoordinateSystems(SAVEMEM: boolean, g_client: TClient, root?:
 	root.traverse(function (mesh) {
 		if (mesh.geometry && mesh.material) {
 			mesh.geometry.taken = false;
-			mesh.geometry.applyMatrix(makeAbsolute ? mesh.matrixWorld : mesh.matrix);
+			mesh.geometry.applyMatrix4(makeAbsolute ? mesh.matrixWorld : mesh.matrix);
 		}
 	});
 
 	root.traverse(function (mesh) {
 		if (mesh.position) {
-			if (SAVEMEM) {
-				mesh.position = g_client.scene.position;
-				mesh.rotation = g_client.scene.rotation;
-				mesh.quaternion = g_client.scene.quaternion;
-				mesh.scale = g_client.scene.scale;
-				mesh.matrix = g_client.scene.matrix;
-				mesh.matrixWorld = g_client.scene.matrixWorld;
-				mesh.up = g_client.scene.up;
-			} else {
-				mesh.position.set(0, 0, 0);
-				mesh.rotation.set(0, 0, 0);
-				mesh.scale.set(1, 1, 1);
-				mesh.updateMatrix();
-			}
+            mesh.position.set(0, 0, 0);
+            mesh.rotation.set(0, 0, 0);
+            mesh.scale.set(1, 1, 1);
+            mesh.updateMatrix();
 		}
 	});
 	g_client.scene.updateMatrixWorld();
@@ -2804,273 +2765,64 @@ function melt(g_client: TClient): void {
 
 	// Merge two geometries or geometry and geometry from object (using object's transform)
 
-	function GeometryUtils_merge(geometry1: Geometry, object2: Mesh | Geometry, materialIndexOffset: number) {
-
-		var matrix = null, normalMatrix = null,
-			vertexOffset = geometry1.vertices.length,
-			uvPosition = geometry1.faceVertexUvs[0].length;
-		var	geometry2: Geometry = object2.isMesh ? object2.geometry as Geometry : object2,
-			vertices1 = geometry1.vertices,
-			vertices2 = geometry2.vertices,
-			faces1 = geometry1.faces,
-			faces2 = geometry2.faces,
-			uvs1 = geometry1.faceVertexUvs[0],
-			uvs2 = geometry2.faceVertexUvs[0];
-
-		if (materialIndexOffset === undefined) materialIndexOffset = 0;
-
-		if (object2.isMesh) {
-
-			object2.matrixAutoUpdate && object2.updateMatrix();
-
-			matrix = object2.matrixWorld;//!
-
-			normalMatrix = new Matrix3().getNormalMatrix(matrix);
-
-		}
-
-		// vertices
-
-		for (var i = 0, il = vertices2.length; i < il; i++) {
-
-			var vertex = vertices2[i];
-
-			var vertexCopy = vertex/*.clone()*/;
-
-			if (matrix) vertexCopy.applyMatrix4(matrix);
-
-			vertices1.push(vertexCopy);
-
-		}
-
-		// faces
-
-		for (i = 0, il = faces2.length; i < il; i++) {
-
-			var face = faces2[i], faceCopy, normal, color,
-				faceVertexNormals = face.vertexNormals,
-				faceVertexColors = face.vertexColors;
-
-			face.geometry = geometry1;
-
-			//			faceCopy = new Face3( face.a + vertexOffset, face.b + vertexOffset, face.c + vertexOffset );
-			//			faceCopy.normal.copy( face.normal );
-			faceCopy = face;
-			faceCopy.a += vertexOffset;
-			faceCopy.b += vertexOffset;
-			faceCopy.c += vertexOffset;
-
-			//			if ( normalMatrix ) {
-			//
-			//				faceCopy.normal.applyMatrix3( normalMatrix ).normalize();
-			//
-			//			}
-
-			for (var j = 0, jl = faceVertexNormals.length; j < jl; j++) {
-
-				normal = faceVertexNormals[j]/*.clone()*/;
-
-				if (normalMatrix) {
-
-					normal.applyMatrix3(normalMatrix).normalize();
-
-				}
-
-				//				faceCopy.vertexNormals.push( normal );
-
-			}
-
-			//			faceCopy.color.copy( face.color );
-			//
-			//			for ( var j = 0, jl = faceVertexColors.length; j < jl; j ++ ) {
-			//
-			//				color = faceVertexColors[ j ];
-			//				faceCopy.vertexColors.push( color.clone() );
-			//
-			//			}
-
-			faceCopy.materialIndex = face.materialIndex + materialIndexOffset;
-			if (faceCopy.materialIndex < 0)
-				alert("Unknown material2 of " + materialIndexOffset);
-
-			faces1.push(faceCopy);
-
-		}
-
-		// uvs
-
-		//		for ( i = 0, il = uvs2.length; i < il; i ++ ) {
-		//
-		//			var uv = uvs2[ i ], uvCopy = [];
-		//
-		//			for ( var j = 0, jl = uv.length; j < jl; j ++ ) {
-		//
-		//				uvCopy.push( new Vector2( uv[ j ].x, uv[ j ].y ) );
-		//
-		//			}
-		//
-		//			uvs1.push( uvCopy );
-		//
-		//		}
-
-	};
-
 	var meltStart = new Date().getTime();
 	myLog("Melting...");
 
 	g_client.scene.updateMatrixWorld();
 
-	var meltIntoBufferGeometry = false;
-	g_client.root.traverse(function (mesh) {
-		meltIntoBufferGeometry = meltIntoBufferGeometry || mesh.geometry.isBufferGeometry;
-	});
+    resetLocalCoordinateSystems(g_client);
+
+    var geometriesOfMaterial: { [mat: string]: BufferGeometry[] } = {};
+
+    g_client.root.traverse(function (mesh) {
+        var mat: string;
+        if (mesh.geometry && mesh.material && (mat = mesh.material.name)) {
+            var geometries = geometriesOfMaterial[mat];
+            if (!geometries) {
+                geometriesOfMaterial[mat] = geometries = [];
+            }
+            geometries.push(mesh.geometry);
+        }
+    });
+
+    var cityMesh = new Object3D();
+    cityMesh.name = "melted meshes";
+    g_client.scene.add(cityMesh);
+
+    for (let mat in geometriesOfMaterial) {
+        var geometries = geometriesOfMaterial[mat];
+        var meltedGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries, true);
+
+        g_client.g_colors[mat].meltedGeometry = meltedGeometry;
+        var materialMesh = new Mesh(meltedGeometry, g_client.g_colors[mat]);
+        setupUVs(materialMesh);
+        cityMesh.add(materialMesh);
+        materialMesh.name = "melted meshes for material " + mat;
+        myLog(materialMesh.name);
+        if (mat == "Door" || mat == "Window")
+            materialMesh.renderOrder = -2;
+    }
+
+    g_client.root.traverse(function (mesh) {
+        let geometry = mesh.geometry;
+        if (geometry) {
+
+            geometry.boundingSphere = null;
+            geometry.computeBoundingSphere();
+
+            // update flags
+
+            for (let attribute in geometry.attributes)
+                geometry.attributes[attribute].needsUpdate = true;
+        }
+    });
 
 
-	if (meltIntoBufferGeometry) {
+    g_client.originalRoot = g_client.root;
+    g_client.scene.remove(g_client.root);
 
-		resetLocalCoordinateSystems(false, g_client);
-
-		var geometriesOfMaterial: { [mat: string]: BufferGeometry[] } = {};
-
-		g_client.root.traverse(function (mesh) {
-			var mat: string;
-			if (mesh.geometry && mesh.material && (mat = mesh.material.name)) {
-				var geometries = geometriesOfMaterial[mat];
-				if (!geometries) {
-					geometriesOfMaterial[mat] = geometries = [];
-				}
-				geometries.push(mesh.geometry as unknown as BufferGeometry);
-			}
-		});
-
-		var cityMesh = new Object3D();
-		cityMesh.name = "melted meshes";
-		g_client.scene.add(cityMesh);
-
-		for (let mat in geometriesOfMaterial) {
-			var geometries = geometriesOfMaterial[mat];
-			var meltedGeometry = BufferGeometryUtils.mergeBufferGeometries(geometries, true);
-
-			g_client.g_colors[mat].meltedGeometry = meltedGeometry;
-			var materialMesh = new Mesh(meltedGeometry, g_client.g_colors[mat]) as unknown as Object3D;
-			setupUVs(materialMesh);
-			cityMesh.add(materialMesh);
-			materialMesh.name = "melted meshes for material " + mat;
-			myLog(materialMesh.name);
-			if (mat == "Door" || mat == "Window")
-				materialMesh.renderOrder = -2;
-		}
-
-		g_client.root.traverse(function (mesh) {
-			var geometry = mesh.geometry;
-			if (geometry) {
-
-				geometry.boundingSphere = null;
-				geometry.computeBoundingSphere();
-
-				// update flags
-
-				geometry.verticesNeedUpdate = true;
-				geometry.morphTargetsNeedUpdate = true;
-				geometry.elementsNeedUpdate = true;
-				geometry.uvsNeedUpdate = true;
-				geometry.normalsNeedUpdate = true;
-				geometry.colorsNeedUpdate = true;
-				geometry.tangentsNeedUpdate = true;
-				geometry.lineDistancesNeedUpdate = true;
-
-				geometry.buffersNeedUpdate = true;
-			}
-		});
-
-
-		g_client.originalRoot = g_client.root;
-		g_client.scene.remove(g_client.root);
-
-		g_client.root = cityMesh as Object3D;
-		g_client.scene.updateMatrixWorld();
-
-
-
-	} else {
-
-		var cityGeometry = new Geometry();
-		var materials: Material[] = [];
-		for (var m in g_client.g_colors) {
-			let mat = g_client.g_colors[m];
-			materials.push(mat);
-		}
-		var meshIndex = 0;
-
-		var meshCount = 0;
-		g_client.root.traverse(function (mesh) {
-			if (mesh.geometry && mesh.material) {
-				meshCount++;
-			}
-		});
-		g_client.root.traverse(function (mesh) {
-			if (mesh.geometry && mesh.material) {
-				var materialIndex = materials.indexOf(mesh.baseMaterial || (Array.isArray(mesh.material) ? mesh.material[0] : mesh.material));
-				if (materialIndex < 0)
-					alert("Unknown material of " + mesh.name);
-				GeometryUtils_merge(cityGeometry, mesh, materialIndex);
-				meshIndex++;
-			}
-		});
-
-		var SAVEMEM = false;
-		resetLocalCoordinateSystems(SAVEMEM, g_client);
-
-
-		g_client.root.traverse(function (mesh) {
-			var geometry = mesh.geometry as Geometry;
-			if (geometry) {
-
-				if (SAVEMEM) {
-					geometry.vertices = optArray(geometry.vertices);
-					geometry.colors = optArray(geometry.colors);  // one-to-one vertex colors, used in ParticleSystem, Line and Ribbon
-					geometry.normals = optArray(geometry.normals); // one-to-one vertex normals, used in Ribbon
-
-					geometry.faces = optArray(geometry.faces);
-
-					if (geometry.faceVertexUvs.length == 1 && geometry.faceVertexUvs[0].length == 0)
-						geometry.faceVertexUvs = g_emptyDoubleArray;
-
-					geometry.morphTargets = optArray(geometry.morphTargets);
-					geometry.morphNormals = optArray(geometry.morphNormals);
-
-					geometry.skinWeights = optArray(geometry.skinWeights);
-					geometry.skinIndices = optArray(geometry.skinIndices);
-
-					geometry.lineDistances = optArray(geometry.lineDistances);
-				}
-
-				geometry.vertices = cityGeometry.vertices;
-				geometry.boundingSphere = null;
-				geometry.computeBoundingSphere();
-
-				// update flags
-
-				geometry.verticesNeedUpdate = true;
-				geometry.elementsNeedUpdate = true;
-				geometry.uvsNeedUpdate = true;
-				geometry.normalsNeedUpdate = true;
-				geometry.colorsNeedUpdate = true;
-				geometry.lineDistancesNeedUpdate = true;
-			}
-		});
-
-		g_client.originalRoot = g_client.root;
-		g_client.scene.remove(g_client.root);
-
-		cityMesh = new Mesh(cityGeometry, materials) as unknown as Object3D;
-		cityMesh.name = "melted meshes";
-		setupUVs(cityMesh as Object3D);
-		g_client.scene.add(cityMesh);
-		g_client.root = cityMesh as Object3D;
-		g_client.scene.updateMatrixWorld();
-
-	}
+    g_client.root = cityMesh as Object3D;
+    g_client.scene.updateMatrixWorld();
 
 	myLog("Melt time=" + (new Date().getTime() - meltStart));
 }
@@ -3078,8 +2830,8 @@ function melt(g_client: TClient): void {
 
 var g_profile: Mesh[] = [];
 
-function getVerticesOfFaces(geometry: Geometry | BufferGeometry): Vector3[] {
-	if (geometry.isBufferGeometry) {
+function getVerticesOfFaces(geometry: Geometry): Vector3[] {
+	if (!geometry.isGeometry) {
 		return getOnlyUsedVertices(geometry);
 	}
 	var vertices: Vector3[] = [];
@@ -3099,7 +2851,7 @@ function readPolygons(): number[] {
 	var result: number[] = [];
 
 	g_client.root.traverse(function (child) {
-		var geometry = child.geometry;
+		let geometry = child.geometry;
 		if (child.visible && geometry && child.material && g_profile.indexOf(child) == -1) {
 			var vectors = getVerticesOfFaces(geometry);
 			for (var v = 0, vlen = vectors.length; v < vlen; v++) {
@@ -3123,7 +2875,7 @@ function paintBendPoints(): void {
 	if (g_profile.length == 0) {
 
 		g_client.root.traverse(function (child) {
-			var geometry = child.geometry;
+			let geometry = child.geometry;
 			if (geometry && child.material && g_profile.length == 0) {
 				g_profile = [assureMeshWithNoBufferGeometry(child)];
 			}
@@ -3185,13 +2937,13 @@ function paintBendPoints(): void {
 
 	var extrudeSettings = { bevelEnabled: false, steps: effectController["steps"], extrudePath: sampleClosedSpline }; // bevelSegments: 2, steps: 2 , bevelSegments: 5, bevelSize: 8, bevelThickness:5,
 
-	var parent = new Object3D();
+	var parent = new Mesh();
 	g_client.scene.add(parent);
 
 	for (var tt = 0; tt < g_profile.length; tt++) {
 		const child = g_profile[tt];
 
-		var geometry = child.geometry;
+		let geometry = child.geometry;
 		if (geometry && child.material) {
 
 			var shapes = [];
@@ -3246,8 +2998,8 @@ function paintBendPoints(): void {
 
 			if (shapes.length > 0) {
 				geometry = new ExtrudeGeometry(shapes, extrudeSettings);
-				if (effectController.vertexnormals) geometry.computeVertexNormals(effectController.areaweighted);
-				var mesh = new Mesh(geometry, child.material) as unknown as Object3D;
+				if (effectController.vertexnormals) geometry.computeVertexNormals();
+				var mesh = new Mesh(geometry, child.material);
 				//				mesh.position = child.position.clone();
 				//				mesh.rotation = child.rotation.clone();
 				//				mesh.quaternion = child.quaternion.clone();
@@ -3277,8 +3029,8 @@ function paintBendPoints(): void {
 					rectShape.lineTo(-rectLength / 2, -rectLength / 2);
 
 					geometry = new ExtrudeGeometry(rectShape, { depth: -effectController["suspension_length"] / ww, bevelEnabled: false, bevelSegments: 2, steps: 1 });
-					if (effectController.vertexnormals) geometry.computeVertexNormals(effectController.areaweighted);
-					mesh = new Mesh(geometry, child.material) as unknown as Object3D;
+					if (effectController.vertexnormals) geometry.computeVertexNormals();
+					mesh = new Mesh(geometry, child.material);
 					//					mesh.position = child.position.clone();
 					//					mesh.rotation = child.rotation.clone();
 					//					mesh.quaternion = child.quaternion.clone();
@@ -3378,7 +3130,6 @@ function start(_overrideSettings: any): void {
 		quickmode: true,
 		antialias: true,
 		vertexnormals: false,
-		areaweighted: true,
 		select_face: false,
 		opencontrols: true,
 		opencontrolsWidth: 275,
@@ -3533,15 +3284,15 @@ function hasVertexNormals(geometry: Geometry & BufferGeometry): boolean {
 	return geometry.faces && geometry.faces.length > 0 && geometry.faces[0].vertexNormals.length > 0;
 }
 
-function assureMeshWithNoBufferGeometry(mesh: Object3D): Mesh {
+function assureMeshWithNoBufferGeometry(mesh: Mesh<BufferGeometry>): Mesh {
 
-	if (mesh.geometry.isGeometry) {
+	if (!mesh.geometry.isBufferGeometry) {
 
-		return mesh as Mesh;
+		return mesh;
 
 	}
 
-	var mesh2 = new Mesh(new Geometry().fromBufferGeometry(mesh.geometry), mesh.material);
+	var mesh2 = new Mesh(new Geometry().fromBufferGeometry(mesh.geometry) as unknown as BufferGeometry, mesh.material);
 	mesh2.matrix.copy(mesh.matrixWorld); // has no parents
 	mesh2.matrixAutoUpdate = false;
 	mesh2.matrixWorldNeedsUpdate = true;
@@ -3557,22 +3308,19 @@ function addVertex(vertices: Vector3[], vertex: Vector3): number {
 	return vertices.length - 1;
 }
 
-function assureBufferGeometry(geometry: BufferGeometry | Geometry) {
+function assureBufferGeometry(geometry: Geometry) : BufferGeometry {
 
-	if (geometry.isBufferGeometry) {
-
-		return geometry;
+	if (!geometry.isGeometry) {
+		return geometry as unknown as BufferGeometry;
 
 	}
-	return new BufferGeometry().fromGeometry(geometry);
+	return geometry.toBufferGeometry();
 
 }
 
 function assureNoBufferGeometry(geometry: BufferGeometry): Geometry {
 	return new Geometry().fromBufferGeometry(geometry);
 }
-
-
 
 function prepareMisc(g_client: TClient) {
 	if (effectController.quickmode) melt(g_client);
@@ -3630,10 +3378,10 @@ function load2(ii: number): void {
 					var root = result.scene;
 					if (effectController.vertexnormals)
 						root.traverse(function (mesh) {
-							var geometry = mesh.geometry;
+							let geometry = mesh.geometry as unknown as Geometry;
 							if (geometry) {
-								(geometry as Geometry).computeFaceNormals();
-								geometry.computeVertexNormals(effectController.areaweighted);
+								geometry.computeFaceNormals();
+								geometry.computeVertexNormals();
 							}
 						});
 					afterLoad(root, g_clients[ii]);
@@ -3641,10 +3389,10 @@ function load2(ii: number): void {
 			} else
 				if (doFBX) {
 					let loader = new FBXLoader();
-					loader.load(g_paths[ii], function (root) {
+					loader.load(g_paths[ii], function (root: Object3D) {
 						var g_client = g_clients[ii];
 						effectController.quickmode = false; // this mode not works
-						afterLoad(root as unknown as Object3D, g_clients[ii]);
+						afterLoad(root, g_clients[ii]);
 					});
 				} else
 					if (doGLTF) {
@@ -3656,7 +3404,7 @@ function load2(ii: number): void {
 							var root = result.scene.children[result.scene.children.length - 1] as Object3D;
 							effectController.quickmode = false; // this mode not works
 							root.traverse(function (mesh) {
-								var geometry = mesh.geometry;
+								let geometry = mesh.geometry;
 								if (geometry && !hasVertexNormals(geometry as any)) {
 									geometry.computeVertexNormals();
 								}
@@ -3666,9 +3414,9 @@ function load2(ii: number): void {
 					} else {
 						let loader = new OBJLoader();
 
-						loader.load(g_paths[ii], function (object) {
+						loader.load(g_paths[ii], function (object: Object3D) {
 							var g_client = g_clients[ii];
-							init(object as unknown as Object3D, g_client);
+							init(object, g_client);
 							animate(g_client);
 						});
 					}
@@ -3678,13 +3426,13 @@ function load2(ii: number): void {
 }
 
 // follow up https://github.com/ironbane/IronbaneServer/issues/123
-function automaticUnwrapping(geometry: Geometry, deltaX: number, deltaY: number): void {
+function automaticUnwrapping(geometry: BufferGeometry, deltaX: number, deltaY: number): void {
 
 	var uvA = new Vector2(0, 0);
 	var uvB = new Vector2(0, 0);
 	var uvC = new Vector2(0, 0);
 
-	var vertices = getVerticesOfFaces(geometry);
+	var vertices = getVerticesOfFaces(geometry as unknown as Geometry);
 
 
 	var uvs = null;
@@ -3919,7 +3667,7 @@ function init(root: Object3D, g_client: TClient) {
 				g_client.scene.add(root = root.children[0] as Object3D);
 				scene = g_client.scene;
 			} else {
-				scene = g_client.scene = root;
+				scene = g_client.scene = root as Scene;
 				root = root.children[0] as Object3D;
 			}
 			//	    scene = g_client.scene = new Scene();
@@ -4030,7 +3778,6 @@ function init(root: Object3D, g_client: TClient) {
 			child.visible = true; //non-meshes are not visible by default, but required to be visible for canvas renderer
 		});
 		updateColors(g_client);
-		optimizeMem(g_client);
 
 		var plane = g_client.plane = new Mesh(new PlaneGeometry(1000000, 1000000, 1, 1), new MeshBasicMaterial({ color: 0x000000, opacity: 0.25, transparent: true, side: DoubleSide }));
 		plane.name = "intersection plane";
@@ -4051,7 +3798,7 @@ function init(root: Object3D, g_client: TClient) {
 }
 
 function setupUVs(mesh: Object3D): void {
-	var geometry = mesh.geometry;
+	let geometry = mesh.geometry;
 	var material = mesh.material;
 	if (material && geometry) {
 		var hasTexture = (material.map != null);
@@ -4083,7 +3830,7 @@ function setupColors(g_client: TClient, updateVisibilityArray?: boolean): void {
 		//			color[2] = color[2]*255;
 		//			}
 
-		var materialColor = g_colors[m] as Material;
+		var materialColor = g_colors[m] as MeshPhongMaterial;
 		if (!materialColor.uuid)
 			if (Array.isArray(materialColor)) {
 				materialColor = g_colors[m] = new MeshPhongMaterial({
@@ -4092,11 +3839,12 @@ function setupColors(g_client: TClient, updateVisibilityArray?: boolean): void {
 					transparent: materialColor[3] != 1
 				});
 			} else if (!materialColor.map) {
-				materialColor = g_colors[m] = new MeshPhongMaterial(materialColor);
+				materialColor = g_colors[m] = new MeshPhongMaterial(materialColor as unknown as MeshPhongMaterialParameters);
 			} else {
-				if (materialColor.map.indexOf("http:") == -1)
-					materialColor.map = g_path.substring(0, g_path.indexOf("&filename=")) + "&filename=" + materialColor.map;
-				var texture = ImageUtils.loadTexture(materialColor.map, undefined, updateClients, function () { alert("Could not load texture of material!"); });
+                let url = materialColor.map as unknown as string;
+				if (url.indexOf("http:") == -1)
+                    url = g_path.substring(0, g_path.indexOf("&filename=")) + "&filename=" + url;
+				var texture = ImageUtils.loadTexture(url, undefined, updateClients, function () { alert("Could not load texture of material!"); });
 				texture.wrapS = texture.wrapT = RepeatWrapping;
 				materialColor = g_colors[m] = new MeshPhongMaterial({ map: texture });
 			}
@@ -4195,14 +3943,9 @@ function updateClients(): void {
 function updateClient(g_client: TClient, lazy?: boolean): void {
 	if (!lazy) {
 		g_client.renderer.sortObjects = true;
-		g_client.renderer.autoUpdateObjects = true;
 	}
 	if (g_client.invalidated) return;
 	g_client.invalidated = true;
-	if (lazy) {
-		//		g_client.renderer.sortObjects=  false;
-		g_client.renderer.autoUpdateObjects = false;
-	}
 	if (disableRendering) return;
 	requestAnimationFrame(function () { animate(g_client); });
 }
@@ -4283,7 +4026,6 @@ function render(g_client: TClient): void {
 
 	g_client.invalidated = false;
 	g_client.renderer.sortObjects = true;
-	g_client.renderer.autoUpdateObjects = true;
 
 	motionByKeys(g_client);
 	g_updateClientTime = new Date().getTime() - updateClientStart;
@@ -4349,7 +4091,7 @@ function getScene(scene: Object3D): Scene | null {
 
 	if (scene.isScene) {
 
-		return scene as unknown as Scene;
+		return scene as Scene;
 
 	}
 
@@ -4411,7 +4153,7 @@ function removeFromScene(object: Object3D, g_client: TClient): void {
 		}
 }
 
-function select(newSelection: Object3D[], g_client?: TClient): void {
+function select(newSelection: Mesh<BufferGeometry, Material>[], g_client?: TClient): void {
 	g_client = g_client || g_clients[0];
 	newSelection = reviseSelection(newSelection);
 	g_clients.forEach(unSelectAll);
@@ -4457,9 +4199,9 @@ function applyOnMaterials(material: Material, func: (mat: Material) => void): vo
 	}
 }
 
-function selectRecursive(transform: Object3D, g_client: TClient): void {
+function selectRecursive(transform: Mesh<BufferGeometry, Material>, g_client: TClient): void {
 	for (var tt = 0; tt < transform.children.length; tt++) {
-		selectRecursive(transform.children[tt] as Object3D, g_client);
+		selectRecursive(transform.children[tt] as Mesh<BufferGeometry, Material>, g_client);
 	}
 	if (transform.material && !(transform.isSprite)) {
 		transform.originalMaterial = transform.material as Material;
@@ -4467,14 +4209,14 @@ function selectRecursive(transform: Object3D, g_client: TClient): void {
 		g_selectionMaterial.side = transform.material.side;
 		transform.material = g_selectionMaterial;
 	}
-	var geometry = transform.geometry as Geometry;
+	let geometry = transform.geometry;
 	if (geometry) {
 		// required if original material has a texture
-		geometry.buffersNeedUpdate = true;
-		geometry.normalsNeedUpdate = true;
+        for (let attribute in geometry.attributes)
+            geometry.attributes[attribute].needsUpdate = true;
 	}
 	if (transform.pred != null) {
-		selectRecursive(transform.pred, g_client);
+		selectRecursive(transform.pred, g_client); 
 	}
 }
 
@@ -4551,7 +4293,7 @@ function onDocumentMouseMove(e: PointerEvent): void {
 								array[i + 1] += localOffs.y;
 								array[i + 2] += localOffs.z;
 							}
-							object.geometry.boundingSphere.center.add(localOffs);
+							object.geometry.boundingSphere!.center.add(localOffs);
 							object.geometry.attributes.position.needsUpdate = true;
 							meltedGeometry.attributes.position.needsUpdate = true;
 							lazy = false;
@@ -4714,7 +4456,7 @@ function onDocumentMouseDown(e: PointerEvent): void {
 
 			intersects = raycaster.intersectOctreeObjects(octreeObjects)!;
 
-			var descSort = function (a, b) {
+			var descSort = function (a: Intersection, b: Intersection) {
 
 				return a.distance - b.distance;
 
@@ -4735,7 +4477,7 @@ function onDocumentMouseDown(e: PointerEvent): void {
 	if (intersects) myLog("intersects.length = " + intersects.length);
 
 
-	var SELECTED: Object3D | null = null;
+	var SELECTED: Mesh<BufferGeometry, Material> | null = null;
 
 	if (intersects)
 		for (var tt = 0; tt < intersects.length; tt++) {
@@ -4749,6 +4491,7 @@ function onDocumentMouseDown(e: PointerEvent): void {
                     let vC=new Vector3().fromBufferAttribute(object.geometry.attributes.position, face.c);
 					var faceSingleton = object.clone();
                     faceSingleton.geometry = new BufferGeometry().setFromPoints([vA,vB,vC]);
+                    faceSingleton.geometry.computeVertexNormals();
 					SELECTED = faceSingleton;
 				}
 				break;
@@ -4827,7 +4570,7 @@ function generateEvent(eventType: string, e: MouseEvent, g_client: TClient): voi
 		if (g_worldPosition) {
 			mainParams = mainParams.concat(vector3ToArray(g_worldPosition));
 			if (animateTube)
-				mainParams = mainParams.concat([g_client.me.position.x, -g_client.me.position.z, g_client.me.position.y - g_client.me.shiftUp]);
+				mainParams = mainParams.concat([g_client.me.position.x, -g_client.me.position.z, g_client.me.position.y - g_client.me_shiftUp]);
 		}
 		myLog("Processing " + eventType + "...");
 		var milli = new Date().getMilliseconds();
@@ -4862,10 +4605,10 @@ function generateEvent(eventType: string, e: MouseEvent, g_client: TClient): voi
 
 function onDocumentDblClick(e: MouseEvent): void {
 	myLog("onDocumentDblClick #selection=" + g_selectedInfo.length + " buttons=" + e.buttons);
-	var g_client = e.target;
+	var g_client = e.target as TClient;
 	e.preventDefault();
 	if (effectController.select_by_dblclick) {
-		onDocumentMouseDown(e);
+		onDocumentMouseDown(e as PointerEvent);
 	} else
 		if (g_selectedInfo.length > 0) {
 			locate(g_selectedInfo, g_client, 10);
@@ -4906,7 +4649,7 @@ function onDocumentMouseUp(e: PointerEvent): void {
 
 }
 
-function onDocumentMouseWheel(e: MouseWheelEvent): void {
+function onDocumentMouseWheel(e: WheelEvent): void {
 	var delta = e.wheelDelta || - e.detail || -e.deltaY;
 	if (delta) {
 		if (effectController.enable_maps) {
@@ -4930,12 +4673,15 @@ function onDocumentMouseWheel(e: MouseWheelEvent): void {
 	}
 }
 
+function isBufferGeometry(geometry: Geometry | BufferGeometry): geometry is BufferGeometry {
+    return (geometry as BufferGeometry).isBufferGeometry;
+  } 
 
 function getOnlyUsedVertices(geometry: Geometry | BufferGeometry): Vector3[] {
-	if (geometry.isBufferGeometry) {
+	if (isBufferGeometry(geometry)) {
 		let result: Vector3[] = [];
 
-		var positions = geometry.attributes["position"].array;
+		var positions = geometry.attributes.position?.array;
 
 		if (positions) {
 			for (var i = 0, il = positions.length; i < il; i += 3) {
@@ -5052,23 +4798,22 @@ function printCameras(lines: number[], artifactId: string): void {
 		var n4 = new Vector3(-1, 1, -1).unproject(camera);
 
 
-		var geometry = new Geometry();
+		let geometry = new Geometry();
 		geometry.vertices = [p, n1, n2, n3, n4];
 		geometry.faces = [new Face3(0, 1, 2), new Face3(0, 2, 3), new Face3(0, 3, 4), new Face3(0, 4, 1)];
 		geometry.computeFaceNormals();
-		var mesh = new Mesh(geometry, cameraBoxMaterial);
+		var mesh = new Mesh(geometry as unknown as BufferGeometry, cameraBoxMaterial);
 		g_client.scene.add(mesh);
 		g_cameraTransforms.push(mesh);
 		g_client.additionalObjectsToSelect.push(mesh);
-		mesh.draggable = true;
-		mesh.name = lines[tt + 8];
+		mesh.name = ""+lines[tt + 8];
 		mesh.cam = camera;
 
 		geometry = new Geometry();
 		geometry.vertices = [p, n1, n2, n3, n4];
 		geometry.faces = [new Face3(4, 3, 2)];
 		geometry.computeFaceNormals();
-		mesh = new Mesh(geometry, cameraHoleMaterial);
+		mesh = new Mesh(geometry as unknown as BufferGeometry, cameraHoleMaterial);
 		g_client.scene.add(mesh);
 		g_cameraTransforms.push(mesh);
 		g_client.additionalObjectsToSelect.push(mesh);
@@ -5079,7 +4824,7 @@ function printCameras(lines: number[], artifactId: string): void {
 	updateClient(g_client);
 }
 
-var incidentGeometries: { [n: string]: Geometry } = {};
+var incidentGeometries: { [n: string]: BufferGeometry } = {};
 var incidentMaterials: { [n: string]: Material } = {};
 
 
@@ -5266,9 +5011,9 @@ function printIncidents(lines: string[], artifactId: string): void {
 	myLog("called printIncidents");
 
 	for (var tt = 0; tt < lines.length;) {
-		var lastPoint = asVector3([lines[tt + 0], lines[tt + 1], lines[tt + 2]]);
+		var lastPoint = asVector3([parseFloat(lines[tt + 0]), parseFloat(lines[tt + 1]), parseFloat(lines[tt + 2])]);
 		var material = null;
-		var geometry = null;
+		let geometry : BufferGeometry | null = null ;
 		var desc = lines[tt + 3].toLowerCase();
 
 		for (let _key in incidentMaterials) {
@@ -5347,9 +5092,9 @@ function printIncidents(lines: string[], artifactId: string): void {
 		});
 
 		text3d.computeBoundingBox();
-		var centerOffset = -0.5 * (text3d.boundingBox.max.x - text3d.boundingBox.min.x);
+		var centerOffset = -0.5 * (text3d.boundingBox!.max.x - text3d.boundingBox!.min.x);
 
-		var textMaterial = new MeshBasicMaterial({ color: 0x030303, overdraw: true });
+		var textMaterial = new MeshBasicMaterial({ color: 0x030303 });
 		var text = new Mesh(text3d, textMaterial);
 
 		text.position.x = lastPoint.x;
@@ -5361,7 +5106,7 @@ function printIncidents(lines: string[], artifactId: string): void {
 		text.rotation.z = -Math.PI / 2;
 		text.scale.x = text.scale.y = text.scale.z = 0.04;
 
-		var parent = new Object3D();
+		var parent =  new Mesh();
 		parent.add(text);
 
 		g_client.scene.add(parent);
@@ -5430,7 +5175,7 @@ function generateMaterials(): TMat {
 
 		"shiny":
 		{
-			m: new MeshPhongMaterial({ color: 0x550000, specular: 0x440000, envMap: reflectionCube, combine: MixOperation, reflectivity: 0.3, metal: true }),
+			m: new MeshPhongMaterial({ color: 0x550000, specular: 0x440000, envMap: reflectionCube, combine: MixOperation, reflectivity: 0.3 }),
 			h: 0, s: 0.8, l: 0.2
 		},
 
@@ -5442,7 +5187,7 @@ function generateMaterials(): TMat {
 
 		"flat":
 		{
-			m: new MeshPhongMaterial({ color: 0x000000, specular: 0x111111, shininess: 1, shading: FlatShading }),
+			m: new MeshPhongMaterial({ color: 0x000000, specular: 0x111111, shininess: 1, flatShading: true }),
 			h: 0, s: 0, l: 1
 		},
 
