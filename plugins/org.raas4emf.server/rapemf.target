@@ -25,6 +25,7 @@
 		<unit id="com.google.inject" version="3.0.0.v201605172100"/>
 		<unit id="javax.xml.bind" version="2.2.0.v201105210648"/>
 		<unit id="javax.activation" version="1.1.0.v201211130549"/>
+		<unit id="javax.xml.stream" version="1.0.1.v201004272200"/>
 	</location>
 </locations>
 </target>

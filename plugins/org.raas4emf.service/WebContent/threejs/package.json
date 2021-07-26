@@ -18,9 +18,9 @@
     "@types/jstree": "^3.3.40",
     "@types/node": "^12.7.12",
     "@types/requirejs": "^2.1.32",
-    "@types/three": "^0.103.2",
+    "@types/three": "^0.130.1",
     "dat.gui": "^0.7.7",
-    "three": "^0.124.0",
+    "three": "^0.130.1",
     "typescript": "^3.8.3"
   },
   "devDependencies": {

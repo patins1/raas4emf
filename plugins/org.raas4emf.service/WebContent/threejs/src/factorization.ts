@@ -1,5 +1,5 @@
 import {
-    Object3D, Geometry, BufferGeometry, Mesh, SkinnedMesh, Vector3, Vector2, Material, ShaderMaterial, Texture, Color, Camera,
+    Object3D, BufferGeometry, Mesh, SkinnedMesh, Vector3, Vector2, Material, ShaderMaterial, Texture, Color, Camera,
     Scene, WebGLRenderer, DirectionalLight, PointLight, AmbientLight, Box3, Sphere, Clock, Intersection, Curve, MeshPhongMaterial
 } from "three";
 

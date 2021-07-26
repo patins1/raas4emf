@@ -1,17 +1,18 @@
 
 import {
-	Geometry, BoxGeometry, Object3D, Clock, Face3, Intersection, Raycaster, BufferGeometry, Curve, Mesh, SkinnedMesh, Vector3,
+	BoxGeometry, Object3D, Clock, Intersection, Raycaster, BufferGeometry, Curve, Mesh, SkinnedMesh, Vector3,
 	Vector2, Vector4, Color, Box3, Sphere, Camera, Scene, WebGLRenderer, Material, MeshPhongMaterial, ShaderMaterial,
 	Texture, Light, AmbientLight, PointLight, DirectionalLight, BufferAttribute,
 	DoubleSide, SmoothShading, RGBFormat, BackSide, FrontSide, RepeatWrapping, MixOperation, FlatShading, MultiplyOperation,
 	SphereGeometry, ExtrudeGeometryOptions, ExtrudeGeometry, TubeGeometry, PlaneGeometry, OctahedronGeometry, TextGeometry, MathUtils, Shape,
-	Path, FaceColors, VertexColors, LineBasicMaterial, Line, ImageUtils, ShaderLib, MeshBasicMaterial, Sprite, Matrix4,
+	Path, LineBasicMaterial, Line, ImageUtils, ShaderLib, MeshBasicMaterial, Sprite, Matrix4,
 	OrthographicCamera, PerspectiveCamera, UniformsUtils, Matrix3, MeshLambertMaterial
 } from "three";
 
+import { Face3 } from "three/examples/jsm/deprecated/Geometry";
+import { Geometry } from "three/examples/jsm/deprecated/Geometry";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { ColladaLoader, Collada } from "three/examples/jsm/loaders/ColladaLoader";
-import { FaceNormalsHelper } from "three/examples/jsm/helpers/FaceNormalsHelper";
 import { VertexNormalsHelper } from "three/examples/jsm/helpers/VertexNormalsHelper";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { NURBSCurve } from "three/examples/jsm/curves/NURBSCurve";
@@ -168,7 +169,8 @@ var g_incidentTransforms: Object3D[] = [];
 var isInParse = false;
 var defaultScheme: string;
 
-var g_map: google.maps.Map<HTMLElement> & { ownPosition: google.maps.LatLng };
+var g_map: google.maps.Map<HTMLElement>;
+var ownPosition: google.maps.LatLng;
 var g_overlay: google.maps.OverlayView;
 var g_mapsteps = 20;
 
@@ -248,7 +250,6 @@ var framesCount = 0;
 var startedTestFps: number | null = null;
 var testFps: number | null = null;
 var disableRendering = false;
-var initStaticsCalled = false;
 
 var theJavaFunction: (guids: string, dummy1: string, client_id: string, x: number, y: number, which: number, eventType: string) => any = (window as any).theJavaFunction;
 
@@ -280,7 +281,7 @@ function processMessage(event: MessageEvent): void {
 			calcPaths();
 			load2(0);
 		} else {
-			start();
+			start({});
 		}
 	}
 	finally {
@@ -380,10 +381,9 @@ function paintBoundingSphere(bsphere: Sphere | undefined, g_client: TClient): vo
 
 }
 
-var oldFaceNormalsHelper: Object3D, oldVertexNormalsHelper: Object3D, meshWithVisualizedNormals: Mesh | null;
+var oldVertexNormalsHelper: Object3D, meshWithVisualizedNormals: Mesh | null;
 
 function paintNormals(mesh: Mesh | undefined, g_client: TClient): void {
-	g_client.scene.remove(oldFaceNormalsHelper);
 	g_client.scene.remove(oldVertexNormalsHelper);
 
 	if (!mesh || meshWithVisualizedNormals == mesh) {
@@ -393,8 +393,6 @@ function paintNormals(mesh: Mesh | undefined, g_client: TClient): void {
 	}
 	meshWithVisualizedNormals = mesh;
 
-	mesh = assureMeshWithNoBufferGeometry(mesh);
-	g_client.scene.add(oldFaceNormalsHelper = new FaceNormalsHelper(mesh!, 1));
 	g_client.scene.add(oldVertexNormalsHelper = new VertexNormalsHelper(mesh!, 1));
 
 	updateClient(g_client);
@@ -438,7 +436,7 @@ function locate(transforms: Object3D[], g_client: TClient, steps: number): boole
 
 		if (intersects)
 			for (var tt = 0; tt < intersects.length; tt++) {
-				var object = intersects[tt].object as Object3D;
+				var object = intersects[tt].object as Mesh<BufferGeometry, Material>;
 				if (g_selectedInfo.length > 0 && object.uuid == g_selectedInfo[0].uuid) break;
 				if (isIntersectedObjectVisible(object, g_client)) {
 					eye = intersects[tt].point;
@@ -451,7 +449,7 @@ function locate(transforms: Object3D[], g_client: TClient, steps: number): boole
 	return true;
 }
 
-function isIntersectedObjectVisible(object: Object3D, g_client: TClient): boolean {
+function isIntersectedObjectVisible(object: Mesh<BufferGeometry, Material>, g_client: TClient): boolean {
 	var material = g_client.g_colors[object.material.name];
 	return (object.visible || g_client.additionalObjectsToSelect.indexOf(object) >= 0) && (material && material.opacity != 0 && material.visible || !!object.material);
 }
@@ -733,7 +731,7 @@ function createRenderer(container: HTMLElement, ii: number): TClient {
 		renderer = new WebGLDeferredRenderer();
 		container.appendChild(renderer.domElement);
 	} else {
-		alert("Renderer " + renderName + " unknown!");
+		alert("Renderer " + g_renderer + " unknown!");
 		return null!;
 	}
 	var g_client: TClient = renderer.domElement as TClient;
@@ -927,7 +925,7 @@ function updateWebGL() {
 	if (effectController.enable_maps && placeInto && g_overlay && g_overlay.getProjection()) {
 		var sw = g_overlay.getProjection().fromLatLngToContainerPixel(new google.maps.LatLng(effectController.latitude, effectController.longitude));
 		var own;
-		if (g_map.ownPosition) own = g_overlay.getProjection().fromLatLngToContainerPixel(g_map.ownPosition);
+		if (ownPosition) own = g_overlay.getProjection().fromLatLngToContainerPixel(ownPosition);
 		else own = sw;
 		var southWest = g_map.getBounds()!.getSouthWest();
 		var northEast = g_map.getBounds()!.getNorthEast();
@@ -1209,7 +1207,7 @@ function reduceGui(gui: GUI): boolean {
 		var c = gui.__controllers[i];
 		if (overrideSettings.opencontrols.split(",").indexOf(c.property) == -1 && !c.neverRemove) {
 			try {
-				c.remove(c);
+				c.remove();
 			} catch (e) {
 				// maybe already be removed!
 			}
@@ -1222,7 +1220,7 @@ function reduceGui(gui: GUI): boolean {
 	for (var i in gui.__folders) {
 		var folder = gui.__folders[i];
 		if (reduceGui(folder)) {
-			gui.removeFolder(i);
+			gui.removeFolder(folder);
 		} else {
 			allFoldersReduced = false;
 		}
@@ -1426,18 +1424,13 @@ function printLines(lines: number[], artifactId: string, prefix: string, message
 
 					for (var i = 0, il = materials.length; i < il; i++) {
 
-						var originalMaterial = materials[i];
-						originalMaterial.skinning = true;
+						var originalMaterial = materials[i] as MeshPhongMaterial;
 
-						originalMaterial.map = undefined;
-						originalMaterial.shading = SmoothShading;
+						originalMaterial.map = null;
+						originalMaterial.flatShading = false;
 						originalMaterial.color.setHSL(0.01, 0.3, 0.3);
-						originalMaterial.ambient.copy(originalMaterial.color);
 						originalMaterial.specular.setHSL(0, 0, 0.1);
 						originalMaterial.shininess = 75;
-
-						originalMaterial.wrapAround = true;
-						originalMaterial.wrapRGB.set(1, 0.5, 0.5);
 
 					}
 
@@ -1455,8 +1448,7 @@ function printLines(lines: number[], artifactId: string, prefix: string, message
 					animation.JITCompile = false;
 					animation.interpolationType = AnimationHandler.LINEAR;
 
-					animation.play(true);
-					animation.update(0);
+					animation.play();
 
 					mesh.scale.copy(new Vector3(0.8, 0.8, 0.8));
 
@@ -2045,7 +2037,7 @@ function generateGui(): void {
 			myLog("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude + ", Altitude: " + position.coords.altitude + ", Accuracy: " + position.coords.accuracy);
 			//[effectController.latitude, effectController.longitude] = [position.coords.latitude, position.coords.longitude];
 			if (g_map) {
-				g_map.panTo(g_map.ownPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+				g_map.panTo(ownPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
 			}
 		}
 
@@ -2641,7 +2633,7 @@ function generateGui(): void {
 	expect(debugGui.add(effectController, 'wireframe').onChange(function () {
 		g_clients.forEach(function updateFillMode(g_client: TClient) {
 			for (var m in g_client.g_colors) {
-				const material = g_client.g_colors[m];
+				const material = g_client.g_colors[m] as MeshPhongMaterial;
 				material.wireframe = effectController.wireframe;
 				material.wireframeLinewidth = 1;
 				material.needsUpdate = true;
@@ -2651,7 +2643,7 @@ function generateGui(): void {
 	}));
 	expect(debugGui.add(effectController, 'double_side_material').onChange(function () {
 		for (var m in g_colors) {
-			var material = g_colors[m];
+			var material = g_colors[m] as MeshPhongMaterial;
 			material.side = effectController.double_side_material ? DoubleSide : FrontSide;
 			material.needsUpdate = true;
 		}
@@ -2751,7 +2743,7 @@ function optimizeMem(g_client: TClient): void {
 		var geometry = mesh.geometry;
 		if (geometry) {
 			if (geometry.faces)
-				for (f = 0, fl = geometry.faces.length; f < fl; f++) {
+				for (var f = 0, fl = geometry.faces.length; f < fl; f++) {
 					var face = geometry.faces[f];
 					face.color = optThree(face.color, g_emptyColor);
 					face.vertexColors = optArray(face.vertexColors);
@@ -2816,8 +2808,8 @@ function melt(g_client: TClient): void {
 
 		var matrix = null, normalMatrix = null,
 			vertexOffset = geometry1.vertices.length,
-			uvPosition = geometry1.faceVertexUvs[0].length,
-			geometry2: Geometry = object2.isMesh ? object2.geometry as Geometry : object2,
+			uvPosition = geometry1.faceVertexUvs[0].length;
+		var	geometry2: Geometry = object2.isMesh ? object2.geometry as Geometry : object2,
 			vertices1 = geometry1.vertices,
 			vertices2 = geometry2.vertices,
 			faces1 = geometry1.faces,
@@ -3045,7 +3037,6 @@ function melt(g_client: TClient): void {
 						geometry.faceVertexUvs = g_emptyDoubleArray;
 
 					geometry.morphTargets = optArray(geometry.morphTargets);
-					geometry.morphColors = optArray(geometry.morphColors);
 					geometry.morphNormals = optArray(geometry.morphNormals);
 
 					geometry.skinWeights = optArray(geometry.skinWeights);
@@ -3061,15 +3052,11 @@ function melt(g_client: TClient): void {
 				// update flags
 
 				geometry.verticesNeedUpdate = true;
-				geometry.morphTargetsNeedUpdate = true;
 				geometry.elementsNeedUpdate = true;
 				geometry.uvsNeedUpdate = true;
 				geometry.normalsNeedUpdate = true;
 				geometry.colorsNeedUpdate = true;
-				geometry.tangentsNeedUpdate = true;
 				geometry.lineDistancesNeedUpdate = true;
-
-				geometry.buffersNeedUpdate = true;
 			}
 		});
 
@@ -3546,77 +3533,6 @@ function hasVertexNormals(geometry: Geometry & BufferGeometry): boolean {
 	return geometry.faces && geometry.faces.length > 0 && geometry.faces[0].vertexNormals.length > 0;
 }
 
-function initStatics() {
-
-	if (effectController.quickmode) {
-
-		if (initStaticsCalled) return;
-		initStaticsCalled = true;
-
-		Geometry.prototype.computeFaceNormals = function () {
-		};
-
-		Geometry.prototype.computeBoundingSphere = function () {
-
-			if (isInParse) return;
-
-			if (this.boundingSphere === null) {
-
-				this.boundingSphere = new Sphere();
-
-			}
-
-			this.boundingSphere.setFromPoints(getOnlyUsedVertices(this));
-
-		};
-
-		// speed: dont store a name
-		Object.defineProperty(BufferGeometry.prototype, "name", {
-			get: function () {
-				return null;
-			},
-			set: function (y) {
-			}
-		});
-
-		// speed: dont store a uuid
-		Object.defineProperty(BufferGeometry.prototype, "uuid", {
-			get: function () {
-				return null;
-			},
-			set: function (y) {
-			}
-		});
-
-		Object.defineProperty(Face3.prototype, "normal", {
-			get: function () {
-				if (this.geometry) {
-
-					var cb = new Vector3();
-					var ab = new Vector3();
-
-					var vA = this.geometry.vertices[this.a];
-					var vB = this.geometry.vertices[this.b];
-					var vC = this.geometry.vertices[this.c];
-
-					cb.subVectors(vC, vB);
-					ab.subVectors(vA, vB);
-					cb.cross(ab);
-
-					cb.normalize();
-
-					return cb;
-				}
-				return new Vector3();
-			},
-			set: function (y) {
-			}
-		});
-
-	}
-
-}
-
 function assureMeshWithNoBufferGeometry(mesh: Object3D): Mesh {
 
 	if (mesh.geometry.isGeometry) {
@@ -3666,7 +3582,6 @@ function prepareMisc(g_client: TClient) {
 
 
 function load(ii: number): void {
-	initStatics();
 	load2(ii);
 }
 
@@ -4824,9 +4739,18 @@ function onDocumentMouseDown(e: PointerEvent): void {
 
 	if (intersects)
 		for (var tt = 0; tt < intersects.length; tt++) {
-			let object = intersects[tt].object as Object3D;
+			let object = intersects[tt].object as Mesh<BufferGeometry, Material>;
 			if (isIntersectedObjectVisible(object, g_client)) {
 				SELECTED = object;
+				if (effectController.select_face && intersects[tt].face) {
+                    var face = intersects[tt].face!;
+                    let vA=new Vector3().fromBufferAttribute(object.geometry.attributes.position, face.a);
+                    let vB=new Vector3().fromBufferAttribute(object.geometry.attributes.position, face.b);
+                    let vC=new Vector3().fromBufferAttribute(object.geometry.attributes.position, face.c);
+					var faceSingleton = object.clone();
+                    faceSingleton.geometry = new BufferGeometry().setFromPoints([vA,vB,vC]);
+					SELECTED = faceSingleton;
+				}
 				break;
 			}
 		}
@@ -4835,35 +4759,6 @@ function onDocumentMouseDown(e: PointerEvent): void {
 
 		if (SELECTED.cam) {
 			g_client.additionalCamera = SELECTED.cam;
-		}
-
-		//	    if (g_line) g_client.scene.remove(g_line);
-		//		var geometry3 = new Geometry();
-		//		geometry3.vertices.push( intersects[ 0 ].point.clone().add(new Vector3( 0,-1,0 )) );
-		//		geometry3.vertices.push( intersects[ 0 ].point.clone() );
-		//		geometry3.vertices.push( intersects[ 0 ].point.clone().add(new Vector3( 0,1,0 )) );
-		//		var material = new LineBasicMaterial( { color: Math.random() * 0xffffff , opacity: 1, linewidth: 13 } );
-		//		g_line = new Line(geometry3, material );
-		//		g_line.position = new Vector3( 0,0,0 );
-		//		g_client.scene.add( g_line );
-
-		if (effectController.select_face) {
-			var mesh = assureMeshWithNoBufferGeometry(SELECTED);
-			let raycaster = getRaycaster(mouse, g_client);
-			intersects = raycaster.intersectObjects([mesh]);
-			for (var tt = 0; tt < intersects.length; tt++) {
-				let object = intersects[tt].object as Object3D;
-				if (intersects[tt].face) {
-					SELECTED = object;
-					var faceSingleton = SELECTED.clone();
-					faceSingleton.matrix.copy(faceSingleton.matrixWorld);
-					faceSingleton.geometry = new Geometry();
-					faceSingleton.geometry.faces = [intersects[tt].face!];
-					faceSingleton.geometry.vertices = SELECTED.geometry.vertices;
-					SELECTED = faceSingleton;
-					break;
-				}
-			}
 		}
 
 		if (canChangeSelection)
@@ -5417,7 +5312,7 @@ function printIncidents(lines: string[], artifactId: string): void {
 
 							}
 
-							material = new MeshBasicMaterial({ vertexColors: FaceColors });
+							material = new MeshBasicMaterial({ vertexColors: false });
 
 						}
 
@@ -5559,7 +5454,7 @@ function generateMaterials(): TMat {
 
 		"colors":
 		{
-			m: new MeshPhongMaterial({ color: 0xffffff, specular: 0xffffff, shininess: 2, vertexColors: VertexColors }),
+			m: new MeshPhongMaterial({ color: 0xffffff, specular: 0xffffff, shininess: 2, vertexColors: true }),
 			h: 0, s: 0, l: 1
 		},
 

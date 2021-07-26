@@ -1,69 +1,81 @@
 
 import {
-    Geometry, BoxGeometry, Object3D, Clock, Face3, Intersection, Raycaster, BufferGeometry, Curve, Mesh, SkinnedMesh, Vector3,
+    BoxGeometry, Object3D, Clock, Intersection, Raycaster, BufferGeometry, Curve, Mesh, SkinnedMesh, Vector3,
     Vector2, Vector4, Color, Box3, Sphere, Camera, Scene, WebGLRenderer, Material, MeshPhongMaterial, ShaderMaterial,
     Texture, Light, AmbientLight, PointLight, DirectionalLight, BufferAttribute,
     DoubleSide, SmoothShading, RGBFormat, BackSide, FrontSide, RepeatWrapping, MixOperation, FlatShading, MultiplyOperation,
     SphereGeometry, ExtrudeGeometryOptions, ExtrudeGeometry, TubeGeometry, PlaneGeometry, OctahedronGeometry, TextGeometry, MathUtils, Shape,
-    Path, FaceColors, VertexColors, LineBasicMaterial, Line, ImageUtils, ShaderLib, MeshBasicMaterial, Sprite, Matrix4,
+    Path, LineBasicMaterial, Line, ImageUtils, ShaderLib, MeshBasicMaterial, Sprite, Matrix4,
     OrthographicCamera, PerspectiveCamera, UniformsUtils, Matrix3, MeshLambertMaterial
 } from "three";
 
+import { Face3 } from "three/examples/jsm/deprecated/Geometry";
+import { Geometry } from "three/examples/jsm/deprecated/Geometry";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GUIController } from "dat.gui";
 
 
 declare module "three" {
     export interface Object3D {
-        //new(): Object3D;
-        //(): Object3D;
-        geometry: Geometry | BufferGeometry;
+        traverse(callback: (object: Mesh<BufferGeometry, Material>) => any): void;
         importedMaterial: Material;
         originalMaterial: Material;
         baseMaterial: Material;
-        originalParent: Object3D | null;
+        originalParent: Mesh<BufferGeometry, Material> | null;
         material: Material | Material[];
-        pred: Object3D;
+        pred: Mesh<BufferGeometry, Material>;
         costInfo: string;
         storedMaterialName: string;
+        customMaterialName: string;
+        cam: Camera;
         readonly isSprite: false;
         isMesh: boolean;
         isCamera: boolean;
         readonly isLight: false;
-        readonly isScene: false;
+    //     readonly isScene: false;
     }
-    export interface Mesh {
-        importedMaterial: Material;
-        originalMaterial: Material;
-        baseMaterial: Material;
-        originalParent: Object3D | null;
-        pred: Object3D;
-        costInfo: string;
-        storedMaterialName: string;
-        readonly isSprite: false;
-        readonly isCamera: false;
-        readonly isLight: false;
-        readonly isScene: false;
-    }
-    export interface Geometry {
-        path: Curve<Vector3>;
+    // export interface Mesh {
+    //     importedMaterial: Material;
+    //     originalMaterial: Material;
+    //     baseMaterial: Material;
+    //     originalParent: Object3D | null;
+    //     pred: Object3D;
+    //     costInfo: string;
+    //     storedMaterialName: string;
+    //     readonly isSprite: false;
+    //     readonly isCamera: false;
+    //     readonly isLight: false;
+    //     readonly isScene: false;
+    // }
+    // export interface Geometry {\
+    //     taken: boolean;
+    //     readonly isBufferGeometry: false;
+    //     readonly isGeometry: true;
+    //     readonly isMesh: false
+    // }
+    // export interface BufferGeometry {
+    //         new(): BufferGeometry;
+    //     taken: boolean;
+    //     // readonly isBufferGeometry: true;
+    // //     readonly isGeometry: false;
+    // }
+    export interface EventDispatcher {
         taken: boolean;
-        readonly isBufferGeometry: false;
-        readonly isGeometry: true;
-        readonly isMesh: false
-    }
-    export interface BufferGeometry {
-        path: Curve<Vector3>;
-        taken: boolean;
-        readonly isBufferGeometry: true;
-        readonly isGeometry: false;
     }
     export interface Material {
         meltedGeometry: BufferGeometry;
-        map: Texture;
+        baseMaterialName: string;
+        clock: Clock;
+    //     map: Texture;
     }
     export interface Camera {
         eye: Vector3;
         target: Vector3;
+        updateProjectionMatrix: ()=>void;
+    }
+
+    export interface OrbitControls {
+        active: boolean;
     }
 }
 declare module "three/examples/jsm/curves/NURBSCurve" {
