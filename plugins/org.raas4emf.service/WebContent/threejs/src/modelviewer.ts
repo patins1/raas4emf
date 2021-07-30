@@ -84,7 +84,7 @@ var g_path: string;
 var g_ids: string[] = [];
 var zoomId: number;
 var countProgress: number;
-var g_colors: { [color: string]: (number[] | Material | MeshPhongMaterial) & { isDefaultColorScheme?: boolean} & { hideFromMaterialVisibility?: boolean }) } = {
+var g_colors: { [color: string]: (number[] | Material | MeshPhongMaterial) & { isDefaultColorScheme?: boolean} & { hideFromMaterialVisibility?: boolean } } = {
 
 	"Beam": [0, 1, 0, 0.85],
 	"Building": [0, 0, 1, 0.5],
@@ -878,20 +878,20 @@ function onWindowResize(): void {
 	});
 }
 
-function traverseAllObjects(f: (object: Object3D) => any, g_client: TClient): void {
+function traverseAllObjects(f: (object: Mesh<BufferGeometry, Material>) => any, g_client: TClient): void {
 	g_client.scene.traverse(f);
 	if (g_client.originalRoot) g_client.originalRoot.traverse(f);
 
 }
 
-function getObjectsWithSplittings(name: string[], g_client?: TClient): Object3D[] {
+function getObjectsWithSplittings(name: string[], g_client?: TClient): Mesh<BufferGeometry, Material>[] {
 	g_client = g_client || g_clients[0];
 	name = asArray(name);
-	var found: Object3D[] = [];
+	var found: Mesh<BufferGeometry, Material>[] = [];
 	for (var j = 0; j < name.length; ++j) {
 		var n = name[j];
 		var n_ = n + "_";
-		var f = function (object: Object3D) {
+		var f = function (object: Mesh<BufferGeometry, Material>) {
 			if (object.uuid && (object.uuid == n || object.uuid.indexOf(n_) == 0)) {
 				found.push(object);
 			}
@@ -901,7 +901,7 @@ function getObjectsWithSplittings(name: string[], g_client?: TClient): Object3D[
 	return found;
 }
 
-function getObjectsWithIDs(name: number[], g_client?: TClient): Mesh<BufferGeometry, Material>[] {
+function getObjectsWithIDs(name: number[], g_client?: TClient): Object3D[] {
 	g_client = g_client || g_clients[0];
 	name = asArray(name);
 	var found: Object3D[] = [];
@@ -1675,7 +1675,7 @@ function expect(controller: GUIController, value?: boolean): void {
 	}
 }
 
-function getObjectsFromTreeIDs(selected: string[]): Mesh<BufferGeometry, Material>[] {
+function getObjectsFromTreeIDs(selected: string[]): Object3D[] {
 	return getObjectsWithIDs(selected.map(function (ti) { if (ti.indexOf("_") != -1) return -1; return parseInt(ti.substring(2)); }));
 }
 
