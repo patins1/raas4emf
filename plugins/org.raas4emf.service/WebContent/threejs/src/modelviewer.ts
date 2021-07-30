@@ -24,8 +24,13 @@ import { SceneUtils } from "three/examples/jsm/utils/SceneUtils";
 
 import { GUIController, GUI } from "dat.gui";
 
+interface TreeItem { id:string, text:string, state: { loaded: boolean }, children?: TreeItem[]};
 
 //import "./augmentation";
+
+class MyOrbitControls extends OrbitControls {
+    active: boolean = false;
+}
 
 interface TClient extends HTMLCanvasElement {
 	hideSpaces: boolean;
@@ -44,7 +49,7 @@ interface TClient extends HTMLCanvasElement {
 	additionalObjectsToSelect: Object3D[];
 	parentNode: HTMLElement;
 	circleShape: Object3D;
-	controls: OrbitControls;
+	controls: MyOrbitControls;
 	invalidated: boolean;
 	me: SkinnedMesh<BufferGeometry, Material[]>;
     me_shiftUp: number;
@@ -79,7 +84,7 @@ var g_path: string;
 var g_ids: string[] = [];
 var zoomId: number;
 var countProgress: number;
-var g_colors: { [color: string]: (number[] | Material | MeshPhongMaterial | { isDefaultColorScheme?: boolean }) } = {
+var g_colors: { [color: string]: (number[] | Material | MeshPhongMaterial) & { isDefaultColorScheme?: boolean} & { hideFromMaterialVisibility?: boolean }) } = {
 
 	"Beam": [0, 1, 0, 0.85],
 	"Building": [0, 0, 1, 0.5],
@@ -149,7 +154,6 @@ var g_colorSchemes: { [scheme: string]: { [color: string]: Material } };
 var b_colorSchemes: { [scheme: string]: boolean } = {};
 var materialCtls: GUIController[] = [];
 var g_visibility: { [material: string]: boolean } = {};
-var useOctree = false, octree: any;
 
 var g_angle = 45;
 var g_cameraHistory: any[5][] = [];
@@ -897,7 +901,7 @@ function getObjectsWithSplittings(name: string[], g_client?: TClient): Object3D[
 	return found;
 }
 
-function getObjectsWithIDs(name: number[], g_client?: TClient): Object3D[] {
+function getObjectsWithIDs(name: number[], g_client?: TClient): Mesh<BufferGeometry, Material>[] {
 	g_client = g_client || g_clients[0];
 	name = asArray(name);
 	var found: Object3D[] = [];
@@ -1671,7 +1675,7 @@ function expect(controller: GUIController, value?: boolean): void {
 	}
 }
 
-function getObjectsFromTreeIDs(selected: string[]): Object3D[] {
+function getObjectsFromTreeIDs(selected: string[]): Mesh<BufferGeometry, Material>[] {
 	return getObjectsWithIDs(selected.map(function (ti) { if (ti.indexOf("_") != -1) return -1; return parseInt(ti.substring(2)); }));
 }
 
@@ -1719,7 +1723,7 @@ function truncatedMaterialName(name: string): string {
 	return name;
 }
 
-function getTreeNodeForThreejsNode(node: Object3D): any {
+function getTreeNodeForThreejsNode(node: Object3D): TreeItem {
 	return { "id": getTreeID(node), "text": getTreeLabel(node), state: { loaded: node.children.length == 0 } };
 }
 
@@ -1736,25 +1740,25 @@ function generateTree(): void {
 
 	jstree = $('#jstree').jstree({
 		'core': {
-			'data': function (obj, cb) {
+			'data': function (obj:TreeItem, cb: (items:TreeItem[])=> void) {
 				if (obj.id == "#") {
 					var g_client = g_clients[0];
 					cb.call(this, [getTreeNodeForThreejsNode(effectController.quickmode ? g_client.originalRoot : g_client.root)]);
 				} else {
 					var parentNode = getObjectsFromTreeIDs([obj.id])[0];
 					if (getIntermediateTreeID(parentNode, parentNode)) {
-						var childrenTree = [];
-						var materialToTree = {};
+						var childrenTree : TreeItem[] = [];
+						var materialToTree : { [id:string]: TreeItem } = {};
 						parentNode.children.forEach(
 							function (child) {
 								var childMaterial = getTruncatedIfcClass(child);
-								var childTree = materialToTree[childMaterial];
+								var childTree: TreeItem = materialToTree[childMaterial];
 								if (childTree == null) {
-									childTree = { "id": getIntermediateTreeID(child, parentNode), "text": childMaterial, state: { loaded: true }, "children": [] };
+									childTree = { "id": getIntermediateTreeID(child, parentNode)!, "text": childMaterial, state: { loaded: true }, "children": [] };
 									materialToTree[childMaterial] = childTree;
 									childrenTree.push(childTree);
 								}
-								childTree.children.push(getTreeNodeForThreejsNode(child));
+								childTree.children!.push(getTreeNodeForThreejsNode(child));
 							}
 						);
 						cb.call(this, childrenTree);
@@ -1825,7 +1829,7 @@ function generateGui(): void {
 			mat_old.s = m_s.getValue();
 			mat_old.l = m_l.getValue();
 
-			var mat = materials[id];
+			var mat = materials[id] as MeshPhongMaterial;
 
 			current_material = null;
 
@@ -2023,7 +2027,7 @@ function generateGui(): void {
 		}
 
 
-		function displayError(error: PositionError) {
+		function displayError(error: GeolocationPositionError) {
 			if (error.code == error.PERMISSION_DENIED) {
 				alert("Error: Permission denied");
 			}
@@ -2035,7 +2039,7 @@ function generateGui(): void {
 			}
 		}
 
-		function displayPosition(position: Position) {
+		function displayPosition(position: GeolocationPosition) {
 			myLog("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude + ", Altitude: " + position.coords.altitude + ", Accuracy: " + position.coords.accuracy);
 			//[effectController.latitude, effectController.longitude] = [position.coords.latitude, position.coords.longitude];
 			if (g_map) {
@@ -2401,6 +2405,7 @@ function generateGui(): void {
 		let geometry = object.geometry;
 		if (geometry.isBufferGeometry) {
 			var array = geometry.attributes.position.array;
+            var _array = new Float32Array(array);
 			for (var i = 0; i < array.length; i += 9) {
 				var ax = array[i + 0];
 				var ay = array[i + 1];
@@ -2408,13 +2413,14 @@ function generateGui(): void {
 				var cx = array[i + 6 + 0];
 				var cy = array[i + 6 + 1];
 				var cz = array[i + 6 + 2];
-				array[i + 0] = cx;
-				array[i + 1] = cy;
-				array[i + 2] = cz;
-				array[i + 6 + 0] = ax;
-				array[i + 6 + 1] = ay;
-				array[i + 6 + 2] = az;
+				_array[i + 0] = cx;
+				_array[i + 1] = cy;
+				_array[i + 2] = cz;
+				_array[i + 6 + 0] = ax;
+				_array[i + 6 + 1] = ay;
+				_array[i + 6 + 2] = az;
 			}
+            geometry.setAttribute('position', new BufferAttribute(_array, 3));
 			geometry.attributes.position.needsUpdate = true;
 			var meltedGeometry = (object.originalMaterial || object.material).meltedGeometry;
 			if (meltedGeometry) {
@@ -2440,6 +2446,7 @@ function generateGui(): void {
 			var cb = new Vector3();
 			var ab = new Vector3();
 			var center = geometry.boundingSphere!.center;
+            var _array = new Float32Array(array);
 			for (var i = 0; i < array.length; i += 9) {
 				readXYZFromArgs(array, i, vA);
 				readXYZFromArgs(array, i + 3, vB);
@@ -2458,14 +2465,15 @@ function generateGui(): void {
 					var cx = array[i + 6 + 0];
 					var cy = array[i + 6 + 1];
 					var cz = array[i + 6 + 2];
-					array[i + 0] = cx;
-					array[i + 1] = cy;
-					array[i + 2] = cz;
-					array[i + 6 + 0] = ax;
-					array[i + 6 + 1] = ay;
-					array[i + 6 + 2] = az;
+					_array[i + 0] = cx;
+					_array[i + 1] = cy;
+					_array[i + 2] = cz;
+					_array[i + 6 + 0] = ax;
+					_array[i + 6 + 1] = ay;
+					_array[i + 6 + 2] = az;
 				}
 			}
+            geometry.setAttribute('position', new BufferAttribute(_array, 3));
 			geometry.attributes.position.needsUpdate = true;
 			var meltedGeometry = (object.originalMaterial || object.material).meltedGeometry;
 			if (meltedGeometry) {
@@ -2830,8 +2838,8 @@ function melt(g_client: TClient): void {
 
 var g_profile: Mesh[] = [];
 
-function getVerticesOfFaces(geometry: Geometry): Vector3[] {
-	if (!geometry.isGeometry) {
+function getVerticesOfFaces(geometry: Geometry| BufferGeometry): Vector3[] {
+    if (isBufferGeometry(geometry)) {
 		return getOnlyUsedVertices(geometry);
 	}
 	var vertices: Vector3[] = [];
@@ -3435,11 +3443,8 @@ function automaticUnwrapping(geometry: BufferGeometry, deltaX: number, deltaY: n
 	var vertices = getVerticesOfFaces(geometry as unknown as Geometry);
 
 
-	var uvs = null;
-	if (geometry.isBufferGeometry) {
-		uvs = new Float32Array(vertices.length * 2);
-		geometry.addAttribute('uv', new BufferAttribute(uvs, 2));
-	}
+	var uvs = new Float32Array(vertices.length * 2);
+	geometry.setAttribute('uv', new BufferAttribute(uvs, 2));
 
 	for (var f = 0; f < vertices.length; f += 3) {
 
@@ -3459,15 +3464,12 @@ function automaticUnwrapping(geometry: BufferGeometry, deltaX: number, deltaY: n
 		distance = vtx.distanceTo(va);
 		uvC.set(distance * Math.cos(angle) / deltaX, distance * Math.sin(angle) / deltaY).add(uvA);
 
-		if (uvs) {
-			uvs[f * 2 + 0] = uvA.x;
-			uvs[f * 2 + 1] = uvA.y;
-			uvs[f * 2 + 2] = uvB.x;
-			uvs[f * 2 + 3] = uvB.y;
-			uvs[f * 2 + 4] = uvC.x;
-			uvs[f * 2 + 5] = uvC.y;
-		} else
-			geometry.faceVertexUvs[0].push([uvA.clone(), uvB.clone(), uvC.clone()]);
+        uvs[f * 2 + 0] = uvA.x;
+        uvs[f * 2 + 1] = uvA.y;
+        uvs[f * 2 + 2] = uvB.x;
+        uvs[f * 2 + 3] = uvB.y;
+        uvs[f * 2 + 4] = uvC.x;
+        uvs[f * 2 + 5] = uvC.y;
 
 
 	}
@@ -3492,26 +3494,6 @@ function updateSelectableObjects(g_client: TClient) {
 	for (var tt = 0; tt < g_client.additionalObjectsToSelect.length; tt++) {
 		g_client.objects.push(g_client.additionalObjectsToSelect[tt]);
 	}
-
-	if (!useOctree) return;
-
-	octree = new Octree({
-		// uncomment below to see the octree (may kill the fps)
-		//scene: scene,
-		// when undeferred = true, objects are inserted immediately
-		// instead of being deferred until next octree.update() call
-		// this may decrease performance as it forces a matrix update
-		undeferred: false,
-		// set the max depth of tree
-		depthMax: Infinity,
-		// max number of objects before nodes split or merge
-		objectsThreshold: 8,
-		// percent between 0 and 1 that nodes will overlap each other
-		// helps insert objects that lie over more than one node
-		overlapPct: 0.15
-	});
-
-	g_client.objects.forEach(function (object) { octree.add(object, { useFaces: false }); });
 }
 
 function addSelectableObjects(g_client: TClient, parent: Object3D) {
@@ -3572,12 +3554,11 @@ function init(root: Object3D, g_client: TClient) {
 			this.knots.push(last);
 		};
 
-		NURBSCurve.prototype.addArcAndLine = function (direction: Vector4, percentageOfQuarter: number, lineLength: number, radius: number) {
+		NURBSCurve.prototype.addArcAndLine = function (direction: Vector3, percentageOfQuarter: number, lineLength: number, radius: number) {
 
 			// build up quarter arc
-			var point = this.controlPoints[this.controlPoints.length - 1];
-			if (point.w)
-				point = point.clone().divideScalar(point.w);
+			var point4 = this.controlPoints[this.controlPoints.length - 1];
+            var point = new Vector3(point4.x, point4.y, point4.z).divideScalar(point4.w ? point4.w : 1);
 			// y-z plane
 			//		var vertical1 = new Vector3(direction.x,direction.z,-direction.y);
 			//		var vertical2 = new Vector3(direction.x,-direction.z,direction.y);
@@ -3649,7 +3630,7 @@ function init(root: Object3D, g_client: TClient) {
 	try {
 
 		if (!g_client.controls) {
-			g_client.controls = new OrbitControls(new PerspectiveCamera(90, 1, 0.01, 2000000), g_client);
+			g_client.controls = new MyOrbitControls(new PerspectiveCamera(90, 1, 0.01, 2000000), g_client);
 			g_client.controls.oriUpdate = g_client.controls.update;
 			g_client.controls.update = function () { if (this.active) this.oriUpdate(); };
 			g_client.controls.enablePan = false;
@@ -3797,13 +3778,13 @@ function init(root: Object3D, g_client: TClient) {
 	}
 }
 
-function setupUVs(mesh: Object3D): void {
+function setupUVs(mesh: Mesh<BufferGeometry, Material>): void {
 	let geometry = mesh.geometry;
-	var material = mesh.material;
+	var material = mesh.material as MeshPhongMaterial;
 	if (material && geometry) {
 		var hasTexture = (material.map != null);
 		if (Array.isArray(material)) {
-			const materials = material as Material[];
+			const materials = material as MeshPhongMaterial[];
 			for (var i = 0; i < materials.length; i++) {
 				if (materials[i].map) {
 					hasTexture = true;
@@ -3811,12 +3792,11 @@ function setupUVs(mesh: Object3D): void {
 			}
 		}
 		if (!hasTexture) return;
-		if (!(geometry.faceVertexUvs && geometry.faceVertexUvs[0].length > 0 || geometry.attributes && geometry.attributes.uv))
+		if (!(geometry.attributes && geometry.attributes.uv))
 			automaticUnwrapping(geometry, 0.1 * 1, 0.1 * 1);
 		//							if (geometry.faceVertexUvs[0].length==0 && geometry.boundingBox && !geometry.boundingBox.isEmpty() && materialColor.map.image.width!=null &&  materialColor.map.image.width>0 )
 		//								automaticUnwrapping(geometry,0.1*1,0.1*materialColor.map.image.height/materialColor.map.image.width);
-		geometry.buffersNeedUpdate = true;
-		geometry.uvsNeedUpdate = true;
+		geometry.attributes.uv.needsUpdate = true;
 	}
 }
 
@@ -4052,7 +4032,6 @@ function render(g_client: TClient): void {
 	if (!effectController.lazy_rendering || testFps == null) {
 		updateClient(g_client, true);
 	}
-	if (useOctree) octree.update();
 }
 
 function removeFromArray(array: any[], object: any): void {
@@ -4288,11 +4267,13 @@ function onDocumentMouseMove(e: PointerEvent): void {
 						var meltedGeometry = (object.originalMaterial || object.material).meltedGeometry;
 						if (object.geometry.isBufferGeometry && meltedGeometry) {
 							var array = object.geometry.attributes.position.array;
+                            var _array = new Float32Array(array);
 							for (var i = 0; i < array.length; i += 3) {
-								array[i + 0] += localOffs.x;
-								array[i + 1] += localOffs.y;
-								array[i + 2] += localOffs.z;
+								_array[i + 0] += localOffs.x;
+								_array[i + 1] += localOffs.y;
+								_array[i + 2] += localOffs.z;
 							}
+                            object.geometry.setAttribute('position', new BufferAttribute(_array, 3));
 							object.geometry.boundingSphere!.center.add(localOffs);
 							object.geometry.attributes.position.needsUpdate = true;
 							meltedGeometry.attributes.position.needsUpdate = true;
@@ -4449,24 +4430,7 @@ function onDocumentMouseDown(e: PointerEvent): void {
 
 		let raycaster = getRaycaster(mouse, g_client);
 
-
-		if (useOctree) {
-
-			var octreeObjects = octree.search(raycaster.ray.origin, raycaster.ray.far, true, raycaster.ray.direction);
-
-			intersects = raycaster.intersectOctreeObjects(octreeObjects)!;
-
-			var descSort = function (a: Intersection, b: Intersection) {
-
-				return a.distance - b.distance;
-
-			};
-
-			intersects!.sort(descSort);
-
-		} else {
-			intersects = raycaster.intersectObjects(g_client.objects);
-		}
+		intersects = raycaster.intersectObjects(g_client.objects);
 
 		intersects = intersectParticleSystems(raycaster, g_client) || intersects;
 	}
@@ -5051,13 +5015,13 @@ function printIncidents(lines: string[], artifactId: string): void {
 
 							geometry = new BoxGeometry(1, 1, 1);
 
-							for (var i = 0; i < geometry.faces.length; i++) {
-
-								geometry.faces[i].color.setHex(Math.random() * 0xffffff);
-
+                            const colors = [];
+							for (var i = 0; i < geometry.attributes.position.array.length / 3; i++) {
+                                colors.push(Math.random(), Math.random(), Math.random());
 							}
+                            geometry.setAttribute('color', new BufferAttribute(colors, 1));
 
-							material = new MeshBasicMaterial({ vertexColors: false });
+							material = new MeshBasicMaterial({ vertexColors: true });
 
 						}
 

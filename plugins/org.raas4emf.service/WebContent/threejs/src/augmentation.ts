@@ -84,7 +84,7 @@ declare module "three/examples/jsm/curves/NURBSCurve" {
         addPoint(p: Vector4, knot: number): void;
         getLastKnot(): number;
         removeLastPoint(): void;
-        addArcAndLine(direction: Vector4, percentageOfQuarter: number, lineLength: number, radius: number): void;
+        addArcAndLine(direction: Vector3, percentageOfQuarter: number, lineLength: number, radius: number): Vector3;
         endKnot: number;
         controlPoints: Vector4[];
         knots: number[];
